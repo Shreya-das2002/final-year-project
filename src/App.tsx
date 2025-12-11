@@ -1,9 +1,17 @@
-function App() {
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import Header from "./Screen/Common/Header/index";
+
+const App: React.FC = () => {
   return (
-    <div className="p-10 text-center">
-      <h1 className="text-4xl font-bold bg-amber-400 text-blue-600">React + TS + Vite + Tailwind v4</h1>
+    <>
+    <BrowserRouter>
+    <div>
+      <Header />
     </div>
+    </BrowserRouter>
+    </>
   );
-}
+};
 
 export default App;
