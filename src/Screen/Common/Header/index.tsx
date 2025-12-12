@@ -35,7 +35,7 @@ const Header: React.FC = () => {
   }, [location]);
 
   return (
-    <div>
+    <div className="sticky">
       {/* TOP HEADER */}
       <header className="w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-gray-400 dark:via-gray-500 dark:to-gray-700 flex items-center justify-between px-6 shadow-md">
         <div>
