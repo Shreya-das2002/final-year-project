@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { FaRegCalendarAlt, FaRegClock } from "react-icons/fa";
 
 const Header: React.FC = () => {
   const location = useLocation();
@@ -41,22 +42,34 @@ const Header: React.FC = () => {
           <span className="text-xl text-sky-600 font-bold">Nexus</span>
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-gray-900">
-          <span>{date}</span>
-          <span>{time}</span>
+        {/* DATE & TIME WITH ICONS BEHIND */}
+        <div className="flex items-center gap-8 text-sm text-white font-medium">
+
+          {/* Date */}
+          <div className="relative flex items-center">
+            <span className="absolute -left-7 bg-white/30 p-2 rounded-full">
+              <FaRegCalendarAlt className="text-white text-lg" />
+            </span>
+            <span className="ml-4">{date}</span>
+          </div>
+
+          {/* Time */}
+          <div className="relative flex items-center">
+            <span className="absolute -left-7 bg-white/30 p-2 rounded-full">
+              <FaRegClock className="text-white text-lg" />
+            </span>
+            <span className="ml-4">{time}</span>
+          </div>
+
         </div>
       </header>
 
       {/* NAV BAR */}
       <nav className="w-full h-18 bg-blue-100 flex items-center justify-between px-6 shadow">
         <div className="flex items-center">
-          <span className="text-xl text-blue-950 font-bold">
-            Guiding Your Path
-          </span>
+          <span className="text-xl text-blue-950 font-bold">Guiding Your Path</span>
           &ensp;
-          <span className="text-xl text-blue-500 font-bold">
-            From Concern to Calm
-          </span>
+          <span className="text-xl text-blue-500 font-bold">From Concern to Calm</span>
         </div>
 
         <div className="flex gap-4">
