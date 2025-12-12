@@ -1,15 +1,27 @@
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./Screen/Common/Header/index";
 import Footer from "./Screen/Common/Footer/index";
+import HomePage from "./Screen/Homepage/index";
+import About from "./Screen/About";
+import Privacy from "./Screen/Privacy";
+import Contact from "./Screen/Contact";
 
 const App: React.FC = () => {
   return (
     <>
     <BrowserRouter>
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Header />
     <div/>
+      <main className="flex-grow">
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+      </main>
     <div>
       <Footer/>
       </div>
