@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer: React.FC = () => {
     return (
-        <footer className="w-full bg-gray-200 dark:bg-gray-900 text-gray-600 py-3 mt-auto">
+        <footer className="w-full bg-gray-200 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-3 mt-auto">
             <div className="container mx-auto text-center text-sm">
                 <p className="mb-2">© {new Date().getFullYear()} SymptoNexus. All rights reserved.</p>
                 <div className="flex justify-center gap-4">
