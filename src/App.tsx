@@ -4,6 +4,8 @@ import Header from "./Screen/Common/Header/index";
 import Footer from "./Screen/Common/Footer/index";
 import HomePage from "./Screen/Homepage/index";
 import About from "./Screen/About";
+import Privacy from "./Screen/Privacy";
+import Contact from "./Screen/Contact";
 
 const App: React.FC = () => {
   return (
@@ -16,10 +18,11 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<About />} />
-        {/* <Route path="/privacy" element={<Privacy />} /> */}
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
       </main>
-    <div className="">
+    <div>
       <Footer/>
       </div>
     </div>
