@@ -40,7 +40,7 @@ const Header: React.FC = () => {
       <header className="w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-gray-400 dark:via-gray-500 dark:to-gray-700 flex items-center justify-between px-6 shadow-md">
         <div>
           <span className="text-xl text-blue-950 font-bold">Sympto</span>
-          <span className="text-xl text-sky-600 font-bold">Nexus</span>
+          <span className="text-xl text-sky-600 dark:text-sky-700 font-bold">Nexus</span>
         </div>
 
 
