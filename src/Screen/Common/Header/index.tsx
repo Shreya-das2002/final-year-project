@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { FaRegCalendarAlt, FaRegClock } from "react-icons/fa";
+import Theme from "../Theme/Theme";
 
 const Header: React.FC = () => {
   const location = useLocation();
@@ -36,14 +37,19 @@ const Header: React.FC = () => {
   return (
     <div>
       {/* TOP HEADER */}
-      <header className="w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 flex items-center justify-between px-6 shadow-md">
+      <header className="w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-gray-400 dark:via-gray-500 dark:to-gray-700 flex items-center justify-between px-6 shadow-md">
         <div>
           <span className="text-xl text-blue-950 font-bold">Sympto</span>
           <span className="text-xl text-sky-600 font-bold">Nexus</span>
         </div>
 
+
         {/* DATE & TIME WITH ICONS BEHIND */}
         <div className="flex items-center gap-8 text-sm text-white font-medium">
+          <div className="pr-2">
+            <Theme/>
+          </div>
+          
 
           {/* Date */}
           <div className="relative flex items-center">

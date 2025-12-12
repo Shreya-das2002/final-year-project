@@ -1,0 +1,14 @@
+@keyframes slide {
+    0% {
+    transform: translateX(100%);
+    }
+    100% {
+    transform: translateX(-100%);
+    }
+}
+
+@layer utilities {
+    .animate-slide {
+    animation: slide 15s linear infinite;
+    }
+}
