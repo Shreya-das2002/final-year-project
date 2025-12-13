@@ -9,7 +9,7 @@ const About: React.FC = () => {
       {/* About Section */}
       <div className="w-full max-w-4xl bg-gray-200 dark:bg-gray-800 text-center p-8 rounded-xl shadow-md">
         <h1 className="text-3xl font-bold mb-3 text-gray-900 dark:text-white">
-          About Us Page
+          About Us
         </h1>
         <p className="text-gray-700 dark:text-gray-300">
           Some text about who we are and what we do.
