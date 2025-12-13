@@ -1,4 +1,6 @@
 import shreyaImg from "./assets/Shreya.jpg";
+import subhaImg from "./assets/Subhankar.jpg";
+import ranaImg from "./assets/Ranabir.jpg";
 
 export interface TeamMember {
   id: number;
@@ -13,8 +15,8 @@ export interface TeamMember {
 export const teamMembers: TeamMember[] = [
   {
     id: 1,
-    name: "Jane Doe",
-    role: "CEO & Founder",
+    name: "Shreya Das",
+    role: "Full-Stack Developer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
     img: shreyaImg,
     email: "das.shreya.sid@gmail.com",
@@ -22,26 +24,26 @@ export const teamMembers: TeamMember[] = [
   },
   {
     id: 2,
-    name: "Mike Ross",
-    role: "Art Director",
+    name: "Subhankar Basak",
+    role: "Designer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
-    img: "https://www.w3schools.com/w3images/team2.jpg",
+    img: subhaImg,
     email: "das.shreya.sid@gmail.com",
     num: 7001142661
   },
   {
     id: 3,
-    name: "John Doe",
-    role: "Designer",
+    name: "Ranabir Basak",
+    role: "ML Engineer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
-    img: "https://www.w3schools.com/w3images/team3.jpg",
+    img: ranaImg,
     email: "das.shreya.sid@gmail.com",
     num: 7001142661
   },
     {
     id: 4,
-    name: "Mike Ross",
-    role: "Art Director",
+    name: "Rinki Singha Roy",
+    role: "Detabase Engineer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
     img: "https://www.w3schools.com/w3images/team2.jpg",
     email: "das.shreya.sid@gmail.com",
