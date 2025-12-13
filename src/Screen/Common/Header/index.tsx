@@ -39,8 +39,8 @@ const Header: React.FC = () => {
       {/* TOP HEADER */}
       <header className="w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-gray-400 dark:via-gray-500 dark:to-gray-700 flex items-center justify-between px-6 shadow-md">
         <div>
-          <span className="text-xl text-blue-950 dark:text-sky-600 font-bold">Sympto</span>
-          <span className="text-xl text-sky-600 dark:text-blue-950 font-bold">Nexus</span>
+          <span className="text-xl text-blue-950 dark:text-gray-800 font-bold">Sympto</span>
+          <span className="text-xl text-sky-600 dark:text-gray-300 font-bold">Nexus</span>
         </div>
 
 
@@ -71,11 +71,11 @@ const Header: React.FC = () => {
       </header>
 
       {/* NAV BAR */}
-      <nav className="w-full h-18 bg-blue-100 flex items-center justify-between px-6 shadow">
+      <nav className="w-full h-18 bg-blue-100 dark:bg-gray-200 flex items-center justify-between px-6 shadow">
         <div className="flex items-center">
-          <span className="text-xl text-blue-500 dark:text-blue-950 font-bold">Guiding Your Path</span>
+          <span className="text-xl text-blue-950 dark:text-gray-950 font-bold">Guiding Your Path</span>
           &ensp; 
-          <span className="text-xl text-blue-950 dark:text-sky-600 font-bold">From Concern to Calm</span>
+          <span className="text-xl text-blue-500 dark:text-gray-500 font-bold">From Concern to Calm</span>
         </div>
 
         <div className="flex gap-4">
