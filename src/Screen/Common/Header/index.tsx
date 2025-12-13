@@ -106,7 +106,7 @@ const Header: React.FC = () => {
             <button
               key={role}
               onClick={() => handleRoleClick(role)}
-              className="px-4 h-12 rounded-lgbg-gradient-to-r from-blue-400 to-blue-700 dark:from-gray-500 dark:to-gray-700 hover:from-blue-500 hover:to-blue-800 dark:hover:from-gray-600 dark:hover:to-gray-900 text-white font-semibold"
+              className="px-4 h-12 rounded-lg bg-gradient-to-r from-blue-400 to-blue-700 dark:from-gray-500 dark:to-gray-700 hover:from-blue-500 hover:to-blue-800 dark:hover:from-gray-600 dark:hover:to-gray-900 text-white font-semibold"
             >
               {role}
             </button>
