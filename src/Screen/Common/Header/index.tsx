@@ -22,6 +22,11 @@ const Header: React.FC = () => {
     }
   };
 
+  const goToHome = () => {
+    navigate("/");
+    setClickedRole(null);
+  }
+
   /* ---------- DATE & TIME (RUN ONCE) ---------- */
   useEffect(() => {
     const updateDateTime = () => {
@@ -53,7 +58,9 @@ const Header: React.FC = () => {
     <div>
       {/* ================= TOP HEADER ================= */}
       <header className="w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-gray-400 dark:via-gray-500 dark:to-gray-700 flex items-center justify-between px-6 shadow-md">
-        <div>
+        <div
+          onClick={goToHome}
+            className="cursor-pointer select-none">
           <span className="text-xl text-blue-950 dark:text-gray-800 font-bold">
             Sympto
           </span>
@@ -63,7 +70,7 @@ const Header: React.FC = () => {
         </div>
 
         {/* DATE & TIME */}
-        <div className="flex items-center gap-8 text-sm text-white font-medium">
+        <div className="flex items-center gap-10 text-sm text-white font-medium">
           <Theme />
 
           <div className="relative flex items-center">
@@ -95,11 +102,11 @@ const Header: React.FC = () => {
         </div>
 
         <div className="flex gap-4">
-          {["doctor", "patient", "admin"].map((role) => (
+          {["Doctor", "Patient", "Admin"].map((role) => (
             <button
               key={role}
               onClick={() => handleRoleClick(role)}
-              className="px-4 h-12 rounded-lg bg-blue-600 hover:bg-blue-800 text-white font-semibold"
+              className="px-4 h-12 rounded-lgbg-gradient-to-r from-blue-400 to-blue-700 dark:from-gray-500 dark:to-gray-700 hover:from-blue-500 hover:to-blue-800 dark:hover:from-gray-600 dark:hover:to-gray-900 text-white font-semibold"
             >
               {role}
             </button>
