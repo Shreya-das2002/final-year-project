@@ -28,8 +28,8 @@ export const teamMembers: TeamMember[] = [
     role: "Designer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
     img: subhaImg,
-    email: "das.shreya.sid@gmail.com",
-    num: 7001142661
+    email: "subhankar612003@gmail.com",
+    num: 9434824762
   },
   {
     id: 3,
@@ -37,8 +37,8 @@ export const teamMembers: TeamMember[] = [
     role: "ML Engineer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
     img: ranaImg,
-    email: "das.shreya.sid@gmail.com",
-    num: 7001142661
+    email: "ranabirbasak2004@gmail.com",
+    num: 7679006309
   },
     {
     id: 4,
@@ -46,7 +46,7 @@ export const teamMembers: TeamMember[] = [
     role: "Detabase Engineer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
     img: "https://www.w3schools.com/w3images/team2.jpg",
-    email: "das.shreya.sid@gmail.com",
-    num: 7001142661
+    email: "rinkisingharoy850@gmail.com",
+    num: 7797185159
   },
 ];
