@@ -1,3 +1,4 @@
+import shreyaImg from "./assets/Shreya.jpg";
 
 export interface TeamMember {
   id: number;
@@ -13,7 +14,7 @@ export const teamMembers: TeamMember[] = [
     name: "Jane Doe",
     role: "CEO & Founder",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
-    img: "https://www.w3schools.com/w3images/team1.jpg",
+    img: shreyaImg,
   },
   {
     id: 2,
