@@ -6,6 +6,7 @@ import HomePage from "./Screen/Homepage/index";
 import About from "./Screen/About";
 import Privacy from "./Screen/Privacy";
 import Contact from "./Screen/Contact";
+import Signup from "./Screen/Login/Signup";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,8 @@ const App: React.FC = () => {
         <Route path="/about" element={<About />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/signup" element={<Signup />} />
+
       </Routes>
       </main>
     <div>
