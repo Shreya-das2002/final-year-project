@@ -1,9 +1,9 @@
+
 export interface TeamMember {
   id: number;
   name: string;
   role: string;
   desc: string;
-  email: string;
   img: string;
 }
 
@@ -13,7 +13,6 @@ export const teamMembers: TeamMember[] = [
     name: "Jane Doe",
     role: "CEO & Founder",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
-    email: "jane@example.com",
     img: "https://www.w3schools.com/w3images/team1.jpg",
   },
   {
@@ -21,7 +20,6 @@ export const teamMembers: TeamMember[] = [
     name: "Mike Ross",
     role: "Art Director",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
-    email: "mike@example.com",
     img: "https://www.w3schools.com/w3images/team2.jpg",
   },
   {
@@ -29,7 +27,6 @@ export const teamMembers: TeamMember[] = [
     name: "John Doe",
     role: "Designer",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
-    email: "john@example.com",
     img: "https://www.w3schools.com/w3images/team3.jpg",
   },
     {
@@ -37,7 +34,6 @@ export const teamMembers: TeamMember[] = [
     name: "Mike Ross",
     role: "Art Director",
     desc: "Some text that describes me lorem ipsum ipsum lorem.",
-    email: "mike@example.com",
     img: "https://www.w3schools.com/w3images/team2.jpg",
   },
 ];
