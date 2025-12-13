@@ -12,10 +12,13 @@ const About: React.FC = () => {
           About Us
         </h1>
         <p className="text-gray-700 dark:text-gray-300">
-          Some text about who we are and what we do.
+          SymptoNexus is a healthcare support platform built to help users understand their symptoms, 
+          explore safe home remedies, and connect easily with doctors. 
+          Our goal is to reduce uncertainty and improve access to healthcare through simple, ethical, and user-friendly technology.
+
         </p>
-        <p className="text-gray-700 dark:text-gray-300 mt-2">
-          Resize the browser window to see that this page is responsive by the way.
+        <p className="text-gray-800 dark:text-gray-200 mt-2">
+          We focus on guidance and comfort, not replacing professional medical advice.
         </p>
       </div>
 
