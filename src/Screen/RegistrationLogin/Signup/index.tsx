@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 
 const Signup = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 w-full max-w-md">
+      <div>
 
         <h2 className="text-2xl font-semibold text-center mb-6 text-green-600 dark:text-green-300">
           Create Account
@@ -44,7 +43,6 @@ const Signup = () => {
           </Link>
         </p>
       </div>
-    </div>
   );
 };
 
