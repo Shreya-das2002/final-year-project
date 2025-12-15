@@ -9,7 +9,6 @@ const Contact: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Thank you for contacting SymptoNexus!");
     setName("");
     setEmail("");
     setMessage("");

@@ -41,6 +41,13 @@ const Footer: React.FC = () => {
           >
             Contact
           </span>
+
+          <span 
+            onClick={() => handleNavigate("/faq")}
+            className="hover:text-teal-600 cursor-pointer"
+          >
+            FAQs
+          </span>
         </div>
       </div>
     </footer>

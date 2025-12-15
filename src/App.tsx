@@ -6,6 +6,7 @@ import HomePage from "./Screen/Homepage/index";
 import About from "./Screen/Homepage/About";
 import Privacy from "./Screen/Homepage/Privacy/index";
 import Contact from "./Screen/Homepage/Contact";
+import FAQ from "./Screen/Homepage/FAQs";
 
 import RegistrationLogin from "./Screen/RegistrationLogin";
 import Login from "./Screen/RegistrationLogin/Login";
@@ -40,6 +41,7 @@ const Routing = ()=>(<Routes>
         <Route path="/about" element={<About />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
         <Route path="/registrationlogin" element={<RegistrationLogin />} >
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />

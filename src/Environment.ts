@@ -50,3 +50,44 @@ export const teamMembers: TeamMember[] = [
     num: 7797185159
   },
 ];
+
+
+// for faq questions
+export interface  FAQItem  {
+  question: string;
+  answer: string;
+};
+
+
+  export const faqData: FAQItem[] = [
+  {
+    question: "What is SymptoNexus?",
+    answer:
+      "SymptoNexus is a digital healthcare platform designed to help users assess symptoms, manage health-related information, and connect with healthcare professionals securely.",
+  },
+  {
+    question: "Who can use SymptoNexus?",
+    answer:
+      "SymptoNexus can be used by patients, doctors, and administrators. Each user role has specific features and access permissions.",
+  },
+  {
+    question: "Is SymptoNexus a replacement for a doctor?",
+    answer:
+      "No. SymptoNexus is not a substitute for professional medical advice. It is intended to support users in understanding symptoms and seeking appropriate care.",
+  },
+  {
+    question: "How does SymptoNexus analyze symptoms?",
+    answer:
+      "The platform uses structured medical data and predefined logic to analyze symptoms and provide general health insights for informational purposes.",
+  },
+  {
+    question: "Is my personal and medical data secure?",
+    answer:
+      "Yes. SymptoNexus uses secure authentication and role-based access control to protect personal and medical information.",
+  },
+  {
+    question: "What should I do in case of a medical emergency?",
+    answer:
+      "In a medical emergency, users should immediately contact local emergency services or visit the nearest hospital. SymptoNexus should not be used for emergency diagnosis.",
+  },
+];
