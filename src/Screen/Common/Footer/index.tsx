@@ -23,28 +23,28 @@ const Footer: React.FC = () => {
         <div className="flex justify-center gap-4">
           <span 
             onClick={() => handleNavigate("/about")}
-            className="hover:text-teal-600 cursor-pointer"
+            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
           >
             About
           </span>
 
           <span 
             onClick={() => handleNavigate("/privacy")}
-            className="hover:text-teal-600 cursor-pointer"
+            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
           >
             Privacy Policy
           </span>
 
           <span 
             onClick={() => handleNavigate("/contact")}
-            className="hover:text-teal-600 cursor-pointer"
+            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
           >
             Contact
           </span>
 
           <span 
             onClick={() => handleNavigate("/faq")}
-            className="hover:text-teal-600 cursor-pointer"
+            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
           >
             FAQs
           </span>
