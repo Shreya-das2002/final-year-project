@@ -91,3 +91,63 @@ export interface  FAQItem  {
       "In a medical emergency, users should immediately contact local emergency services or visit the nearest hospital. SymptoNexus should not be used for emergency diagnosis.",
   },
 ];
+
+// Check if password is strong
+export const isStrongPassword = (password: string): boolean => {
+  return (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password) &&
+    /[^A-Za-z0-9]/.test(password)
+  );
+};
+
+// Match password & confirm password
+export const doPasswordsMatch = (
+  password: string,
+  confirmPassword: string
+): boolean => {
+  return password === confirmPassword;
+};
+
+export const isValidDOB = (dob: string): boolean => {
+  if (!dob) return false;
+
+  const birthDate = new Date(dob);
+  const today = new Date();
+
+  return birthDate < today;
+};
+
+// Calculate age from DOB (optional but useful)
+export const calculateAge = (dob: string): number => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
+};
+
+export type Gender = "male" | "female" | "other";
+
+// Allowed gender options
+export const genderOptions: { label: string; value: Gender }[] = [
+  { label: "Male", value: "male" },
+  { label: "Female", value: "female" },
+  { label: "Other", value: "other" },
+];
+
+// Validate gender value
+export const isValidGender = (gender: string): boolean => {
+  return ["male", "female", "other"].includes(gender);
+};
