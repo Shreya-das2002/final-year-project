@@ -143,7 +143,7 @@ const [selected, setSelected] = useState<string>(
           <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
             New here?{" "}
             <Link
-              to="/Register"
+              to="/registrationlogin/signup"
               className="text-blue-600 dark:text-blue-400 hover:underline"
             >
               Register Now
