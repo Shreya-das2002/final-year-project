@@ -61,10 +61,10 @@ const Header: React.FC = () => {
         <div
           onClick={goToHome}
             className="cursor-pointer select-none">
-          <span className="text-xl text-blue-950 dark:text-gray-800 font-bold">
+          <span className="text-xl hover:text-blue-800 dark:hover:text-gray-700 text-blue-950 dark:text-gray-800 font-bold">
             Sympto
           </span>
-          <span className="text-xl text-sky-600 dark:text-gray-300 font-bold">
+          <span className="text-xl hover:text-sky-400 dark:hover:text-gray-200 text-sky-600 dark:text-gray-300 font-bold">
             Nexus
           </span>
         </div>

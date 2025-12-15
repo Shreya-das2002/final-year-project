@@ -4,14 +4,14 @@ import { teamMembers } from "../../../Environment";
 
 const About: React.FC = () => {
   return (
-    <div className="w-full flex flex-col items-center px-6 py-10 bg-gray-100 dark:bg-gray-900">
+    <div className="w-full flex flex-col items-center px-6 py-10 bg-cyan-50 dark:bg-gray-900">
       
       {/* About Section */}
-      <div className="w-full max-w-4xl bg-gray-200 dark:bg-gray-800 text-center p-8 rounded-xl shadow-md">
-        <h1 className="text-3xl font-bold mb-3 text-gray-900 dark:text-white">
+      <div className="w-full max-w-4xl bg-blue-100 dark:bg-gray-800 text-center p-8 rounded-xl shadow-md">
+        <h1 className="text-3xl font-bold mb-3 text-blue-500 dark:text-white">
           About Us
         </h1>
-        <p className="text-gray-700 dark:text-gray-300">
+        <p className="text-blue-950 dark:text-gray-300">
           SymptoNexus is a healthcare support platform built to help users understand their symptoms, 
           explore safe home remedies, and connect easily with doctors. 
           Our goal is to reduce uncertainty and improve access to healthcare through simple, ethical, and user-friendly technology.
@@ -23,7 +23,7 @@ const About: React.FC = () => {
       </div>
 
       {/* Team Section */}
-      <h2 className="text-2xl font-semibold mt-10 mb-6 text-gray-900 dark:text-white">
+      <h2 className="text-2xl font-semibold mt-10 mb-6 text-blue-600 dark:text-white">
         Our Team
       </h2>
 
@@ -31,14 +31,14 @@ const About: React.FC = () => {
         {teamMembers.map((member) => (
           <div
             key={member.name}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+            className="bg-teal-50 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
           >
             <img src={member.img} alt={member.name} className="w-full h-60 object-cover" />
 
             <div className="p-4 text-center">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{member.name}</h3>
-              <p className="text-gray-600 dark:text-gray-400">{member.role}</p>
-              <p className="text-gray-700 dark:text-gray-300 mt-2">{member.desc}</p>
+              <h3 className="text-xl font-bold text-blue-600 dark:text-white">{member.name}</h3>
+              <p className="text-sky-500 dark:text-gray-400">{member.role}</p>
+              <p className="text-blue-950 dark:text-gray-300 mt-2">{member.desc}</p>
             </div>
           </div>
         ))}
