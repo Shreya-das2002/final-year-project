@@ -1,6 +1,7 @@
 import shreyaImg from "./assets/Shreya.jpg";
 import subhaImg from "./assets/Subhankar.jpg";
 import ranaImg from "./assets/Ranabir.jpg";
+import rinkiImg from "./assets/Rinki.jpg";
 
 export interface TeamMember {
   id: number;
@@ -45,7 +46,7 @@ export const teamMembers: TeamMember[] = [
     name: "Rinki Singha Roy",
     role: "Detabase Engineer",
     desc: "Manages database structure and basic data organization. Supports data storage, retrieval, and overall system consistency.",
-    img: "https://www.w3schools.com/w3images/team2.jpg",
+    img: rinkiImg,
     email: "rinkisingharoy850@gmail.com",
     num: 7797185159
   },
