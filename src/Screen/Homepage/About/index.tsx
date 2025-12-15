@@ -11,13 +11,13 @@ const About: React.FC = () => {
         <h1 className="text-3xl font-bold mb-3 text-blue-500 dark:text-white">
           About Us
         </h1>
-        <p className="text-blue-950 dark:text-gray-300">
+        <p className="text-blue-700 dark:text-gray-300">
           SymptoNexus is a healthcare support platform built to help users understand their symptoms, 
           explore safe home remedies, and connect easily with doctors. 
           Our goal is to reduce uncertainty and improve access to healthcare through simple, ethical, and user-friendly technology.
 
         </p>
-        <p className="text-gray-800 dark:text-gray-200 mt-2">
+        <p className="text-blue-700 dark:text-gray-200 mt-2">
           We focus on guidance and comfort, not replacing professional medical advice.
         </p>
       </div>
@@ -38,7 +38,7 @@ const About: React.FC = () => {
             <div className="p-4 text-center">
               <h3 className="text-xl font-bold text-blue-600 dark:text-white">{member.name}</h3>
               <p className="text-sky-500 dark:text-gray-400">{member.role}</p>
-              <p className="text-blue-950 dark:text-gray-300 mt-2">{member.desc}</p>
+              <p className="text-blue-500 dark:text-gray-300 mt-2">{member.desc}</p>
             </div>
           </div>
         ))}
