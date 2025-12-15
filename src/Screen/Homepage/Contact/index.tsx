@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
-import  { teamMembers } from "../../Environment";
+import  { teamMembers } from "../../../Environment";
 
 const Contact: React.FC = () => {
   const [name, setName] = useState("");

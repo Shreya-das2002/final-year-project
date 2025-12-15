@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const Register = () => {
+const Signup = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 w-full max-w-md">
@@ -39,7 +39,7 @@ const Register = () => {
 
         <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
           Already have an account?{" "}
-          <Link to="/signup" className="text-green-600 dark:text-green-400 hover:underline">
+          <Link to="/registrationlogin/login" className="text-green-600 dark:text-green-400 hover:underline">
             Login
           </Link>
         </p>
@@ -48,4 +48,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Signup;

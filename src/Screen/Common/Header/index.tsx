@@ -12,12 +12,12 @@ const Header: React.FC = () => {
 
   const handleRoleClick = (role: string) => {
     // If same role is clicked again while on signup → go back home
-    if (clickedRole === role && location.pathname === "/signup") {
+    if (clickedRole === role && location.pathname === "/registrationlogin/login") {
       navigate("/");
       setClickedRole(null);
     } else {
       // First click or different role → go to signup with that role selected
-      navigate("/signup", { state: { role } });
+      navigate("/registrationlogin/login", { state: { role } });
       setClickedRole(role);
     }
   };

@@ -1,5 +1,5 @@
 import React from "react";
-import { teamMembers } from "../../Environment";
+import { teamMembers } from "../../../Environment";
 
 
 const About: React.FC = () => {

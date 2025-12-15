@@ -3,11 +3,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./Screen/Common/Header/index";
 import Footer from "./Screen/Common/Footer/index";
 import HomePage from "./Screen/Homepage/index";
-import About from "./Screen/About";
-import Privacy from "./Screen/Privacy/index";
-import Contact from "./Screen/Contact";
-import Signup from "./Screen/Login/Signup";
-import Register from "./Screen/Login/Register";
+import About from "./Screen/Homepage/About";
+import Privacy from "./Screen/Homepage/Privacy/index";
+import Contact from "./Screen/Homepage/Contact";
+
+import RegistrationLogin from "./Screen/RegistrationLogin";
+import Login from "./Screen/RegistrationLogin/Login";
+import Signup from "./Screen/RegistrationLogin/Signup";
 
 const App: React.FC = () => {
   return (
@@ -17,15 +19,7 @@ const App: React.FC = () => {
       <Header />
     <div/>
       <main className="flex-grow">
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/Register" element={<Register />} />
-
-      </Routes>
+        <Routing />
       </main>
     <div>
       <Footer/>
@@ -37,3 +31,19 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+
+
+const Routing = ()=>(<Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/registrationlogin" element={<RegistrationLogin />} >
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+        </Route>
+
+      </Routes>
+)

@@ -1,11 +1,11 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import background from "../../assets/Background.jpg";
-import dark_background from "../../assets/dark_background.jpg";
-import signup_logo from "../../assets/signup_logo.jpg";
-import dark_signup from "../../assets/dark_signup.jpg"
+import background from "../../../assets/Background.jpg";
+import dark_background from "../../../assets/dark_background.jpg";
+import signup_logo from "../../../assets/signup_logo.jpg";
+import dark_signup from "../../../assets/dark_signup.jpg"
 
-const Signup = () => {
+const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -155,4 +155,4 @@ const [selected, setSelected] = useState<string>(
   );
 };
 
-export default Signup;
+export default Login;
