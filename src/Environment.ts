@@ -152,3 +152,10 @@ export const genderOptions: { label: string; value: Gender }[] = [
 export const isValidGender = (gender: string): boolean => {
   return ["male", "female", "other"].includes(gender);
 };
+
+export type Role = "doctor" | "patient" | "admin";
+
+export const getRoleFromUrl = (search: string): Role => {
+  const params = new URLSearchParams(search);
+  return (params.get("role") as Role) ?? "doctor";
+};
