@@ -109,7 +109,7 @@ const Login: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-blue-300 to-blue-400 py-2 rounded-full font-semibold hover:from-blue-400 hover:to-blue-600 transition-transform hover:-translate-y-1 shadow-lg"
+          className="w-full bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:dark:from-gray-500 hover:dark:to-gray-700  py-2 rounded-full font-semibold hover:from-blue-400 hover:to-blue-600 transition-transform hover:-translate-y-1 shadow-lg"
         >
           Login
         </button>

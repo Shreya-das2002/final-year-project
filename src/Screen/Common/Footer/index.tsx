@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full bg-gray-200 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-4 text-center">
+    <footer className="w-full bg-gradient-to-r dark:from-gray-600 dark:to-gray-700 from-sky-100 to-blue-300  text-blue-950 dark:text-gray-400 py-4 text-center">
       <div className="container mx-auto">
         <p className="mb-2">
           © {new Date().getFullYear()} SymptoNexus. All rights reserved.
@@ -23,28 +23,28 @@ const Footer: React.FC = () => {
         <div className="flex justify-center gap-4">
           <span 
             onClick={() => handleNavigate("/about")}
-            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
+            className="hover:text-green-800 dark:hover:text-teal-600 cursor-pointer"
           >
             About
           </span>
 
           <span 
             onClick={() => handleNavigate("/privacy")}
-            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
+            className="hover:text-green-800 dark:hover:text-teal-600 cursor-pointer"
           >
             Privacy Policy
           </span>
 
           <span 
             onClick={() => handleNavigate("/contact")}
-            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
+            className="hover:text-green-800 dark:hover:text-teal-600 cursor-pointer"
           >
             Contact
           </span>
 
           <span 
             onClick={() => handleNavigate("/faq")}
-            className="hover:text-blue-600 dark:hover:text-teal-600 cursor-pointer"
+            className="hover:text-green-800 dark:hover:text-teal-600 cursor-pointer"
           >
             FAQs
           </span>
