@@ -73,7 +73,7 @@ const Signup: React.FC = () => {
             value={formData.fullName}
             onChange={handleChange}
             required
-            className="md:col-span-4 px-4 py-2 border rounded-md"
+            className="md:col-span-3 px-4 py-2 border rounded-md"
           />
 
           {/* Date of Birth */}
@@ -83,7 +83,7 @@ const Signup: React.FC = () => {
             value={formData.dob}
             onChange={handleChange}
             required
-            className="md:col-span-2 px-4 py-2 border rounded-md"
+            className="md:col-span-3 px-4 py-2 border rounded-md"
           />
 
           {/* Email */}
@@ -94,7 +94,7 @@ const Signup: React.FC = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="md:col-span-4 px-4 py-2 border rounded-md"
+            className="md:col-span-3 px-4 py-2 border rounded-md"
           />
 
           {/* Gender */}
@@ -103,7 +103,7 @@ const Signup: React.FC = () => {
             value={formData.gender}
             onChange={handleChange}
             required
-            className="md:col-span-2 px-4 py-2 border rounded-md"
+            className="md:col-span-3 px-4 py-2 border rounded-md"
           >
             <option value="">Select Gender</option>
             {genderOptions.map((g) => (
