@@ -67,7 +67,7 @@ export interface  FAQItem  {
       "SymptoNexus is a digital healthcare platform designed to help users assess symptoms, manage health-related information, and connect with healthcare professionals securely.",
   },
   {
-    question: "Who can use SymptoNexus?",
+    question: "Who should use SymptoNexus?",
     answer:
       "SymptoNexus can be used by patients, doctors, and administrators. Each user role has specific features and access permissions.",
   },
@@ -91,6 +91,42 @@ export interface  FAQItem  {
     answer:
       "In a medical emergency, users should immediately contact local emergency services or visit the nearest hospital. SymptoNexus should not be used for emergency diagnosis.",
   },
+  {
+    question: "Can I book both online and in-person appointments?",
+    answer:
+      "Yes. SymptoNexus allows patients to book both virtual (online) and physical (in-person) appointments with available doctors through the platform.",
+  },
+  {
+    question: "Do I need to create an account to use SymptoNexus?",
+    answer:
+      "Patients are required to create an account to access features such as appointment booking and personalized services. Doctors and administrators receive login credentials from the system administrator.",
+  },
+  {
+    question: "Does the chatbot suggest medicines or medical tests?",
+    answer:
+      "No. The chatbot does not recommend medicines, medical tests, or treatments. It only provides general information and safe home remedies for awareness and comfort.",
+  },
+  {
+    question: "How accurate is the symptom prediction feature?",
+    answer:
+      "The symptom analysis feature provides approximate and educational insights based on available data. It should not be considered a medical diagnosis and must be followed by professional consultation when needed.",
+  },
+  {
+    question: "Can doctors view patient information?",
+    answer:
+      "Yes. Doctors can view basic patient-provided information relevant to scheduled appointments, helping them prepare for consultations while maintaining data privacy.",
+  },
+  {
+    question: "Who manages doctor accounts on SymptoNexus?",
+    answer:
+      "Doctor accounts are created and managed exclusively by the system administrator to ensure authenticity and controlled access.",
+  },
+  {
+    question: "Will SymptoNexus store my medical history?",
+    answer:
+      "Currently, SymptoNexus stores only essential information required for platform functionality. Future versions may include optional medical history features with user consent.",
+  },
+
 ];
 
 // Check if password is strong
