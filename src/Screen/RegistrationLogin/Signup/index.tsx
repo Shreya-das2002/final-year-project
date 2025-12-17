@@ -2,7 +2,9 @@ import React, { useState } from "react";
 
 import { isStrongPassword, doPasswordsMatch } from "../../../Environment";
 import { isValidDOB } from "../../../Environment";
-import { genderOptions, isValidGender } from "../../../Environment";
+import { genderOptions, isValidGender, datePickerStyles } from "../../../Environment";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -77,14 +79,80 @@ const Signup: React.FC = () => {
           />
 
           {/* Date of Birth */}
-          <input
+          {/* <input
             type="date"
             name="dob"
             value={formData.dob}
             onChange={handleChange}
             required
             className="md:col-span-3 px-4 py-2 border rounded-md"
-          />
+          /> */}
+
+          <DatePicker
+  openTo="year"
+  views={["year", "month", "day"]}
+  format="DD/MM/YYYY"
+  disableFuture
+  value={formData.dob ? dayjs(formData.dob) : null}
+  onChange={(newValue: Dayjs | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      dob: newValue ? newValue.toISOString() : "",
+    }));
+  }}
+  slotProps={{
+    textField: {
+      required: true,
+      placeholder: "DD/MM/YYYY",
+      className: "md:col-span-3",
+    },
+  }}
+  sx={{
+    /* DAY (date) */
+    "& .MuiPickersDay-root": {
+      borderRadius: datePickerStyles.date.borderRadius,
+      fontSize: datePickerStyles.date.fontSize,
+    },
+    "& .MuiPickersDay-root:hover": {
+      backgroundColor: datePickerStyles.date.hoverBg,
+    },
+    "& .MuiPickersDay-root.Mui-selected": {
+      backgroundColor: datePickerStyles.date.selectedBg,
+      color: datePickerStyles.date.selectedColor,
+    },
+    "& .MuiPickersDay-root.MuiPickersDay-today": {
+      border: datePickerStyles.date.todayBorder,
+    },
+
+    /* MONTH */
+    "& .MuiPickersMonth-root": {
+      borderRadius: datePickerStyles.month.borderRadius,
+      border: datePickerStyles.month.border,
+      fontWeight: datePickerStyles.month.fontWeight,
+    },
+    "& .MuiPickersMonth-root.Mui-selected": {
+      backgroundColor: datePickerStyles.month.selectedBg,
+      color: datePickerStyles.month.selectedColor,
+    },
+
+    /* YEAR */
+    "& .MuiPickersYear-yearButton": {
+      borderRadius: datePickerStyles.year.borderRadius,
+      fontSize: datePickerStyles.year.fontSize,
+    },
+    "& .MuiPickersYear-yearButton.Mui-selected": {
+      backgroundColor: datePickerStyles.year.selectedBg,
+      color: datePickerStyles.year.selectedColor,
+    },
+
+    /* HEADER */
+    "& .MuiPickersCalendarHeader-label": {
+      fontSize: datePickerStyles.header.fontSize,
+      fontWeight: datePickerStyles.header.fontWeight,
+    },
+  }}
+/>
+
 
           {/* Email */}
           <input

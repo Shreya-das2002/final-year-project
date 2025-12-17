@@ -122,22 +122,55 @@ export const isValidDOB = (dob: string): boolean => {
 };
 
 // Calculate age from DOB (optional but useful)
-export const calculateAge = (dob: string): number => {
-  const birthDate = new Date(dob);
-  const today = new Date();
+// export const calculateAge = (dob: string): number => {
+//   const birthDate = new Date(dob);
+//   const today = new Date();
 
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
+//   let age = today.getFullYear() - birthDate.getFullYear();
+//   const monthDiff = today.getMonth() - birthDate.getMonth();
 
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    age--;
-  }
+//   if (
+//     monthDiff < 0 ||
+//     (monthDiff === 0 && today.getDate() < birthDate.getDate())
+//   ) {
+//     age--;
+//   }
 
-  return age;
+//   return age;
+// };
+
+export const datePickerStyles = {
+  month: {
+    borderRadius: "8px",
+    border: "1px solid #e5e7eb",
+    fontWeight: 500,
+    hoverBg: "#ccfbf1",
+    selectedBg: "#0d9488",
+    selectedColor: "#ffffff",
+  },
+
+  year: {
+    borderRadius: "6px",
+    fontSize: "14px",
+    selectedBg: "#1e40af",
+    selectedColor: "#ffffff",
+  },
+
+  date: {
+    borderRadius: "50%",
+    fontSize: "14px",
+    hoverBg: "#e0f2fe",
+    selectedBg: "#2563eb",
+    selectedColor: "#ffffff",
+    todayBorder: "1px solid #2563eb",
+  },
+
+  header: {
+    fontSize: "18px",
+    fontWeight: "bold",
+  },
 };
+
 
 export type Gender = "male" | "female" | "other";
 
