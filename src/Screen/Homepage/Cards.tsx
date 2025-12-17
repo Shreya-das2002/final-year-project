@@ -46,7 +46,7 @@ const Cards = () => {
 
         <div className="bg-gradient-to-r from-purple-200 to-indigo-300 dark:bg-gray-700 p-6 rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
             <FaCommentMedical className="text-indigo-900 dark:text-blue-9500 text-4xl mx-auto mb-4" />
-            <h3 className="text-indigo-800 dark:text-blue-900-lg font-bold mb-2">1. Describe Your Symptoms</h3>
+            <h3 className="text-indigo-800 dark:text-blue-900 text-lg font-bold mb-2">1. Describe Your Symptoms</h3>
             <p className="text-indigo-700 dark:text-blue-800">
             Tell us how you're feeling to get personalized insights.
             </p>
