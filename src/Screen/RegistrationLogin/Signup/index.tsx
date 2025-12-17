@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Link } from "react-router-dom";
 import { isStrongPassword, doPasswordsMatch } from "../../../Environment";
 import { isValidDOB } from "../../../Environment";
 import { genderOptions, isValidGender, datePickerStyles } from "../../../Environment";
@@ -218,6 +218,15 @@ const Signup: React.FC = () => {
             Create Account
           </button>
         </form>
+        <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
+          Already have an account?{" "}
+          <Link
+            to="/registrationlogin/login"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );
