@@ -58,8 +58,8 @@ const Signup: React.FC = () => {
   return (
     <div className=" flex items-center justify-center">
       {/* CARD */}
-      <div className=" shadow-lg rounded-md">
-        <h2 className="text-2xl font-bold text-center">
+      <div>
+        <h2 className="text-2xl font-bold text-center text-blue-600 mb-3">
           Create New Account
         </h2>
 
