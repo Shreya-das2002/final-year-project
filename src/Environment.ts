@@ -178,7 +178,7 @@ export type Gender = "male" | "female" | "other";
 export const genderOptions: { label: string; value: Gender }[] = [
   { label: "Male", value: "male" },
   { label: "Female", value: "female" },
-  { label: "Other", value: "other" },
+  { label: "Others", value: "other" },
 ];
 
 // Validate gender value
