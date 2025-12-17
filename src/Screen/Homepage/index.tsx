@@ -20,7 +20,7 @@ const HomePage: React.FC = () => {
     }, []);
 
     return (
-        <div className=" min-w-full min-h-fit">
+        <div className="min-w-full min-h-fit">
         <div className="flex flex-col items-center justify-center py-6 shadow-md bg-cover bg-center bg-no-repeat"
         style={{
             backgroundImage: `url(${isDark ? dark_background : background})`,

@@ -15,8 +15,8 @@ const FAQ: React.FC = () => {
     };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+    <div className=" bg-gray-100 dark:bg-gray-900 max-w-3xl mx-auto p-6">
+      <h2 className=" text-blue-500 dark:text-white text-3xl font-bold mb-6">Frequently Asked Questions</h2>
 
       <div className="space-y-4">
         {faqData.map((item, index) => (
@@ -42,22 +42,22 @@ const FAQ: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="w-full bg-white py-20 flex justify-center">
+      <div className="w-full bg-gray-100 dark:bg-gray-900 py-20 flex justify-center">
       <div className="text-center max-w-2xl px-4">
         {/* Heading */}
-        <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 mb-4">
+        <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Need more help?
         </h2>
 
         {/* Subtitle */}
-        <p className="text-gray-400 text-lg mb-8">
+        <p className="text-gray-500 dark:text-gray-400 text-lg mb-8">
           Send us a message with more details about your specific needs.
         </p>
 
         {/* Button */}
         <button 
             onClick={() => handleClick()}
-            className="bg-blue-500 hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition">
+            className="bg-blue-600 dark:bg-gray-600 hover:bg-blue-700 dark:hover:bg-gray-700 text-white dark:text-gray-200 px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition">
           SUBMIT A REQUEST
         </button>
       </div>
