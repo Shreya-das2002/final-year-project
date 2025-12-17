@@ -20,7 +20,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Introduction */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-2">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             1. Introduction
           </h2>
           <p>
@@ -32,21 +32,21 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Information We Collect */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-3">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-3">
             2. Information We Collect
           </h2>
 
           <div className="space-y-2">
             <p className="flex items-center gap-2">
-              <FaUserShield className="text-blue-500" />
+              <FaUserShield className="text-blue-500 dark:text-white" />
               Personal details such as name, email, and login credentials
             </p>
             <p className="flex items-center gap-2">
-              <FaDatabase className="text-blue-500" />
+              <FaDatabase className="text-blue-500 dark:text-white" />
               Health-related inputs like symptoms provided by users
             </p>
             <p className="flex items-center gap-2">
-              <FaDatabase className="text-blue-500" />
+              <FaDatabase className="text-blue-500 dark:text-white" />
               Usage data including browser type and device information
             </p>
           </div>
@@ -54,7 +54,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* How We Use Information */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-2">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             3. How We Use Your Information
           </h2>
           <ul className="list-disc pl-6 space-y-1">
@@ -66,11 +66,11 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Data Protection */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-2">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             4. Data Protection & Security
           </h2>
           <p className="flex items-center gap-2">
-            <FaLock className="text-blue-500" />
+            <FaLock className="text-blue-500 dark:text-white " />
             We use secure technologies and best practices to protect your data.
             We do not sell or share your personal information with third parties.
           </p>
@@ -78,7 +78,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Cookies */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-2">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             5. Cookies & Tracking
           </h2>
           <p>
@@ -90,7 +90,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* User Rights */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-2">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             6. Your Rights
           </h2>
           <ul className="list-disc pl-6 space-y-1">
@@ -102,7 +102,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Policy Changes */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-2">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             7. Changes to This Policy
           </h2>
           <p>
@@ -113,13 +113,13 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Contact */}
         <section>
-          <h2 className="text-2xl font-semibold text-blue-500 mb-2">
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             8. Contact Us
           </h2>
           <p className="flex items-center gap-2">
-            <FaEnvelope className="text-blue-500" />
+            <FaEnvelope className="text-blue-500 dark:text-white" />
             If you have any questions, contact us at:
-            <span className="font-semibold text-blue-600 dark:text-blue-400">
+            <span className="font-semibold text-blue-600 dark:text-gray-200">
               support@symptonexus.com
             </span>
           </p>
