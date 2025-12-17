@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { isStrongPassword, doPasswordsMatch } from "../../../Environment";
-import { isValidDOB } from "../../../Environment";
-import { genderOptions, isValidGender, datePickerStyles } from "../../../Environment";
+import {
+  isValidDOB,
+  genderOptions,
+  isValidGender,
+  datePickerStyles,
+  getPasswordStrength,
+  doPasswordsMatch,
+  isStrongPassword,
+} from "../../../Environment";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -16,7 +22,13 @@ const Signup: React.FC = () => {
     gender: "",
   });
 
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
+
+  const passwordStrength = getPasswordStrength(formData.password);
+  const passwordsMatch = doPasswordsMatch(
+    formData.password,
+    formData.confirmPassword
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -46,26 +58,24 @@ const Signup: React.FC = () => {
       return;
     }
 
-    if (!doPasswordsMatch(formData.password, formData.confirmPassword)) {
+    if (!passwordsMatch) {
       setError("Passwords do not match.");
       return;
     }
 
-    console.log("Signup Data:", formData);
     alert("Account created successfully!");
   };
 
   return (
-    <div className=" flex items-center justify-center">
-      {/* CARD */}
+    <div className="flex items-center justify-center">
       <div>
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-3">
           Create New Account
         </h2>
 
         <form
-          className="grid grid-cols-1 md:grid-cols-6 gap-4"
           onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-6 gap-4"
         >
           {/* Full Name */}
           <input
@@ -78,81 +88,28 @@ const Signup: React.FC = () => {
             className="md:col-span-3 px-4 py-2 border rounded-md"
           />
 
-          {/* Date of Birth */}
-          {/* <input
-            type="date"
-            name="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            required
-            className="md:col-span-3 px-4 py-2 border rounded-md"
-          /> */}
-
+          {/* DOB */}
           <DatePicker
-  openTo="year"
-  views={["year", "month", "day"]}
-  format="DD/MM/YYYY"
-  disableFuture
-  value={formData.dob ? dayjs(formData.dob) : null}
-  onChange={(newValue: Dayjs | null) => {
-    setFormData((prev) => ({
-      ...prev,
-      dob: newValue ? newValue.toISOString() : "",
-    }));
-  }}
-  slotProps={{
-    textField: {
-      required: true,
-      placeholder: "DD/MM/YYYY",
-      className: "md:col-span-3",
-    },
-  }}
-  sx={{
-    /* DAY (date) */
-    "& .MuiPickersDay-root": {
-      borderRadius: datePickerStyles.date.borderRadius,
-      fontSize: datePickerStyles.date.fontSize,
-    },
-    "& .MuiPickersDay-root:hover": {
-      backgroundColor: datePickerStyles.date.hoverBg,
-    },
-    "& .MuiPickersDay-root.Mui-selected": {
-      backgroundColor: datePickerStyles.date.selectedBg,
-      color: datePickerStyles.date.selectedColor,
-    },
-    "& .MuiPickersDay-root.MuiPickersDay-today": {
-      border: datePickerStyles.date.todayBorder,
-    },
-
-    /* MONTH */
-    "& .MuiPickersMonth-root": {
-      borderRadius: datePickerStyles.month.borderRadius,
-      border: datePickerStyles.month.border,
-      fontWeight: datePickerStyles.month.fontWeight,
-    },
-    "& .MuiPickersMonth-root.Mui-selected": {
-      backgroundColor: datePickerStyles.month.selectedBg,
-      color: datePickerStyles.month.selectedColor,
-    },
-
-    /* YEAR */
-    "& .MuiPickersYear-yearButton": {
-      borderRadius: datePickerStyles.year.borderRadius,
-      fontSize: datePickerStyles.year.fontSize,
-    },
-    "& .MuiPickersYear-yearButton.Mui-selected": {
-      backgroundColor: datePickerStyles.year.selectedBg,
-      color: datePickerStyles.year.selectedColor,
-    },
-
-    /* HEADER */
-    "& .MuiPickersCalendarHeader-label": {
-      fontSize: datePickerStyles.header.fontSize,
-      fontWeight: datePickerStyles.header.fontWeight,
-    },
-  }}
-/>
-
+            openTo="year"
+            views={["year", "month", "day"]}
+            format="DD/MM/YYYY"
+            disableFuture
+            value={formData.dob ? dayjs(formData.dob) : null}
+            onChange={(newValue: Dayjs | null) =>
+              setFormData((prev) => ({
+                ...prev,
+                dob: newValue ? newValue.toISOString() : "",
+              }))
+            }
+            slotProps={{
+              textField: {
+                required: true,
+                placeholder: "DD/MM/YYYY",
+                className: "md:col-span-3",
+              },
+            }}
+            sx={datePickerStyles}
+          />
 
           {/* Email */}
           <input
@@ -182,15 +139,32 @@ const Signup: React.FC = () => {
           </select>
 
           {/* Password */}
-          <input
-            type="password"
-            name="password"
-            placeholder="Create Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="md:col-span-3 px-4 py-2 border rounded-md"
-          />
+          <div className="md:col-span-3 relative">
+  <input
+    type="password"
+    name="password"
+    placeholder="Create Password"
+    value={formData.password}
+    onChange={handleChange}
+    required
+    maxLength={8} 
+    className="w-full px-4 py-2 pr-16 border rounded-md "
+  />
+
+  {formData.password && (
+    <span
+      className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold pointer-events-none ${
+        passwordStrength === "Weak"
+          ? "text-red-500"
+          : passwordStrength === "Medium"
+          ? "text-yellow-500"
+          : "text-green-600"
+      }`}
+    >
+      {passwordStrength}
+    </span>
+  )}
+</div>
 
           {/* Confirm Password */}
           <input
@@ -203,7 +177,20 @@ const Signup: React.FC = () => {
             className="md:col-span-3 px-4 py-2 border rounded-md"
           />
 
-          {/* Error Message */}
+          {/* Match message */}
+          {formData.confirmPassword && (
+            <p
+              className={`md:col-span-6 text-sm text-center ${
+                passwordsMatch ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              {passwordsMatch
+                ? "Passwords match"
+                : "Passwords do not match"}
+            </p>
+          )}
+
+          {/* Error */}
           {error && (
             <p className="md:col-span-6 text-red-500 text-sm text-center">
               {error}
@@ -218,12 +205,10 @@ const Signup: React.FC = () => {
             Create Account
           </button>
         </form>
-        <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
+
+        <p className="text-center text-gray-600 mt-4">
           Already have an account?{" "}
-          <Link
-            to="/registrationlogin/login"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
+          <Link to="/registrationlogin/login" className="text-blue-600">
             Login
           </Link>
         </p>

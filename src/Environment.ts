@@ -129,10 +129,22 @@ export interface  FAQItem  {
 
 ];
 
-// Check if password is strong
+
+// Password strength levels
+export type PasswordStrength = "Weak" | "Medium" | "Strong";
+
+/**
+ * Check if password is STRONG (for final submit)
+ * Rules:
+ * - EXACTLY 8 characters
+ * - At least 1 uppercase letter
+ * - At least 1 lowercase letter
+ * - At least 1 number
+ * - At least 1 special character
+ */
 export const isStrongPassword = (password: string): boolean => {
   return (
-    password.length >= 8 &&
+    password.length === 8 &&
     /[A-Z]/.test(password) &&
     /[a-z]/.test(password) &&
     /[0-9]/.test(password) &&
@@ -140,13 +152,44 @@ export const isStrongPassword = (password: string): boolean => {
   );
 };
 
-// Match password & confirm password
+/**
+ * Get password strength level (for UI)
+ * Weak   → 0–1 rules satisfied
+ * Medium → 2–3 rules satisfied
+ * Strong → All 4 rules satisfied
+ */
+export const getPasswordStrength = (
+  password: string
+): PasswordStrength => {
+  if (!password) return "Weak";
+
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+  const score =
+    Number(hasUpper) +
+    Number(hasLower) +
+    Number(hasNumber) +
+    Number(hasSpecial);
+
+  if (score === 4) return "Strong";
+  if (score >= 2) return "Medium";
+
+  return "Weak";
+};
+
+/**
+ * Match password and confirm password
+ */
 export const doPasswordsMatch = (
   password: string,
   confirmPassword: string
 ): boolean => {
   return password === confirmPassword;
 };
+
 
 export const isValidDOB = (dob: string): boolean => {
   if (!dob) return false;
@@ -156,24 +199,6 @@ export const isValidDOB = (dob: string): boolean => {
 
   return birthDate < today;
 };
-
-// Calculate age from DOB (optional but useful)
-// export const calculateAge = (dob: string): number => {
-//   const birthDate = new Date(dob);
-//   const today = new Date();
-
-//   let age = today.getFullYear() - birthDate.getFullYear();
-//   const monthDiff = today.getMonth() - birthDate.getMonth();
-
-//   if (
-//     monthDiff < 0 ||
-//     (monthDiff === 0 && today.getDate() < birthDate.getDate())
-//   ) {
-//     age--;
-//   }
-
-//   return age;
-// };
 
 export const datePickerStyles = {
   month: {
