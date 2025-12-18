@@ -139,7 +139,8 @@ const Signup: React.FC = () => {
           </select>
 
           {/* Password */}
-          <div className="md:col-span-3 relative">
+  <div className="md:col-span-3 relative flex flex-col">
+    <div className="relative">
   <input
     type="password"
     name="password"
@@ -147,7 +148,8 @@ const Signup: React.FC = () => {
     value={formData.password}
     onChange={handleChange}
     required
-    maxLength={8} 
+    minLength={8}
+    maxLength={12} 
     className="w-full px-4 py-2 pr-16 border rounded-md "
   />
 
@@ -164,9 +166,17 @@ const Signup: React.FC = () => {
       {passwordStrength}
     </span>
   )}
+  </div>
+  {/* Password length message */}
+{formData.password && formData.password.length < 8 && (
+  <p className="mt-1 text-xs text-red-500">
+    Password must be at least 8 characters
+  </p>
+)}
 </div>
 
           {/* Confirm Password */}
+        <div className="md:col-span-3 flex flex-col">
           <input
             type="password"
             name="confirmPassword"
@@ -189,6 +199,7 @@ const Signup: React.FC = () => {
                 : "Passwords do not match"}
             </p>
           )}
+          </div>
 
           {/* Error */}
           {error && (

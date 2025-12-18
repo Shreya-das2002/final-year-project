@@ -38,7 +38,6 @@ const RegistrationLogin = () => {
       <Outlet />
     </div>
         
-    
     </div>
   )
 }
