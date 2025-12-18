@@ -73,7 +73,7 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center ">
       <div className="w-full max-w-3xl p-6 rounded-xl">
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
           Create New Account
