@@ -105,8 +105,16 @@ const Login: React.FC = () => {
             className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300"
             placeholder="Enter your password"
           />
+           {/* 🔑 Forgot Password */}
+  <div className="text-right mt-1">
+    <Link
+      to={`/registrationlogin/forgot-password?role=${selected}`}
+      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+    >
+      Forgot Password?
+    </Link>
         </div>
-
+      </div>        
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:dark:from-gray-500 hover:dark:to-gray-700  py-2 rounded-full font-semibold hover:from-blue-400 hover:to-blue-600 transition-transform hover:-translate-y-1 shadow-lg"
