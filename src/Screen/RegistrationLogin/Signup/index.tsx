@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   isValidDOB,
   genderOptions,
@@ -13,6 +13,11 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 
 const Signup: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
   const [formData, setFormData] = useState({
     fullName: "",
     dob: "",
@@ -21,8 +26,6 @@ const Signup: React.FC = () => {
     confirmPassword: "",
     gender: "",
   });
-
-  const [error, setError] = useState("");
 
   const passwordStrength = getPasswordStrength(formData.password);
   const passwordsMatch = doPasswordsMatch(
@@ -37,8 +40,10 @@ const Signup: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ✅ SINGLE submit handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
     setError("");
 
     if (!isValidDOB(formData.dob)) {
@@ -53,7 +58,7 @@ const Signup: React.FC = () => {
 
     if (!isStrongPassword(formData.password)) {
       setError(
-        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character."
+        "Password must be at least 8 characters."
       );
       return;
     }
@@ -63,13 +68,14 @@ const Signup: React.FC = () => {
       return;
     }
 
-    alert("Account created successfully!");
+    // ✅ SUCCESS → redirect
+    navigate("/registrationlogin/login?role=patient");
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <div>
-        <h2 className="text-2xl font-bold text-center text-blue-600 mb-3">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-3xl p-6 rounded-xl">
+        <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
           Create New Account
         </h2>
 
@@ -139,76 +145,79 @@ const Signup: React.FC = () => {
           </select>
 
           {/* Password */}
-  <div className="md:col-span-3 relative flex flex-col">
-    <div className="relative">
-  <input
-    type="password"
-    name="password"
-    placeholder="Create Password"
-    value={formData.password}
-    onChange={handleChange}
-    required
-    minLength={8}
-    maxLength={12} 
-    className="w-full px-4 py-2 pr-16 border rounded-md "
-  />
+          <div className="md:col-span-3 flex flex-col">
+            <div className="relative">
+              <input
+                type="password"
+                name="password"
+                placeholder="Create Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-2 pr-16 border rounded-md"
+              />
 
-  {formData.password && (
-    <span
-      className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold pointer-events-none ${
-        passwordStrength === "Weak"
-          ? "text-red-500"
-          : passwordStrength === "Medium"
-          ? "text-yellow-500"
-          : "text-green-600"
-      }`}
-    >
-      {passwordStrength}
-    </span>
+              {formData.password && (
+                <span
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold ${
+                    passwordStrength === "Weak"
+                      ? "text-red-500"
+                      : passwordStrength === "Medium"
+                      ? "text-yellow-500"
+                      : "text-green-600"
+                  }`}
+                >
+                  {passwordStrength}
+                </span>
+              )}
+            </div>
+
+            {submitted && !isStrongPassword(formData.password) && (
+              <p className="mt-1 text-xs text-red-500">
+                Password must be at least 8 characters
+              </p>
+            )}
+
+  {/* ✅ SHOW WHILE TYPING */}
+  {formData.password.length > 0 && formData.password.length < 8 && (
+    <p className="mt-1 text-xs text-red-500">
+      Password must be at least 8 characters
+    </p>
   )}
-  </div>
-  {/* Password length message */}
-{formData.password && formData.password.length < 8 && (
-  <p className="mt-1 text-xs text-red-500">
-    Password must be at least 8 characters
-  </p>
-)}
-</div>
-
-          {/* Confirm Password */}
-        <div className="md:col-span-3 flex flex-col">
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-            className="md:col-span-3 px-4 py-2 border rounded-md"
-          />
-
-          {/* Match message */}
-          {formData.confirmPassword && (
-            <p
-              className={`md:col-span-6 text-sm text-center ${
-                passwordsMatch ? "text-green-600" : "text-red-500"
-              }`}
-            >
-              {passwordsMatch
-                ? "Passwords match"
-                : "Passwords do not match"}
-            </p>
-          )}
           </div>
 
-          {/* Error */}
+          {/* Confirm Password */}
+          <div className="md:col-span-3 flex flex-col">
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="px-4 py-2 border rounded-md"
+            />
+
+  {formData.password.length >= 8 &&
+  formData.confirmPassword.length > 0 && (
+    <p
+      className={`mt-1 text-xs ${
+        passwordsMatch ? "text-green-600" : "text-red-500"
+      }`}
+    >
+      {passwordsMatch
+        ? "Passwords match"
+        : "Passwords do not match"}
+    </p>
+)}
+          </div>
+
+          {/* Global Error */}
           {error && (
             <p className="md:col-span-6 text-red-500 text-sm text-center">
               {error}
             </p>
           )}
 
-          {/* Button */}
+          {/* Submit */}
           <button
             type="submit"
             className="md:col-span-6 bg-blue-600 text-white py-2 font-semibold rounded-md hover:bg-blue-700 transition"
