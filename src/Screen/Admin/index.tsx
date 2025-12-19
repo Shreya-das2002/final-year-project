@@ -1,9 +1,18 @@
-import React from 'react'
+import { Outlet } from "react-router-dom";
+import SideNav from "../Common/SideNav";
 
-const index = () => {
+const Admin = () => {
   return (
-    <div>index</div>
-  )
-}
+    <div className="flex">
+      {/* Admin Sidebar */}
+      <SideNav role="admin" />
 
-export default index
+      {/* Page Content */}
+      <main className="flex-1 p-6 bg-gray-100 min-h-screen">
+        <Outlet />
+      </main>
+    </div>
+  );
+};
+
+export default Admin;

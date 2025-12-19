@@ -11,6 +11,7 @@ import FAQ from "./Screen/Homepage/FAQs";
 import RegistrationLogin from "./Screen/RegistrationLogin";
 import Login from "./Screen/RegistrationLogin/Login";
 import Signup from "./Screen/RegistrationLogin/Signup";
+import Admin from "./Screen/Admin";
 
 const App: React.FC = () => {
   return (
@@ -42,6 +43,7 @@ const Routing = ()=>(<Routes>
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/registrationlogin" element={<RegistrationLogin />} >
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
