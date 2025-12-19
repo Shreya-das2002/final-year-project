@@ -34,7 +34,7 @@ const HomePage: React.FC = () => {
 
         </div>
 
-        <div className="overflow-hidden whitespace-nowrap bg-white dark:bg-slate-800 py-4">
+        <div className="overflow-hidden whitespace-nowrap bg-cyan-50 dark:bg-slate-800 py-4">
         <p className="text-xl font-sans font-semibold text-blue-800 dark:text-gray-200 animate-slide">
             Think of SymptoNexus as your first step to understanding and relief. We
             provide helpful knowledge and connect you with doctors, but never
