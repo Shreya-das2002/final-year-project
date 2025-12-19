@@ -42,7 +42,7 @@ const Cards = () => {
         How SymptoNexus Works
         </h2>
 
-        <div className="grid gap-8 md:grid-cols-3 text-center bg-cyan-50">
+        <div className="grid gap-8 md:grid-cols-3 text-center dark:bg-gray-800 bg-cyan-50">
 
         <div className="bg-gradient-to-r from-purple-200 to-indigo-300 dark:bg-gray-700 p-6 rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
             <FaCommentMedical className="text-indigo-900 dark:text-blue-9500 text-4xl mx-auto mb-4" />
