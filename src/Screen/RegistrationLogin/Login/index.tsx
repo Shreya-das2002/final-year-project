@@ -20,7 +20,7 @@ const Login: React.FC = () => {
 
     if (selected === "admin") {
       if (id === "2590012300" && password === "symptonexus") {
-        navigate("/admin/home");
+        navigate("/admin");
       } else {
         alert("Invalid Admin ID or Password");
       }
