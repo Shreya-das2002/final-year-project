@@ -12,16 +12,13 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 
-// const RequiredLabel: React.FC<{ text: string }> = ({ text }) => (
-//   <label className="text-sm font-medium mb-1">
-//     {text} <span className="text-red-500">*</span>
-//   </label>
-// );
+const RequiredStar = () => (
+  <span className="absolute top-1 right-2 text-red-500 text-sm font-bold">*</span>
+);
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
 
-  
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
@@ -47,7 +44,6 @@ const Signup: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ SINGLE submit handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
@@ -64,9 +60,7 @@ const Signup: React.FC = () => {
     }
 
     if (!isStrongPassword(formData.password)) {
-      setError(
-        "Password must be at least 8 characters."
-      );
+      setError("Password must be at least 8 characters.");
       return;
     }
 
@@ -75,86 +69,107 @@ const Signup: React.FC = () => {
       return;
     }
 
-    // ✅ SUCCESS → redirect
     navigate("/registrationlogin/login?role=patient");
   };
 
   return (
-    <div className="flex items-center justify-center ">
+    <div className="flex items-center justify-center">
       <div className="w-full max-w-3xl p-6 rounded-xl">
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
           Create New Account
         </h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-6 gap-4"
-        >
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-6 gap-4">
+
           {/* Full Name */}
-          
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Full Name"
-            value={formData.fullName}
-            onChange={handleChange}
-            required
-            className="md:col-span-3 px-4 py-2 border rounded-md"
-            
-          />
+          <div className="md:col-span-3 relative">
+            <RequiredStar />
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-md"
+            />
+          </div>
 
           {/* DOB */}
-          <DatePicker
-            openTo="year"
-            views={["year", "month", "day"]}
-            format="DD/MM/YYYY"
-            disableFuture
-            value={formData.dob ? dayjs(formData.dob) : null}
-            onChange={(newValue: Dayjs | null) =>
-              setFormData((prev) => ({
-                ...prev,
-                dob: newValue ? newValue.toISOString() : "",
-              }))
-            }
-            slotProps={{
-              textField: {
-                required: true,
-                placeholder: "DD/MM/YYYY",
-                className: "md:col-span-3",
-              },
-            }}
-            sx={datePickerStyles}
-          />
+{/* DOB */}
+<div className="md:col-span-3">
+  <div className="relative">
+    <DatePicker
+      openTo="year"
+      views={["year", "month", "day"]}
+      format="DD/MM/YYYY"
+      disableFuture
+      value={formData.dob ? dayjs(formData.dob) : null}
+      onChange={(newValue: Dayjs | null) =>
+        setFormData((prev) => ({
+          ...prev,
+          dob: newValue ? newValue.toISOString() : "",
+        }))
+      }
+      slotProps={{
+        textField: {
+          required: true,
+          placeholder: "DD/MM/YYYY",
+          fullWidth: true,
+          InputProps: {
+            sx: { pr: 4 }, // space for star
+          },
+        },
+      }}
+      sx={datePickerStyles}
+    />
+
+    {/* ⭐ Required Star correctly anchored */}
+    <span className="absolute top-1/2 right-3 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
+      *
+    </span>
+  </div>
+</div>
+
+
 
           {/* Email */}
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="md:col-span-3 px-4 py-2 border rounded-md"
-          />
+          <div className="md:col-span-3 relative">
+            
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-md"
+            />
+            <RequiredStar />
+          </div>
 
           {/* Gender */}
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-            className="md:col-span-3 px-4 py-2 border rounded-md"
-          >
-            <option value="">Select Gender</option>
-            {genderOptions.map((g) => (
-              <option key={g.value} value={g.value}>
-                {g.label}
-              </option>
-            ))}
-          </select>
+          <div className="md:col-span-3 relative">
+            <RequiredStar />
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-md"
+            >
+              <option value="">Select Gender</option>
+              {genderOptions.map((g) => (
+                <option key={g.value} value={g.value}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Password */}
-          <div className="md:col-span-3 flex flex-col">
+          <div className="md:col-span-3 relative flex flex-col">
+            <RequiredStar />
             <div className="relative">
               <input
                 type="password"
@@ -186,16 +201,16 @@ const Signup: React.FC = () => {
               </p>
             )}
 
-  {/* ✅ SHOW WHILE TYPING */}
-  {formData.password.length > 0 && formData.password.length < 8 && (
-    <p className="mt-1 text-xs text-red-500">
-      Password must be at least 8 characters
-    </p>
-  )}
+            {formData.password.length > 0 && formData.password.length < 8 && (
+              <p className="mt-1 text-xs text-red-500">
+                Password must be at least 8 characters
+              </p>
+            )}
           </div>
 
           {/* Confirm Password */}
-          <div className="md:col-span-3 flex flex-col">
+          <div className="md:col-span-3 relative flex flex-col">
+            <RequiredStar />
             <input
               type="password"
               name="confirmPassword"
@@ -205,28 +220,26 @@ const Signup: React.FC = () => {
               className="px-4 py-2 border rounded-md"
             />
 
-  {formData.password.length >= 8 &&
-  formData.confirmPassword.length > 0 && (
-    <p
-      className={`mt-1 text-xs ${
-        passwordsMatch ? "text-green-600" : "text-red-500"
-      }`}
-    >
-      {passwordsMatch
-        ? "Passwords match"
-        : "Passwords do not match"}
-    </p>
-)}
+            {formData.password.length >= 8 &&
+              formData.confirmPassword.length > 0 && (
+                <p
+                  className={`mt-1 text-xs ${
+                    passwordsMatch ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {passwordsMatch
+                    ? "Passwords match"
+                    : "Passwords do not match"}
+                </p>
+              )}
           </div>
 
-          {/* Global Error */}
           {error && (
             <p className="md:col-span-6 text-red-500 text-sm text-center">
               {error}
             </p>
           )}
 
-          {/* Submit */}
           <button
             type="submit"
             className="md:col-span-6 bg-blue-600 text-white py-2 font-semibold rounded-md hover:bg-blue-700 transition"
