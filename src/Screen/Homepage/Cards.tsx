@@ -2,8 +2,8 @@ import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb,
 
 const Cards = () => {
     return (
-        <div>
-    <div className="grid gap-6 md:grid-cols-3 p-8 dark:bg-gray-800">
+        <div className="bg-cyan-50">
+    <div className="grid gap-6 md:grid-cols-3 p-8 bg-cyan-50 dark:bg-gray-800">
         
         <div className="bg-gradient-to-r from-zinc-200 to-stone-400 dark:bg-gradient-to-r from-rose-100 to-red-900 shadow-lg rounded-xl p-6 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
         <FaClipboardCheck className="text-gray-800 dark:text-blue-950 text-4xl mx-auto mb-4" />
@@ -37,12 +37,12 @@ const Cards = () => {
 
     </div>
 
-    <div className="py-14 px-6 bg-gray-50 dark:bg-gray-800">
+    <div className="py-14 px-6 bg-cyan-50 dark:bg-gray-800">
         <h2 className="text-2xl font-semibold text-center text-blue-600 dark:text-gray-300 mb-10">
         How SymptoNexus Works
         </h2>
 
-        <div className="grid gap-8 md:grid-cols-3 text-center">
+        <div className="grid gap-8 md:grid-cols-3 text-center dark:bg-gray-800 bg-cyan-50">
 
         <div className="bg-gradient-to-r from-purple-200 to-indigo-300 dark:bg-gray-700 p-6 rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
             <FaCommentMedical className="text-indigo-900 dark:text-blue-9500 text-4xl mx-auto mb-4" />
