@@ -17,6 +17,9 @@ const AdminSideNav = () => (
       <NavLink to="/admin/doctors" className="block p-3 rounded hover:bg-blue-500">
         <FaUserMd /> Doctor List
       </NavLink>
+      <NavLink to="/admin/doctors" className="block p-3 rounded hover:bg-blue-500">
+        <FaUserMd /> Exit
+      </NavLink>
     </nav>
   </aside>
 );
