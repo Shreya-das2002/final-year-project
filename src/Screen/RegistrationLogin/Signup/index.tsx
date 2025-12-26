@@ -12,9 +12,16 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 
+// const RequiredLabel: React.FC<{ text: string }> = ({ text }) => (
+//   <label className="text-sm font-medium mb-1">
+//     {text} <span className="text-red-500">*</span>
+//   </label>
+// );
+
 const Signup: React.FC = () => {
   const navigate = useNavigate();
 
+  
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
@@ -84,6 +91,7 @@ const Signup: React.FC = () => {
           className="grid grid-cols-1 md:grid-cols-6 gap-4"
         >
           {/* Full Name */}
+          
           <input
             type="text"
             name="fullName"
@@ -92,6 +100,7 @@ const Signup: React.FC = () => {
             onChange={handleChange}
             required
             className="md:col-span-3 px-4 py-2 border rounded-md"
+            
           />
 
           {/* DOB */}
