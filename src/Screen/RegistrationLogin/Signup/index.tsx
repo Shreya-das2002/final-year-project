@@ -124,7 +124,7 @@ const Signup: React.FC = () => {
       sx={datePickerStyles}
     />
 
-    {/* ⭐ Required Star correctly anchored */}
+    {/*  Required Star correctly anchored */}
     <span className="absolute top-1/2 right-3 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
       *
     </span>
