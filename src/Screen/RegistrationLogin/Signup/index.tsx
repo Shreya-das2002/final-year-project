@@ -235,7 +235,12 @@ const Signup: React.FC = () => {
                 name="password"
                 placeholder="Create Password"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={(e) => {
+    const value = e.target.value;
+    if (value.length <= 12) {
+      setFormData(prev => ({ ...prev, password: value }));
+    }
+  }}
                 required
                 className="w-full px-4 py-2 pr-16 border rounded-md"
               />
@@ -261,7 +266,7 @@ const Signup: React.FC = () => {
               </p>
             )}
 
-            {formData.password.length > 0 && formData.password.length < 8 && (
+            {formData.password.length > 12 && formData.password.length < 8 && (
               <p className="mt-1 text-xs text-red-500">
                 Password must be at least 8 characters
               </p>
