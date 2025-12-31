@@ -1,20 +1,26 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  isValidDOB,
-  genderOptions,
-  isValidGender,
-  datePickerStyles,
+  // isValidDOB,
+  // genderOptions,
+  // isValidGender,
+  // datePickerStyles,
   getPasswordStrength,
   doPasswordsMatch,
   isStrongPassword,
 } from "../../../Environment";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs, { Dayjs } from "dayjs";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+// import dayjs, { Dayjs } from "dayjs";
 
-const RequiredStar = () => (
-  <span className="absolute top-1 right-2 text-red-500 text-sm font-bold">*</span>
+const RequiredStar = ({ required }: { required?: boolean }) => (
+  required ? (
+    <span className="absolute top-1/2 right-3 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
+      *
+    </span>
+  ) : null
 );
+
+  
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -23,9 +29,12 @@ const Signup: React.FC = () => {
   const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
     dob: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
     gender: "",
@@ -49,15 +58,15 @@ const Signup: React.FC = () => {
     setSubmitted(true);
     setError("");
 
-    if (!isValidDOB(formData.dob)) {
-      setError("Please enter a valid date of birth.");
-      return;
-    }
+    // if (!isValidDOB(formData.dob)) {
+    //   setError("Please enter a valid date of birth.");
+    //   return;
+    // }
 
-    if (!isValidGender(formData.gender)) {
-      setError("Please select a valid gender.");
-      return;
-    }
+    // if (!isValidGender(formData.gender)) {
+    //   setError("Please select a valid gender.");
+    //   return;
+    // }
 
     if (!isStrongPassword(formData.password)) {
       setError("Password must be at least 8 characters.");
@@ -68,6 +77,11 @@ const Signup: React.FC = () => {
       setError("Passwords do not match.");
       return;
     }
+
+    if (!/^[0-9]{10}$/.test(formData.phone)) {
+  setError("Please enter a valid 10-digit phone number");
+  return;
+}
 
     navigate("/registrationlogin/login?role=patient");
   };
@@ -81,23 +95,48 @@ const Signup: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-6 gap-4">
 
-          {/* Full Name */}
+          {/* First Name */}
           <div className="md:col-span-3 relative">
-            <RequiredStar />
+            <RequiredStar  required />
             <input
               type="text"
-              name="fullName"
-              placeholder="Full Name"
-              value={formData.fullName}
+              name="firstName"
+              placeholder="First Name"
+              value={formData.firstName}
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
-          {/* DOB */}
+          {/* Middle Name */}
+          <div className="md:col-span-3 relative">
+            <input
+              type="text"
+              name="middleName"
+              placeholder="Middle Name"
+              value={formData.middleName}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md"
+            />
+          </div>
+
+          {/* Last Name */}
+          <div className="md:col-span-3 relative">
+            <RequiredStar required />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-md"
+            />
+          </div>
+
 {/* DOB */}
-<div className="md:col-span-3">
+{/* <div className="md:col-span-3">
   <div className="relative">
     <DatePicker
       openTo="year"
@@ -125,11 +164,11 @@ const Signup: React.FC = () => {
     />
 
     {/*  Required Star correctly anchored */}
-    <span className="absolute top-1/2 right-3 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
+    {/* <span className="absolute top-1/2 right-3 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
       *
     </span>
   </div>
-</div>
+</div> */} 
 
 
 
@@ -145,11 +184,31 @@ const Signup: React.FC = () => {
               required
               className="w-full px-4 py-2 border rounded-md"
             />
-            <RequiredStar />
+            <RequiredStar  required />
           </div>
 
+<div className="md:col-span-3 relative">
+
+  <input
+    type="tel"
+    name="phone"
+    value={formData.phone}
+    onChange={(e) => {
+      const value = e.target.value.replace(/\D/g, "");
+      if (value.length <= 10) {
+        setFormData(prev => ({ ...prev, phone: value }));
+      }
+    }}
+    placeholder="phone number"
+    className="w-full px-4 py-2 border rounded-md"
+    required
+    pattern="[0-9]{10}"
+  />
+  <RequiredStar  required />
+</div>
+
           {/* Gender */}
-          <div className="md:col-span-3 relative">
+          {/* <div className="md:col-span-3 relative">
             <RequiredStar />
             <select
               name="gender"
@@ -165,18 +224,24 @@ const Signup: React.FC = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* Password */}
           <div className="md:col-span-3 relative flex flex-col">
-            <RequiredStar />
+            <RequiredStar  required />
             <div className="relative">
               <input
                 type="password"
                 name="password"
                 placeholder="Create Password"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={(e) => {
+    const value = e.target.value;
+    if (value.length <= 12) {
+      setFormData(prev => ({ ...prev, password: value }));
+    }
+  }}
+                required
                 className="w-full px-4 py-2 pr-16 border rounded-md"
               />
 
@@ -201,7 +266,7 @@ const Signup: React.FC = () => {
               </p>
             )}
 
-            {formData.password.length > 0 && formData.password.length < 8 && (
+            {formData.password.length > 12 && formData.password.length < 8 && (
               <p className="mt-1 text-xs text-red-500">
                 Password must be at least 8 characters
               </p>
@@ -210,13 +275,14 @@ const Signup: React.FC = () => {
 
           {/* Confirm Password */}
           <div className="md:col-span-3 relative flex flex-col">
-            <RequiredStar />
+            <RequiredStar  required />
             <input
               type="password"
               name="confirmPassword"
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
+              required
               className="px-4 py-2 border rounded-md"
             />
 
