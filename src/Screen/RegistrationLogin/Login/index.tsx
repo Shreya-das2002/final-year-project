@@ -19,46 +19,41 @@ const Login: React.FC = () => {
 
   /* ---------- LOGIN HANDLER ---------- */
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-if (loading) return;
-  setLoading(true);
+    e.preventDefault();
+    if (loading) return;
 
-  try {
-    const payload: LoginPayload = {
-      email: id,
-      password
-    };
+    setLoading(true);
 
-    const res = await loginApi(payload);
+    try {
+      const payload: LoginPayload = {
+        email: id,
+        password,
+      };
 
-    if (res.data.status === 200) {
-      const { token, role } = res.data.data;
+      const res = await loginApi(payload);
 
-      localStorage.setItem("token", token);
+      if (res.data.status === 200) {
+        const { token, role } = res.data.data;
 
-      if (role === "admin") {
-        navigate("/admin/home");
-      } 
-      else if (role === "doctor") {
-        navigate("/doctor-dashboard");
-      } 
-      else if (role === "patient") {
-        navigate("/patient/home");  
-      } 
-      else {
-        navigate("/");
+        localStorage.setItem("token", token);
+
+        if (role === "admin") navigate("/admin/home");
+        else if (role === "doctor") navigate("/doctor-dashboard");
+        else if (role === "patient") navigate("/patient/home");
+        else navigate("/");
+      } else {
+        alert(res.data.error_message);
       }
-    } else {
-      alert(res.data.error_message);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Server error. Please try again.");
-  } finally {
-    setLoading(false);   //  THIS LINE WAS MISSING
-  }
-};
+    } catch (error: unknown) {
+  console.error("LOGIN ERROR:", error);
 
+  if (error instanceof Error) {
+    alert(error.message);
+  } else {
+    alert("Server error. Please try again.");
+  }
+}
+  };
 
   /* ---------- ROLE SWITCH FROM LOGIN ---------- */
   const switchRole = (role: Role) => {
@@ -106,16 +101,9 @@ if (loading) return;
           <input
             type="text"
             value={id}
+            disabled={loading}
             onChange={(e) => setId(e.target.value)}
-            className="w-full px-4 py-2 
-           bg-gray-100 
-           border border-blue-300 
-           rounded-full 
-           text-black 
-           placeholder-gray-800
-           focus:outline-none 
-           focus:ring-2 
-           focus:ring-blue-300"
+            className="w-full px-4 py-2 bg-gray-100 border border-blue-300 rounded-full text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder={
               selected === "doctor"
                 ? "Enter Doctor ID"
@@ -134,8 +122,9 @@ if (loading) return;
           <input
             type="password"
             value={password}
+            disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder="Enter your password"
           />
 
@@ -153,9 +142,16 @@ if (loading) return;
         <button
           type="button"
           onClick={handleLogin}
-          className="w-full bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:dark:from-gray-500 hover:dark:to-gray-700 py-2 rounded-full font-semibold hover:from-blue-400 hover:to-blue-600 transition-transform hover:-translate-y-1 shadow-lg"
+          disabled={loading}
+          className={`w-full py-2 rounded-full font-semibold shadow-lg transition-all
+            ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 hover:-translate-y-1"
+            }
+          `}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
