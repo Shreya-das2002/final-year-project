@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   // isValidDOB,
-  // genderOptions,
-  // isValidGender,
+  genderOptions,
+  isValidGender,
   // datePickerStyles,
   getPasswordStrength,
   doPasswordsMatch,
@@ -14,7 +14,7 @@ import {
 
 const RequiredStar = ({ required }: { required?: boolean }) => (
   required ? (
-    <span className="absolute top-1/2 right-3 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
+    <span className="absolute top-1/2 right-4 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
       *
     </span>
   ) : null
@@ -63,10 +63,10 @@ const Signup: React.FC = () => {
     //   return;
     // }
 
-    // if (!isValidGender(formData.gender)) {
-    //   setError("Please select a valid gender.");
-    //   return;
-    // }
+    if (!isValidGender(formData.gender)) {
+      setError("Please select a valid gender.");
+      return;
+    }
 
     if (!isStrongPassword(formData.password)) {
       setError("Password must be at least 8 characters.");
@@ -208,8 +208,8 @@ const Signup: React.FC = () => {
 </div>
 
           {/* Gender */}
-          {/* <div className="md:col-span-3 relative">
-            <RequiredStar />
+          <div className="md:col-span-3 relative">
+            <RequiredStar required />
             <select
               name="gender"
               value={formData.gender}
@@ -224,7 +224,7 @@ const Signup: React.FC = () => {
                 </option>
               ))}
             </select>
-          </div> */}
+          </div>
 
           {/* Password */}
           <div className="md:col-span-3 relative flex flex-col">
