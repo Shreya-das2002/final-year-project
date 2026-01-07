@@ -4,6 +4,7 @@ import { getRoleFromUrl } from "../../../Environment";
 import type { Role } from "../../../Environment";
 import { loginApi } from "../../../services/authApi";
 import type { LoginPayload } from "../../../services/authApi";
+import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -42,11 +43,11 @@ const Login: React.FC = () => {
         else if (role === "patient") navigate("/patient/home");
         else navigate("/");
       } else {
-        alert(res.data.error_message);
+        toast.error(res.data.error_message || "Invalid credentials");
       }
     } catch (error: unknown) {
       console.error("LOGIN ERROR:", error);
-      alert("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { signupApi } from "../../../services/authApi";
 import {
@@ -96,13 +97,13 @@ const Signup: React.FC = () => {
 
       const res = await signupApi(payload);
 
-      alert(res.data.message || "Account created successfully");
+      toast.success(res.data.message || "Account created successfully");
       navigate("/registrationlogin/login?role=patient");
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setApiError(err.message);
+        toast.error(err.message);
       } else {
-        setApiError("Signup failed");
+        toast.error("Signup failed");
       }
     } finally {
       setLoading(false);
