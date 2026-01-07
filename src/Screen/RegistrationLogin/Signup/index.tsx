@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { signupApi } from "../../../services/authApi";
 import {
   // isValidDOB,
   genderOptions,
@@ -12,21 +13,20 @@ import {
 // import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 // import dayjs, { Dayjs } from "dayjs";
 
-const RequiredStar = ({ required }: { required?: boolean }) => (
+const RequiredStar = ({ required }: { required?: boolean }) =>
   required ? (
     <span className="absolute top-1/2 right-4 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
       *
     </span>
-  ) : null
-);
-
-  
+  ) : null;
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
 
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [apiError, setApiError] = useState<string>("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -40,7 +40,8 @@ const Signup: React.FC = () => {
     gender: "",
   });
 
-  const passwordStrength = getPasswordStrength(formData.password);
+  const passwordStrength: string = getPasswordStrength(formData.password);
+
   const passwordsMatch = doPasswordsMatch(
     formData.password,
     formData.confirmPassword
@@ -53,15 +54,11 @@ const Signup: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
     setError("");
-
-    // if (!isValidDOB(formData.dob)) {
-    //   setError("Please enter a valid date of birth.");
-    //   return;
-    // }
+    setApiError("");
 
     if (!isValidGender(formData.gender)) {
       setError("Please select a valid gender.");
@@ -79,11 +76,37 @@ const Signup: React.FC = () => {
     }
 
     if (!/^[0-9]{10}$/.test(formData.phone)) {
-  setError("Please enter a valid 10-digit phone number");
-  return;
-}
+      setError("Please enter a valid 10-digit phone number");
+      return;
+    }
 
-    navigate("/registrationlogin/login?role=patient");
+    try {
+      setLoading(true);
+
+      const payload = {
+        first_name: formData.firstName,
+        middle_name: formData.middleName || "",
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        confirm_password: formData.confirmPassword,
+        gender: formData.gender,
+      };
+
+      const res = await signupApi(payload);
+
+      alert(res.data.message || "Account created successfully");
+      navigate("/registrationlogin/login?role=patient");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setApiError(err.message);
+      } else {
+        setApiError("Signup failed");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -93,11 +116,13 @@ const Signup: React.FC = () => {
           Create New Account
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-6 gap-4">
-
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-6 gap-4"
+        >
           {/* First Name */}
           <div className="md:col-span-3 relative">
-            <RequiredStar  required />
+            <RequiredStar required />
             <input
               type="text"
               name="firstName"
@@ -135,46 +160,10 @@ const Signup: React.FC = () => {
             />
           </div>
 
-{/* DOB */}
-{/* <div className="md:col-span-3">
-  <div className="relative">
-    <DatePicker
-      openTo="year"
-      views={["year", "month", "day"]}
-      format="DD/MM/YYYY"
-      disableFuture
-      value={formData.dob ? dayjs(formData.dob) : null}
-      onChange={(newValue: Dayjs | null) =>
-        setFormData((prev) => ({
-          ...prev,
-          dob: newValue ? newValue.toISOString() : "",
-        }))
-      }
-      slotProps={{
-        textField: {
-          required: true,
-          placeholder: "DD/MM/YYYY",
-          fullWidth: true,
-          InputProps: {
-            sx: { pr: 4 }, // space for star
-          },
-        },
-      }}
-      sx={datePickerStyles}
-    />
-
-    {/*  Required Star correctly anchored */}
-    {/* <span className="absolute top-1/2 right-3 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
-      *
-    </span>
-  </div>
-</div> */} 
-
-
+          {/* DOB (kept commented exactly as requested) */}
 
           {/* Email */}
           <div className="md:col-span-3 relative">
-            
             <input
               type="email"
               name="email"
@@ -184,28 +173,28 @@ const Signup: React.FC = () => {
               required
               className="w-full px-4 py-2 border rounded-md"
             />
-            <RequiredStar  required />
+            <RequiredStar required />
           </div>
 
-<div className="md:col-span-3 relative">
-
-  <input
-    type="tel"
-    name="phone"
-    value={formData.phone}
-    onChange={(e) => {
-      const value = e.target.value.replace(/\D/g, "");
-      if (value.length <= 10) {
-        setFormData(prev => ({ ...prev, phone: value }));
-      }
-    }}
-    placeholder="phone number"
-    className="w-full px-4 py-2 border rounded-md"
-    required
-    pattern="[0-9]{10}"
-  />
-  <RequiredStar  required />
-</div>
+          {/* Phone */}
+          <div className="md:col-span-3 relative">
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, "");
+                if (value.length <= 10) {
+                  setFormData((prev) => ({ ...prev, phone: value }));
+                }
+              }}
+              placeholder="phone number"
+              className="w-full px-4 py-2 border rounded-md"
+              required
+              pattern="[0-9]{10}"
+            />
+            <RequiredStar required />
+          </div>
 
           {/* Gender */}
           <div className="md:col-span-3 relative">
@@ -228,7 +217,7 @@ const Signup: React.FC = () => {
 
           {/* Password */}
           <div className="md:col-span-3 relative flex flex-col">
-            <RequiredStar  required />
+            <RequiredStar required />
             <div className="relative">
               <input
                 type="password"
@@ -236,11 +225,11 @@ const Signup: React.FC = () => {
                 placeholder="Create Password"
                 value={formData.password}
                 onChange={(e) => {
-    const value = e.target.value;
-    if (value.length <= 12) {
-      setFormData(prev => ({ ...prev, password: value }));
-    }
-  }}
+                  const value = e.target.value;
+                  if (value.length <= 12) {
+                    setFormData((prev) => ({ ...prev, password: value }));
+                  }
+                }}
                 required
                 className="w-full px-4 py-2 pr-16 border rounded-md"
               />
@@ -265,17 +254,11 @@ const Signup: React.FC = () => {
                 Password must be at least 8 characters
               </p>
             )}
-
-            {formData.password.length > 12 && formData.password.length < 8 && (
-              <p className="mt-1 text-xs text-red-500">
-                Password must be at least 8 characters
-              </p>
-            )}
           </div>
 
           {/* Confirm Password */}
           <div className="md:col-span-3 relative flex flex-col">
-            <RequiredStar  required />
+            <RequiredStar required />
             <input
               type="password"
               name="confirmPassword"
@@ -306,11 +289,18 @@ const Signup: React.FC = () => {
             </p>
           )}
 
+          {apiError && (
+            <p className="md:col-span-6 text-red-500 text-sm text-center">
+              {apiError}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="md:col-span-6 bg-blue-600 text-white py-2 font-semibold rounded-md hover:bg-blue-700 transition"
+            disabled={loading}
+            className="md:col-span-6 bg-blue-600 text-white py-2 font-semibold rounded-md hover:bg-blue-700 transition disabled:opacity-60"
           >
-            Create Account
+            {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
