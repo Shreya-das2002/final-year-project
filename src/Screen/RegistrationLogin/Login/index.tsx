@@ -4,6 +4,7 @@ import { getRoleFromUrl } from "../../../Environment";
 import type { Role } from "../../../Environment";
 import { loginApi } from "../../../services/authApi";
 import type { LoginPayload } from "../../../services/authApi";
+import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -19,64 +20,37 @@ const Login: React.FC = () => {
 
   /* ---------- LOGIN HANDLER ---------- */
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-if (loading) return;
-  setLoading(true);
-
-  try {
-    const payload: LoginPayload = {
-      email: id,
-      password
-    };
-
-    const res = await loginApi(payload);
-
-    if (res.data.status === 200) {
-      const { token, role } = res.data.data;
-
-      localStorage.setItem("token", token);
-
-      if (role === "admin") {
-        navigate("/admin/home");
-      } 
-      else if (role === "doctor") {
-        navigate("/doctor-dashboard");
-      } 
-      else if (role === "patient") {
-        navigate("/patient/home");  
-      } 
-      else {
-        navigate("/");
-      }
-    } else {
-      alert(res.data.error_message);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Server error. Please try again.");
-  } finally {
-    setLoading(false);   //  THIS LINE WAS MISSING
-  }
-};
-
-  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
 
-    if (selected === "admin") {
-      if (id === "2590012300" && password === "symptonexus") {
-        navigate("/admin");
+    setLoading(true);
+
+    try {
+      const payload: LoginPayload = {
+        email: id,
+        password,
+      };
+
+      const res = await loginApi(payload);
+
+      if (res.data.status === 200) {
+        const { token, role } = res.data.data;
+
+        localStorage.setItem("token", token);
+
+        if (role === "admin") navigate("/admin/home");
+        else if (role === "doctor") navigate("/doctor-dashboard");
+        else if (role === "patient") navigate("/patient/home");
+        else navigate("/");
       } else {
-        alert("Invalid Admin ID or Password");
+        toast.error(res.data.error_message || "Invalid credentials");
       }
-      return;
+    } catch (error: unknown) {
+      console.error("LOGIN ERROR:", error);
+      toast.error("Server error. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    if (selected === "doctor") {
-      navigate("/doctor-dashboard");
-      return;
-    }
-
-    navigate("/");
   };
 
   /* ---------- ROLE SWITCH FROM LOGIN ---------- */
@@ -125,16 +99,9 @@ if (loading) return;
           <input
             type="text"
             value={id}
+            disabled={loading}
             onChange={(e) => setId(e.target.value)}
-            className="w-full px-4 py-2 
-           bg-gray-100 
-           border border-blue-300 
-           rounded-full 
-           text-black 
-           placeholder-gray-800
-           focus:outline-none 
-           focus:ring-2 
-           focus:ring-blue-300"
+            className="w-full px-4 py-2 bg-gray-100 border border-blue-300 rounded-full text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder={
               selected === "doctor"
                 ? "Enter Doctor ID"
@@ -153,8 +120,9 @@ if (loading) return;
           <input
             type="password"
             value={password}
+            disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder="Enter your password"
           />
 
@@ -172,9 +140,16 @@ if (loading) return;
         <button
           type="button"
           onClick={handleLogin}
-          className="w-full bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:dark:from-gray-500 hover:dark:to-gray-700 py-2 rounded-full font-semibold hover:from-blue-400 hover:to-blue-600 transition-transform hover:-translate-y-1 shadow-lg"
+          disabled={loading}
+          className={`w-full py-2 rounded-full font-semibold shadow-lg transition-all
+            ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 hover:-translate-y-1"
+            }
+          `}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
