@@ -45,14 +45,11 @@ const Login: React.FC = () => {
         alert(res.data.error_message);
       }
     } catch (error: unknown) {
-  console.error("LOGIN ERROR:", error);
-
-  if (error instanceof Error) {
-    alert(error.message);
-  } else {
-    alert("Server error. Please try again.");
-  }
-}
+      console.error("LOGIN ERROR:", error);
+      alert("Server error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ---------- ROLE SWITCH FROM LOGIN ---------- */
