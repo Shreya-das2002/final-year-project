@@ -38,9 +38,9 @@ const Login: React.FC = () => {
 
         localStorage.setItem("token", token);
 
-        if (role === "admin") navigate("/admin/home");
-        else if (role === "doctor") navigate("/doctor-dashboard");
-        else if (role === "patient") navigate("/patient/home");
+        if (role === "admin") navigate("/admin");
+        else if (role === "doctor") navigate("/doctor");
+        else if (role === "patient") navigate("/patient");
         else navigate("/");
       } else {
         toast.error(res.data.error_message || "Invalid credentials");

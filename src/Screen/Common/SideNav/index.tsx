@@ -1,13 +1,15 @@
-import AdminSideNav from "./AdminNav";
-import DoctorSideNav from "./DoctorNav";
-import PatientSideNav from "./PatientNav";
+import AdminNav from "./AdminNav";
+import DoctorNav from "./DoctorNav";
+import PatientNav from "./PatientNav";
 
 type Role = "admin" | "doctor" | "patient";
 
 const SideNav = ({ role }: { role: Role }) => {
-    if (role === "admin") return <AdminSideNav />;
-    if (role === "doctor") return <DoctorSideNav />;
-    return <PatientSideNav />;
+    if (role === "patient") return <PatientNav />;
+    if (role === "doctor") return <DoctorNav />;
+    if (role === "admin") return <AdminNav />;
+
+  return null;
 };
 
 export default SideNav;
