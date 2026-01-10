@@ -1,4 +1,3 @@
-
 import {
   FaHome,
   FaUser,
@@ -10,6 +9,7 @@ import {
 } from "react-icons/fa";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+
 interface NavItemProps {
   icon: ReactNode;
   text: string;
@@ -17,7 +17,8 @@ interface NavItemProps {
 }
 
 const PatientNav: React.FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
   return (
     <aside className="w-64 bg-teal-700 text-white flex flex-col min-h-screen">
 
@@ -27,7 +28,7 @@ const PatientNav: React.FC = () => {
 
       <nav className="flex-1 p-4 space-y-3">
         <NavItem icon={<FaHome />} text="Dashboard" onClick={() => navigate("/patient")} />
-        <NavItem icon={<FaUser />} text="Profile" />
+        <NavItem icon={<FaUser />} text="Profile" onClick={() => navigate("/patient/profile")} />
         <NavItem icon={<FaComments />} text="Symptom Checker" />
         <NavItem icon={<FaRobot />} text="SymptoBot" />
         <NavItem icon={<FaCalendarAlt />} text="Appointments" />
@@ -44,8 +45,11 @@ const PatientNav: React.FC = () => {
   );
 };
 
-const NavItem: React.FC<NavItemProps> = ({ icon, text }) => (
-  <button className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-teal-600">
+const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
+  <button
+    onClick={onClick}
+    className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-teal-600"
+  >
     {icon}
     {text}
   </button>
