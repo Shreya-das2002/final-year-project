@@ -20,7 +20,7 @@ const PatientNav: React.FC = () => {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
+  const fullName = `${user.first_name || ""} ${user.middle_name || ""} ${user.last_name || ""} `;
 
   return (
     <aside className="w-64 bg-teal-700 rounded-lg text-white flex flex-col min-h-screen">

@@ -23,6 +23,8 @@ interface ProfileData {
 interface FieldProps {
   label: string;
   value: string;
+  onChange?: (val: string) => void;
+  disabled?: boolean;
 }
 
 /* ================= HELPERS ================= */
@@ -108,56 +110,56 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-slate-100 p-8">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-8">
 
-        {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold">{steps[step - 1]}</h2>
-
-          {/* Stepper */}
-          <div className="flex items-center justify-between relative mt-6">
-            <div className="absolute left-0 right-0 h-1 bg-slate-200 top-1/2 -translate-y-1/2" />
-            {steps.map((label, i) => {
-              const active = i + 1 <= step;
-              return (
-                <div key={label} className="relative flex flex-col items-center w-1/3">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
-                      active ? "bg-blue-600" : "bg-slate-300"
-                    }`}
-                  >
-                    {i + 1}
-                  </div>
-                  <span className={`mt-2 text-sm ${active ? "text-blue-600" : "text-slate-400"}`}>
-                    {label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <h2 className="text-xl font-semibold mb-6">{steps[step - 1]}</h2>
 
         {/* Step Content */}
         {step === 1 && (
-          <div className="grid grid-cols-2 gap-6 mt-8">
-            <Field label="First Name" value={profile.firstName} />
-            <Field label="Last Name" value={profile.lastName} />
-            <Field label="Email" value={profile.email} />
-            <Field label="Phone" value={profile.phone} />
+          <div className="grid grid-cols-2 gap-6">
+            <Field label="First Name" value={profile.firstName} disabled />
+            <Field label="Middle Name" value={profile.middleName} disabled />
+            <Field label="Last Name" value={profile.lastName} disabled />
+            <Field label="Email" value={profile.email} disabled />
+            <Field label="Phone" value={profile.phone} disabled />
           </div>
         )}
 
         {step === 2 && (
-          <div className="grid grid-cols-2 gap-6 mt-8">
-            <Field label="Date of Birth" value={profile.dob} />
-            <Field label="Blood Group" value={profile.bloodGroup} />
-            <Field label="Height" value={profile.height} />
-            <Field label="Weight" value={profile.weight} />
+          <div className="grid grid-cols-2 gap-6">
+            <Textarea
+              label="Current Address"
+              value={profile.currentAddress}
+              onChange={val => setProfile({ ...profile, currentAddress: val })}
+            />
+            <Textarea
+              label="Permanent Address"
+              value={profile.permanentAddress}
+              onChange={val => setProfile({ ...profile, permanentAddress: val })}
+            />
+            <Field
+              label="Date of Birth"
+              value={profile.dob}
+              onChange={val => setProfile({ ...profile, dob: val })}
+            />
           </div>
         )}
 
         {step === 3 && (
-          <div className="grid grid-cols-2 gap-6 mt-8">
-            <Textarea label="Current Address" value={profile.currentAddress} />
-            <Textarea label="Permanent Address" value={profile.permanentAddress} />
+          <div className="grid grid-cols-2 gap-6">
+            <Field
+              label="Blood Group"
+              value={profile.bloodGroup}
+              onChange={val => setProfile({ ...profile, bloodGroup: val })}
+            />
+            <Field
+              label="Height"
+              value={profile.height}
+              onChange={val => setProfile({ ...profile, height: val })}
+            />
+            <Field
+              label="Weight"
+              value={profile.weight}
+              onChange={val => setProfile({ ...profile, weight: val })}
+            />
           </div>
         )}
 
@@ -179,6 +181,7 @@ const Profile: React.FC = () => {
             </button>
           )}
         </div>
+
       </div>
     </div>
   );
@@ -188,22 +191,24 @@ export default Profile;
 
 /* ================= REUSABLE FIELDS ================= */
 
-const Field: React.FC<FieldProps> = ({ label, value }) => (
+const Field: React.FC<FieldProps> = ({ label, value, onChange, disabled }) => (
   <div>
     <label className="block text-sm font-medium mb-1">{label}</label>
     <input
       value={value}
-      disabled
-      className="w-full px-3 py-2 border rounded-md bg-gray-100"
+      disabled={disabled}
+      onChange={e => onChange?.(e.target.value)}
+      className={`w-full px-3 py-2 border rounded-md ${disabled ? "bg-gray-100" : "bg-white"}`}
     />
   </div>
 );
 
-const Textarea: React.FC<FieldProps> = ({ label, value }) => (
+const Textarea: React.FC<FieldProps> = ({ label, value, onChange }) => (
   <div>
     <label className="block text-sm font-medium mb-1">{label}</label>
     <textarea
       value={value}
+      onChange={e => onChange?.(e.target.value)}
       className="w-full px-3 py-2 border rounded-md h-24"
     />
   </div>
