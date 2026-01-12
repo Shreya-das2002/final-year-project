@@ -12,7 +12,7 @@ import RegistrationLogin from "./Screen/RegistrationLogin";
 import Login from "./Screen/RegistrationLogin/Login";
 import Signup from "./Screen/RegistrationLogin/Signup";
 import Patient from "./Screen/Patient";
-import Patientpage from "./Screen/Patient/Patientpage";
+import Patientpage from "./Screen/Patient/Dashboard";
 import Profile from "./Screen/Patient/Profile";
 
 const App: React.FC = () => {

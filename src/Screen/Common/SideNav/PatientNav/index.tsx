@@ -19,11 +19,25 @@ interface NavItemProps {
 const PatientNav: React.FC = () => {
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
+
   return (
     <aside className="w-64 bg-teal-700 text-white flex flex-col min-h-screen">
 
-      <div className="p-6 text-2xl font-bold border-b border-teal-600">
-        Patient Panel
+      {/* Profile Header */}
+      <div className="p-6 flex flex-col items-center text-center">
+        <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
+          <img
+            src="/src/assets/avatar.png"
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <h3 className="mt-3 font-semibold text-slate-800">
+          {fullName || "Patient"}
+        </h3>
       </div>
 
       <nav className="flex-1 p-4 space-y-3">
@@ -56,3 +70,4 @@ const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
 );
 
 export default PatientNav;
+
