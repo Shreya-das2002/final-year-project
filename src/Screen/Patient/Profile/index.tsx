@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { isValidDOB } from "../../../Environment";
 
 /* ================= TYPES ================= */
 
@@ -135,31 +136,35 @@ const Profile: React.FC = () => {
               value={profile.permanentAddress}
               onChange={val => setProfile({ ...profile, permanentAddress: val })}
             />
-            <Field
-              label="Date of Birth"
-              value={profile.dob}
-              onChange={val => setProfile({ ...profile, dob: val })}
-            />
+
+            {/* DOB */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Date of Birth</label>
+              <input
+                type="date"
+                value={profile.dob}
+                onChange={e => setProfile({ ...profile, dob: e.target.value })}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  isValidDOB(profile.dob) ? "border-slate-300" : "border-red-500"
+                }`}
+              />
+              {!isValidDOB(profile.dob) && profile.dob && (
+                <p className="text-xs text-red-500 mt-1">
+                  Please select a valid birth date
+                </p>
+              )}
+            </div>
           </div>
         )}
 
         {step === 3 && (
           <div className="grid grid-cols-2 gap-6">
-            <Field
-              label="Blood Group"
-              value={profile.bloodGroup}
-              onChange={val => setProfile({ ...profile, bloodGroup: val })}
-            />
-            <Field
-              label="Height"
-              value={profile.height}
-              onChange={val => setProfile({ ...profile, height: val })}
-            />
-            <Field
-              label="Weight"
-              value={profile.weight}
-              onChange={val => setProfile({ ...profile, weight: val })}
-            />
+            <Field label="Blood Group" value={profile.bloodGroup}
+              onChange={val => setProfile({ ...profile, bloodGroup: val })} />
+            <Field label="Height" value={profile.height}
+              onChange={val => setProfile({ ...profile, height: val })} />
+            <Field label="Weight" value={profile.weight}
+              onChange={val => setProfile({ ...profile, weight: val })} />
           </div>
         )}
 
@@ -172,7 +177,15 @@ const Profile: React.FC = () => {
           )}
 
           {step < 3 ? (
-            <button onClick={() => setStep(step + 1)} className="bg-blue-600 text-white px-8 py-2 rounded-md">
+            <button
+              disabled={step === 2 && !isValidDOB(profile.dob)}
+              onClick={() => setStep(step + 1)}
+              className={`px-8 py-2 rounded-md text-white ${
+                step === 2 && !isValidDOB(profile.dob)
+                  ? "bg-blue-300 cursor-not-allowed"
+                  : "bg-blue-600"
+              }`}
+            >
               Next →
             </button>
           ) : (
@@ -181,7 +194,6 @@ const Profile: React.FC = () => {
             </button>
           )}
         </div>
-
       </div>
     </div>
   );
@@ -198,7 +210,9 @@ const Field: React.FC<FieldProps> = ({ label, value, onChange, disabled }) => (
       value={value}
       disabled={disabled}
       onChange={e => onChange?.(e.target.value)}
-      className={`w-full px-3 py-2 border rounded-md ${disabled ? "bg-gray-100" : "bg-white"}`}
+      className={`w-full px-3 py-2 border rounded-md ${
+        disabled ? "bg-gray-100" : "bg-white"
+      }`}
     />
   </div>
 );
