@@ -23,10 +23,10 @@ const PatientNav: React.FC = () => {
   const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
 
   return (
-    <aside className="w-64 bg-teal-700 text-white flex flex-col min-h-screen">
+    <aside className="w-64 bg-teal-700 rounded-lg text-white flex flex-col min-h-screen">
 
       {/* Profile Header */}
-      <div className="p-6 flex flex-col items-center text-center">
+      <div className="p-6 border-b border-teal-600 flex flex-col items-center text-center">
         <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
           <img
             src="/src/assets/avatar.png"
@@ -46,7 +46,7 @@ const PatientNav: React.FC = () => {
         <NavItem icon={<FaComments />} text="Symptom Checker" />
         <NavItem icon={<FaRobot />} text="SymptoBot" />
         <NavItem icon={<FaCalendarAlt />} text="Appointments" />
-        <NavItem icon={<FaCommentDots />} text="Feedback" />
+        <NavItem icon={<FaCommentDots />} text="Feedback" onClick={() => navigate("/patient/feedback")} />
       </nav>
 
       <div className="p-4 border-t border-teal-600">
