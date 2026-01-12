@@ -15,7 +15,7 @@ export interface SignupPayload {
   phone: string;
   password: string;
   confirm_password: string;
-  gender: string;
+  gender: number;
 }
 
 /* ---------- API Calls ---------- */

@@ -11,41 +11,47 @@ import FAQ from "./Screen/Homepage/FAQs";
 import RegistrationLogin from "./Screen/RegistrationLogin";
 import Login from "./Screen/RegistrationLogin/Login";
 import Signup from "./Screen/RegistrationLogin/Signup";
+import Patient from "./Screen/Patient";
+import Patientpage from "./Screen/Patient/Patientpage";
+import Profile from "./Screen/Patient/Profile";
 
 const App: React.FC = () => {
   return (
-    <>
     <BrowserRouter>
-    <div className=" bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
-      <Header />
-    <div/>
-      <main className="flex-grow">
-        <Routing />
-      </main>
-    <div>
-      <Footer/>
+      <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
+
+        <Header />
+
+        <main className="flex-grow">
+          <Routing />
+        </main>
+
+        <Footer />
+
       </div>
-    </div>
     </BrowserRouter>
-    </>
   );
 };
 
 export default App;
 
+const Routing = () => (
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/privacy" element={<Privacy />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="/faq" element={<FAQ />} />
 
+    <Route path="/registrationlogin" element={<RegistrationLogin />}>
+      <Route path="login" element={<Login />} />
+      <Route path="signup" element={<Signup />} />
+    </Route>
 
+    <Route path="/patient" element={<Patient />}>
+  <Route index element={<Patientpage />} />
+  <Route path="profile" element={<Profile />} />
+</Route>
 
-const Routing = ()=>(<Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/registrationlogin" element={<RegistrationLogin />} >
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
-        </Route>
-
-      </Routes>
-)
+  </Routes>
+);

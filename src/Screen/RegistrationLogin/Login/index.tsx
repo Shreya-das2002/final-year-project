@@ -34,21 +34,27 @@ const Login: React.FC = () => {
       const res = await loginApi(payload);
 
       if (res.data.status === 200) {
-        const { token, role } = res.data.data;
+        const { token, role, user } = res.data.data;
 
+        // 🔐 Save session data
         localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
 
-        if (role === "admin") navigate("/admin/home");
-        else if (role === "doctor") navigate("/doctor-dashboard");
-        else if (role === "patient") navigate("/patient/home");
+        // 🚀 Navigate immediately
+        if (role === "admin") navigate("/admin");
+        else if (role === "doctor") navigate("/doctor");
+        else if (role === "patient") navigate("/patient");
         else navigate("/");
-      } else {
-        toast.error(res.data.error_message || "Invalid credentials");
+
+        return; // 🛑 stop here — do NOT run setLoading(false)
       }
-    } catch (error: unknown) {
+
+      toast.error(res.data.error_message || "Invalid credentials");
+    } catch (error) {
       console.error("LOGIN ERROR:", error);
       toast.error("Server error. Please try again.");
     } finally {
+      // only reset loading if login failed
       setLoading(false);
     }
   };
@@ -126,7 +132,6 @@ const Login: React.FC = () => {
             placeholder="Enter your password"
           />
 
-          {/* 🔑 Forgot Password */}
           <div className="text-right mt-1">
             <Link
               to={`/registrationlogin/forgot-password?role=${selected}`}
@@ -138,7 +143,7 @@ const Login: React.FC = () => {
         </div>
 
         <button
-          type="button"
+          type="submit"
           onClick={handleLogin}
           disabled={loading}
           className={`w-full py-2 rounded-full font-semibold shadow-lg transition-all
@@ -153,7 +158,6 @@ const Login: React.FC = () => {
         </button>
       </form>
 
-      {/* PATIENT REGISTER LINK */}
       {selected === "patient" && (
         <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
           New here?{" "}

@@ -3,16 +3,12 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { signupApi } from "../../../services/authApi";
 import {
-  // isValidDOB,
   genderOptions,
   isValidGender,
-  // datePickerStyles,
   getPasswordStrength,
   doPasswordsMatch,
   isStrongPassword,
 } from "../../../Environment";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-// import dayjs, { Dayjs } from "dayjs";
 
 const RequiredStar = ({ required }: { required?: boolean }) =>
   required ? (
@@ -21,19 +17,23 @@ const RequiredStar = ({ required }: { required?: boolean }) =>
     </span>
   ) : null;
 
+/* 🆕 GENDER MAPPING */
+const genderToNumber: Record<string, number> = {
+  male: 1,
+  female: 2,
+  other: 3,
+};
+
 const Signup: React.FC = () => {
   const navigate = useNavigate();
 
-  const [submitted, setSubmitted] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [apiError, setApiError] = useState<string>("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
     lastName: "",
-    dob: "",
     email: "",
     phone: "",
     password: "",
@@ -41,7 +41,7 @@ const Signup: React.FC = () => {
     gender: "",
   });
 
-  const passwordStrength: string = getPasswordStrength(formData.password);
+  const passwordStrength = getPasswordStrength(formData.password);
 
   const passwordsMatch = doPasswordsMatch(
     formData.password,
@@ -52,17 +52,20 @@ const Signup: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
     setError("");
-    setApiError("");
 
     if (!isValidGender(formData.gender)) {
       setError("Please select a valid gender.");
+      return;
+    }
+
+    if (!genderToNumber[formData.gender]) {
+      setError("Invalid gender selected.");
       return;
     }
 
@@ -92,19 +95,20 @@ const Signup: React.FC = () => {
         phone: formData.phone,
         password: formData.password,
         confirm_password: formData.confirmPassword,
-        gender: formData.gender,
+        gender: genderToNumber[formData.gender],
       };
 
       const res = await signupApi(payload);
+      const apiResponse = res?.data;
 
-      toast.success(res.data.message || "Account created successfully");
-      navigate("/registrationlogin/login?role=patient");
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast.error(err.message);
+      if (apiResponse?.status === 200 && apiResponse?.data?.success) {
+        toast.success("Account created successfully");
+        navigate("/registrationlogin/login?role=patient");
       } else {
-        toast.error("Signup failed");
+        toast.error(apiResponse?.error_message || "Signup failed");
       }
+    } catch {
+      toast.error("Signup failed");
     } finally {
       setLoading(false);
     }
@@ -113,6 +117,7 @@ const Signup: React.FC = () => {
   return (
     <div className="flex items-center justify-center">
       <div className="w-full max-w-3xl p-6 rounded-xl">
+
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
           Create New Account
         </h2>
@@ -121,83 +126,65 @@ const Signup: React.FC = () => {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-6 gap-4"
         >
-          {/* First Name */}
           <div className="md:col-span-3 relative">
             <RequiredStar required />
             <input
-              type="text"
               name="firstName"
-              placeholder="First Name"
               value={formData.firstName}
               onChange={handleChange}
+              placeholder="First Name"
               required
               className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
-          {/* Middle Name */}
           <div className="md:col-span-3 relative">
             <input
-              type="text"
               name="middleName"
-              placeholder="Middle Name"
               value={formData.middleName}
               onChange={handleChange}
+              placeholder="Middle Name"
               className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
-          {/* Last Name */}
           <div className="md:col-span-3 relative">
             <RequiredStar required />
             <input
-              type="text"
               name="lastName"
-              placeholder="Last Name"
               value={formData.lastName}
               onChange={handleChange}
+              placeholder="Last Name"
               required
               className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
-          {/* DOB (kept commented exactly as requested) */}
-
-          {/* Email */}
           <div className="md:col-span-3 relative">
+            <RequiredStar required />
             <input
               type="email"
               name="email"
-              placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
+              placeholder="Email"
               required
               className="w-full px-4 py-2 border rounded-md"
             />
-            <RequiredStar required />
           </div>
 
-          {/* Phone */}
           <div className="md:col-span-3 relative">
+            <RequiredStar required />
             <input
-              type="tel"
               name="phone"
               value={formData.phone}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, "");
-                if (value.length <= 10) {
-                  setFormData((prev) => ({ ...prev, phone: value }));
-                }
-              }}
-              placeholder="phone number"
-              className="w-full px-4 py-2 border rounded-md"
+              onChange={handleChange}
+              placeholder="Phone"
               required
-              pattern="[0-9]{10}"
+              className="w-full px-4 py-2 border rounded-md"
             />
-            <RequiredStar required />
           </div>
 
-          {/* Gender */}
           <div className="md:col-span-3 relative">
             <RequiredStar required />
             <select
@@ -208,7 +195,7 @@ const Signup: React.FC = () => {
               className="w-full px-4 py-2 border rounded-md"
             >
               <option value="">Select Gender</option>
-              {genderOptions.map((g) => (
+              {genderOptions.map(g => (
                 <option key={g.value} value={g.value}>
                   {g.label}
                 </option>
@@ -216,96 +203,56 @@ const Signup: React.FC = () => {
             </select>
           </div>
 
-          {/* Password */}
-          <div className="md:col-span-3 relative flex flex-col">
+          <div className="md:col-span-3 relative">
             <RequiredStar required />
-            <div className="relative">
-              <input
-                type="password"
-                name="password"
-                placeholder="Create Password"
-                value={formData.password}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.length <= 12) {
-                    setFormData((prev) => ({ ...prev, password: value }));
-                  }
-                }}
-                required
-                className="w-full px-4 py-2 pr-16 border rounded-md"
-              />
-
-              {formData.password && (
-                <span
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold ${
-                    passwordStrength === "Weak"
-                      ? "text-red-500"
-                      : passwordStrength === "Medium"
-                      ? "text-yellow-500"
-                      : "text-green-600"
-                  }`}
-                >
-                  {passwordStrength}
-                </span>
-              )}
-            </div>
-
-            {submitted && !isStrongPassword(formData.password) && (
-              <p className="mt-1 text-xs text-red-500">
-                Password must be at least 8 characters
-              </p>
-            )}
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Password"
+              required
+              className="w-full px-4 py-2 border rounded-md"
+            />
+            <small className="text-gray-500">{passwordStrength}</small>
           </div>
 
-          {/* Confirm Password */}
-          <div className="md:col-span-3 relative flex flex-col">
+          <div className="md:col-span-3 relative">
             <RequiredStar required />
             <input
               type="password"
               name="confirmPassword"
-              placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
+              placeholder="Confirm Password"
               required
-              className="px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md"
             />
 
-            {formData.password.length >= 8 &&
-              formData.confirmPassword.length > 0 && (
-                <p
-                  className={`mt-1 text-xs ${
-                    passwordsMatch ? "text-green-600" : "text-red-500"
-                  }`}
-                >
-                  {passwordsMatch
-                    ? "Passwords match"
-                    : "Passwords do not match"}
-                </p>
-              )}
+            {formData.confirmPassword.length > 0 && (
+              <p
+                className={`text-xs mt-1 ${
+                  passwordsMatch ? "text-green-600" : "text-red-500"
+                }`}
+              >
+                {passwordsMatch ? "Passwords match " : "Passwords do not match "}
+              </p>
+            )}
           </div>
 
           {error && (
-            <p className="md:col-span-6 text-red-500 text-sm text-center">
-              {error}
-            </p>
-          )}
-
-          {apiError && (
-            <p className="md:col-span-6 text-red-500 text-sm text-center">
-              {apiError}
-            </p>
+            <p className="md:col-span-6 text-red-500 text-center">{error}</p>
           )}
 
           <button
-            type="submit"
             disabled={loading}
-            className="md:col-span-6 bg-blue-600 text-white py-2 font-semibold rounded-md hover:bg-blue-700 transition disabled:opacity-60"
+            className="md:col-span-6 bg-blue-600 text-white py-2 rounded-md disabled:opacity-60"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
-        <p className="text-center text-gray-600 mt-4">
+        <p className="text-center mt-4">
           Already have an account?{" "}
           <Link to="/registrationlogin/login" className="text-blue-600">
             Login
