@@ -77,8 +77,8 @@ const Login: React.FC = () => {
             className={`px-4 py-2 rounded-md font-semibold capitalize transition-all
               ${
                 selected === role
-                  ? "bg-blue-500 text-white shadow-md"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                  ? "bg-blue-500 dark:bg-gray-500 text-white shadow-md"
+                  : "bg-blue-300/30 dark:bg-gray-700/30 text-gray-700 dark:text-gray-300"
               }`}
           >
             {role}
@@ -87,14 +87,14 @@ const Login: React.FC = () => {
       </div>
 
       {/* HEADING */}
-      <h2 className="text-2xl text-center mb-6 text-blue-600 dark:text-blue-300 font-bold">
+      <h2 className="text-2xl text-center mb-6 text-blue-600 dark:text-gray-100 font-bold">
         {selected.charAt(0).toUpperCase() + selected.slice(1)} Login
       </h2>
 
       {/* LOGIN FORM */}
       <form className="space-y-4">
         <div>
-          <label className="block mb-1 pl-3 text-gray-700 dark:text-gray-300">
+          <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             {selected === "doctor"
               ? "Doctor ID"
               : selected === "admin"
@@ -107,19 +107,19 @@ const Login: React.FC = () => {
             value={id}
             disabled={loading}
             onChange={(e) => setId(e.target.value)}
-            className="w-full px-4 py-2 bg-gray-100 border border-blue-300 rounded-full text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+            className="w-full px-4 py-2 bg-white/20 border border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder={
               selected === "doctor"
                 ? "Enter Doctor ID"
                 : selected === "admin"
                 ? "Enter Admin ID"
-                : "Enter your email"
+                : "Enter Your Email"
             }
           />
         </div>
 
         <div>
-          <label className="block mb-1 pl-3 text-gray-700 dark:text-gray-300">
+          <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             Password
           </label>
 
@@ -128,8 +128,8 @@ const Login: React.FC = () => {
             value={password}
             disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
-            placeholder="Enter your password"
+            className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+            placeholder="Enter Your Password"
           />
 
           <div className="text-right mt-1">
@@ -150,7 +150,7 @@ const Login: React.FC = () => {
             ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 hover:-translate-y-1"
+                : "bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 dark:hover:from-gray-500 dark:hover:to-gray-700 hover:-translate-y-1"
             }
           `}
         >
