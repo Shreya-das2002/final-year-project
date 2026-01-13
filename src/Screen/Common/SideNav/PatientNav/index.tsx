@@ -35,7 +35,7 @@ const PatientNav: React.FC = () => {
           />
         </div>
 
-        <h3 className="mt-3 font-semibold text-slate-800">
+        <h3 className="mt-3 font-semibold text-gray-300">
           {fullName || "Patient"}
         </h3>
       </div>
