@@ -126,7 +126,7 @@ const Signup: React.FC = () => {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-6 gap-4"
         >
-          <div className="md:col-span-3 relative">
+          <div className="md:col-span-2 relative">
             <RequiredStar required />
             <input
               name="firstName"
@@ -138,7 +138,7 @@ const Signup: React.FC = () => {
             />
           </div>
 
-          <div className="md:col-span-3 relative">
+          <div className="md:col-span-2 relative">
             <input
               name="middleName"
               value={formData.middleName}
@@ -148,7 +148,7 @@ const Signup: React.FC = () => {
             />
           </div>
 
-          <div className="md:col-span-3 relative">
+          <div className="md:col-span-2 relative">
             <RequiredStar required />
             <input
               name="lastName"
@@ -160,7 +160,7 @@ const Signup: React.FC = () => {
             />
           </div>
 
-          <div className="md:col-span-3 relative">
+          <div className="md:col-span-2 relative">
             <RequiredStar required />
             <input
               type="email"
@@ -173,7 +173,7 @@ const Signup: React.FC = () => {
             />
           </div>
 
-          <div className="md:col-span-3 relative">
+          <div className="md:col-span-2 relative">
             <RequiredStar required />
             <input
               name="phone"
@@ -185,7 +185,7 @@ const Signup: React.FC = () => {
             />
           </div>
 
-          <div className="md:col-span-3 relative">
+          <div className="md:col-span-2 relative">
             <RequiredStar required />
             <select
               name="gender"
