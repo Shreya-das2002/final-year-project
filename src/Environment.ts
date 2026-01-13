@@ -254,3 +254,24 @@ export const getRoleFromUrl = (search: string): Role => {
   const params = new URLSearchParams(search);
   return (params.get("role") as Role) ?? "doctor";
 };
+
+// ================= AGE HELPERS =================
+
+export const calculateAge = (dob: string): string => {
+  if (!dob) return "";
+
+  const birthDate = new Date(dob);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+
+  return age.toString();
+};

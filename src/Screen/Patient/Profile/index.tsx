@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { isValidDOB } from "../../../Environment";
+import { isValidDOB, datePickerStyles, calculateAge } from "../../../Environment";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 /* ================= TYPES ================= */
 
@@ -11,6 +15,7 @@ interface ProfileData {
   email: string;
   phone: string;
   gender: string;
+  age: string;
   password: string;
   dob: string;
   bloodGroup: string;
@@ -50,6 +55,7 @@ const getInitialProfile = (): ProfileData => {
     gender: genderMap[user.gender] || "",
     password: "********",
     dob: "",
+    age: "",
     bloodGroup: "",
     allergies: "",
     height: "",
@@ -84,6 +90,7 @@ const Profile: React.FC = () => {
           phone: data.patient?.phone_no || prev.phone,
           gender: genderMap[Number(data.patient?.gender)] || "",
           dob: data.patient_detail?.dob || "",
+          age: data.patient_details?.age || "",
           bloodGroup: data.patient_detail?.blood_group || "",
           allergies: data.patient_detail?.allergies || "",
           height: data.patient_detail?.height || "",
@@ -187,20 +194,48 @@ const Profile: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium mb-1">Date of Birth</label>
-              <input
-                type="date"
-                value={profile.dob}
-                onChange={e => setProfile({ ...profile, dob: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-md ${
-                  isValidDOB(profile.dob) ? "border-slate-300" : "border-red-500"
-                }`}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <DatePicker
+    value={profile.dob ? dayjs(profile.dob) : null}
+    onChange={val => {
+      const dob = val ? val.format("YYYY-MM-DD") : "";
+      setProfile({
+        ...profile,
+        dob,
+        age: calculateAge(dob),
+      });
+    }}
+    slotProps={{
+      day: {
+        sx: {
+          borderRadius: datePickerStyles.date.borderRadius,
+          fontSize: datePickerStyles.date.fontSize,
+          "&.Mui-selected": {
+            backgroundColor: datePickerStyles.date.selectedBg,
+            color: datePickerStyles.date.selectedColor,
+          },
+          "&:hover": {
+            backgroundColor: datePickerStyles.date.hoverBg,
+          },
+        },
+      },
+      calendarHeader: {
+        sx: {
+          fontSize: datePickerStyles.header.fontSize,
+          fontWeight: datePickerStyles.header.fontWeight,
+        },
+      },
+    }}
+  />
+</LocalizationProvider>
+
               {!isValidDOB(profile.dob) && profile.dob && (
-                <p className="text-xs text-red-500 mt-1">
+                <p className="text-xs text-blue-500 mt-1">
                   Please select a valid birth date
                 </p>
               )}
             </div>
+            <Field label="Age" value={profile.age} disabled />
           </div>
         )}
 
