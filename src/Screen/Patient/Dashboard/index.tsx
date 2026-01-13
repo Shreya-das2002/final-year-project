@@ -43,7 +43,7 @@ const Patientpage: React.FC = () => {
               </thead>
               <tbody>
                 <tr className="border-b">
-                  <td className="py-3">Dr. Anil Sharma</td>
+                  <td className="py-3">Dr. ULULU Sharma</td>
                   <td>Cardiologist</td>
                   <td>10 Jan 2026</td>
                   <td>
@@ -53,7 +53,7 @@ const Patientpage: React.FC = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3">Dr. Meena Das</td>
+                  <td className="py-3">Dr. Kamchor basak</td>
                   <td>Dentist</td>
                   <td>15 Jan 2026</td>
                   <td>

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { isValidDOB } from "../../../Environment";
+import { isValidDOB, datePickerStyles, calculateAge } from "../../../Environment";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 /* ================= TYPES ================= */
 
@@ -11,6 +15,7 @@ interface ProfileData {
   email: string;
   phone: string;
   gender: string;
+  age: string;
   password: string;
   dob: string;
   bloodGroup: string;
@@ -50,6 +55,7 @@ const getInitialProfile = (): ProfileData => {
     gender: genderMap[user.gender] || "",
     password: "********",
     dob: "",
+    age: "",
     bloodGroup: "",
     allergies: "",
     height: "",
@@ -84,6 +90,7 @@ const Profile: React.FC = () => {
           phone: data.patient?.phone_no || prev.phone,
           gender: genderMap[Number(data.patient?.gender)] || "",
           dob: data.patient_detail?.dob || "",
+          age: data.patient_details?.age || "",
           bloodGroup: data.patient_detail?.blood_group || "",
           allergies: data.patient_detail?.allergies || "",
           height: data.patient_detail?.height || "",
@@ -95,6 +102,11 @@ const Profile: React.FC = () => {
   }, [token]);
 
   const handleSave = async (): Promise<void> => {
+    if (!isValidDOB(profile.dob)) {
+      toast.error("Please enter a valid Date of Birth");
+      return;
+    }
+
     await fetch("http://localhost:3000/api/patient/profile", {
       method: "POST",
       headers: {
@@ -111,16 +123,59 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-slate-100 p-8">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-8">
 
+        {/* Step Progress */}
+        <div className="flex items-center justify-between mb-10">
+          {steps.map((label, index) => {
+            const current = index + 1;
+            const active = current <= step;
+
+            return (
+              <button
+                key={label}
+                onClick={() => setStep(current)}
+                type="button"
+                className="flex-1 flex flex-col items-center focus:outline-none"
+              >
+                <div
+                  className={`w-10 h-10 flex items-center justify-center rounded-full font-semibold 
+                  ${active ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}`}
+                >
+                  {current}
+                </div>
+
+                <p
+                  className={`mt-2 text-sm ${
+                    active ? "text-blue-600 font-medium" : "text-gray-400"
+                  }`}
+                >
+                  {label}
+                </p>
+
+                {current < steps.length && (
+                  <div className="w-full h-1 mt-4 bg-gray-200">
+                    <div
+                      className={`h-full ${
+                        step > current ? "bg-blue-600" : "bg-transparent"
+                      }`}
+                    />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
         <h2 className="text-xl font-semibold mb-6">{steps[step - 1]}</h2>
 
         {/* Step Content */}
         {step === 1 && (
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-3 gap-6">
             <Field label="First Name" value={profile.firstName} disabled />
             <Field label="Middle Name" value={profile.middleName} disabled />
             <Field label="Last Name" value={profile.lastName} disabled />
             <Field label="Email" value={profile.email} disabled />
             <Field label="Phone" value={profile.phone} disabled />
+            <Field label="Gender" value={profile.gender} disabled />
           </div>
         )}
 
@@ -137,23 +192,50 @@ const Profile: React.FC = () => {
               onChange={val => setProfile({ ...profile, permanentAddress: val })}
             />
 
-            {/* DOB */}
             <div>
               <label className="block text-sm font-medium mb-1">Date of Birth</label>
-              <input
-                type="date"
-                value={profile.dob}
-                onChange={e => setProfile({ ...profile, dob: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-md ${
-                  isValidDOB(profile.dob) ? "border-slate-300" : "border-red-500"
-                }`}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <DatePicker
+    value={profile.dob ? dayjs(profile.dob) : null}
+    onChange={val => {
+      const dob = val ? val.format("YYYY-MM-DD") : "";
+      setProfile({
+        ...profile,
+        dob,
+        age: calculateAge(dob),
+      });
+    }}
+    slotProps={{
+      day: {
+        sx: {
+          borderRadius: datePickerStyles.date.borderRadius,
+          fontSize: datePickerStyles.date.fontSize,
+          "&.Mui-selected": {
+            backgroundColor: datePickerStyles.date.selectedBg,
+            color: datePickerStyles.date.selectedColor,
+          },
+          "&:hover": {
+            backgroundColor: datePickerStyles.date.hoverBg,
+          },
+        },
+      },
+      calendarHeader: {
+        sx: {
+          fontSize: datePickerStyles.header.fontSize,
+          fontWeight: datePickerStyles.header.fontWeight,
+        },
+      },
+    }}
+  />
+</LocalizationProvider>
+
               {!isValidDOB(profile.dob) && profile.dob && (
-                <p className="text-xs text-red-500 mt-1">
+                <p className="text-xs text-blue-500 mt-1">
                   Please select a valid birth date
                 </p>
               )}
             </div>
+            <Field label="Age" value={profile.age} disabled />
           </div>
         )}
 
@@ -168,28 +250,27 @@ const Profile: React.FC = () => {
           </div>
         )}
 
-        {/* Navigation */}
+        {/* Footer Buttons */}
         <div className="flex justify-between mt-10">
-          {step > 1 && (
-            <button onClick={() => setStep(step - 1)} className="px-6 py-2 border rounded-md">
-              ← Back
-            </button>
-          )}
+          <button
+            onClick={() => setStep(Math.max(1, step - 1))}
+            className="px-6 py-2 border rounded-md"
+          >
+            ← Back
+          </button>
 
           {step < 3 ? (
             <button
-              disabled={step === 2 && !isValidDOB(profile.dob)}
-              onClick={() => setStep(step + 1)}
-              className={`px-8 py-2 rounded-md text-white ${
-                step === 2 && !isValidDOB(profile.dob)
-                  ? "bg-blue-300 cursor-not-allowed"
-                  : "bg-blue-600"
-              }`}
+              onClick={() => setStep(Math.min(3, step + 1))}
+              className="bg-blue-600 text-white px-8 py-2 rounded-md"
             >
               Next →
             </button>
           ) : (
-            <button onClick={handleSave} className="bg-blue-600 text-white px-8 py-2 rounded-md">
+            <button
+              onClick={handleSave}
+              className="bg-blue-600 text-white px-8 py-2 rounded-md"
+            >
               Save
             </button>
           )}
