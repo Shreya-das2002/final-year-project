@@ -14,6 +14,7 @@ import Signup from "./Screen/RegistrationLogin/Signup";
 import Patient from "./Screen/Patient";
 import Patientpage from "./Screen/Patient/Dashboard";
 import Profile from "./Screen/Patient/Profile";
+import PatientProfileView from "./Screen/Patient/Profile/PatientProfileView";
 import Feedback from "./Screen/Patient/Feedback";
 
 const App: React.FC = () => {
@@ -52,6 +53,7 @@ const Routing = () => (
     <Route path="/patient" element={<Patient />}>
   <Route index element={<Patientpage />} />
   <Route path="profile" element={<Profile />} />
+  <Route path="profile_edit" element={<PatientProfileView />} />
   <Route path="feedback" element={<Feedback />} />
 </Route>
 

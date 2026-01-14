@@ -56,7 +56,7 @@ const PatientNav: React.FC = () => {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-3">
         <NavItem icon={<FaHome />} text="Dashboard" onClick={() => navigate("/patient")} />
-        <NavItem icon={<FaUser />} text="Profile" onClick={() => navigate("/patient/profile")} />
+        <NavItem icon={<FaUser />} text="Profile" onClick={() => navigate("/patient/profile_Edit")} />
         <NavItem icon={<FaComments />} text="Symptom Checker" />
         <NavItem icon={<FaRobot />} text="SymptoBot" />
         <NavItem icon={<FaCalendarAlt />} text="Appointments" />

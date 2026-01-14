@@ -21,12 +21,15 @@ interface ProfileData {
   dob: string;
   bloodGroup: string;
   allergies: string[];
+  medicalCondition: string[];
   height: string;
   weight: string;
   currentAddress: string;
   permanentAddress: string;
   occupation: string;
   maritalStatus: string;
+  alcohol: string;
+  smoking: string;
 }
 
 interface FieldProps {
@@ -44,7 +47,17 @@ const genderMap: Record<number, string> = {
   3: "Others",
 };
 
-const steps = ["Basic Information", "Personal Details", "Medical Details"];
+const medicalConditionOptions = [
+  "Diabetes",
+  "Blood Pressure",
+  "Heart Disease",
+  "Thyroid",
+  "Asthma",
+  "Arthritis",
+  "None",
+];
+
+const steps = ["Basic Information", "Personal Details", "Medical Details", "Reports"];
 
 
 const getInitialProfile = (): ProfileData => {
@@ -64,6 +77,9 @@ const getInitialProfile = (): ProfileData => {
     maritalStatus: "",
     bloodGroup: "",
     allergies: [],
+    medicalCondition: [],
+    smoking: "",
+    alcohol: "",
     height: "",
     weight: "",
     currentAddress: "",
@@ -79,6 +95,30 @@ const Profile: React.FC = () => {
   const token = localStorage.getItem("token");
   const [showAllergyDropdown, setShowAllergyDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [showMedicalDropdown, setShowMedicalDropdown] = useState(false);
+const medicalDropdownRef = useRef<HTMLDivElement | null>(null);
+
+useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setShowAllergyDropdown(false);
+    }
+
+    if (
+      medicalDropdownRef.current &&
+      !medicalDropdownRef.current.contains(event.target as Node)
+    ) {
+      setShowMedicalDropdown(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
 
   useEffect(() => {
   function handleClickOutside(event: MouseEvent) {
@@ -120,8 +160,13 @@ const Profile: React.FC = () => {
           bloodGroup: data.patient_detail?.blood_group || "",
           allergies: Array.isArray(data.patient_detail?.allergies)
             ? data.patient_detail.allergies
-            : [],      
+            : [],
+          medicalCondition: Array.isArray(data.patient_detail?.medical_condition)
+          ? data.patient_detail.medical_condition
+          : [],
           height: data.patient_detail?.height || "",
+          smoking: data.patient_detail.smoking || "",
+          alcohol: data.patient_detail.alcohol || "",
           weight: data.patient_detail?.weight || "",
           currentAddress: data.patient_detail?.current_address || "",
           permanentAddress: data.patient_detail?.permanent_address || "",
@@ -148,6 +193,9 @@ const Profile: React.FC = () => {
       profile.height,
       profile.weight,
       profile.allergies,
+      profile.medicalCondition,
+      profile.alcohol,
+      profile.smoking,
     ];
 
     const filled = fields.filter(
@@ -434,9 +482,171 @@ const Profile: React.FC = () => {
         </div>
       )}
     </div>
+<div className="relative" ref={medicalDropdownRef}>
+  <label className="block text-sm font-medium mb-1">
+    Medical Conditions
+  </label>
+
+  <div
+    onClick={() => setShowMedicalDropdown(prev => !prev)}
+    className="w-full px-3 py-2 border rounded-md bg-white cursor-pointer flex flex-wrap gap-1"
+  >
+    {profile.medicalCondition.length ? (
+      profile.medicalCondition.map(item => (
+        <span
+          key={item}
+          className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs"
+        >
+          {item}
+        </span>
+      ))
+    ) : (
+      <span className="text-gray-400 text-sm">
+        Select medical conditions
+      </span>
+    )}
+  </div>
+
+  {showMedicalDropdown && (
+    <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-md p-2 space-y-1">
+      {medicalConditionOptions.map(item => (
+        <label
+          key={item}
+          className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 p-1 rounded"
+        >
+          <input
+            type="checkbox"
+            checked={profile.medicalCondition.includes(item)}
+            onChange={e => {
+              const updated = e.target.checked
+                ? [...profile.medicalCondition, item]
+                : profile.medicalCondition.filter(i => i !== item);
+
+              setProfile({ ...profile, medicalCondition: updated });
+            }}
+            className="accent-green-600"
+          />
+          {item}
+        </label>
+      ))}
+    </div>
+  )}
+</div>
+<div>
+  <label className="block text-sm font-medium mb-2">
+    Do you smoke?
+  </label>
+  <div className="flex gap-3">
+    {["Yes", "No"].map(option => (
+      <button
+        key={option}
+        type="button"
+        onClick={() => setProfile({ ...profile, smoking: option })}
+        className={`px-5 py-2 rounded-md border text-sm font-medium transition
+          ${
+            profile.smoking === option
+              ? "bg-blue-600 text-white border-blue-600"
+              : "bg-white hover:bg-blue-50"
+          }`}
+      >
+        {option}
+      </button>
+    ))}
+  </div>
+</div>
+
+<div>
+  <label className="block text-sm font-medium mb-2">
+    Do you consume alcohol?
+  </label>
+  <div className="flex gap-3">
+    {["Yes", "No"].map(option => (
+      <button
+        key={option}
+        type="button"
+        onClick={() => setProfile({ ...profile, alcohol: option })}
+        className={`px-5 py-2 rounded-md border text-sm font-medium transition
+          ${
+            profile.alcohol === option
+              ? "bg-blue-600 text-white border-blue-600"
+              : "bg-white hover:bg-blue-50"
+          }`}
+      >
+        {option}
+      </button>
+    ))}
+  </div>
+</div>
 
   </div>
 )}
+
+{step === 4 && (
+  <div className="space-y-8">
+
+    {/* Upload Card */}
+    <div className="border rounded-xl p-6 shadow-sm bg-white">
+      <h3 className="text-lg font-semibold mb-4">Upload Medical Report</h3>
+
+      <div className="border-2 border-dashed rounded-lg p-6 text-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition">
+        <p className="text-sm text-gray-500">Drag & drop file here or</p>
+        <button className="mt-2 text-blue-600 font-medium">Browse</button>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mt-4">
+        <select className="border rounded-md p-2">
+          <option>Blood Test</option>
+          <option>X-Ray</option>
+          <option>MRI</option>
+          <option>Prescription</option>
+          <option>Other</option>
+        </select>
+
+        <input type="date" className="border rounded-md p-2" />
+
+        <input
+          placeholder="Doctor / Notes"
+          className="border rounded-md p-2"
+        />
+      </div>
+
+      <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+        Upload Report
+      </button>
+    </div>
+
+    {/* Reports List */}
+    <div className="border rounded-xl p-6 shadow-sm bg-white">
+      <h3 className="text-lg font-semibold mb-4">Your Reports</h3>
+
+      <div className="divide-y">
+        {["Blood Test", "X-Ray Chest", "Prescription"].map((r, i) => (
+          <div
+            key={i}
+            className="flex justify-between items-center py-3"
+          >
+            <div>
+              <p className="font-medium">{r}</p>
+              <p className="text-xs text-gray-500">12 Jan 2026</p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="text-xs px-3 py-1 rounded-full bg-green-100 text-green-700">
+                Uploaded
+              </span>
+
+              <button className="text-blue-600 hover:underline text-sm">
+                Download
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+)}
+
 
         {/* Footer Buttons */}
         <div className="flex justify-between mt-14">
