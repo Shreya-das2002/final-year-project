@@ -261,7 +261,7 @@ const Profile: React.FC = () => {
         <div className="flex justify-between mt-10">
           <button
             onClick={() => setStep(Math.max(1, step - 1))}
-            className="px-6 py-2 border rounded-md"
+            className="px-6 py-2 text-gray-200 rounded-md bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700"
           >
             ← Back
           </button>
@@ -269,14 +269,14 @@ const Profile: React.FC = () => {
           {step < 3 ? (
             <button
               onClick={() => setStep(Math.min(3, step + 1))}
-              className="bg-blue-600 text-white px-8 py-2 rounded-md"
+              className=" bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-2 rounded-md"
             >
               Next →
             </button>
           ) : (
             <button
               onClick={handleSave}
-              className="bg-blue-600 text-white px-8 py-2 rounded-md"
+              className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-2 rounded-md"
             >
               Save
             </button>
