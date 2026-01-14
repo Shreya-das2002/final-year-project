@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ProfileAvatar from "./ProfileAvatar";
 import toast from "react-hot-toast";
 import { isValidDOB, datePickerStyles, calculateAge } from "../../../Environment";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -123,6 +124,12 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-slate-100 p-8">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-8">
 
+        {/* Profile Avatar */}
+        <ProfileAvatar
+          firstName={profile.firstName}
+          lastName={profile.lastName}
+        />
+
         {/* Step Progress */}
         <div className="flex items-center justify-between mb-10">
           {steps.map((label, index) => {
@@ -195,39 +202,39 @@ const Profile: React.FC = () => {
             <div>
               <label className="block text-sm font-medium mb-1">Date of Birth</label>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-  <DatePicker
-    value={profile.dob ? dayjs(profile.dob) : null}
-    onChange={val => {
-      const dob = val ? val.format("YYYY-MM-DD") : "";
-      setProfile({
-        ...profile,
-        dob,
-        age: calculateAge(dob),
-      });
-    }}
-    slotProps={{
-      day: {
-        sx: {
-          borderRadius: datePickerStyles.date.borderRadius,
-          fontSize: datePickerStyles.date.fontSize,
-          "&.Mui-selected": {
-            backgroundColor: datePickerStyles.date.selectedBg,
-            color: datePickerStyles.date.selectedColor,
-          },
-          "&:hover": {
-            backgroundColor: datePickerStyles.date.hoverBg,
-          },
-        },
-      },
-      calendarHeader: {
-        sx: {
-          fontSize: datePickerStyles.header.fontSize,
-          fontWeight: datePickerStyles.header.fontWeight,
-        },
-      },
-    }}
-  />
-</LocalizationProvider>
+                <DatePicker
+                  value={profile.dob ? dayjs(profile.dob) : null}
+                  onChange={val => {
+                    const dob = val ? val.format("YYYY-MM-DD") : "";
+                    setProfile({
+                      ...profile,
+                      dob,
+                      age: calculateAge(dob),
+                    });
+                  }}
+                  slotProps={{
+                    day: {
+                      sx: {
+                        borderRadius: datePickerStyles.date.borderRadius,
+                        fontSize: datePickerStyles.date.fontSize,
+                        "&.Mui-selected": {
+                          backgroundColor: datePickerStyles.date.selectedBg,
+                          color: datePickerStyles.date.selectedColor,
+                        },
+                        "&:hover": {
+                          backgroundColor: datePickerStyles.date.hoverBg,
+                        },
+                      },
+                    },
+                    calendarHeader: {
+                      sx: {
+                        fontSize: datePickerStyles.header.fontSize,
+                        fontWeight: datePickerStyles.header.fontWeight,
+                      },
+                    },
+                  }}
+                />
+              </LocalizationProvider>
 
               {!isValidDOB(profile.dob) && profile.dob && (
                 <p className="text-xs text-blue-500 mt-1">

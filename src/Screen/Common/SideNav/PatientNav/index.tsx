@@ -10,36 +10,50 @@ import {
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
+/* ================= TYPES ================= */
+
 interface NavItemProps {
   icon: ReactNode;
   text: string;
   onClick?: () => void;
 }
 
+/* ================= COMPONENT ================= */
+
 const PatientNav: React.FC = () => {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const fullName = `${user.first_name || ""} ${user.middle_name || ""} ${user.last_name || ""} `;
+  // Read user only ONCE
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const image = localStorage.getItem("profileImage");
+
+  const initials =
+    storedUser.first_name?.charAt(0).toUpperCase() +
+    storedUser.last_name?.charAt(0).toUpperCase();
+
+  const fullName = `${storedUser.first_name || ""} ${storedUser.middle_name || ""} ${storedUser.last_name || ""}`;
 
   return (
     <aside className="w-64 bg-teal-700 rounded-lg text-white flex flex-col min-h-screen">
 
       {/* Profile Header */}
       <div className="p-6 border-b border-teal-600 flex flex-col items-center text-center">
-        <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-          <img
-            src="/src/assets/avatar.png"
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
+
+        {/* Avatar */}
+        <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-900 flex items-center justify-center text-white text-xl font-semibold">
+          {image ? (
+            <img src={image} className="w-full h-full object-cover" />
+          ) : (
+            initials
+          )}
         </div>
 
-        <h3 className="mt-3 font-semibold text-gray-300">
+        <h3 className="mt-3 font-semibold text-gray-100">
           {fullName || "Patient"}
         </h3>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 p-4 space-y-3">
         <NavItem icon={<FaHome />} text="Dashboard" onClick={() => navigate("/patient")} />
         <NavItem icon={<FaUser />} text="Profile" onClick={() => navigate("/patient/profile")} />
@@ -49,6 +63,7 @@ const PatientNav: React.FC = () => {
         <NavItem icon={<FaCommentDots />} text="Feedback" onClick={() => navigate("/patient/feedback")} />
       </nav>
 
+      {/* Logout */}
       <div className="p-4 border-t border-teal-600">
         <button className="flex items-center gap-3 w-full p-3 rounded-lg bg-red-600 hover:bg-red-700">
           <FaSignOutAlt /> Logout
@@ -58,6 +73,8 @@ const PatientNav: React.FC = () => {
     </aside>
   );
 };
+
+/* ================= ITEM ================= */
 
 const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
   <button
@@ -70,4 +87,3 @@ const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
 );
 
 export default PatientNav;
-
