@@ -118,7 +118,7 @@ const Signup: React.FC = () => {
     <div className="flex items-center justify-center">
       <div className="w-full max-w-3xl p-6 rounded-xl">
 
-        <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
+        <h2 className="text-2xl font-bold text-center text-blue-600 dark:text-gray-100 mb-6">
           Create New Account
         </h2>
 
@@ -134,7 +134,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="First Name"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             />
           </div>
 
@@ -144,7 +144,7 @@ const Signup: React.FC = () => {
               value={formData.middleName}
               onChange={handleChange}
               placeholder="Middle Name"
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             />
           </div>
 
@@ -156,7 +156,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Last Name"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             />
           </div>
 
@@ -169,7 +169,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Email"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             />
           </div>
 
@@ -181,7 +181,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Phone"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             />
           </div>
 
@@ -192,7 +192,7 @@ const Signup: React.FC = () => {
               value={formData.gender}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             >
               <option value="">Select Gender</option>
               {genderOptions.map(g => (
@@ -212,7 +212,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Password"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             />
             <small className="text-gray-500">{passwordStrength}</small>
           </div>
@@ -226,7 +226,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Confirm Password"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             />
 
             {formData.confirmPassword.length > 0 && (
@@ -246,15 +246,15 @@ const Signup: React.FC = () => {
 
           <button
             disabled={loading}
-            className="md:col-span-6 bg-blue-600 text-white py-2 rounded-md disabled:opacity-60"
+            className="md:col-span-6 bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 dark:hover:from-gray-500 dark:hover:to-gray-700 hover:-translate-y-1 py-2 rounded-md disabled:opacity-60"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
-        <p className="text-center mt-4">
+        <p className="text-center mt-4 text-gray-800 dark:text-gray-100">
           Already have an account?{" "}
-          <Link to="/registrationlogin/login" className="text-blue-600">
+          <Link to="/registrationlogin/login" className="text-blue-600 dark:text-blue-500">
             Login
           </Link>
         </p>
