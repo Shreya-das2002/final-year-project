@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { FaEdit } from "react-icons/fa";
 
 interface Props {
   firstName: string;
@@ -24,7 +25,7 @@ const ProfileAvatar: React.FC<Props> = ({ firstName, lastName }) => {
   return (
     <div className="flex flex-col items-center mb-8">
       <div
-        className="relative w-28 h-28 rounded-full bg-gray-900 text-white flex items-center justify-center text-3xl font-semibold cursor-pointer overflow-hidden"
+        className="relative w-28 h-28 rounded-full bg-blue-700 text-white flex items-center justify-center text-3xl font-semibold cursor-pointer overflow-hidden"
         onClick={() => inputRef.current?.click()}
       >
         {image ? (
@@ -44,10 +45,10 @@ const ProfileAvatar: React.FC<Props> = ({ firstName, lastName }) => {
 
       <button
         type="button"
-        className="mt-4 px-6 py-2 border border-purple-500 text-purple-600 rounded-md hover:bg-purple-50 transition"
+        className="mt-4 px-6 py-2 border border-blue-500 text-blue-600 rounded-md  hover:bg-blue-100 transition flex items-left gap-2"
         onClick={() => inputRef.current?.click()}
       >
-        Edit profile
+        <FaEdit className="text-xl"/> Edit profile
       </button>
     </div>
   );

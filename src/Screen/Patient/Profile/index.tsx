@@ -124,53 +124,53 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-slate-100 p-8">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-8">
 
-        {/* Profile Avatar */}
         <ProfileAvatar
           firstName={profile.firstName}
           lastName={profile.lastName}
         />
 
-        {/* Step Progress */}
-        <div className="flex items-center justify-between mb-10">
-          {steps.map((label, index) => {
-            const current = index + 1;
-            const active = current <= step;
+        {/* Progress Bar Stepper */}
+<div className="mb-12">
 
-            return (
-              <button
-                key={label}
-                onClick={() => setStep(current)}
-                type="button"
-                className="flex-1 flex flex-col items-center focus:outline-none"
-              >
-                <div
-                  className={`w-10 h-10 flex items-center justify-center rounded-full font-semibold 
-                  ${active ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}`}
-                >
-                  {current}
-                </div>
+  <div className="flex items-center">
 
-                <p
-                  className={`mt-2 text-sm ${
-                    active ? "text-blue-600 font-medium" : "text-gray-400"
-                  }`}
-                >
-                  {label}
-                </p>
+    {steps.map((label, i) => {
+      const current = i + 1;
+      const active = step >= current;
 
-                {current < steps.length && (
-                  <div className="w-full h-1 mt-4 bg-gray-200">
-                    <div
-                      className={`h-full ${
-                        step > current ? "bg-blue-600" : "bg-transparent"
-                      }`}
-                    />
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
+      return (
+        <React.Fragment key={label}>
+          <div className="flex flex-col items-center min-w-[120px]">
+
+            <button
+  onClick={() => setStep(current)}
+  className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold transition
+  ${active ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-500"}`}
+>
+  {current}
+</button>
+
+            <p
+              className={`mt-2 text-sm
+              ${active ? "text-blue-600 font-medium" : "text-gray-400"}`}
+            >
+              {label}
+            </p>
+          </div>
+
+          {i < steps.length - 1 && (
+            <div
+              className={`flex-1 h-1 mx-4 rounded transition
+              ${step > current ? "bg-blue-600" : "bg-gray-200"}`}
+            />
+          )}
+        </React.Fragment>
+      );
+    })}
+  </div>
+
+</div>
+
 
         <h2 className="text-xl font-semibold mb-6">{steps[step - 1]}</h2>
 
@@ -258,10 +258,15 @@ const Profile: React.FC = () => {
         )}
 
         {/* Footer Buttons */}
-        <div className="flex justify-between mt-10">
+        <div className="flex justify-between mt-14">
           <button
             onClick={() => setStep(Math.max(1, step - 1))}
-            className="px-6 py-2 text-gray-200 rounded-md bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700"
+            disabled={step === 1}
+            className={`px-6 py-2 rounded-md text-white transition
+              ${step === 1
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700"
+              }`}
           >
             ← Back
           </button>
@@ -269,14 +274,14 @@ const Profile: React.FC = () => {
           {step < 3 ? (
             <button
               onClick={() => setStep(Math.min(3, step + 1))}
-              className=" bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-2 rounded-md"
+              className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-2 rounded-md transition"
             >
               Next →
             </button>
           ) : (
             <button
               onClick={handleSave}
-              className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-2 rounded-md"
+              className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-2 rounded-md transition"
             >
               Save
             </button>
