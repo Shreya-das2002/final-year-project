@@ -34,13 +34,13 @@ const PatientNav: React.FC = () => {
   const fullName = `${storedUser.first_name || ""} ${storedUser.middle_name || ""} ${storedUser.last_name || ""}`;
 
   return (
-    <aside className="w-64 bg-teal-700 rounded-lg text-white flex flex-col min-h-screen">
+    <aside className="w-64 bg-sky-600 rounded-lg text-white flex flex-col min-h-screen">
 
       {/* Profile Header */}
-      <div className="p-6 border-b border-teal-600 flex flex-col items-center text-center">
+      <div className="p-6 border-b border-sky-600 flex flex-col items-center text-center">
 
         {/* Avatar */}
-        <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-900 flex items-center justify-center text-white text-xl font-semibold">
+        <div className="w-20 h-20 rounded-full overflow-hidden bg-white flex items-center justify-center text-blue-600 text-xl font-semibold">
           {image ? (
             <img src={image} className="w-full h-full object-cover" />
           ) : (
