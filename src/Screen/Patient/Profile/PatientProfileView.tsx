@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit,FaUserCircle } from "react-icons/fa";
+import { MdEmail, MdPhone, MdCake } from "react-icons/md";
+import { GiMedicalPack } from "react-icons/gi";
+import { RiVirusLine } from "react-icons/ri";
 
 /* ================= TYPES ================= */
 
@@ -119,74 +122,82 @@ const PatientProfileView: React.FC = () => {
     }, [token]);
 
   return (
-    <div className="min-h-screen bg-slate-100 p-8">
-      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-10">
+  <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="w-full max-w-3xl bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl shadow-xl p-10 text-center">
 
-        {/* PROFILE HEADER */}
-        <div className="flex flex-col items-center text-center">
+      {/* PROFILE HEADER */}
+      <div className="flex flex-col items-center">
 
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-2xl font-semibold">
-            {image ? (
-              <img src={image} className="w-full h-full object-cover" />
-            ) : (
-              initials || "P"
-            )}
-          </div>
-
-          <h2 className="mt-4 text-xl font-semibold">{fullName || "Patient"}</h2>
-          <p className="text-gray-500">{profile.email}</p>
-
-          <div className="mt-4 text-sm space-y-1">
-            <p><span className="font-medium">Phone:</span> {profile.phone || "—"}</p>
-            <p><span className="font-medium">Gender:</span> {profile.gender || "—"}</p>
-            <p><span className="font-medium">Age:</span> {profile.age || "—"}</p>
-          </div>
-
-          <button
-            onClick={() => navigate("/patient/profile")}
-            className="mt-6 flex items-center gap-2 border border-blue-600 text-blue-600 px-6 py-2 rounded-md hover:bg-blue-50 transition"
-          >
-            <FaEdit className="text-lg" /> Edit Profile
-          </button>
+        {/* Avatar */}
+        <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-2xl font-semibold shadow-md">
+          {image ? (
+            <img src={image} className="w-full h-full object-cover" />
+          ) : (
+            initials || "P"
+          )}
         </div>
 
-        <hr className="my-10" />
+        <h2 className="mt-4 text-2xl font-semibold text-gray-800">
+          {fullName || "Patient"}
+        </h2>
 
-        {/* MEDICAL CONDITIONS */}
+        <p className="text-gray-500 flex items-center gap-2">
+          <MdEmail className=""/>{profile.email}
+          </p>
+
+        {/* Info Pills */}
+        <div className="mt-4 flex flex-wrap justify-center gap-3  text-sm">
+          <span className="px-4 py-2 bg-blue-50 rounded-full flex items-center gap-2 shadow text-gray-700">
+            <MdPhone/>{profile.phone || "—"}
+          </span>
+          <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
+            <FaUserCircle/>{profile.gender || "—"}
+          </span>
+          <span className="px-4 py-2 bg-blue-50 rounded-full shadow  flex items-center gap-2 text-gray-700">
+          <MdCake/>Age: {profile.age || "—"}
+          </span>
+        </div>
+
+        {/* Edit Button */}
+        <button
+          onClick={() => navigate("/patient/profile")}
+          className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+        >
+          <FaEdit />
+          Edit Profile
+        </button>
+      </div>
+
+      {/* MEDICAL + ALLERGIES CARD */}
+      <div className="mt-10 bg-gradient-to-br from-sky-50 to-blue-100 rounded-xl  shadow-md p-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+
+        {/* Medical Conditions */}
         <div>
-          <h3 className="font-semibold text-lg mb-3">Medical Conditions</h3>
-
-          <div className="grid grid-cols-2 gap-6 bg-slate-50 p-5 rounded-lg">
-            <div>
-              <p className="text-gray-500 text-xs">Condition</p>
-              <p className="mt-1 font-medium">
-                {profile.medicalCondition.join(", ") || "—"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-xs">Blood Group</p>
-              <p className="mt-1 font-medium">
-                {profile.bloodGroup || "—"}
-              </p>
-            </div>
-          </div>
+          <h3 className="text-blue-600 font-semibold mb-2 flex items-center gap-2">
+          <GiMedicalPack/>Medical Conditions
+          </h3>
+          <p className="text-gray-700 text-sm">
+            {profile.medicalCondition.join(", ") || "—"}
+          </p>
+          <p className="mt-2 text-gray-700 text-sm">
+            <span className="font-medium">Blood Group:</span>{" "}
+            {profile.bloodGroup || "—"}
+          </p>
         </div>
 
-        {/* ALLERGIES */}
-        <div className="mt-8">
-          <h3 className="font-semibold text-lg mb-3">Allergies</h3>
-
-          <div className="bg-slate-50 p-5 rounded-lg">
-            <p className="font-medium">
-              {profile.allergies.join(", ") || "—"}
-            </p>
-          </div>
+        {/* Allergies */}
+        <div>
+          <h3 className="text-pink-600 font-semibold mb-2 flex items-center gap-2">
+            <RiVirusLine/>Allergies
+          </h3>
+          <p className="text-gray-700 text-sm">
+            {profile.allergies.join(", ") || "—"}
+          </p>
         </div>
-
       </div>
     </div>
-  );
-};
+  </div>
+);
+}
 
 export default PatientProfileView;

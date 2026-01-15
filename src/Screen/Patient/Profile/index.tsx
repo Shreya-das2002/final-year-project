@@ -224,8 +224,8 @@ useEffect(() => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 p-8">
-      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-8">
+    <div className="min-h-screen bg-white p-8">
+      <div className="max-w-5xl mx-auto gap-2  bg-gradient-to-br from-sky-100 to-blue-200 shadow-xl rounded-lg p-8">
        {/* PROFILE COMPLETION */}
         <div className="flex justify-end mb-6">
           <div className="flex items-center justify-between w-72 bg-white border-transparent transition-shadow hover:shadow-lg hover:shadow-gray-300 rounded-xl p-4 shadow-sm">
