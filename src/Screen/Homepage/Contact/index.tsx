@@ -78,7 +78,8 @@ const Contact: React.FC = () => {
         </p>
 
         <p className="text-gray-600 dark:text-gray-300 text-xs text-center flex items-center gap-2">
-          <FaEnvelope/> {member.email}
+        <FaEnvelope className="flex-shrink-0" />
+  <span className="truncate">{member.email}</span>
         </p>
       </div>
     ))}
