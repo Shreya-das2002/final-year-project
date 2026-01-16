@@ -44,7 +44,7 @@ export const teamMembers: TeamMember[] = [
     {
     id: 4,
     name: "Rinki Singha Roy",
-    role: "Detabase Engineer",
+    role: "Database Engineer",
     desc: "Manages database structure and basic data organization. Supports data storage, retrieval, and overall system consistency.",
     img: rinkiImg,
     email: "rinkisingharoy850@gmail.com",
