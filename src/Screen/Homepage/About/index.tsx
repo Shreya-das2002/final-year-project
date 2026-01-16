@@ -1,6 +1,6 @@
 import React from "react";
 import { teamMembers } from "../../../Environment";
-
+import { FaUsers } from "react-icons/fa";
 
 const About: React.FC = () => {
   return (
@@ -23,8 +23,8 @@ const About: React.FC = () => {
       </div>
 
       {/* Team Section */}
-      <h2 className="text-2xl font-semibold mt-10 mb-6 text-blue-600 dark:text-white">
-        Our Team
+      <h2 className="text-2xl font-semibold mt-10 mb-6 text-blue-600 dark:text-white text-center flex items-center gap-2">
+        <FaUsers/> Our Team
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
