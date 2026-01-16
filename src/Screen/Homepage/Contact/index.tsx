@@ -73,12 +73,12 @@ const Contact: React.FC = () => {
           {member.role}
         </p>
 
-        <p className="text-gray-600 dark:text-gray-200">
-          📞 {member.num}
+        <p className="text-gray-600 dark:text-gray-200 text-center flex items-center gap-2">
+          <FaPhoneAlt/> {member.num}
         </p>
 
-        <p className="text-gray-600 dark:text-gray-300 text-xs">
-          ✉️ {member.email}
+        <p className="text-gray-600 dark:text-gray-300 text-xs text-center flex items-center gap-2">
+          <FaEnvelope/> {member.email}
         </p>
       </div>
     ))}
