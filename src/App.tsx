@@ -49,12 +49,20 @@ const Routing = () => (
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
     </Route>
-
-    <Route path="/patient" element={<Patient />}>
+  {/* {
+    !!user  &&UserActivation.user_type == 3 &&
+        <Route path="/patient" element={<Patient />}>
   <Route index element={<Patientpage />} />
   <Route path="profile" element={<Profile />} />
   <Route path="profile_edit" element={<PatientProfileView />} />
   <Route path="feedback" element={<Feedback />} />
+  } */}
+          <Route path="/patient" element={<Patient />}>
+  <Route index element={<Patientpage />} />
+  <Route path="profile" element={<Profile />} />
+  <Route path="profile_edit" element={<PatientProfileView />} />
+  <Route path="feedback" element={<Feedback />} />
+
 </Route>
 
   </Routes>

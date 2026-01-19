@@ -1,3 +1,4 @@
+import { urls } from "../Environment";
 import { API } from "./api";
 
 /* ---------- Types ---------- */
@@ -21,9 +22,9 @@ export interface SignupPayload {
 /* ---------- API Calls ---------- */
 
 export const loginApi = (data: LoginPayload) => {
-  return API.post("/auth/login", data);
+  return API.post(urls.loginUrl, data);
 };
 
 export const signupApi = (data: SignupPayload) => {
-  return API.post("/auth/signup", data);
+  return API.post(urls.signupUrl, data);
 };

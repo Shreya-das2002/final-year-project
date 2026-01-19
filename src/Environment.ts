@@ -275,3 +275,9 @@ export const calculateAge = (dob: string): string => {
 
   return age.toString();
 };
+
+export const urls ={
+  baseUrl : 'http://localhost:4000/api/',
+  loginUrl :'auth/login',
+  signupUrl : 'auth/signup'
+}
