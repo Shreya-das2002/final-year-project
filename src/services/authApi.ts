@@ -1,3 +1,4 @@
+
 import { urls } from "../Environment";
 import { API } from "./api";
 
@@ -22,7 +23,9 @@ export interface SignupPayload {
 /* ---------- API Calls ---------- */
 
 export const loginApi = (data: LoginPayload) => {
-  return API.post(urls.loginUrl, data);
+  return API.post(urls.loginUrl, data, {
+    validateStatus: () => true, //  accept all statuses
+  });
 };
 
 export const signupApi = (data: SignupPayload) => {

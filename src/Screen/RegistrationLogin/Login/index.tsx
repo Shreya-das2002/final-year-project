@@ -13,15 +13,23 @@ const Login: React.FC = () => {
   // 🔑 ROLE FROM URL
   const selected: Role = getRoleFromUrl(location.search);
 
-  // FORM STATE
+  // ================= STATE =================
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const [idError, setIdError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* ===================== LOGIN HANDLER ===================== */
+  // ================= LOGIN HANDLER =================
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
+
+    // basic validation
+    if (!id || !password) {
+      toast.error("Please fill all fields");
+      return;
+    }
 
     setLoading(true);
 
@@ -33,15 +41,13 @@ const Login: React.FC = () => {
 
       const res = await loginApi(payload);
 
-      // ✅ SUCCESS
+      // ================= SUCCESS =================
       if (res.data.success) {
         const { token, role, user } = res.data.data;
 
-        // Save auth data
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
 
-        // Navigate based on role
         if (role === "admin") navigate("/admin");
         else if (role === "doctor") navigate("/doctor");
         else if (role === "patient") navigate("/patient");
@@ -50,8 +56,21 @@ const Login: React.FC = () => {
         return;
       }
 
-      // ❌ BUSINESS ERROR
-      toast.error(res.data.message || "Invalid credentials");
+      if (!res.data.success) {
+  const { message, errorCode } = res.data;
+
+  if (errorCode === "USER_NOT_FOUND") {
+    toast.error(message || "Invalid User ID");
+  } 
+  else if (errorCode === "INVALID_PASSWORD") {
+    toast.error(message || "Invalid Password");
+  } 
+  else {
+    toast.error(message || "Login failed");
+  }
+
+  return;
+}
 
     } catch (error) {
       console.error("LOGIN ERROR:", error);
@@ -61,16 +80,18 @@ const Login: React.FC = () => {
     }
   };
 
-  /* ===================== ROLE SWITCH ===================== */
+  // ================= ROLE SWITCH =================
   const switchRole = (role: Role) => {
     navigate(`/registrationlogin/login?role=${role}`);
     setId("");
     setPassword("");
+    setIdError("");
+    setPasswordError("");
   };
 
   return (
     <div>
-      {/* ROLE SWITCH BUTTONS */}
+      {/* ROLE SWITCH */}
       <div className="flex justify-center gap-3 mb-6">
         {(["doctor", "patient", "admin"] as Role[]).map((role) => (
           <button
@@ -93,8 +114,9 @@ const Login: React.FC = () => {
         {selected.charAt(0).toUpperCase() + selected.slice(1)} Login
       </h2>
 
-      {/* LOGIN FORM */}
+      {/* FORM */}
       <form className="space-y-4" onSubmit={handleLogin}>
+        {/* USER ID / EMAIL */}
         <div>
           <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             {selected === "doctor"
@@ -108,7 +130,9 @@ const Login: React.FC = () => {
             type="text"
             value={id}
             disabled={loading}
-            onChange={(e) => setId(e.target.value)}
+            onChange={(e) => {
+              setId(e.target.value);
+            }}
             className="w-full px-4 py-2 bg-white/20 border border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder={
               selected === "doctor"
@@ -118,8 +142,15 @@ const Login: React.FC = () => {
                 : "Enter Your Email"
             }
           />
+
+          {idError && (
+            <p className="text-sm text-red-500 mt-1 pl-3">
+              {idError}
+            </p>
+          )}
         </div>
 
+        {/* PASSWORD */}
         <div>
           <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             Password
@@ -129,10 +160,18 @@ const Login: React.FC = () => {
             type="password"
             value={password}
             disabled={loading}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
             className="w-full px-4 py-2 bg-white/20 border border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder="Enter Your Password"
           />
+
+          {passwordError && (
+            <p className="text-sm text-red-500 mt-1 pl-3">
+              {passwordError}
+            </p>
+          )}
 
           <div className="text-right mt-1">
             <Link
@@ -144,6 +183,7 @@ const Login: React.FC = () => {
           </div>
         </div>
 
+        {/* SUBMIT */}
         <button
           type="submit"
           disabled={loading}
@@ -159,6 +199,7 @@ const Login: React.FC = () => {
         </button>
       </form>
 
+      {/* REGISTER */}
       {selected === "patient" && (
         <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
           New here?{" "}
