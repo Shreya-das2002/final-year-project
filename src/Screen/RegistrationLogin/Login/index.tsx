@@ -10,15 +10,15 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔑 ROLE DERIVED FROM URL (SINGLE SOURCE OF TRUTH)
+  // 🔑 ROLE FROM URL
   const selected: Role = getRoleFromUrl(location.search);
 
-  // Form state only
+  // FORM STATE
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* ---------- LOGIN HANDLER ---------- */
+  /* ===================== LOGIN HANDLER ===================== */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
@@ -33,33 +33,35 @@ const Login: React.FC = () => {
 
       const res = await loginApi(payload);
 
-      if (res.data.status === 200) {
+      // ✅ SUCCESS
+      if (res.data.success) {
         const { token, role, user } = res.data.data;
 
-        // 🔐 Save session data
+        // Save auth data
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
 
-        // 🚀 Navigate immediately
+        // Navigate based on role
         if (role === "admin") navigate("/admin");
         else if (role === "doctor") navigate("/doctor");
         else if (role === "patient") navigate("/patient");
         else navigate("/");
 
-        return; // 🛑 stop here — do NOT run setLoading(false)
+        return;
       }
 
-      toast.error(res.data.error_message || "Invalid credentials");
+      // ❌ BUSINESS ERROR
+      toast.error(res.data.message || "Invalid credentials");
+
     } catch (error) {
       console.error("LOGIN ERROR:", error);
       toast.error("Server error. Please try again.");
     } finally {
-      // only reset loading if login failed
       setLoading(false);
     }
   };
 
-  /* ---------- ROLE SWITCH FROM LOGIN ---------- */
+  /* ===================== ROLE SWITCH ===================== */
   const switchRole = (role: Role) => {
     navigate(`/registrationlogin/login?role=${role}`);
     setId("");
@@ -92,7 +94,7 @@ const Login: React.FC = () => {
       </h2>
 
       {/* LOGIN FORM */}
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleLogin}>
         <div>
           <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             {selected === "doctor"
@@ -128,7 +130,7 @@ const Login: React.FC = () => {
             value={password}
             disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+            className="w-full px-4 py-2 bg-white/20 border border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
             placeholder="Enter Your Password"
           />
 
@@ -144,7 +146,6 @@ const Login: React.FC = () => {
 
         <button
           type="submit"
-          onClick={handleLogin}
           disabled={loading}
           className={`w-full py-2 rounded-full font-semibold shadow-lg transition-all
             ${
