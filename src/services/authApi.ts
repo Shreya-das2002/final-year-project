@@ -1,5 +1,5 @@
 
-import { urls } from "../Environment";
+import { urls, type Role } from "../Environment";
 import { API } from "./api";
 
 /* ---------- Types ---------- */
@@ -7,6 +7,7 @@ import { API } from "./api";
 export interface LoginPayload {
   email: string;
   password: string;
+  role: Role;
 }
 
 export interface SignupPayload {

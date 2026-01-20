@@ -40,10 +40,11 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const payload: LoginPayload = {
-        email: id,
-        password,
-      };
+     const payload: LoginPayload = {
+  email: id,
+  password,
+  role: selected.toLowerCase() as Role
+};
 
       const res = await loginApi(payload);
 
@@ -76,15 +77,22 @@ const Login: React.FC = () => {
       /* ================= FAILURE ================= */
       const { message, errorCode } = res.data;
 
-      if (errorCode === "USER_NOT_FOUND") {
-        setIdError(message || "Invalid User ID");
-        toast.error(message || "Invalid User ID");
-      } else if (errorCode === "INVALID_PASSWORD") {
-        setPasswordError(message || "Invalid Password");
-        toast.error(message || "Invalid Password");
-      } else {
-        toast.error(message || "Login failed");
-      }
+      if (errorCode === "ROLE_MISMATCH") {
+  toast.error(`This account is not registered as ${selected}`);
+  return;
+}
+
+if (errorCode === "USER_NOT_FOUND") {
+  setIdError(message || "Invalid User ID");
+  toast.error(message || "Invalid User ID");
+} 
+else if (errorCode === "INVALID_PASSWORD") {
+  setPasswordError(message || "Invalid Password");
+  toast.error(message || "Invalid Password");
+} 
+else {
+  toast.error(message || "Login failed");
+}
     } catch (error) {
       console.error("LOGIN ERROR:", error);
       toast.error("Server error. Please try again.");
