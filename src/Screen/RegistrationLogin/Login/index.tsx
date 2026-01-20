@@ -5,12 +5,16 @@ import type { Role } from "../../../Environment";
 import { loginApi } from "../../../services/authApi";
 import type { LoginPayload } from "../../../services/authApi";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../store/store";
+import { loginSuccess } from "../../../../store/slices/authSlice";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // 🔑 ROLE FROM URL
+  //  ROLE FROM URL
   const selected: Role = getRoleFromUrl(location.search);
 
   // ================= STATE =================
@@ -25,7 +29,9 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (loading) return;
 
-    // basic validation
+    setIdError("");
+    setPasswordError("");
+
     if (!id || !password) {
       toast.error("Please fill all fields");
       return;
@@ -41,13 +47,24 @@ const Login: React.FC = () => {
 
       const res = await loginApi(payload);
 
-      // ================= SUCCESS =================
+      /* ================= SUCCESS ================= */
       if (res.data.success) {
         const { token, role, user } = res.data.data;
 
+        //  REDUX UPDATE (IMPORTANT)
+        dispatch(
+          loginSuccess({
+            token,
+            user,
+            role,
+          })
+        );
+
+        //  Persist
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
 
+        //  Role-based navigation
         if (role === "admin") navigate("/admin");
         else if (role === "doctor") navigate("/doctor");
         else if (role === "patient") navigate("/patient");
@@ -56,22 +73,18 @@ const Login: React.FC = () => {
         return;
       }
 
-      if (!res.data.success) {
-  const { message, errorCode } = res.data;
+      /* ================= FAILURE ================= */
+      const { message, errorCode } = res.data;
 
-  if (errorCode === "USER_NOT_FOUND") {
-    toast.error(message || "Invalid User ID");
-  } 
-  else if (errorCode === "INVALID_PASSWORD") {
-    toast.error(message || "Invalid Password");
-  } 
-  else {
-    toast.error(message || "Login failed");
-  }
-
-  return;
-}
-
+      if (errorCode === "USER_NOT_FOUND") {
+        setIdError(message || "Invalid User ID");
+        toast.error(message || "Invalid User ID");
+      } else if (errorCode === "INVALID_PASSWORD") {
+        setPasswordError(message || "Invalid Password");
+        toast.error(message || "Invalid Password");
+      } else {
+        toast.error(message || "Login failed");
+      }
     } catch (error) {
       console.error("LOGIN ERROR:", error);
       toast.error("Server error. Please try again.");
@@ -116,7 +129,7 @@ const Login: React.FC = () => {
 
       {/* FORM */}
       <form className="space-y-4" onSubmit={handleLogin}>
-        {/* USER ID / EMAIL */}
+        {/* USER ID */}
         <div>
           <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             {selected === "doctor"
@@ -130,10 +143,8 @@ const Login: React.FC = () => {
             type="text"
             value={id}
             disabled={loading}
-            onChange={(e) => {
-              setId(e.target.value);
-            }}
-            className="w-full px-4 py-2 bg-white/20 border border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+            onChange={(e) => setId(e.target.value)}
+            className="w-full px-4 py-2 rounded-full border focus:ring-2"
             placeholder={
               selected === "doctor"
                 ? "Enter Doctor ID"
@@ -160,10 +171,8 @@ const Login: React.FC = () => {
             type="password"
             value={password}
             disabled={loading}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            className="w-full px-4 py-2 bg-white/20 border border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded-full border focus:ring-2"
             placeholder="Enter Your Password"
           />
 
@@ -176,7 +185,7 @@ const Login: React.FC = () => {
           <div className="text-right mt-1">
             <Link
               to={`/registrationlogin/forgot-password?role=${selected}`}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-sm text-blue-600 hover:underline"
             >
               Forgot Password?
             </Link>
@@ -187,13 +196,7 @@ const Login: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 rounded-full font-semibold shadow-lg transition-all
-            ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 dark:hover:from-gray-500 dark:hover:to-gray-700 hover:-translate-y-1"
-            }
-          `}
+          className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -201,12 +204,9 @@ const Login: React.FC = () => {
 
       {/* REGISTER */}
       {selected === "patient" && (
-        <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
+        <p className="text-center mt-4">
           New here?{" "}
-          <Link
-            to="/registrationlogin/signup"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
+          <Link to="/registrationlogin/signup" className="text-blue-600">
             Register Now
           </Link>
         </p>

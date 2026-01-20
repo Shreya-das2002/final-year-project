@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 /* ================= TYPES ================= */
 
@@ -20,13 +21,20 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+/*  PAYLOAD TYPE */
+interface LoginSuccessPayload {
+  token: string;
+  user: User;
+  role: string;
+}
+
 /* ================= INITIAL STATE ================= */
 
 const initialState: AuthState = {
-  token: localStorage.getItem("token"),
+  token: null,
   user: null,
   role: null,
-  isAuthenticated: !!localStorage.getItem("token"),
+  isAuthenticated: false,
 };
 
 /* ================= SLICE ================= */
@@ -35,7 +43,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginSuccess(state, action: PayloadAction<any>) {
+    loginSuccess(
+      state,
+      action: PayloadAction<LoginSuccessPayload>
+    ) {
       state.token = action.payload.token;
       state.user = action.payload.user;
       state.role = action.payload.role;

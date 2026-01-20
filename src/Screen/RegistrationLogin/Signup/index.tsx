@@ -10,6 +10,12 @@ import {
   isStrongPassword,
 } from "../../../Environment";
 
+/* ================= CONSTANTS ================= */
+
+const PATIENT_ROLE_ID = 5;
+
+/* ================= REQUIRED STAR ================= */
+
 const RequiredStar = ({ required }: { required?: boolean }) =>
   required ? (
     <span className="absolute top-1/2 right-4 -translate-y-1/2 text-red-500 text-sm font-bold pointer-events-none">
@@ -17,18 +23,28 @@ const RequiredStar = ({ required }: { required?: boolean }) =>
     </span>
   ) : null;
 
-/* 🆕 GENDER MAPPING */
+/* ================= GENDER MAPPING ================= */
+
 const genderToNumber: Record<string, number> = {
   male: 1,
   female: 2,
   other: 3,
 };
 
+/* ================= TYPES ================= */
+
+interface ApiErrorResponse {
+  message?: string;
+  errorCode?: string;
+}
+
+/* ================= COMPONENT ================= */
+
 const Signup: React.FC = () => {
   const navigate = useNavigate();
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -42,11 +58,12 @@ const Signup: React.FC = () => {
   });
 
   const passwordStrength = getPasswordStrength(formData.password);
-
   const passwordsMatch = doPasswordsMatch(
     formData.password,
     formData.confirmPassword
   );
+
+  /* ================= INPUT HANDLER ================= */
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -55,32 +72,33 @@ const Signup: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  /* ================= SUBMIT ================= */
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    if (loading) return;
+
+    setEmailError("");
+
+    /* ---------- FRONTEND VALIDATION ---------- */
 
     if (!isValidGender(formData.gender)) {
-      setError("Please select a valid gender.");
-      return;
-    }
-
-    if (!genderToNumber[formData.gender]) {
-      setError("Invalid gender selected.");
+      toast.error("Please select a valid gender");
       return;
     }
 
     if (!isStrongPassword(formData.password)) {
-      setError("Password must be at least 8 characters.");
+      toast.error("Password must be at least 8 characters");
       return;
     }
 
     if (!passwordsMatch) {
-      setError("Passwords do not match.");
+      toast.error("Passwords do not match");
       return;
     }
 
-    if (!/^[0-9]{10}$/.test(formData.phone)) {
-      setError("Please enter a valid 10-digit phone number");
+    if (!/^[0-9]{10}$/.test(formData.phone.trim())) {
+      toast.error("Please enter a valid 10-digit phone number");
       return;
     }
 
@@ -88,44 +106,75 @@ const Signup: React.FC = () => {
       setLoading(true);
 
       const payload = {
-        first_name: formData.firstName,
-        middle_name: formData.middleName || "",
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
+        first_name: formData.firstName.trim(),
+        middle_name: formData.middleName.trim(),
+        last_name: formData.lastName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
         password: formData.password,
         confirm_password: formData.confirmPassword,
         gender: genderToNumber[formData.gender],
+        role_id: PATIENT_ROLE_ID,
       };
 
-      const res = await signupApi(payload);
-      const apiResponse = res?.data;
+      await signupApi(payload);
 
-      if (apiResponse?.status === 200 && apiResponse?.data?.success) {
-        toast.success("Account created successfully");
-        navigate("/registrationlogin/login?role=patient");
-      } else {
-        toast.error(apiResponse?.error_message || "Signup failed");
+      // SUCCESS (200)
+      toast.success("Account created successfully");
+      navigate("/registrationlogin/login?role=patient", { replace: true });
+
+    } catch (error: unknown) {
+      // ✅ HANDLE BUSINESS ERRORS (400)
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error
+      ) {
+        const err = error as {
+          response?: {
+            status?: number;
+            data?: ApiErrorResponse;
+          };
+        };
+
+        if (err.response?.status === 400) {
+          const { message, errorCode } = err.response.data || {};
+
+          if (errorCode === "EMAIL_ALREADY_EXISTS") {
+            setEmailError(message || "Email already registered");
+            toast.error(message || "Email already registered");
+            return;
+          }
+
+          if (errorCode === "Password_do_not_match") {
+            toast.error(message || "Passwords do not match");
+            return;
+          }
+
+          toast.error(message || "Validation error");
+          return;
+        }
       }
-    } catch {
-      toast.error("Signup failed");
+
+      //  REAL SERVER ERROR (500 etc.)
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ================= UI ================= */
+
   return (
     <div className="flex items-center justify-center">
       <div className="w-full max-w-3xl p-6 rounded-xl">
 
-        <h2 className="text-2xl font-bold text-center text-blue-600 dark:text-gray-100 mb-6">
-          Create New Account
+        <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
+          Create Patient Account
         </h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-6 gap-4"
-        >
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-6 gap-4">
+
           <div className="md:col-span-2 relative">
             <RequiredStar required />
             <input
@@ -134,17 +183,17 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="First Name"
               required
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
-          <div className="md:col-span-2 relative">
+          <div className="md:col-span-2">
             <input
               name="middleName"
               value={formData.middleName}
               onChange={handleChange}
               placeholder="Middle Name"
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
@@ -156,7 +205,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Last Name"
               required
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
@@ -169,8 +218,11 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Email"
               required
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             />
+            {emailError && (
+              <p className="text-sm text-red-500 mt-1">{emailError}</p>
+            )}
           </div>
 
           <div className="md:col-span-2 relative">
@@ -181,7 +233,7 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Phone"
               required
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             />
           </div>
 
@@ -192,13 +244,11 @@ const Signup: React.FC = () => {
               value={formData.gender}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             >
               <option value="">Select Gender</option>
               {genderOptions.map(g => (
-                <option key={g.value} value={g.value}>
-                  {g.label}
-                </option>
+                <option key={g.value} value={g.value}>{g.label}</option>
               ))}
             </select>
           </div>
@@ -212,9 +262,9 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Password"
               required
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             />
-            <small className="text-gray-800 dark:text-gray-200">{passwordStrength}</small>
+            <small>{passwordStrength}</small>
           </div>
 
           <div className="md:col-span-3 relative">
@@ -226,35 +276,21 @@ const Signup: React.FC = () => {
               onChange={handleChange}
               placeholder="Confirm Password"
               required
-              className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+              className="w-full px-4 py-2 border rounded-md"
             />
-
-            {formData.confirmPassword.length > 0 && (
-              <p
-                className={`text-xs mt-1 ${
-                  passwordsMatch ? "text-green-600" : "text-red-500"
-                }`}
-              >
-                {passwordsMatch ? "Passwords match " : "Passwords do not match "}
-              </p>
-            )}
           </div>
-
-          {error && (
-            <p className="md:col-span-6 text-red-500 text-center">{error}</p>
-          )}
 
           <button
             disabled={loading}
-            className="md:col-span-6 bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 dark:hover:from-gray-500 dark:hover:to-gray-700 hover:-translate-y-1 py-2 rounded-md disabled:opacity-60"
+            className="md:col-span-6 py-2 rounded-md bg-blue-500 text-white disabled:opacity-60"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
-        <p className="text-center mt-4 text-gray-800 dark:text-gray-100">
+        <p className="text-center mt-4">
           Already have an account?{" "}
-          <Link to="/registrationlogin/login" className="text-blue-600 dark:text-blue-500">
+          <Link to="/registrationlogin/login?role=patient" className="text-blue-600 hover:underline">
             Login
           </Link>
         </p>
