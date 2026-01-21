@@ -9,6 +9,9 @@ import {
 } from "react-icons/fa";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../../../../../store/store";
+import { logout } from "../../../../../store/slices/authSlice";
 
 /* ================= TYPES ================= */
 
@@ -22,16 +25,25 @@ interface NavItemProps {
 
 const PatientNav: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // Read user only ONCE
-  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const image = localStorage.getItem("profileImage");
+  //  READ USER FROM REDUX (NOT localStorage)
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  //  STOP RENDERING IF USER IS NULL (VERY IMPORTANT)
+  if (!user) return null;
 
   const initials =
-    storedUser.first_name?.charAt(0).toUpperCase() +
-    storedUser.last_name?.charAt(0).toUpperCase();
+    user.first_name.charAt(0).toUpperCase() +
+    user.last_name.charAt(0).toUpperCase();
 
-  const fullName = `${storedUser.first_name || ""} ${storedUser.middle_name || ""} ${storedUser.last_name || ""}`;
+  const fullName = `${user.first_name} ${user.middle_name || ""} ${user.last_name}`;
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem("token");
+    navigate("/registrationlogin/login");
+  };
 
   return (
     <aside className="w-64 bg-sky-600 rounded-lg text-white flex flex-col min-h-screen">
@@ -41,15 +53,11 @@ const PatientNav: React.FC = () => {
 
         {/* Avatar */}
         <div className="w-20 h-20 rounded-full overflow-hidden bg-white flex items-center justify-center text-blue-600 text-xl font-semibold">
-          {image ? (
-            <img src={image} className="w-full h-full object-cover" />
-          ) : (
-            initials
-          )}
+          {initials}
         </div>
 
         <h3 className="mt-3 font-semibold text-gray-100">
-          {fullName || "Patient"}
+          {fullName}
         </h3>
       </div>
 
@@ -65,7 +73,10 @@ const PatientNav: React.FC = () => {
 
       {/* Logout */}
       <div className="p-4 border-t border-teal-600">
-        <button className="flex items-center gap-3 w-full p-3 rounded-lg bg-red-600 hover:bg-red-700">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full p-3 rounded-lg bg-red-600 hover:bg-red-700"
+        >
           <FaSignOutAlt /> Logout
         </button>
       </div>

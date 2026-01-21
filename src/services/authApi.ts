@@ -1,3 +1,5 @@
+
+import { urls, type Role } from "../Environment";
 import { API } from "./api";
 
 /* ---------- Types ---------- */
@@ -5,6 +7,7 @@ import { API } from "./api";
 export interface LoginPayload {
   email: string;
   password: string;
+  role: Role;
 }
 
 export interface SignupPayload {
@@ -21,9 +24,11 @@ export interface SignupPayload {
 /* ---------- API Calls ---------- */
 
 export const loginApi = (data: LoginPayload) => {
-  return API.post("/auth/login", data);
+  return API.post(urls.loginUrl, data, {
+    validateStatus: () => true, //  accept all statuses
+  });
 };
 
 export const signupApi = (data: SignupPayload) => {
-  return API.post("/auth/signup", data);
+  return API.post(urls.signupUrl, data);
 };

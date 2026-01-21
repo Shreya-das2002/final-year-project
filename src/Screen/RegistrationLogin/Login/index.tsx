@@ -5,70 +5,114 @@ import type { Role } from "../../../Environment";
 import { loginApi } from "../../../services/authApi";
 import type { LoginPayload } from "../../../services/authApi";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../store/store";
+import { loginSuccess } from "../../../../store/slices/authSlice";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // 🔑 ROLE DERIVED FROM URL (SINGLE SOURCE OF TRUTH)
+  //  ROLE FROM URL
   const selected: Role = getRoleFromUrl(location.search);
 
-  // Form state only
+  // ================= STATE =================
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const [idError, setIdError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* ---------- LOGIN HANDLER ---------- */
+  // ================= LOGIN HANDLER =================
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
 
+    setIdError("");
+    setPasswordError("");
+
+    if (!id || !password) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const payload: LoginPayload = {
-        email: id,
-        password,
-      };
+     const payload: LoginPayload = {
+  email: id,
+  password,
+  role: selected.toLowerCase() as Role
+};
 
       const res = await loginApi(payload);
 
-      if (res.data.status === 200) {
+      /* ================= SUCCESS ================= */
+      if (res.data.success) {
         const { token, role, user } = res.data.data;
 
-        // 🔐 Save session data
+        //  REDUX UPDATE (IMPORTANT)
+        dispatch(
+          loginSuccess({
+            token,
+            user,
+            role,
+          })
+        );
+
+        //  Persist
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
 
-        // 🚀 Navigate immediately
+        //  Role-based navigation
         if (role === "admin") navigate("/admin");
         else if (role === "doctor") navigate("/doctor");
         else if (role === "patient") navigate("/patient");
         else navigate("/");
 
-        return; // 🛑 stop here — do NOT run setLoading(false)
+        return;
       }
 
-      toast.error(res.data.error_message || "Invalid credentials");
+      /* ================= FAILURE ================= */
+      const { message, errorCode } = res.data;
+
+      if (errorCode === "ROLE_MISMATCH") {
+  toast.error(`This account is not registered as ${selected}`);
+  return;
+}
+
+if (errorCode === "USER_NOT_FOUND") {
+  setIdError(message || "Invalid User ID");
+  toast.error(message || "Invalid User ID");
+} 
+else if (errorCode === "INVALID_PASSWORD") {
+  setPasswordError(message || "Invalid Password");
+  toast.error(message || "Invalid Password");
+} 
+else {
+  toast.error(message || "Login failed");
+}
     } catch (error) {
       console.error("LOGIN ERROR:", error);
       toast.error("Server error. Please try again.");
     } finally {
-      // only reset loading if login failed
       setLoading(false);
     }
   };
 
-  /* ---------- ROLE SWITCH FROM LOGIN ---------- */
+  // ================= ROLE SWITCH =================
   const switchRole = (role: Role) => {
     navigate(`/registrationlogin/login?role=${role}`);
     setId("");
     setPassword("");
+    setIdError("");
+    setPasswordError("");
   };
 
   return (
     <div>
-      {/* ROLE SWITCH BUTTONS */}
+      {/* ROLE SWITCH */}
       <div className="flex justify-center gap-3 mb-6">
         {(["doctor", "patient", "admin"] as Role[]).map((role) => (
           <button
@@ -91,8 +135,9 @@ const Login: React.FC = () => {
         {selected.charAt(0).toUpperCase() + selected.slice(1)} Login
       </h2>
 
-      {/* LOGIN FORM */}
-      <form className="space-y-4">
+      {/* FORM */}
+      <form className="space-y-4" onSubmit={handleLogin}>
+        {/* USER ID */}
         <div>
           <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             {selected === "doctor"
@@ -107,7 +152,7 @@ const Login: React.FC = () => {
             value={id}
             disabled={loading}
             onChange={(e) => setId(e.target.value)}
-            className="w-full px-4 py-2 bg-white/20 border border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+            className="w-full px-4 py-2 rounded-full border focus:ring-2"
             placeholder={
               selected === "doctor"
                 ? "Enter Doctor ID"
@@ -116,8 +161,15 @@ const Login: React.FC = () => {
                 : "Enter Your Email"
             }
           />
+
+          {idError && (
+            <p className="text-sm text-red-500 mt-1 pl-3">
+              {idError}
+            </p>
+          )}
         </div>
 
+        {/* PASSWORD */}
         <div>
           <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
             Password
@@ -128,43 +180,41 @@ const Login: React.FC = () => {
             value={password}
             disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-white/20 border  border-gray-400/30 dark:border-white/30 rounded-full text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60"
+            className="w-full px-4 py-2 rounded-full border focus:ring-2"
             placeholder="Enter Your Password"
           />
+
+          {passwordError && (
+            <p className="text-sm text-red-500 mt-1 pl-3">
+              {passwordError}
+            </p>
+          )}
 
           <div className="text-right mt-1">
             <Link
               to={`/registrationlogin/forgot-password?role=${selected}`}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-sm text-blue-600 hover:underline"
             >
               Forgot Password?
             </Link>
           </div>
         </div>
 
+        {/* SUBMIT */}
         <button
           type="submit"
-          onClick={handleLogin}
           disabled={loading}
-          className={`w-full py-2 rounded-full font-semibold shadow-lg transition-all
-            ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-300 to-blue-400 dark:from-gray-400 dark:to-gray-600 hover:from-blue-400 hover:to-blue-600 dark:hover:from-gray-500 dark:hover:to-gray-700 hover:-translate-y-1"
-            }
-          `}
+          className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
+      {/* REGISTER */}
       {selected === "patient" && (
-        <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
+        <p className="text-center mt-4">
           New here?{" "}
-          <Link
-            to="/registrationlogin/signup"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
+          <Link to="/registrationlogin/signup" className="text-blue-600">
             Register Now
           </Link>
         </p>
