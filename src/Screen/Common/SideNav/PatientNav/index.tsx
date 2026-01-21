@@ -1,6 +1,5 @@
 import {
   FaHome,
-  FaUser,
   FaComments,
   FaCalendarAlt,
   FaRobot,
@@ -38,6 +37,7 @@ const PatientNav: React.FC = () => {
     user.last_name.charAt(0).toUpperCase();
 
   const fullName = `${user.first_name} ${user.middle_name || ""} ${user.last_name}`;
+  const email = user.email;
 
   const handleLogout = () => {
     dispatch(logout());
@@ -52,19 +52,23 @@ const PatientNav: React.FC = () => {
       <div className="p-6 border-b border-sky-600 flex flex-col items-center text-center">
 
         {/* Avatar */}
-        <div className="w-20 h-20 rounded-full overflow-hidden bg-white flex items-center justify-center text-blue-600 text-xl font-semibold">
+        <div className="w-20 h-20 rounded-full overflow-hidden bg-white flex items-center justify-center text-blue-600 text-xl font-semibold"
+        onClick={() => navigate("/patient/profile_Edit")}>
           {initials}
         </div>
 
         <h3 className="mt-3 font-semibold text-gray-100">
           {fullName}
         </h3>
+
+        <p>
+          {email}
+        </p>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-3">
         <NavItem icon={<FaHome />} text="Dashboard" onClick={() => navigate("/patient")} />
-        <NavItem icon={<FaUser />} text="Profile" onClick={() => navigate("/patient/profile_Edit")} />
         <NavItem icon={<FaComments />} text="Symptom Checker" />
         <NavItem icon={<FaRobot />} text="SymptoBot" />
         <NavItem icon={<FaCalendarAlt />} text="Appointments" />
