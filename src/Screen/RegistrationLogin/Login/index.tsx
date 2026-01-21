@@ -40,7 +40,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-     const payload: LoginPayload = {
+      const payload: LoginPayload = {
   email: id,
   password,
   role: selected.toLowerCase() as Role
