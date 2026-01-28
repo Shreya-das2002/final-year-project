@@ -1,7 +1,8 @@
+import { urls } from "../Environment";
 import { API } from "./api";
 
-/* ---------- Types ---------- */
 
+/* ================= FETCH PROFILE TYPE ================= */
 export interface PatientProfilePayload {
   firstName: string;
   middleName: string;
@@ -25,12 +26,24 @@ export interface PatientProfilePayload {
   smoking: string;
 }
 
-/* ---------- API Calls ---------- */
+/* ================= SAVE PROFILE TYPE ================= */
+export interface SavePatientProfilePayload {
+  dob: string;
+  bloodGroup: string;
+  height: string;
+  weight: string;
+  currentAddress: string;
+  permanentAddress: string;
+}
+
+/* ================= APIs ================= */
 
 export const getPatientProfileApi = () => {
-  return API.get("/patient/profile");
+  return API.get(urls.profileurl);
 };
 
-export const savePatientProfileApi = (data: PatientProfilePayload) => {
-  return API.post("/patient/profile", data);
+export const savePatientProfileApi = (
+  payload: SavePatientProfilePayload
+) => {
+  return API.post(urls.profileurl, payload);
 };

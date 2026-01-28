@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
 
@@ -8,7 +8,11 @@ import {
   getPatientProfileApi,
   savePatientProfileApi,
 } from "../../../services/patientApi";
-import type { PatientProfilePayload } from "../../../services/patientApi";
+
+import type {
+  PatientProfilePayload,
+  SavePatientProfilePayload,
+} from "../../../services/patientApi";
 
 import {
   isValidDOB,
@@ -29,59 +33,30 @@ interface FieldProps {
   disabled?: boolean;
 }
 
-/* ================= HELPERS ================= */
-
-const genderMap: Record<number, string> = {
-  1: "Male",
-  2: "Female",
-  3: "Others",
-};
-
-const medicalConditionOptions = [
-  "Diabetes",
-  "Blood Pressure",
-  "Heart Disease",
-  "Thyroid",
-  "Asthma",
-  "Arthritis",
-  "None",
-];
-
-const steps = [
-  "Basic Information",
-  "Personal Details",
-  "Medical Details",
-  "Reports",
-];
-
 /* ================= INITIAL STATE ================= */
 
-const getInitialProfile = (): PatientProfilePayload => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  return {
-    firstName: user.first_name || "",
-    middleName: user.middle_name || "",
-    lastName: user.last_name || "",
-    email: user.email || "",
-    phone: user.phone_no || "",
-    gender: genderMap[user.gender] || "",
-    age: "",
-    password: "********",
-    dob: "",
-    bloodGroup: "",
-    allergies: [],
-    medicalCondition: [],
-    height: "",
-    weight: "",
-    currentAddress: "",
-    permanentAddress: "",
-    occupation: "",
-    maritalStatus: "",
-    alcohol: "",
-    smoking: "",
-  };
-};
+const getInitialProfile = (): PatientProfilePayload => ({
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  gender: "",
+  age: "",
+  password: "********",
+  dob: "",
+  bloodGroup: "",
+  allergies: [],
+  medicalCondition: [],
+  height: "",
+  weight: "",
+  currentAddress: "",
+  permanentAddress: "",
+  occupation: "",
+  maritalStatus: "",
+  alcohol: "",
+  smoking: "",
+});
 
 /* ================= COMPONENT ================= */
 
@@ -90,36 +65,7 @@ const Profile: React.FC = () => {
     useState<PatientProfilePayload>(getInitialProfile);
   const [step, setStep] = useState(1);
 
-  const [showAllergyDropdown, setShowAllergyDropdown] = useState(false);
-  const [showMedicalDropdown, setShowMedicalDropdown] = useState(false);
-
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const medicalDropdownRef = useRef<HTMLDivElement | null>(null);
-
-  /* ---------- CLICK OUTSIDE ---------- */
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setShowAllergyDropdown(false);
-      }
-
-      if (
-        medicalDropdownRef.current &&
-        !medicalDropdownRef.current.contains(e.target as Node)
-      ) {
-        setShowMedicalDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  /* ---------- FETCH PROFILE ---------- */
+  /* ================= FETCH PROFILE ================= */
   useEffect(() => {
     getPatientProfileApi()
       .then(res => {
@@ -127,23 +73,20 @@ const Profile: React.FC = () => {
 
         setProfile(prev => ({
           ...prev,
-          firstName: data.patient?.first_name || "",
-          middleName: data.patient?.middle_name || "",
-          lastName: data.patient?.last_name || "",
-          email: data.patient?.email || "",
-          phone: data.patient?.phone_no || "",
-          gender: genderMap[Number(data.patient?.gender)] || "",
+          firstName: data.first_name || "",
+          middleName: data.middle_name || "",
+          lastName: data.last_name || "",
+          email: data.email || "",
+          phone: data.phone_no || "",
+          gender: data.patient_detail?.gender || "",
           dob: data.patient_detail?.dob || "",
-          age: data.patient_details?.age || "",
-          occupation: data.patient_details?.occupation || "",
-          maritalStatus: data.patient_details?.maritalStatus || "",
+          age: data.patient_detail?.dob
+            ? calculateAge(data.patient_detail.dob)
+            : "",
           bloodGroup: data.patient_detail?.blood_group || "",
           allergies: data.patient_detail?.allergies || [],
-          medicalCondition: data.patient_detail?.medical_condition || [],
           height: data.patient_detail?.height || "",
           weight: data.patient_detail?.weight || "",
-          smoking: data.patient_detail?.smoking || "",
-          alcohol: data.patient_detail?.alcohol || "",
           currentAddress: data.patient_detail?.current_address || "",
           permanentAddress: data.patient_detail?.permanent_address || "",
         }));
@@ -151,15 +94,24 @@ const Profile: React.FC = () => {
       .catch(() => toast.error("Failed to load profile"));
   }, []);
 
-  /* ---------- SAVE ---------- */
+  /* ================= SAVE PROFILE ================= */
   const handleSave = async () => {
     if (!isValidDOB(profile.dob)) {
       toast.error("Invalid Date of Birth");
       return;
     }
 
+    const payload: SavePatientProfilePayload = {
+      dob: profile.dob,
+      bloodGroup: profile.bloodGroup,
+      height: profile.height,
+      weight: profile.weight,
+      currentAddress: profile.currentAddress,
+      permanentAddress: profile.permanentAddress,
+    };
+
     try {
-      await savePatientProfileApi(profile);
+      await savePatientProfileApi(payload);
       toast.success("Profile saved successfully");
     } catch {
       toast.error("Failed to save profile");
@@ -177,48 +129,8 @@ const Profile: React.FC = () => {
           lastName={profile.lastName}
         />
 
-        {/* ---------- STEPPER ---------- */}
-        <div className="flex items-center mb-12">
-          {steps.map((label, i) => {
-            const current = i + 1;
-            const active = step >= current;
-
-            return (
-              <React.Fragment key={label}>
-                <div className="flex flex-col items-center min-w-[120px]">
-                  <button
-                    onClick={() => setStep(current)}
-                    className={`w-9 h-9 rounded-full font-semibold transition ${
-                      active
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    {current}
-                  </button>
-                  <p
-                    className={`mt-2 text-sm ${
-                      active ? "text-blue-600 font-medium" : "text-gray-400"
-                    }`}
-                  >
-                    {label}
-                  </p>
-                </div>
-
-                {i < steps.length - 1 && (
-                  <div
-                    className={`flex-1 h-1 mx-4 rounded ${
-                      step > current ? "bg-blue-600" : "bg-gray-200"
-                    }`}
-                  />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-
         <h2 className="text-xl font-semibold mb-6">
-          {steps[step - 1]}
+          Patient Profile
         </h2>
 
         {/* ================= STEP 1 ================= */}
@@ -252,14 +164,13 @@ const Profile: React.FC = () => {
             />
 
             <div>
-              <label className="block text-sm col-span-3 font-medium mb-1">
+              <label className="block text-sm font-medium mb-1">
                 Date of Birth
               </label>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   format="DD/MM/YYYY"
                   value={profile.dob ? dayjs(profile.dob) : null}
-                  className="w-full  px-3 pr-10 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={val => {
                     const dob = val ? val.format("YYYY-MM-DD") : "";
                     setProfile({
@@ -268,6 +179,7 @@ const Profile: React.FC = () => {
                       age: calculateAge(dob),
                     });
                   }}
+                  className="w-full"
                   slotProps={{
                     day: {
                       sx: {
@@ -282,34 +194,6 @@ const Profile: React.FC = () => {
             </div>
 
             <Field label="Age" value={profile.age} disabled />
-
-            <Textarea
-              label="Occupation"
-              value={profile.occupation}
-              onChange={val =>
-                setProfile({ ...profile, occupation: val })
-              }
-            />
-    <div>
-    <label className="block text-sm font-medium mb-1">
-    Marital Status
-  </label>
-
-  <select
-    value={profile.maritalStatus}
-    onChange={e =>
-      setProfile({ ...profile, maritalStatus: e.target.value })
-    }
-    className="w-full h-[42px] px-3 border rounded-md bg-white"
-  >
-    <option value="">Select status</option>
-    <option value="Single">Single (Never Married)</option>
-    <option value="Married">Married</option>
-    <option value="Divorced">Divorced</option>
-    <option value="Widowed">Widowed</option>
-    <option value="Separated">Separated</option>
-  </select>
-  </div>
           </div>
         )}
 
@@ -330,190 +214,18 @@ const Profile: React.FC = () => {
                 setProfile({ ...profile, height: val })
               }
             />
-
             <Field
-              label="weight"
+              label="Weight"
               value={profile.weight}
               onChange={val =>
                 setProfile({ ...profile, weight: val })
               }
             />
-
-            {/* Allergy dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <label className="block text-sm font-medium mb-1">
-                Allergy Types
-              </label>
-
-              <div
-                onClick={() =>
-                  setShowAllergyDropdown(prev => !prev)
-                }
-                className="w-full px-3 py-2 border rounded-md bg-white cursor-pointer flex flex-wrap gap-1"
-              >
-                {profile.allergies.length
-                  ? profile.allergies.join(", ")
-                  : "Select allergy types"}
-              </div>
-
-              {showAllergyDropdown && (
-                <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-md p-2">
-                  {[
-                    "Food",
-                    "Drug / Medication",
-                    "Environmental",
-                    "Insect / Sting",
-                    "Latex",
-                    "Pet / Animal",
-                    "Chemical",
-                    "Other",
-                  ].map(type => (
-                    <label
-                      key={type}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={profile.allergies.includes(type)}
-                        onChange={e => {
-                          const updated = e.target.checked
-                            ? [...profile.allergies, type]
-                            : profile.allergies.filter(
-                                t => t !== type
-                              );
-                          setProfile({
-                            ...profile,
-                            allergies: updated,
-                          });
-                        }}
-                      />
-                      {type}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Medical Conditions */}
-            <div className="relative" ref={medicalDropdownRef}>
-              <label className="block text-sm font-medium mb-1">
-                Medical Conditions
-              </label>
-
-              <div
-                onClick={() =>
-                  setShowMedicalDropdown(prev => !prev)
-                }
-                className="w-full px-3 py-2 border rounded-md bg-white cursor-pointer"
-              >
-                {profile.medicalCondition.length
-                  ? profile.medicalCondition.join(", ")
-                  : "Select medical conditions"}
-              </div>
-
-              {showMedicalDropdown && (
-                <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-md p-2">
-                  {medicalConditionOptions.map(item => (
-                    <label
-                      key={item}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={profile.medicalCondition.includes(
-                          item
-                        )}
-                        onChange={e => {
-                          const updated = e.target.checked
-                            ? [
-                                ...profile.medicalCondition,
-                                item,
-                              ]
-                            : profile.medicalCondition.filter(
-                                i => i !== item
-                              );
-                          setProfile({
-                            ...profile,
-                            medicalCondition: updated,
-                          });
-                        }}
-                      />
-                      {item}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="col-span-2">
-  <label className="block text-sm font-medium mb-2">
-    Do you consume alcohol?
-  </label>
-
-  <div className="flex gap-3">
-    {["Yes", "No"].map(option => (
-      <button
-        key={option}
-        type="button"
-        onClick={() =>
-          setProfile({ ...profile, alcohol: option })
-        }
-        className={`px-5 py-2 rounded-md border text-sm font-medium transition ${
-          profile.alcohol === option
-            ? "bg-blue-600 text-white border-blue-600"
-            : "bg-white hover:bg-blue-50"
-        }`}
-      >
-        {option}
-      </button>
-    ))}
-  </div>
-</div>
-<div className="col-span-2">
-  <label className="block text-sm font-medium mb-2">
-    Do you consume smoking?
-  </label>
-
-  <div className="flex gap-3">
-    {["Yes", "No"].map(option => (
-      <button
-        key={option}
-        type="button"
-        onClick={() =>
-          setProfile({ ...profile, smoking: option })
-        }
-        className={`px-5 py-2 rounded-md border text-sm font-medium transition ${
-          profile.smoking === option
-            ? "bg-blue-600 text-white border-blue-600"
-            : "bg-white hover:bg-blue-50"
-        }`}
-      >
-        {option}
-      </button>
-    ))}
-  </div>
-</div>
-
           </div>
         )}
 
-        {/* ================= STEP 4 ================= */}
-        {step === 4 && (
-          <div className="border rounded-xl p-6 bg-white">
-            <h3 className="text-lg font-semibold mb-4">
-              Upload Medical Report
-            </h3>
-            <div className="border-2 border-dashed rounded-lg p-6 text-center bg-gray-50">
-              Drag & drop file here or{" "}
-              <span className="text-blue-600 cursor-pointer">
-                Browse
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* ---------- FOOTER ---------- */}
-        <div className="flex justify-between mt-14">
+        {/* ================= FOOTER ================= */}
+        <div className="flex justify-between mt-10">
           <button
             onClick={() => setStep(prev => Math.max(1, prev - 1))}
             disabled={step === 1}
@@ -526,7 +238,7 @@ const Profile: React.FC = () => {
             ← Back
           </button>
 
-          {step < 4 ? (
+          {step < 3 ? (
             <button
               onClick={() => setStep(prev => prev + 1)}
               className="bg-blue-600 text-white px-8 py-2 rounded-md"
@@ -549,7 +261,7 @@ const Profile: React.FC = () => {
 
 export default Profile;
 
-/* ================= REUSABLE FIELDS ================= */
+/* ================= REUSABLE COMPONENTS ================= */
 
 const Field: React.FC<FieldProps> = ({
   label,

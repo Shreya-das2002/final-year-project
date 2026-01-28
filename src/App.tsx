@@ -22,6 +22,9 @@ import Feedback from "./Screen/Patient/Feedback";
 
 import PrivateRoute from "./Screen/Common/Route/PrivateRoute";
 
+
+import Admin from "./Screen/Admin";
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -59,7 +62,12 @@ const App: React.FC = () => {
               <Route path="feedback" element={<Feedback />} />
             </Route>
 
+            <Route>
+              <Route path="/admin" element={<Admin/>} />
+            </Route>
+
           </Routes>
+
         </main>
 
         <Footer />

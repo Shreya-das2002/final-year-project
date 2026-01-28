@@ -63,13 +63,18 @@ const Login: React.FC = () => {
 
         //  Persist
         localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        // localStorage.setItem("user", JSON.stringify(user));
 
         //  Role-based navigation
-        if (role === "admin") navigate("/admin");
-        else if (role === "doctor") navigate("/doctor");
-        else if (role === "patient") navigate("/patient");
-        else navigate("/");
+        if (role.includes("admin")) {
+  navigate("/admin");
+} else if (role === "doctor") {
+  navigate("/doctor");
+} else if (role === "patient") {
+  navigate("/patient");
+} else {
+  navigate("/");
+}
 
         return;
       }
