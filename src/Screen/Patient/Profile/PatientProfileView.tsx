@@ -7,6 +7,7 @@ import { MdEmail, MdPhone, MdCake } from "react-icons/md";
 import { GiMedicalPack } from "react-icons/gi";
 import { RiVirusLine } from "react-icons/ri";
 import dayjs from "dayjs";
+import { getGenderLabel } from "../../../Environment";
 
 const PatientProfileView: React.FC = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const PatientProfileView: React.FC = () => {
             </span>
 
             <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-              <FaUserCircle /> {user.gender || "—"}
+              <FaUserCircle /> {getGenderLabel(user.gender) || "—"}
             </span>
 
             <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
