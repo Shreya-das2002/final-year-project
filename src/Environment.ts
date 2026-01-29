@@ -282,3 +282,37 @@ export const urls ={
   signupUrl : 'auth/signup',
   profileurl : 'patient/profile'
 }
+
+/* ================= MENU ROUTE MAP ================= */
+
+export const MENU_ROUTE_MAP: Record<string, string> = {
+  /* PATIENT */
+  "patient dashboard": "/patient",
+  "symptom checker": "/patient/symptom-checker",
+  "symptobot": "/patient/chatbot",
+  "patient appointments": "/patient/appointments",
+  "feedback": "/patient/feedback",
+
+  /* ADMIN */
+  "admin dashboard": "/admin",
+  "create admin": "/admin/create",
+  "admin list": "/admin/list",
+  "pending doctor list": "/admin/pending-doctors",
+  "doctor list": "/admin/doctors",
+  "messages": "/admin/messages",
+  "add doctor": "/admin/add-doctor",
+  "appointment requests": "/admin/appointment-requests",
+
+  /* DOCTOR */
+  "doctor dashboard": "/doctor",
+  "doctor appointment": "/doctor/appointments",
+
+  /* COMMON */
+  "logout": "/logout"
+};
+
+/* ================= GET ROUTE HELPER ================= */
+
+export const getRoute = (controlKey: string): string => {
+  return MENU_ROUTE_MAP[controlKey] || "/";
+};

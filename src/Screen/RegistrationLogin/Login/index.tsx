@@ -50,7 +50,7 @@ const Login: React.FC = () => {
 
       /* ================= SUCCESS ================= */
       if (res.data.success) {
-        const { token, role, user } = res.data.data;
+        const { token, role, user, menus } = res.data.data;
 
         //  REDUX UPDATE (IMPORTANT)
         dispatch(
@@ -58,6 +58,7 @@ const Login: React.FC = () => {
             token,
             user,
             role,
+            menus
           })
         );
 
