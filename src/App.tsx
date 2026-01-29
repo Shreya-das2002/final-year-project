@@ -1,6 +1,8 @@
 
 
 import React from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./Screen/Common/Header";
 import Footer from "./Screen/Common/Footer";
@@ -26,6 +28,12 @@ import PrivateRoute from "./Screen/Common/Route/PrivateRoute";
 import Admin from "./Screen/Admin";
 
 const App: React.FC = () => {
+
+const { user, role } = useSelector(
+  (state: RootState) => state.auth
+);
+
+
   return (
     <BrowserRouter>
       <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
@@ -47,24 +55,34 @@ const App: React.FC = () => {
               <Route path="signup" element={<Signup />} />
             </Route>
 
-            {/* PROTECTED PATIENT ROUTES */}
-            <Route
-              path="/patient"
-              element={
-                <PrivateRoute>
-                  <Patient />
-                </PrivateRoute>
-              }
-            >
-              <Route index element={<Patientpage />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="profile_edit" element={<PatientProfileView />} />
-              <Route path="feedback" element={<Feedback />} />
-            </Route>
+           {/* ================= PATIENT ROUTES ================= */}
+            {user && role === "patient" && (
+              <Route
+                path="/patient"
+                element={
+                  <PrivateRoute>
+                    <Patient />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<Patientpage />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="profile_edit" element={<PatientProfileView />} />
+                <Route path="feedback" element={<Feedback />} />
+              </Route>
+            )}
 
-            <Route>
-              <Route path="/admin" element={<Admin/>} />
-            </Route>
+            {/* ================= ADMIN ROUTES ================= */}
+            {user && role?.includes("admin") && (
+              <Route
+                path="/admin"
+                element={
+                  <PrivateRoute>
+                    <Admin />
+                  </PrivateRoute>
+                }
+              />
+            )}
 
           </Routes>
 
