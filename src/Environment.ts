@@ -326,6 +326,57 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
   "logout": "/logout"
 };
 
+/* ================= MENU ORDER BY ROLE ================= */
+
+export const MENU_ORDER_BY_ROLE: Record<string, string[]> = {
+patient: [
+    "patient dashboard",
+    "symptom checker",
+    "symptobot",
+    "patient appointments",
+    "feedback",
+    "logout"
+  ],
+
+  /* ================= SUPER ADMIN ================= */
+  "super admin": [
+    "admin dashboard",
+    "create admin",
+    "admin list",
+    "pending doctor list",
+    "doctor list",
+    "messages",
+    "add doctor",
+    "appointment requests",
+    "logout"
+  ],
+
+  /* ================= STANDARD ADMIN ================= */
+  "standard admin": [
+    "admin dashboard",
+    "admin list",
+    "doctor list",
+    "messages",
+    "logout"
+  ],
+
+  /* ================= GUEST ADMIN ================= */
+  "guest admin": [
+    "admin dashboard",
+    "doctor list",
+    "logout"
+  ],
+
+  /* ================= DOCTOR ================= */
+  doctor: [
+    "doctor dashboard",
+    "doctor appointment",
+    "messages",
+    "logout"
+  ]
+}
+
+
 /* ================= GET ROUTE HELPER ================= */
 
 export const getRoute = (controlKey: string): string => {

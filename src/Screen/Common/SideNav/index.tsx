@@ -3,31 +3,57 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { logout } from "../../../../store/slices/authSlice";
-import { getRoute } from "../../../Environment";
+import { MENU_ROUTE_MAP, MENU_ORDER_BY_ROLE } from "../../../Environment";
+
+/* ================= TYPES ================= */
+
+interface Menu {
+  control_master_id: number;
+  control_key: string;
+  control_name: string;
+  control_type: string;
+  control_desc: string | null;
+  status: string;
+}
 
 const SideNav: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // DATA FROM LOGIN API (REDUX)
+  // DATA FROM REDUX
   const user = useSelector((state: RootState) => state.auth.user);
   const menus = useSelector((state: RootState) => state.auth.menus);
   const role = useSelector((state: RootState) => state.auth.role);
 
+  /* ================= ORDERED MENUS (FRONTEND CONTROLLED) ================= */
+
+  const roleMenuOrder: string[] =
+  MENU_ORDER_BY_ROLE[role ?? ""] ?? [];
+
+const orderedMenus: Menu[] = roleMenuOrder
+  .map((key: string) =>
+    menus.find(
+      (menu: Menu) => menu.control_key === key
+    )
+  )
+  .filter((menu): menu is Menu => Boolean(menu));
   /* ================= AVATAR LETTERS ================= */
+
   const firstLetter =
     user?.first_name?.charAt(0)?.toUpperCase() || "";
   const lastLetter =
     user?.last_name?.charAt(0)?.toUpperCase() || "";
 
   /* ================= PROFILE NAV ================= */
+
   const handleProfileClick = () => {
     if (role === "patient") navigate("/patient/profile_edit");
     else if (role === "doctor") navigate("/doctor/profile");
-    else navigate("/admin/profile");
+    else if (role?.includes("admin")) navigate("/admin/profile");
   };
 
   /* ================= MENU NAV ================= */
+
   const handleMenuClick = (controlKey: string) => {
     if (controlKey === "logout") {
       dispatch(logout());
@@ -36,36 +62,40 @@ const SideNav: React.FC = () => {
       return;
     }
 
-    navigate(getRoute(controlKey));
+    const route = MENU_ROUTE_MAP[controlKey];
+    if (route) {
+      navigate(route);
+    } else {
+      console.warn("Route not found for menu:", controlKey);
+    }
   };
+
+  /* ================= UI ================= */
 
   return (
     <aside className="w-64 bg-blue-900 text-white min-h-screen flex flex-col">
 
-      {/* ===== PROFILE HEADER (OLD DESIGN PRESERVED) ===== */}
+      {/* PROFILE HEADER */}
       <div
         className="flex flex-col items-center py-6 border-b border-blue-700 cursor-pointer"
         onClick={handleProfileClick}
       >
-        {/* AVATAR */}
         <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold mb-2">
           {firstLetter}{lastLetter}
         </div>
 
-        {/* NAME */}
         <p className="font-semibold text-center">
           {user?.first_name} {user?.last_name}
         </p>
 
-        {/* EMAIL */}
         <p className="text-sm text-blue-200 text-center break-all px-2">
           {user?.email}
         </p>
       </div>
 
-      {/* ===== MENU LIST (DB CONTROLLED) ===== */}
+      {/* MENU LIST */}
       <ul className="flex-1 p-4 space-y-2">
-        {menus.map((menu) => (
+        {orderedMenus.map((menu: Menu) => (
           <li
             key={menu.control_master_id}
             onClick={() => handleMenuClick(menu.control_key)}
