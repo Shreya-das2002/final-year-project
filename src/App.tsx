@@ -1,8 +1,9 @@
-
-
 import React from "react";
-import { useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+import { useEffect } from "react";
+import { useSelector,useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../store/store";
+import { logout, loginSuccess } from "../store/slices/authSlice";
+import { isTokenExpired } from "./utils/jwt";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./Screen/Common/Header";
 import Footer from "./Screen/Common/Footer";
@@ -33,6 +34,37 @@ const { user, role } = useSelector(
   (state: RootState) => state.auth
 );
 
+const dispatch = useDispatch<AppDispatch>();
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+  const role = localStorage.getItem("role");
+  const menus = localStorage.getItem("menus");
+
+  // No token → logout
+  if (!token || !user || !role) {
+    dispatch(logout());
+    return;
+  }
+
+  // Token expired → logout
+  if (isTokenExpired(token)) {
+    localStorage.clear();
+    dispatch(logout());
+    return;
+  }
+
+  // Restore redux
+  dispatch(
+    loginSuccess({
+      token,
+      user: JSON.parse(user),
+      role,
+      menus: menus ? JSON.parse(menus) : [],
+    })
+  );
+}, [dispatch]);
 
   return (
     <BrowserRouter>
