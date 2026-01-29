@@ -9,7 +9,7 @@ const SideNav: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // ✅ DATA FROM LOGIN API (REDUX)
+  // DATA FROM LOGIN API (REDUX)
   const user = useSelector((state: RootState) => state.auth.user);
   const menus = useSelector((state: RootState) => state.auth.menus);
   const role = useSelector((state: RootState) => state.auth.role);

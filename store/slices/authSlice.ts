@@ -32,6 +32,7 @@ interface AuthState {
   role: string | null;
   isAuthenticated: boolean;
   menus: Menu[];
+  authChecked: boolean;
 }
 
 /* ================= PAYLOAD ================= */
@@ -50,7 +51,8 @@ const initialState: AuthState = {
   user: null,
   role: null,
   isAuthenticated: false,
-  menus: []
+  menus: [],
+  authChecked: false,  
 };
 
 /* ================= SLICE ================= */
@@ -68,6 +70,7 @@ const authSlice = createSlice({
       state.role = action.payload.role;
       state.menus = action.payload.menus;
       state.isAuthenticated = true;
+      state.authChecked = true;
     },
 
     logout(state) {
@@ -76,9 +79,14 @@ const authSlice = createSlice({
       state.role = null;
       state.menus = [];
       state.isAuthenticated = false;
+      state.authChecked = true;
     },
+
+    authCheckFinished(state) {
+    state.authChecked = true;
+  }
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, authCheckFinished } = authSlice.actions;
 export default authSlice.reducer;

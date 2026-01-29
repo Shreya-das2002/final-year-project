@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
-import { useSelector,useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../store/store";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../store/store";
 import { logout, loginSuccess } from "../store/slices/authSlice";
 import { isTokenExpired } from "./utils/jwt";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -30,41 +30,47 @@ import Admin from "./Screen/Admin";
 
 const App: React.FC = () => {
 
-const { user, role } = useSelector(
-  (state: RootState) => state.auth
-);
-
 const dispatch = useDispatch<AppDispatch>();
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
-  const role = localStorage.getItem("role");
-  const menus = localStorage.getItem("menus");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    const role = localStorage.getItem("role");
+    const menus = localStorage.getItem("menus");
 
-  // No token → logout
-  if (!token || !user || !role) {
-    dispatch(logout());
-    return;
-  }
+    if (!token || !user || !role) {
+      dispatch(logout());
+      return;
+    }
 
-  // Token expired → logout
-  if (isTokenExpired(token)) {
-    localStorage.clear();
-    dispatch(logout());
-    return;
-  }
+    if (isTokenExpired(token)) {
+      localStorage.clear();
+      dispatch(logout());
+      return;
+    }
 
-  // Restore redux
-  dispatch(
-    loginSuccess({
-      token,
-      user: JSON.parse(user),
-      role,
-      menus: menus ? JSON.parse(menus) : [],
-    })
-  );
-}, [dispatch]);
+    dispatch(
+      loginSuccess({
+        token,
+        user: JSON.parse(user),
+        role,
+        menus: menus ? JSON.parse(menus) : [],
+      })
+    );
+  }, [dispatch]);
+
+  // Auto logout watcher
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const token = localStorage.getItem("token");
+      if (!token || isTokenExpired(token)) {
+        localStorage.clear();
+        dispatch(logout());
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [dispatch]);
 
   return (
     <BrowserRouter>
@@ -87,34 +93,30 @@ useEffect(() => {
               <Route path="signup" element={<Signup />} />
             </Route>
 
-           {/* ================= PATIENT ROUTES ================= */}
-            {user && role === "patient" && (
-              <Route
-                path="/patient"
-                element={
-                  <PrivateRoute>
-                    <Patient />
-                  </PrivateRoute>
-                }
-              >
-                <Route index element={<Patientpage />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="profile_edit" element={<PatientProfileView />} />
-                <Route path="feedback" element={<Feedback />} />
-              </Route>
-            )}
+           {/* PATIENT */}
+        <Route
+          path="/patient"
+          element={
+            <PrivateRoute allowedRoles={["patient"]}>
+              <Patient />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<Patientpage />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="profile_edit" element={<PatientProfileView />} />
+          <Route path="feedback" element={<Feedback />} />
+        </Route>
 
-            {/* ================= ADMIN ROUTES ================= */}
-            {user && role?.includes("admin") && (
-              <Route
-                path="/admin"
-                element={
-                  <PrivateRoute>
-                    <Admin />
-                  </PrivateRoute>
-                }
-              />
-            )}
+        {/* ADMIN */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute allowedRoles={["admin", "super admin"]}>
+              <Admin />
+            </PrivateRoute>
+          }
+        />
 
           </Routes>
 
