@@ -1,124 +1,67 @@
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../store/store";
 import dayjs from "dayjs";
 
 import ProfileAvatar from "./ProfileAvatar";
-
-import {
-  getPatientProfileApi,
-  savePatientProfileApi,
-} from "../../../services/patientApi";
-
-import type {
-  PatientProfilePayload,
-  SavePatientProfilePayload,
-} from "../../../services/patientApi";
-
-import {
-  isValidDOB,
-  datePickerStyles,
-  calculateAge,
-} from "../../../Environment";
+import { isValidDOB, calculateAge } from "../../../Environment";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { getGenderLabel } from "../../../Environment";
 
 /* ================= TYPES ================= */
 
-interface FieldProps {
-  label: string;
-  value: string;
-  onChange?: (val: string) => void;
-  disabled?: boolean;
+interface EditableProfile {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gender: string;
+  dob: string;
+  age: string;
+  bloodGroup: string;
+  height: string;
+  weight: string;
+  currentAddress: string;
+  permanentAddress: string;
 }
-
-/* ================= INITIAL STATE ================= */
-
-const getInitialProfile = (): PatientProfilePayload => ({
-  firstName: "",
-  middleName: "",
-  lastName: "",
-  email: "",
-  phone: "",
-  gender: "",
-  age: "",
-  password: "********",
-  dob: "",
-  bloodGroup: "",
-  allergies: [],
-  medicalCondition: [],
-  height: "",
-  weight: "",
-  currentAddress: "",
-  permanentAddress: "",
-  occupation: "",
-  maritalStatus: "",
-  alcohol: "",
-  smoking: "",
-});
 
 /* ================= COMPONENT ================= */
 
 const Profile: React.FC = () => {
-  const [profile, setProfile] =
-    useState<PatientProfilePayload>(getInitialProfile);
+  const user = useSelector((state: RootState) => state.auth.user);
+
   const [step, setStep] = useState(1);
 
-  /* ================= FETCH PROFILE ================= */
-  useEffect(() => {
-    getPatientProfileApi()
-      .then(res => {
-        const data = res.data;
+  const [profile, setProfile] = useState<EditableProfile>({
+    firstName: user?.first_name || "",
+    middleName: user?.middle_name || "",
+    lastName: user?.last_name || "",
+    email: user?.email || "",
+    phone: user?.phone_no || "",
+    gender: user?.gender || "",
+    dob: "",
+    age: "",
+    bloodGroup: "",
+    height: "",
+    weight: "",
+    currentAddress: "",
+    permanentAddress: "",
+  });
 
-        setProfile(prev => ({
-          ...prev,
-          firstName: data.first_name || "",
-          middleName: data.middle_name || "",
-          lastName: data.last_name || "",
-          email: data.email || "",
-          phone: data.phone_no || "",
-          gender: data.patient_detail?.gender || "",
-          dob: data.patient_detail?.dob || "",
-          age: data.patient_detail?.dob
-            ? calculateAge(data.patient_detail.dob)
-            : "",
-          bloodGroup: data.patient_detail?.blood_group || "",
-          allergies: data.patient_detail?.allergies || [],
-          height: data.patient_detail?.height || "",
-          weight: data.patient_detail?.weight || "",
-          currentAddress: data.patient_detail?.current_address || "",
-          permanentAddress: data.patient_detail?.permanent_address || "",
-        }));
-      })
-      .catch(() => toast.error("Failed to load profile"));
-  }, []);
-
-  /* ================= SAVE PROFILE ================= */
-  const handleSave = async () => {
+  /* ================= SAVE (UI ONLY) ================= */
+  const handleSave = () => {
     if (!isValidDOB(profile.dob)) {
-      toast.error("Invalid Date of Birth");
+      alert("Invalid Date of Birth");
       return;
     }
 
-    const payload: SavePatientProfilePayload = {
-      dob: profile.dob,
-      bloodGroup: profile.bloodGroup,
-      height: profile.height,
-      weight: profile.weight,
-      currentAddress: profile.currentAddress,
-      permanentAddress: profile.permanentAddress,
-    };
-
-    try {
-      await savePatientProfileApi(payload);
-      toast.success("Profile saved successfully");
-    } catch {
-      toast.error("Failed to save profile");
-    }
+    console.log("PROFILE DATA (UI ONLY):", profile);
+    alert("Profile saved locally (no API)");
   };
-
-  /* ================= UI ================= */
 
   return (
     <div className="min-h-screen bg-white p-8">
@@ -141,13 +84,14 @@ const Profile: React.FC = () => {
             <Field label="Last Name" value={profile.lastName} disabled />
             <Field label="Email" value={profile.email} disabled />
             <Field label="Phone" value={profile.phone} disabled />
-            <Field label="Gender" value={profile.gender} disabled />
+            <Field label="Gender" value={getGenderLabel(profile.gender)} disabled />
           </div>
         )}
 
         {/* ================= STEP 2 ================= */}
         {step === 2 && (
           <div className="grid grid-cols-2 gap-6">
+
             <Textarea
               label="Current Address"
               value={profile.currentAddress}
@@ -155,6 +99,7 @@ const Profile: React.FC = () => {
                 setProfile({ ...profile, currentAddress: val })
               }
             />
+
             <Textarea
               label="Permanent Address"
               value={profile.permanentAddress}
@@ -178,16 +123,6 @@ const Profile: React.FC = () => {
                       dob,
                       age: calculateAge(dob),
                     });
-                  }}
-                  className="w-full"
-                  slotProps={{
-                    day: {
-                      sx: {
-                        borderRadius:
-                          datePickerStyles.date.borderRadius,
-                        fontSize: datePickerStyles.date.fontSize,
-                      },
-                    },
                   }}
                 />
               </LocalizationProvider>
@@ -262,6 +197,13 @@ const Profile: React.FC = () => {
 export default Profile;
 
 /* ================= REUSABLE COMPONENTS ================= */
+
+interface FieldProps {
+  label: string;
+  value: string;
+  onChange?: (val: string) => void;
+  disabled?: boolean;
+}
 
 const Field: React.FC<FieldProps> = ({
   label,

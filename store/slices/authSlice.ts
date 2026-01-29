@@ -12,7 +12,10 @@ interface User {
   last_name: string;
   phone_no: string;
   gender: string;
+  dob?: string;  
 }
+
+
 
 interface Menu {
   control_master_id: number;

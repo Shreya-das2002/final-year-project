@@ -276,6 +276,21 @@ export const calculateAge = (dob: string): string => {
   return age.toString();
 };
 
+/* ================= GENDER MAP ================= */
+
+export const GENDER_MAP: Record<string, string> = {
+  "1": "Male",
+  "2": "Female",
+  "3": "Others",
+};
+
+/* ================= HELPERS ================= */
+
+export const getGenderLabel = (value?: string | number): string => {
+  if (!value) return "—";
+  return GENDER_MAP[String(value)] ?? "—";
+};
+
 export const urls ={
   baseUrl : 'http://localhost:4000/api/',
   loginUrl :'auth/login',
