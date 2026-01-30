@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 
 import ProfileAvatar from "./ProfileAvatar";
 import { isValidDOB, calculateAge, getGenderLabel } from "../../../Environment";
+import { savePatientProfileApi } from "../../../services/patientProfileApi";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -56,6 +57,27 @@ const ALLERGY_OPTIONS = [
 const Profile: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [step, setStep] = useState(1);
+  const [sameAddress, setSameAddress] = useState(false);
+
+const [currentAddress, setCurrentAddress] = useState({
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  district: "",
+  state: "",
+  country: "",
+  pincode: "",
+});
+
+const [permanentAddress, setPermanentAddress] = useState({
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  district: "",
+  state: "",
+  country: "",
+  pincode: "",
+});
 
   const [profile, setProfile] = useState<EditableProfile>({
     firstName: user?.first_name || "",
@@ -92,23 +114,89 @@ const Profile: React.FC = () => {
       100
   );
 
+  const handleSameAddressToggle = () => {
+  const checked = !sameAddress;
+  setSameAddress(checked);
+
+  if (checked) {
+    setPermanentAddress({ ...currentAddress });
+  }
+};
+
   /* ================= SAVE ================= */
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    
     if (!isValidDOB(profile.dob)) {
-      toast("Invalid Date of Birth");
+      toast.error("Invalid Date of Birth");
       return;
     }
 
-    console.log("PROFILE DATA:", profile);
-    toast("Profile saved (UI only)");
+    if (!user?.patient_id) {
+      toast.error("Patient ID missing");
+      return;
+    }
+
+    try {
+      // ✅ ONLY FIX: null → undefined
+      const payload = {
+        patient_id: user.patient_id,
+
+        dob: profile.dob || undefined,
+        marital_status: profile.maritalStatus || undefined,
+        occupation: profile.occupation || undefined,
+
+        blood_group: profile.bloodGroup
+          ? Number(profile.bloodGroup)
+          : undefined,
+
+        height: profile.height ? Number(profile.height) : undefined,
+        weight: profile.weight ? Number(profile.weight) : undefined,
+
+        allergies: profile.allergies.length
+          ? profile.allergies
+          : undefined,
+
+        smoking: profile.smoking ?? undefined,
+        alcohol: profile.alcohol ?? undefined,
+
+        current_address: profile.currentAddress
+          ? {
+              address_line: profile.currentAddress,
+              city: "",
+              state: "",
+              pincode: "",
+            }
+          : undefined,
+
+        permanent_address: profile.permanentAddress
+          ? {
+              address_line: profile.permanentAddress,
+              city: "",
+              state: "",
+              pincode: "",
+            }
+          : undefined,
+      };
+
+      const res = await savePatientProfileApi(payload);
+
+      if (res.data?.success) {
+        toast.success("Profile saved successfully");
+        console.log("Saved profile:", res.data.data);
+      } else {
+        toast.error(res.data?.data?.errorcode || "Save failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong");
+    }
   };
 
   return (
     <div className="min-h-screen bg-white p-8">
       <div className="relative max-w-5xl mx-auto bg-gradient-to-br from-sky-100 to-blue-200 shadow-xl rounded-lg p-8">
 
-        {/* PROFILE COMPLETION */}
         <div className="absolute top-6 right-6 bg-white shadow rounded p-4">
           <p className="text-sm font-medium">Profile Completion</p>
           <p className="text-blue-600 font-bold">{completion}%</p>
@@ -121,12 +209,9 @@ const Profile: React.FC = () => {
 
         <h2 className="text-xl font-semibold mb-6">Patient Profile</h2>
 
-        <StepIndicator
-  step={step}
-  onStepClick={(n) => setStep(n)}
-/>
+        <StepIndicator step={step} onStepClick={setStep} />
 
-        {/* ================= STEP 1 ================= */}
+        {/* STEP 1 */}
         {step === 1 && (
           <div className="grid grid-cols-3 gap-6">
             <Field label="First Name" value={profile.firstName} disabled />
@@ -142,40 +227,189 @@ const Profile: React.FC = () => {
           </div>
         )}
 
-        {/* ================= STEP 2 ================= */}
-        {step === 2 && (
-          <div className="grid grid-cols-2 gap-6">
-            <Textarea
-              label="Current Address"
-              value={profile.currentAddress}
-              onChange={v => setProfile({ ...profile, currentAddress: v })}
-            />
+{step === 2 && (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 
-            <Textarea
-              label="Permanent Address"
-              value={profile.permanentAddress}
-              onChange={v => setProfile({ ...profile, permanentAddress: v })}
-            />
+    {/* Current Address */}
+    <div>
+      <h3 className="text-lg font-semibold mb-4">Current Address</h3>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Date of Birth
-              </label>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  format="DD/MM/YYYY"
-                  value={profile.dob ? dayjs(profile.dob) : null}
-                  onChange={val => {
-                    const dob = val ? val.format("YYYY-MM-DD") : "";
-                    setProfile({
-                      ...profile,
-                      dob,
-                      age: calculateAge(dob),
-                    });
-                  }}
-                />
-              </LocalizationProvider>
-            </div>
+      <div className="space-y-4">
+        <input
+          placeholder="Address Line 1"
+          className="input"
+          value={currentAddress.addressLine1}
+          onChange={e =>
+            setCurrentAddress({ ...currentAddress, addressLine1: e.target.value })
+          }
+        />
+
+        <input
+          placeholder="Address Line 2"
+          className="input"
+          value={currentAddress.addressLine2}
+          onChange={e =>
+            setCurrentAddress({ ...currentAddress, addressLine2: e.target.value })
+          }
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            placeholder="City"
+            className="input"
+            value={currentAddress.city}
+            onChange={e =>
+              setCurrentAddress({ ...currentAddress, city: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="District"
+            className="input"
+            value={currentAddress.district}
+            onChange={e =>
+              setCurrentAddress({ ...currentAddress, district: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            placeholder="State"
+            className="input"
+            value={currentAddress.state}
+            onChange={e =>
+              setCurrentAddress({ ...currentAddress, state: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Country"
+            className="input"
+            value={currentAddress.country}
+            onChange={e =>
+              setCurrentAddress({ ...currentAddress, country: e.target.value })
+            }
+          />
+        </div>
+
+        <input
+          placeholder="PIN Code"
+          className="input"
+          value={currentAddress.pincode}
+          onChange={e =>
+            setCurrentAddress({ ...currentAddress, pincode: e.target.value })
+          }
+        />
+      </div>
+    </div>
+
+    {/* Permanent Address */}
+    <div>
+      <h3 className="text-lg font-semibold mb-4">Permanent Address</h3>
+
+      <div className="flex items-center gap-2 mb-4">
+        <input
+          type="checkbox"
+          checked={sameAddress}
+          onChange={handleSameAddressToggle}
+        />
+        <span className="text-sm">Same as Current Address</span>
+      </div>
+
+      <div className="space-y-4">
+        <input
+          placeholder="Address Line 1"
+          disabled={sameAddress}
+          className="input"
+          value={permanentAddress.addressLine1}
+          onChange={e =>
+            setPermanentAddress({ ...permanentAddress, addressLine1: e.target.value })
+          }
+        />
+
+        <input
+          placeholder="Address Line 2"
+          disabled={sameAddress}
+          className="input"
+          value={permanentAddress.addressLine2}
+          onChange={e =>
+            setPermanentAddress({ ...permanentAddress, addressLine2: e.target.value })
+          }
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            placeholder="City"
+            disabled={sameAddress}
+            className="input"
+            value={permanentAddress.city}
+            onChange={e =>
+              setPermanentAddress({ ...permanentAddress, city: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="District"
+            disabled={sameAddress}
+            className="input"
+            value={permanentAddress.district}
+            onChange={e =>
+              setPermanentAddress({ ...permanentAddress, district: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            placeholder="State"
+            disabled={sameAddress}
+            className="input"
+            value={permanentAddress.state}
+            onChange={e =>
+              setPermanentAddress({ ...permanentAddress, state: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Country"
+            disabled={sameAddress}
+            className="input"
+            value={permanentAddress.country}
+            onChange={e =>
+              setPermanentAddress({ ...permanentAddress, country: e.target.value })
+            }
+          />
+        </div>
+
+        <input
+          placeholder="PIN Code"
+          disabled={sameAddress}
+          className="input"
+          value={permanentAddress.pincode}
+          onChange={e =>
+            setPermanentAddress({ ...permanentAddress, pincode: e.target.value })
+          }
+        />
+      </div>
+    </div>
+  </div>
+)}
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                format="DD/MM/YYYY"
+                value={profile.dob ? dayjs(profile.dob) : null}
+                onChange={val => {
+                  const dob = val ? val.format("YYYY-MM-DD") : "";
+                  setProfile({
+                    ...profile,
+                    dob,
+                    age: calculateAge(dob),
+                  });
+                }}
+              />
+            </LocalizationProvider>
 
             <Field label="Age" value={profile.age} disabled />
 
@@ -184,7 +418,6 @@ const Profile: React.FC = () => {
               value={profile.occupation}
               onChange={v => setProfile({ ...profile, occupation: v })}
             />
-
             <div>
               <label className="block text-sm font-medium mb-1">
                 Marital Status
@@ -203,9 +436,8 @@ const Profile: React.FC = () => {
               </select>
             </div>
           </div>
-        )}
 
-        {/* ================= STEP 3 ================= */}
+        {/* STEP 3 */}
         {step === 3 && (
           <div className="grid grid-cols-2 gap-6">
             <Field
@@ -226,7 +458,6 @@ const Profile: React.FC = () => {
               onChange={v => setProfile({ ...profile, weight: v })}
             />
 
-            {/* ✅ ALLERGY TYPES */}
             <AllergySelect
               value={profile.allergies}
               onChange={v => setProfile({ ...profile, allergies: v })}
@@ -246,22 +477,17 @@ const Profile: React.FC = () => {
           </div>
         )}
 
-        {/* ================= FOOTER ================= */}
         <div className="flex justify-between mt-10">
           <button
-            type="button"
             onClick={() => setStep(s => Math.max(1, s - 1))}
             disabled={step === 1}
-            className={`px-6 py-2 rounded-md text-white ${
-              step === 1 ? "bg-gray-300" : "bg-blue-600"
-            }`}
+            className="px-6 py-2 rounded-md bg-blue-600 text-white disabled:bg-gray-300"
           >
             ← Back
           </button>
 
           {step < 3 ? (
             <button
-              type="button"
               onClick={() => setStep(s => s + 1)}
               className="px-8 py-2 bg-blue-600 text-white rounded-md"
             >
@@ -269,7 +495,6 @@ const Profile: React.FC = () => {
             </button>
           ) : (
             <button
-              type="button"
               onClick={handleSave}
               className="px-8 py-2 bg-green-600 text-white rounded-md"
             >
@@ -278,13 +503,12 @@ const Profile: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
   );
 };
 
 export default Profile;
 
-/* ================= STEP INDICATOR ================= */
+/* ================= HELPER COMPONENTS ================= */
 
 const StepIndicator = ({
   step,
@@ -296,19 +520,13 @@ const StepIndicator = ({
   <div className="flex items-center mb-8">
     {[1, 2, 3].map(n => (
       <div key={n} className="flex items-center w-full">
-        {/* STEP CIRCLE */}
         <div
-          onClick={() => {
-            onStepClick(n);
-          }}
+          onClick={() => onStepClick(n)}
           className={`w-8 h-8 rounded-full flex items-center justify-center cursor-pointer
-          ${step >= n ? "bg-blue-600 text-white" : "bg-gray-300"}
-          hover:ring-2 hover:ring-blue-400`}
+          ${step >= n ? "bg-blue-600 text-white" : "bg-gray-300"}`}
         >
           {n}
         </div>
-
-        {/* LINE */}
         {n !== 3 && (
           <div
             className={`flex-1 h-1 mx-2 ${
@@ -320,9 +538,6 @@ const StepIndicator = ({
     ))}
   </div>
 );
-
-
-/* ================= ALLERGY SELECT ================= */
 
 const AllergySelect = ({
   value,
@@ -355,7 +570,6 @@ const AllergySelect = ({
   return (
     <div ref={ref} className="relative">
       <label className="block text-sm font-medium mb-1">Allergy Types</label>
-
       <div
         onClick={() => setOpen(!open)}
         className="min-h-[42px] border rounded-md px-2 py-1 flex flex-wrap gap-2 cursor-pointer bg-white"
@@ -374,12 +588,9 @@ const AllergySelect = ({
       </div>
 
       {open && (
-        <div className="absolute z-20 mt-1 w-full bg-white border rounded-md shadow-lg max-h-56 overflow-auto">
+        <div className="absolute z-20 mt-1 w-full bg-white border rounded-md shadow-lg">
           {ALLERGY_OPTIONS.map(opt => (
-            <label
-              key={opt}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
-            >
+            <label key={opt} className="flex items-center gap-2 px-3 py-2">
               <input
                 type="checkbox"
                 checked={value.includes(opt)}
@@ -393,8 +604,6 @@ const AllergySelect = ({
     </div>
   );
 };
-
-/* ================= YES / NO ================= */
 
 const YesNo = ({
   label,
@@ -428,8 +637,6 @@ const YesNo = ({
   </div>
 );
 
-/* ================= FIELDS ================= */
-
 const Field = ({
   label,
   value,
@@ -454,21 +661,3 @@ const Field = ({
   </div>
 );
 
-const Textarea = ({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) => (
-  <div>
-    <label className="block text-sm font-medium mb-1">{label}</label>
-    <textarea
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      className="w-full px-3 py-2 border rounded-md h-24"
-    />
-  </div>
-);
