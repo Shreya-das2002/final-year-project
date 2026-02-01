@@ -1,4 +1,5 @@
 import React from "react";
+import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
@@ -6,14 +7,20 @@ import { FaEdit, FaUserCircle } from "react-icons/fa";
 import { MdEmail, MdPhone, MdCake } from "react-icons/md";
 import { GiMedicalPack } from "react-icons/gi";
 import { RiVirusLine } from "react-icons/ri";
-import dayjs from "dayjs";
 import { getGenderLabel } from "../../../Environment";
+import { bloodGroupMap } from "../../../Environment";
+
 
 const PatientProfileView: React.FC = () => {
   const navigate = useNavigate();
 
   // USER FROM LOGIN API (REDUX)
   const user = useSelector((state: RootState) => state.auth.user);
+  const profile = useSelector((state: RootState) => state.auth.profile);
+  const dob = profile?.dob || user?.dob || null;
+  const age = dob
+  ? dayjs().diff(dayjs(dob), "year")
+  : null;
 
   if (!user) {
     return <p className="text-center mt-10">No profile data</p>;
@@ -29,8 +36,6 @@ const PatientProfileView: React.FC = () => {
   const image = localStorage.getItem("profileImage");
 
   // Optional DOB logic if later added
-  const dob = user.dob || "";
-  const age = dob ? String(dayjs().diff(dayjs(dob), "year")) : "";
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
@@ -67,7 +72,7 @@ const PatientProfileView: React.FC = () => {
             </span>
 
             <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-              <MdCake /> Age: {age || "—"}
+              <MdCake /> Age:  {age !== null ? age : "—"}
             </span>
           </div>
 
@@ -90,7 +95,10 @@ const PatientProfileView: React.FC = () => {
               Medical Details
             </h3>
             <p className="text-gray-700 text-sm">
-              <span className="font-medium">Blood Group:</span> —
+              <span className="font-medium">Blood Group:</span>{" "}
+                  {profile?.blood_group
+                  ? bloodGroupMap[profile.blood_group]
+                  : "—"}
             </p>
           </div>
 
@@ -99,7 +107,11 @@ const PatientProfileView: React.FC = () => {
               <RiVirusLine />
               Allergies
             </h3>
-            <p className="text-gray-700 text-sm">—</p>
+            <p className="text-gray-700 text-sm">
+                {profile?.allergies?.length
+                ? profile.allergies.join(", ")
+                : "—"}
+</p>
           </div>
         </div>
       </div>

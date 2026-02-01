@@ -5,7 +5,7 @@ const Admin = () => {
   return (
     <div className="flex">
       {/* Admin Sidebar */}
-      <SideNav role="admin" />
+      <SideNav />
 
       {/* Page Content */}
       <main className="flex-1 p-6 bg-gray-100 min-h-screen">

@@ -284,6 +284,17 @@ export const GENDER_MAP: Record<string, string> = {
   "3": "Others",
 };
 
+export const bloodGroupMap: Record<number, string> = {
+  1: "A+",
+  2: "A-",
+  3: "B+",
+  4: "B-",
+  5: "AB+",
+  6: "AB-",
+  7: "O+",
+  8: "O-",
+};
+
 /* ================= HELPERS ================= */
 
 export const getGenderLabel = (value?: string | number): string => {

@@ -4,10 +4,12 @@ import { API } from "./api";
 /* ---------- Types ---------- */
 
 export interface AddressPayload {
-  address_line: string;
-  city: string;
-  state: string;
-  pincode: string;
+   address_line: string;   // ✅ REQUIRED
+  city?: string;
+  district?: string;
+  state?: string;
+  country?: string;
+  pincode?: string;
 }
 
 export interface PatientProfilePayload {

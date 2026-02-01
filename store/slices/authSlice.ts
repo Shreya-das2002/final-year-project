@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-/* ================= TYPES ================= */
+/* ================= USER TYPES ================= */
 
 interface User {
   email: string;
@@ -12,10 +12,8 @@ interface User {
   last_name: string;
   phone_no: string;
   gender: string;
-  dob?: string;  
+  dob?: string;
 }
-
-
 
 interface Menu {
   control_master_id: number;
@@ -26,6 +24,34 @@ interface Menu {
   status: string;
 }
 
+/* ================= PROFILE TYPES ================= */
+
+interface Address {
+  address_line_1: string | null;
+  address_line_2: string | null;
+  city: string | null;
+  district: string | null;
+  state: string | null;
+  country: string | null;
+  pin: string | null;
+}
+
+interface PatientProfile {
+  dob: string | null;
+  marital_status: string | null;
+  occupation: string | null;
+  blood_group: number | null;
+  height: number | null;
+  weight: number | null;
+  allergies: string[];
+  smoking: boolean | null;
+  alcohol: boolean | null;
+  current_address: Address | null;
+  permanent_address: Address | null;
+}
+
+/* ================= AUTH STATE ================= */
+
 interface AuthState {
   token: string | null;
   user: User | null;
@@ -33,6 +59,8 @@ interface AuthState {
   isAuthenticated: boolean;
   menus: Menu[];
   authChecked: boolean;
+
+  profile: PatientProfile | null; // ✅ IMPORTANT
 }
 
 /* ================= PAYLOAD ================= */
@@ -52,7 +80,9 @@ const initialState: AuthState = {
   role: null,
   isAuthenticated: false,
   menus: [],
-  authChecked: false,  
+  authChecked: false,
+
+  profile: null, // ✅ IMPORTANT
 };
 
 /* ================= SLICE ================= */
@@ -73,9 +103,17 @@ const authSlice = createSlice({
       state.authChecked = true;
     },
 
+    setProfile(
+      state,
+      action: PayloadAction<PatientProfile>
+    ) {
+      state.profile = action.payload;
+    },
+
     logout(state) {
       state.token = null;
       state.user = null;
+      state.profile = null;
       state.role = null;
       state.menus = [];
       state.isAuthenticated = false;
@@ -83,10 +121,18 @@ const authSlice = createSlice({
     },
 
     authCheckFinished(state) {
-    state.authChecked = true;
-  }
+      state.authChecked = true;
+    },
   },
 });
 
-export const { loginSuccess, logout, authCheckFinished } = authSlice.actions;
+/* ================= EXPORTS ================= */
+
+export const {
+  loginSuccess,
+  logout,
+  authCheckFinished,
+  setProfile, // USE THIS AFTER SAVE / FETCH
+} = authSlice.actions;
+
 export default authSlice.reducer;

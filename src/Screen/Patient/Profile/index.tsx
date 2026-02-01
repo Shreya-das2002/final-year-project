@@ -2,15 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import dayjs from "dayjs";
-
+import { useDispatch } from "react-redux";
 import ProfileAvatar from "./ProfileAvatar";
 import { isValidDOB, calculateAge, getGenderLabel } from "../../../Environment";
 import { savePatientProfileApi } from "../../../services/patientProfileApi";
-
+import { setProfile } from "../../../../store/slices/authSlice";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 /* ================= TYPES ================= */
 
@@ -52,12 +53,27 @@ const ALLERGY_OPTIONS = [
   "Other",
 ];
 
+/* ================= BLOOD GROUP MAP ================= */
+
+const bloodGroupToNumber: Record<string, number> = {
+  "A+": 1,
+  "A-": 2,
+  "B+": 3,
+  "B-": 4,
+  "AB+": 5,
+  "AB-": 6,
+  "O+": 7,
+  "O-": 8,
+};
+
 /* ================= COMPONENT ================= */
 
 const Profile: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [step, setStep] = useState(1);
   const [sameAddress, setSameAddress] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
 const [currentAddress, setCurrentAddress] = useState({
   addressLine1: "",
@@ -79,7 +95,7 @@ const [permanentAddress, setPermanentAddress] = useState({
   pincode: "",
 });
 
-  const [profile, setProfile] = useState<EditableProfile>({
+  const [profile, setProfilestate] = useState<EditableProfile>({
     firstName: user?.first_name || "",
     middleName: user?.middle_name || "",
     lastName: user?.last_name || "",
@@ -125,7 +141,10 @@ const [permanentAddress, setPermanentAddress] = useState({
 
   /* ================= SAVE ================= */
 
+
+  
   const handleSave = async () => {
+    
     
     if (!isValidDOB(profile.dob)) {
       toast.error("Invalid Date of Birth");
@@ -138,58 +157,80 @@ const [permanentAddress, setPermanentAddress] = useState({
     }
 
     try {
-      // ✅ ONLY FIX: null → undefined
-      const payload = {
-        patient_id: user.patient_id,
+      //  ONLY FIX: null → undefined
+   const payload = {
+  patient_id: user.patient_id,
 
-        dob: profile.dob || undefined,
-        marital_status: profile.maritalStatus || undefined,
-        occupation: profile.occupation || undefined,
+  dob: profile.dob || undefined,
+  marital_status: profile.maritalStatus || undefined,
+  occupation: profile.occupation || undefined,
 
-        blood_group: profile.bloodGroup
-          ? Number(profile.bloodGroup)
-          : undefined,
+  blood_group: profile.bloodGroup
+    ? bloodGroupToNumber[profile.bloodGroup]
+    : undefined,
 
-        height: profile.height ? Number(profile.height) : undefined,
-        weight: profile.weight ? Number(profile.weight) : undefined,
+  height: profile.height ? Number(profile.height) : undefined,
+  weight: profile.weight ? Number(profile.weight) : undefined,
 
-        allergies: profile.allergies.length
-          ? profile.allergies
-          : undefined,
+  allergies: profile.allergies.length
+    ? profile.allergies
+    : undefined,
 
-        smoking: profile.smoking ?? undefined,
-        alcohol: profile.alcohol ?? undefined,
+  smoking: profile.smoking ?? undefined,
+  alcohol: profile.alcohol ?? undefined,
+current_address: currentAddress.addressLine1
+  ? {
+      address_line: [
+        currentAddress.addressLine1,
+        currentAddress.addressLine2,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      city: currentAddress.city,
+      district: currentAddress.district,
+      state: currentAddress.state,
+      country: currentAddress.country,
+      pincode: currentAddress.pincode,
+    }
+  : undefined,
 
-        current_address: profile.currentAddress
-          ? {
-              address_line: profile.currentAddress,
-              city: "",
-              state: "",
-              pincode: "",
-            }
-          : undefined,
+permanent_address: permanentAddress.addressLine1
+  ? {
+      address_line: [
+        permanentAddress.addressLine1,
+        permanentAddress.addressLine2,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      city: permanentAddress.city,
+      district: permanentAddress.district,
+      state: permanentAddress.state,
+      country: permanentAddress.country,
+      pincode: permanentAddress.pincode,
+    }
+  : undefined,
 
-        permanent_address: profile.permanentAddress
-          ? {
-              address_line: profile.permanentAddress,
-              city: "",
-              state: "",
-              pincode: "",
-            }
-          : undefined,
-      };
+};
 
       const res = await savePatientProfileApi(payload);
 
-      if (res.data?.success) {
+    if (res.data?.success) {
         toast.success("Profile saved successfully");
-        console.log("Saved profile:", res.data.data);
-      } else {
+
+        console.log("SAVE RESPONSE FULL:", res.data);
+
+      if (res.data?.profile) {
+        dispatch(setProfile(res.data.data.profile)); // VERY IMPORTANT
+  }
+  return true;
+} else {
         toast.error(res.data?.data?.errorcode || "Save failed");
       }
+      return false;
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong");
+      return false;
     }
   };
 
@@ -248,7 +289,7 @@ const [permanentAddress, setPermanentAddress] = useState({
                   value={profile.dob ? dayjs(profile.dob) : null}
                   onChange={val => {
                     const dob = val ? val.format("YYYY-MM-DD") : "";
-                    setProfile({
+                    setProfilestate({
                       ...profile,
                       dob,
                       age: calculateAge(dob),
@@ -263,7 +304,7 @@ const [permanentAddress, setPermanentAddress] = useState({
                 label="Occupation"
                 value={profile.occupation}
                 onChange={v =>
-                  setProfile({ ...profile, occupation: v })
+                  setProfilestate({ ...profile, occupation: v })
                 }
               />
 
@@ -274,7 +315,7 @@ const [permanentAddress, setPermanentAddress] = useState({
                 <select
                   value={profile.maritalStatus}
                   onChange={e =>
-                    setProfile({
+                    setProfilestate({
                       ...profile,
                       maritalStatus: e.target.value,
                     })
@@ -548,47 +589,77 @@ const [permanentAddress, setPermanentAddress] = useState({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field label="Blood Group" value={profile.bloodGroup}
-              onChange={v => setProfile({ ...profile, bloodGroup: v })} />
+              onChange={v => setProfilestate({ ...profile, bloodGroup: v })} />
             <Field label="Height (cm)" value={profile.height}
-              onChange={v => setProfile({ ...profile, height: v })} />
+              onChange={v => setProfilestate({ ...profile, height: v })} />
             <Field label="Weight (kg)" value={profile.weight}
-              onChange={v => setProfile({ ...profile, weight: v })} />
+              onChange={v => setProfilestate({ ...profile, weight: v })} />
             <AllergySelect value={profile.allergies}
-              onChange={v => setProfile({ ...profile, allergies: v })} />
+              onChange={v => setProfilestate({ ...profile, allergies: v })} />
             <YesNo label="Do you smoke?" value={profile.smoking}
-              onChange={v => setProfile({ ...profile, smoking: v })} />
+              onChange={v => setProfilestate({ ...profile, smoking: v })} />
             <YesNo label="Do you consume alcohol?" value={profile.alcohol}
-              onChange={v => setProfile({ ...profile, alcohol: v })} />
+              onChange={v => setProfilestate({ ...profile, alcohol: v })} />
           </div>
         </div>
       )}
 
-      {/* Navigation */}
-      <div className="flex justify-between mt-10">
-        <button
-          onClick={() => setStep(s => Math.max(1, s - 1))}
-          disabled={step === 1}
-          className="px-6 py-2 rounded-md bg-blue-600 text-white disabled:bg-gray-300"
-        >
-          ← Back
-        </button>
+      {/* ================= NAVIGATION ================= */}
+<div className="flex justify-between mt-10">
 
-        {step < 3 ? (
-          <button
-            onClick={() => setStep(s => s + 1)}
-            className="px-8 py-2 bg-blue-600 text-white rounded-md"
-          >
-            Next →
-          </button>
-        ) : (
-          <button
-            onClick={handleSave}
-            className="px-8 py-2 bg-green-600 text-white rounded-md"
-          >
-            Save
-          </button>
-        )}
-      </div>
+  {/* BACK BUTTON (Step > 1) */}
+  <button
+    onClick={() => setStep(s => Math.max(1, s - 1))}
+    disabled={step === 1}
+    className="px-6 py-2 rounded-md bg-blue-600 text-white disabled:bg-gray-300"
+  >
+    ← Back
+  </button>
+
+  {/* STEP 2 : BACK + SAVE + NEXT */}
+  {step === 2 && (
+    <div className="flex gap-4">
+      <button
+        onClick={handleSave}
+        className="px-6 py-2 rounded-md bg-green-600 text-white"
+      >
+        Save
+      </button>
+
+      <button
+        onClick={() => setStep(3)}
+        className="px-6 py-2 rounded-md bg-blue-600 text-white"
+      >
+        Next →
+      </button>
+    </div>
+  )}
+
+  {/* STEP 1 : NEXT */}
+  {step === 1 && (
+    <button
+      onClick={() => setStep(2)}
+      className="px-8 py-2 bg-blue-600 text-white rounded-md"
+    >
+      Next →
+    </button>
+  )}
+
+  {/* STEP 3 : SAVE */}
+  {step === 3 && (
+    <button
+     onClick={async () => {   //  async added here
+      const ok = await handleSave();
+      if (ok) {
+        navigate("/patient/profile_edit");
+      }
+    }}
+      className="px-8 py-2 bg-green-600 text-white rounded-md"
+    >
+      Save
+    </button>
+  )}
+</div>
 
     </div>
   </div>
