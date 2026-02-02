@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { logout } from "../../../../store/slices/authSlice";
-import { MENU_ROUTE_MAP, MENU_ORDER_BY_ROLE } from "../../../Environment";
-
-/* ================= TYPES ================= */
+import { MENU_ROUTE_MAP, SIDE_NAV_CONTROLS } from "../../../Environment";
 
 interface Menu {
   control_master_id: number;
@@ -20,39 +18,27 @@ const SideNav: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // DATA FROM REDUX
   const user = useSelector((state: RootState) => state.auth.user);
   const menus = useSelector((state: RootState) => state.auth.menus);
-  const role = useSelector((state: RootState) => state.auth.role);
 
-  /* ================= ORDERED MENUS (FRONTEND CONTROLLED) ================= */
+  /* ================= ORDER (FRONTEND) + VISIBILITY (BACKEND) ================= */
 
-  const roleMenuOrder: string[] =
-  MENU_ORDER_BY_ROLE[role ?? ""] ?? [];
+  const orderedMenus: Menu[] = SIDE_NAV_CONTROLS
+    .map(key => menus.find(menu => menu.control_key === key))
+    .filter((menu): menu is Menu => Boolean(menu));
 
-const orderedMenus: Menu[] = roleMenuOrder
-  .map((key: string) =>
-    menus.find(
-      (menu: Menu) => menu.control_key === key
-    )
-  )
-  .filter((menu): menu is Menu => Boolean(menu));
-  /* ================= AVATAR LETTERS ================= */
+  /* ================= AVATAR ================= */
 
-  const firstLetter =
-    user?.first_name?.charAt(0)?.toUpperCase() || "";
-  const lastLetter =
-    user?.last_name?.charAt(0)?.toUpperCase() || "";
+  const firstLetter = user?.first_name?.charAt(0)?.toUpperCase() || "";
+  const lastLetter = user?.last_name?.charAt(0)?.toUpperCase() || "";
 
   /* ================= PROFILE NAV ================= */
 
   const handleProfileClick = () => {
-    if (role === "patient") navigate("/patient/profile_edit");
-    else if (role === "doctor") navigate("/doctor/profile");
-    else if (role?.includes("admin")) navigate("/admin/profile");
+    navigate("/patient/profile_edit"); // or generic profile route
   };
 
-  /* ================= MENU NAV ================= */
+  /* ================= MENU CLICK ================= */
 
   const handleMenuClick = (controlKey: string) => {
     if (controlKey === "logout") {
@@ -63,19 +49,13 @@ const orderedMenus: Menu[] = roleMenuOrder
     }
 
     const route = MENU_ROUTE_MAP[controlKey];
-    if (route) {
-      navigate(route);
-    } else {
-      console.warn("Route not found for menu:", controlKey);
-    }
+    if (route) navigate(route);
   };
 
-  /* ================= UI ================= */
-
   return (
-    <aside className="w-64 bg-blue-900 text-white min-h-screen flex flex-col">
+    <aside className=" fixed top-16 left-0 w-64 bottom-12 bg-blue-900 text-white min-h-screen flex flex-col">
 
-      {/* PROFILE HEADER */}
+      {/* PROFILE */}
       <div
         className="flex flex-col items-center py-6 border-b border-blue-700 cursor-pointer"
         onClick={handleProfileClick}
@@ -93,9 +73,9 @@ const orderedMenus: Menu[] = roleMenuOrder
         </p>
       </div>
 
-      {/* MENU LIST */}
+      {/* MENU */}
       <ul className="flex-1 p-4 space-y-2">
-        {orderedMenus.map((menu: Menu) => (
+        {orderedMenus.map(menu => (
           <li
             key={menu.control_master_id}
             onClick={() => handleMenuClick(menu.control_key)}

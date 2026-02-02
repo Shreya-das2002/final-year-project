@@ -309,84 +309,46 @@ export const urls ={
   profileurl : 'patient/profile'
 }
 
-/* ================= MENU ROUTE MAP ================= */
 
+/* ================= MENU ORDER BY ROLE ================= */
+
+export const SIDE_NAV_CONTROLS: string[] = [
+  "patient dashboard",
+  "symptom checker",
+  "symptobot",
+  "patient appointments",
+  "feedback",
+
+  "admin dashboard",
+  "create admin",
+  "admin list",
+  "pending doctor list",
+  "doctor list",
+  "messages",
+  "add doctor",
+  "appointment requests",
+
+  "doctor dashboard",
+  "doctor appointment",
+
+  "logout",
+];
+
+// menu ➜ route mapping
 export const MENU_ROUTE_MAP: Record<string, string> = {
-  /* PATIENT */
   "patient dashboard": "/patient",
   "symptom checker": "/patient/symptom-checker",
   "symptobot": "/patient/chatbot",
   "patient appointments": "/patient/appointments",
   "feedback": "/patient/feedback",
 
-  /* ADMIN */
-  "admin dashboard": "/admin",
-  "create admin": "/admin/create",
-  "admin list": "/admin/list",
-  "pending doctor list": "/admin/pending-doctors",
-  "doctor list": "/admin/doctors",
-  "messages": "/admin/messages",
-  "add doctor": "/admin/add-doctor",
-  "appointment requests": "/admin/appointment-requests",
-
-  /* DOCTOR */
   "doctor dashboard": "/doctor",
   "doctor appointment": "/doctor/appointments",
 
-  /* COMMON */
-  "logout": "/logout"
+  "admin dashboard": "/admin",
+
+  "logout": "/logout",
 };
-
-/* ================= MENU ORDER BY ROLE ================= */
-
-export const MENU_ORDER_BY_ROLE: Record<string, string[]> = {
-patient: [
-    "patient dashboard",
-    "symptom checker",
-    "symptobot",
-    "patient appointments",
-    "feedback",
-    "logout"
-  ],
-
-  /* ================= SUPER ADMIN ================= */
-  "super admin": [
-    "admin dashboard",
-    "create admin",
-    "admin list",
-    "pending doctor list",
-    "doctor list",
-    "messages",
-    "add doctor",
-    "appointment requests",
-    "logout"
-  ],
-
-  /* ================= STANDARD ADMIN ================= */
-  "standard admin": [
-    "admin dashboard",
-    "admin list",
-    "doctor list",
-    "messages",
-    "logout"
-  ],
-
-  /* ================= GUEST ADMIN ================= */
-  "guest admin": [
-    "admin dashboard",
-    "doctor list",
-    "logout"
-  ],
-
-  /* ================= DOCTOR ================= */
-  doctor: [
-    "doctor dashboard",
-    "doctor appointment",
-    "messages",
-    "logout"
-  ]
-}
-
 
 /* ================= GET ROUTE HELPER ================= */
 

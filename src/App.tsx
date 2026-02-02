@@ -78,7 +78,7 @@ const dispatch = useDispatch<AppDispatch>();
 
         <Header />
 
-        <main className="flex-grow">
+        <main className="ml-64 flex-1 min-h-[calc(100vh-7rem)] overflow-y-auto p-6">
           <Routes>
 
             {/* PUBLIC ROUTES */}
@@ -106,6 +106,7 @@ const dispatch = useDispatch<AppDispatch>();
           <Route path="profile" element={<Profile />} />
           <Route path="profile_edit" element={<PatientProfileView />} />
           <Route path="feedback" element={<Feedback />} />
+
         </Route>
 
         {/* ADMIN */}
