@@ -55,6 +55,17 @@ const ALLERGY_OPTIONS = [
 
 /* ================= BLOOD GROUP MAP ================= */
 
+const numberToBloodGroup: Record<number, string> = {
+  1: "A+",
+  2: "A-",
+  3: "B+",
+  4: "B-",
+  5: "AB+",
+  6: "AB-",
+  7: "O+",
+  8: "O-",
+};
+
 const bloodGroupToNumber: Record<string, number> = {
   "A+": 1,
   "A-": 2,
@@ -65,11 +76,13 @@ const bloodGroupToNumber: Record<string, number> = {
   "O+": 7,
   "O-": 8,
 };
-
 /* ================= COMPONENT ================= */
 
 const Profile: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
+   const reduxProfile = useSelector(
+  (state: RootState) => state.auth.profile
+);
   const [step, setStep] = useState(1);
   const [sameAddress, setSameAddress] = useState(false);
   const navigate = useNavigate();
@@ -95,30 +108,34 @@ const [permanentAddress, setPermanentAddress] = useState({
   pincode: "",
 });
 
-  const [profile, setProfilestate] = useState<EditableProfile>({
-    firstName: user?.first_name || "",
-    middleName: user?.middle_name || "",
-    lastName: user?.last_name || "",
-    email: user?.email || "",
-    phone: user?.phone_no || "",
-    gender: user?.gender || "",
+  const [profile, setProfileState] = useState<EditableProfile>({
+     firstName: user?.first_name || "",
+  middleName: user?.middle_name || "",
+  lastName: user?.last_name || "",
+  email: user?.email || "",
+  phone: user?.phone_no || "",
+  gender: user?.gender || "",
 
-    dob: "",
-    age: "",
-    maritalStatus: "",
-    occupation: "",
+  dob: reduxProfile?.dob || "",
+  age: reduxProfile?.dob ? calculateAge(reduxProfile.dob) : "",
 
-    currentAddress: "",
-    permanentAddress: "",
+  maritalStatus: reduxProfile?.marital_status || "",
+  occupation: reduxProfile?.occupation || "",
 
-    bloodGroup: "",
-    height: "",
-    weight: "",
+  bloodGroup: reduxProfile?.blood_group
+  ? numberToBloodGroup[reduxProfile.blood_group] ?? ""
+  : "",
 
-    allergies: [],
-    smoking: null,
-    alcohol: null,
-  });
+  height: reduxProfile?.height?.toString() || "",
+  weight: reduxProfile?.weight?.toString() || "",
+
+  allergies: reduxProfile?.allergies || [],
+  smoking: reduxProfile?.smoking ?? null,
+  alcohol: reduxProfile?.alcohol ?? null,
+
+  currentAddress: "",
+  permanentAddress: "",
+});
 
   /* ================= PROFILE COMPLETION ================= */
 
@@ -139,22 +156,22 @@ const [permanentAddress, setPermanentAddress] = useState({
   }
 };
 
+
+
   /* ================= SAVE ================= */
 
 
   
   const handleSave = async () => {
-    
-    
-    if (!isValidDOB(profile.dob)) {
-      toast.error("Invalid Date of Birth");
-      return;
-    }
+  if (!isValidDOB(profile.dob)) {
+    toast.error("Invalid Date of Birth");
+    return false;
+  }
 
-    if (!user?.patient_id) {
-      toast.error("Patient ID missing");
-      return;
-    }
+  if (!user?.patient_id) {
+    toast.error("Patient ID missing");
+    return false;
+  }
 
     try {
       //  ONLY FIX: null → undefined
@@ -219,9 +236,10 @@ permanent_address: permanentAddress.addressLine1
 
         console.log("SAVE RESPONSE FULL:", res.data);
 
-      if (res.data?.profile) {
+      if (res.data?.data?.profile) {
         dispatch(setProfile(res.data.data.profile)); // VERY IMPORTANT
-  }
+        localStorage.setItem("patientProfile", JSON.stringify(res.data.data.profile));
+      }
   return true;
 } else {
         toast.error(res.data?.data?.errorcode || "Save failed");
@@ -289,7 +307,7 @@ permanent_address: permanentAddress.addressLine1
                   value={profile.dob ? dayjs(profile.dob) : null}
                   onChange={val => {
                     const dob = val ? val.format("YYYY-MM-DD") : "";
-                    setProfilestate({
+                    setProfileState({
                       ...profile,
                       dob,
                       age: calculateAge(dob),
@@ -304,7 +322,7 @@ permanent_address: permanentAddress.addressLine1
                 label="Occupation"
                 value={profile.occupation}
                 onChange={v =>
-                  setProfilestate({ ...profile, occupation: v })
+                  setProfileState({ ...profile, occupation: v })
                 }
               />
 
@@ -315,7 +333,7 @@ permanent_address: permanentAddress.addressLine1
                 <select
                   value={profile.maritalStatus}
                   onChange={e =>
-                    setProfilestate({
+                    setProfileState({
                       ...profile,
                       maritalStatus: e.target.value,
                     })
@@ -588,18 +606,33 @@ permanent_address: permanentAddress.addressLine1
           <h3 className="text-lg font-semibold mb-6">Medical Information</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Field label="Blood Group" value={profile.bloodGroup}
-              onChange={v => setProfilestate({ ...profile, bloodGroup: v })} />
+           <div>
+  <label className="block text-sm font-medium mb-1">Blood Group</label>
+  <select
+    value={profile.bloodGroup}
+    onChange={e =>
+      setProfileState({ ...profile, bloodGroup: e.target.value })
+    }
+    className="w-full border px-3 py-2 rounded-md"
+  >
+    <option value="">Select</option>
+    {Object.values(numberToBloodGroup).map(bg => (
+      <option key={bg} value={bg}>
+        {bg}
+      </option>
+    ))}
+  </select>
+</div>
             <Field label="Height (cm)" value={profile.height}
-              onChange={v => setProfilestate({ ...profile, height: v })} />
+              onChange={v => setProfileState({ ...profile, height: v })} />
             <Field label="Weight (kg)" value={profile.weight}
-              onChange={v => setProfilestate({ ...profile, weight: v })} />
+              onChange={v => setProfileState({ ...profile, weight: v })} />
             <AllergySelect value={profile.allergies}
-              onChange={v => setProfilestate({ ...profile, allergies: v })} />
+              onChange={v => setProfileState({ ...profile, allergies: v })} />
             <YesNo label="Do you smoke?" value={profile.smoking}
-              onChange={v => setProfilestate({ ...profile, smoking: v })} />
+              onChange={v => setProfileState({ ...profile, smoking: v })} />
             <YesNo label="Do you consume alcohol?" value={profile.alcohol}
-              onChange={v => setProfilestate({ ...profile, alcohol: v })} />
+              onChange={v => setProfileState({ ...profile, alcohol: v })} />
           </div>
         </div>
       )}

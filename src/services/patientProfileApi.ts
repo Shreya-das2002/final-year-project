@@ -4,7 +4,7 @@ import { API } from "./api";
 /* ---------- Types ---------- */
 
 export interface AddressPayload {
-   address_line: string;   // ✅ REQUIRED
+   address_line: string;   // REQUIRED
   city?: string;
   district?: string;
   state?: string;
