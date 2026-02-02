@@ -67,7 +67,7 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
   return (
     <div>
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-gray-400 dark:via-gray-500 dark:to-gray-700 flex items-center justify-between px-6 shadow-md">
+      <header className="fixed top-0 left-0 w-full h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-gray-400 dark:via-gray-500 dark:to-gray-700 flex items-center justify-between px-6 shadow-md">
         <div
           onClick={goToHome}
           className="cursor-pointer select-none"

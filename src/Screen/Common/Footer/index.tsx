@@ -15,14 +15,14 @@ const Footer: React.FC = () => {
 
   return (
 
-    <footer className="w-full bg-gradient-to-r dark:from-gray-700 dark:to-gray-800 from-sky-100 to-blue-300  text-blue-950 dark:text-gray-400 py-4 text-center">
+    <footer className="fixed bottom-0 left-0 w-full bg-gradient-to-r dark:from-gray-700 dark:to-gray-800 from-sky-100 to-blue-300  text-blue-950 dark:text-gray-400 py-4">
 
-      <div className="container mx-auto">
-        <p className="mb-2">
+      <div className="mx-w-7xl mx-auto px-6 flex items-center justify-between">
+        <p className="text-sm">
           © {new Date().getFullYear()} SymptoNexus. All rights reserved.
         </p>
 
-        <div className="flex justify-center gap-4">
+        <div className="flex items-center gap-6 text-sm">
           <span 
             onClick={() => handleNavigate("/about")}
             className="hover:text-green-800 dark:hover:text-teal-600 cursor-pointer"
