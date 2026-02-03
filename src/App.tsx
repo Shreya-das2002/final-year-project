@@ -1,12 +1,18 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../store/store";
 import { logout, loginSuccess } from "../store/slices/authSlice";
 import { isTokenExpired } from "./utils/jwt";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+
 import Header from "./Screen/Common/Header";
 import Footer from "./Screen/Common/Footer";
+
 import HomePage from "./Screen/Homepage";
 import About from "./Screen/Homepage/About";
 import Privacy from "./Screen/Homepage/Privacy";
@@ -23,22 +29,21 @@ import Profile from "./Screen/Patient/Profile";
 import PatientProfileView from "./Screen/Patient/Profile/PatientProfileView";
 import Feedback from "./Screen/Patient/Feedback";
 
+import Admin from "./Screen/Admin";
 import PrivateRoute from "./Screen/Common/Route/PrivateRoute";
 
+/* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
-import Admin from "./Screen/Admin";
+const AppLayout: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
 
-const App: React.FC = () => {
-
-const dispatch = useDispatch<AppDispatch>();
-const location = useLocation();
-
-const hideNavOnRoutes = ["/patient", "/doctor", "/admin"];
-
+  const hideNavOnRoutes = ["/patient", "/doctor", "/admin"];
   const shouldHideNav = hideNavOnRoutes.some(path =>
     location.pathname.startsWith(path)
   );
 
+  /* ---------- AUTH BOOTSTRAP ---------- */
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
@@ -66,7 +71,7 @@ const hideNavOnRoutes = ["/patient", "/doctor", "/admin"];
     );
   }, [dispatch]);
 
-  // Auto logout watcher
+  /* ---------- AUTO LOGOUT ---------- */
   useEffect(() => {
     const interval = setInterval(() => {
       const token = localStorage.getItem("token");
@@ -80,19 +85,15 @@ const hideNavOnRoutes = ["/patient", "/doctor", "/admin"];
   }, [dispatch]);
 
   return (
-    <BrowserRouter>
-        <div className="h-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
 
-    <Header />
+      <Header />
 
-    {/* CONTENT AREA */}
-    <div className={`${shouldHideNav ? "pt-16" : "pt-32"} pb-12 h-full flex`}>
-
-      {/* MAIN CONTENT */}
-      <main className="flex-1 overflow-y-auto p-6 ml-0 md:ml-0">
+      {/* CONTENT AREA */}
+      <div className={`${shouldHideNav ? "pt-16" : "pt-32"} pb-12 h-full flex`}>
+        <main className="flex-1 overflow-y-auto p-6">
           <Routes>
-
-            {/* PUBLIC ROUTES */}
+            {/* PUBLIC */}
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<About />} />
             <Route path="/privacy" element={<Privacy />} />
@@ -104,45 +105,50 @@ const hideNavOnRoutes = ["/patient", "/doctor", "/admin"];
               <Route path="signup" element={<Signup />} />
             </Route>
 
-           {/* PATIENT */}
-        <Route
-          path="/patient"
-          element={
-            <PrivateRoute allowedRoles={["patient"]}>
-              <Patient />
-            </PrivateRoute>
-          }
-        >
-          <Route index element={<Patientpage />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="profile_edit" element={<PatientProfileView />} />
-          <Route path="feedback" element={<Feedback />} />
+            {/* PATIENT */}
+            <Route
+              path="/patient"
+              element={
+                <PrivateRoute allowedRoles={["patient"]}>
+                  <Patient />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<Patientpage />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="profile_edit" element={<PatientProfileView />} />
+              <Route path="feedback" element={<Feedback />} />
+            </Route>
 
-        </Route>
-
-        {/* ADMIN */}
-        <Route
-          path="/admin"
-          element={
-            <PrivateRoute allowedRoles={["admin", "super admin"]}>
-              <Admin />
-            </PrivateRoute>
-          }
-        />
-
+            {/* ADMIN */}
+            <Route
+              path="/admin"
+              element={
+                <PrivateRoute allowedRoles={["admin", "super admin"]}>
+                  <Admin />
+                </PrivateRoute>
+              }
+            />
           </Routes>
-
         </main>
+      </div>
 
-        <Footer />
-      </div>
-      </div>
+      <Footer />
+    </div>
+  );
+};
+
+/* ================= ROOT ================= */
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <AppLayout />
     </BrowserRouter>
   );
 };
 
 export default App;
-
 
 
   {/* {
