@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../store/store";
 import { logout, loginSuccess } from "../store/slices/authSlice";
 import { isTokenExpired } from "./utils/jwt";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./Screen/Common/Header";
 import Footer from "./Screen/Common/Footer";
 import HomePage from "./Screen/Homepage";
@@ -31,6 +31,13 @@ import Admin from "./Screen/Admin";
 const App: React.FC = () => {
 
 const dispatch = useDispatch<AppDispatch>();
+const location = useLocation();
+
+const hideNavOnRoutes = ["/patient", "/doctor", "/admin"];
+
+  const shouldHideNav = hideNavOnRoutes.some(path =>
+    location.pathname.startsWith(path)
+  );
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -74,11 +81,15 @@ const dispatch = useDispatch<AppDispatch>();
 
   return (
     <BrowserRouter>
-      <div className="bg-gray-100 dark:bg-gray-900 h-screen flex flex-col">
+        <div className="h-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
 
-        <Header />
+    <Header />
 
-        <main className="ml-64 flex-1 overflow-y-auto p-6">
+    {/* CONTENT AREA */}
+    <div className={`${shouldHideNav ? "pt-16" : "pt-32"} pb-12 h-full flex`}>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1 overflow-y-auto p-6 ml-0 md:ml-0">
           <Routes>
 
             {/* PUBLIC ROUTES */}
@@ -124,7 +135,7 @@ const dispatch = useDispatch<AppDispatch>();
         </main>
 
         <Footer />
-
+      </div>
       </div>
     </BrowserRouter>
   );

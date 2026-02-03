@@ -53,7 +53,7 @@ const SideNav: React.FC = () => {
   };
 
   return (
-    <aside className=" fixed top-16 left-0 w-64 bottom-12 bg-blue-900 text-white min-h-screen flex flex-col">
+    <aside className=" fixed top-32 bottom-12 left-0 w-64 bg-blue-900 text-white flex flex-col z-40">
 
       {/* PROFILE */}
       <div

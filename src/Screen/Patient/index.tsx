@@ -6,7 +6,7 @@ const Patient = () => {
     <div className="flex min-h-screen bg-gray-100">
       <SideNav/>
       
-      <div className="flex-1 p-6">
+      <div className="ml-64">
         <Outlet />
       </div>
     </div>

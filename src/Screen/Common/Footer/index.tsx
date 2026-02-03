@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
 
   return (
 
-    <footer className="fixed bottom-0 left-0 w-full bg-gradient-to-r dark:from-gray-700 dark:to-gray-800 from-sky-100 to-blue-300  text-blue-950 dark:text-gray-400 py-4">
+    <footer className="fixed bottom-0 left-0 w-full h-12 py-3 px-6 bg-gradient-to-r from-sky-100 to-blue-300 dark:from-gray-700 dark:to-gray-800 z-50">
 
       <div className="mx-w-7xl mx-auto px-6 flex items-center justify-between">
         <p className="text-sm">
