@@ -74,11 +74,11 @@ const dispatch = useDispatch<AppDispatch>();
 
   return (
     <BrowserRouter>
-      <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
+      <div className="bg-gray-100 dark:bg-gray-900 h-screen flex flex-col">
 
         <Header />
 
-        <main className="ml-64 flex-1 min-h-[calc(100vh-7rem)] overflow-y-auto p-6">
+        <main className="ml-64 flex-1 overflow-y-auto p-6">
           <Routes>
 
             {/* PUBLIC ROUTES */}
