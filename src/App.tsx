@@ -31,6 +31,8 @@ import Feedback from "./Screen/Patient/Feedback";
 
 import Admin from "./Screen/Admin";
 import PrivateRoute from "./Screen/Common/Route/PrivateRoute";
+import CreateAdmin from "./Screen/Admin/Create Admin";
+import AdminList from "./Screen/Admin/AdminList";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -128,7 +130,12 @@ const AppLayout: React.FC = () => {
                   <Admin />
                 </PrivateRoute>
               }
-            />
+            >
+              <Route index element={<Admin />} />
+              <Route path="create_admin" element={<CreateAdmin />} />
+              <Route path="admin_list" element={<AdminList/>} />
+            </Route>
+
           </Routes>
         </main>
       </div>

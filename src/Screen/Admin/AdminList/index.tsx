@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import CreateAdmin from "../Create Admin";
+
 
 const AdminList = () => {
-  const [openDrawer, setOpenDrawer] = useState(false);
+ 
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -10,7 +9,7 @@ const AdminList = () => {
       {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
         <button
-          onClick={() => setOpenDrawer(true)}
+        
           className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
         >
           + Add Admin
@@ -44,10 +43,6 @@ const AdminList = () => {
       </div>
 
       {/* Drawer */}
-      <CreateAdmin
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-      />
     </div>
   );
 };

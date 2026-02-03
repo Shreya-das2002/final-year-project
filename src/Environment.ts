@@ -348,6 +348,7 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
 
   "admin dashboard": "/admin",
   "create admin": "/admin/create_admin",
+  "admin list": "/admin/admin_list",
   "pending doctor list": "/admin/pending_doctor_list",
   "doctor list": "/admin/doctor_list",
   "messages": "/admin/messages",

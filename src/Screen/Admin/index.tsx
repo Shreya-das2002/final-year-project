@@ -6,7 +6,7 @@ const Admin = () => {
     <div className="flex">
       <SideNav />
 
-      <main className="flex-1 p-6 bg-gray-100 min-h-screen">
+      <main className="ml-64 w-screen">
         <Outlet />
       </main>
     </div>

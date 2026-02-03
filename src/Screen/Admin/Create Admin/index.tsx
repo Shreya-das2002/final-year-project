@@ -1,79 +1,165 @@
-interface Props {
-  open: boolean;
-  onClose: () => void;
-}
+import React, { useState } from "react";
 
-const CreateAdmin = ({ open, onClose }: Props) => {
+const CreateAdmin = () => {
+  const [form, setForm] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    adminType: "",
+    gender: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (form.password !== form.confirmPassword) {
+      alert("Password and Confirm Password must be same");
+      return;
+    }
+
+    console.log("Create Admin Data:", form);
+    // API call goes here
+  };
+
   return (
-    <>
-      {/* Overlay */}
-      {open && (
-        <div
-          onClick={onClose}
-          className="fixed inset-0 bg-black/30 z-40"
-        />
-      )}
+    <div className="bg-white rounded-lg shadow p-6 max-w-4xl">
+      <h2 className="text-xl font-semibold mb-6">Create Admin</h2>
 
-      {/* Drawer */}
-      <div
-        className={`fixed top-0 right-0 h-full w-[420px] bg-white shadow-xl z-50
-        transform transition-transform duration-300
-        ${open ? "translate-x-0" : "translate-x-full"}`}
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        {/* Header */}
-        <div className="flex items-center gap-3 p-5 border-b">
-          {/* LEFT SIDE CROSS */}
+        <input
+          name="firstName"
+          value={form.firstName}
+          onChange={handleChange}
+          className="input"
+          placeholder="First Name"
+          required
+        />
+
+        <input
+          name="middleName"
+          value={form.middleName}
+          onChange={handleChange}
+          className="input"
+          placeholder="Middle Name"
+        />
+
+        <input
+          name="lastName"
+          value={form.lastName}
+          onChange={handleChange}
+          className="input"
+          placeholder="Last Name"
+          required
+        />
+
+        <input
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          className="input"
+          placeholder="Phone Number"
+          required
+        />
+
+        <input
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          className="input"
+          placeholder="Email"
+          required
+        />
+
+        <select
+          name="adminType"
+          value={form.adminType}
+          onChange={handleChange}
+          className="input"
+          required
+        >
+          <option value="">Select Admin Type</option>
+          <option>Super Admin</option>
+          <option>Admin</option>
+          <option>Sub Admin</option>
+        </select>
+
+        <select
+          name="gender"
+          value={form.gender}
+          onChange={handleChange}
+          className="input"
+          required
+        >
+          <option value="">Select Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+
+        <input
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          className="input"
+          placeholder="Password"
+          required
+        />
+
+        <input
+          type="password"
+          name="confirmPassword"
+          value={form.confirmPassword}
+          onChange={handleChange}
+          className="input"
+          placeholder="Confirm Password"
+          required
+        />
+
+        <div className="md:col-span-2 flex justify-end gap-3 mt-4">
           <button
-            onClick={onClose}
-            className="text-xl text-gray-500 hover:text-black"
+            type="reset"
+            onClick={() =>
+              setForm({
+                firstName: "",
+                middleName: "",
+                lastName: "",
+                phone: "",
+                email: "",
+                adminType: "",
+                gender: "",
+                password: "",
+                confirmPassword: "",
+              })
+            }
+            className="border px-5 py-2 rounded-lg"
           >
-            ✕
+            Reset
           </button>
 
-          <h3 className="text-lg font-semibold">Create Admin</h3>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          >
+            Create Admin
+          </button>
         </div>
-
-        {/* Form */}
-        <form className="p-5 space-y-4 overflow-y-auto h-[calc(100%-70px)]">
-          <input className="input" placeholder="First Name" />
-          <input className="input" placeholder="Middle Name" />
-          <input className="input" placeholder="Last Name" />
-          <input className="input" placeholder="Phone Number" />
-          <input className="input" placeholder="Email" />
-
-          <select className="input">
-            <option>Select Admin Type</option>
-            <option>Super Admin</option>
-            <option>Admin</option>
-            <option>Sub Admin</option>
-          </select>
-
-          <select className="input">
-            <option>Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
-
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border rounded-lg"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Save Admin
-            </button>
-          </div>
-        </form>
-      </div>
-    </>
+      </form>
+    </div>
   );
 };
 
