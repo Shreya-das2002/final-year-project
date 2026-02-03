@@ -326,10 +326,10 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "doctor list",
   "messages",
   "add doctor",
-  "appointment requests",
 
   "doctor dashboard",
   "doctor appointment",
+  "appointment requests",
 
   "logout",
 ];
@@ -337,15 +337,21 @@ export const SIDE_NAV_CONTROLS: string[] = [
 // menu ➜ route mapping
 export const MENU_ROUTE_MAP: Record<string, string> = {
   "patient dashboard": "/patient",
-  "symptom checker": "/patient/symptom-checker",
+  "symptom checker": "/patient/symptom_checker",
   "symptobot": "/patient/chatbot",
   "patient appointments": "/patient/appointments",
   "feedback": "/patient/feedback",
 
   "doctor dashboard": "/doctor",
   "doctor appointment": "/doctor/appointments",
+  "appointment requests": "/doctor/appointment_requests",
 
   "admin dashboard": "/admin",
+  "create admin": "/admin/create_admin",
+  "pending doctor list": "/admin/pending_doctor_list",
+  "doctor list": "/admin/doctor_list",
+  "messages": "/admin/messages",
+  "add doctor": "/admin/add_doctor",
 
   "logout": "/logout",
 };
