@@ -306,7 +306,8 @@ export const urls ={
   baseUrl : 'http://localhost:4000/api/',
   loginUrl :'auth/login',
   signupUrl : 'auth/signup',
-  profileurl : 'patient/profile'
+  profileurl : 'patient/profile',
+  createAdminUrl: 'admin/create'
 }
 
 
