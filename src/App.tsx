@@ -28,6 +28,9 @@ import Patientpage from "./Screen/Patient/Dashboard";
 import Profile from "./Screen/Patient/Profile";
 import PatientProfileView from "./Screen/Patient/Profile/PatientProfileView";
 import Feedback from "./Screen/Patient/Feedback";
+import SymptoChecker from "./Screen/Patient/SymptoChecker";
+import SymptoBot from "./Screen/Patient/SymptoBot";
+import Appointments from "./Screen/Patient/Appointments";
 
 import Admin from "./Screen/Admin";
 import PrivateRoute from "./Screen/Common/Route/PrivateRoute";
@@ -38,6 +41,7 @@ import PendingDoctorlist from "./Screen/Admin/PendingDoctorlist";
 import DoctorList from "./Screen/Admin/DoctorList";
 import AddDoctor from "./Screen/Admin/AddDoctor";
 import Messages from "./Screen/Admin/Messages";
+
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -125,6 +129,9 @@ const AppLayout: React.FC = () => {
               <Route path="profile" element={<Profile />} />
               <Route path="profile_edit" element={<PatientProfileView />} />
               <Route path="feedback" element={<Feedback />} />
+              <Route path="symptom_checker" element={<SymptoChecker/>} />
+              <Route path="symptobot" element={<SymptoBot/>} />
+              <Route path="patient_appointments" element={<Appointments/>} />
             </Route>
 
             {/* ADMIN */}
