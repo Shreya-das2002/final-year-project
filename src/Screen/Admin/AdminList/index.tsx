@@ -1,6 +1,20 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
+import type { RootState, AppDispatch } from "../../../../store/store";
 
 const AdminList = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { admins, loading } = useSelector(
+    (state: RootState) => state.admin
+  );
+
+  useEffect(() => {
+    dispatch(fetchAllAdmins());
+  }, [dispatch]);
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       
@@ -24,34 +38,66 @@ const AdminList = () => {
           </thead>
 
           <tbody>
-            <tr className="border-t hover:bg-gray-50">
-              <td className="p-4">Shruti Das</td>
-              <td className="p-4">superadmin@gmail.com</td>
-              <td className="p-4">9876543210</td>
-              <td className="p-4">Super Admin</td>
-              <td className="p-4 text-green-600 font-medium">Active</td>
+            {loading && (
+              <tr>
+                <td colSpan={6} className="p-6 text-center">
+                  Loading...
+                </td>
+              </tr>
+            )}
 
-              {/* ACTION ICONS */}
-              <td className="p-4">
-                <div className="flex justify-center gap-4">
-                  <button
-                    title="View Admin"
-                    className="text-gray-600 hover:text-blue-600"
-                    onClick={() => console.log("View admin")}
-                  >
-                    <EyeIcon className="w-5 h-5" />
-                  </button>
+            {!loading && admins.length === 0 && (
+              <tr>
+                <td colSpan={6} className="p-6 text-center text-gray-500">
+                  No admins found
+                </td>
+              </tr>
+            )}
 
-                  <button
-                    title="Edit Admin"
-                    className="text-gray-600 hover:text-green-600"
-                    onClick={() => console.log("Edit admin")}
-                  >
-                    <PencilSquareIcon className="w-5 h-5" />
-                  </button>
-                </div>
-              </td>
-            </tr>
+            {!loading &&
+              admins.map((admin) => (
+                <tr
+                  key={admin.admin_user_id}
+                  className="border-t hover:bg-gray-50"
+                >
+                  <td className="p-4">
+                    {admin.first_name} {admin.last_name}
+                  </td>
+                  <td className="p-4">{admin.email}</td>
+                  <td className="p-4">{admin.phone_no}</td>
+                  <td className="p-4">
+                    {admin.user_type === 1 ? "Super Admin" : "Admin"}
+                  </td>
+                  <td className="p-4 text-green-600 font-medium">
+                    {admin.status ?? "Active"}
+                  </td>
+
+                  {/* ACTION ICONS */}
+                  <td className="p-4">
+                    <div className="flex justify-center gap-4">
+                      <button
+                        title="View Admin"
+                        className="text-gray-600 hover:text-blue-600"
+                        onClick={() =>
+                          console.log("View admin", admin)
+                        }
+                      >
+                        <EyeIcon className="w-5 h-5" />
+                      </button>
+
+                      <button
+                        title="Edit Admin"
+                        className="text-gray-600 hover:text-green-600"
+                        onClick={() =>
+                          console.log("Edit admin", admin)
+                        }
+                      >
+                        <PencilSquareIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
