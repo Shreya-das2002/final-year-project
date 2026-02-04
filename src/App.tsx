@@ -131,7 +131,7 @@ const AppLayout: React.FC = () => {
             <Route
               path="/admin"
               element={
-                <PrivateRoute allowedRoles={["admin", "super admin"]}>
+                <PrivateRoute allowedRoles={["admin"]}>
                   <Admin />
                 </PrivateRoute>
               }

@@ -13,9 +13,9 @@ const PrivateRoute: React.FC<Props> = ({ children, allowedRoles }) => {
   const { token, isAuthenticated, role, authChecked } = useSelector(
     (state: RootState) => state.auth
   );
-
+  
   /* ================= WAIT FOR AUTH RESTORE ================= */
-  // ⛔ DO NOT redirect until we finish checking localStorage
+  //  DO NOT redirect until we finish checking localStorage
   if (!authChecked) {
     return null; // or a loader component
   }
@@ -36,10 +36,20 @@ const PrivateRoute: React.FC<Props> = ({ children, allowedRoles }) => {
   }
 
   /* ================= ROLE CHECK ================= */
-  if (allowedRoles && !allowedRoles.includes(role || "")) {
-    return <Navigate to="/" replace />;
+   if (allowedRoles) {
+    // Admin group access
+   if (role?.includes("admin")) {
+    return <>{children}</>;
   }
 
+    // Non-admin exact match
+    if (allowedRoles.includes(role || "")) {
+      return <>{children}</>;
+    }
+
+    // Role not allowed
+    return <Navigate to="/" replace />;
+  }
   /* ================= ACCESS GRANTED ================= */
   return <>{children}</>;
 };
