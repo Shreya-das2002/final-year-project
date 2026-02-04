@@ -34,6 +34,10 @@ import PrivateRoute from "./Screen/Common/Route/PrivateRoute";
 import CreateAdmin from "./Screen/Admin/Create Admin";
 import AdminList from "./Screen/Admin/AdminList";
 import AdminDashboard from "./Screen/Admin/Dashboard";
+import PendingDoctorlist from "./Screen/Admin/PendingDoctorlist";
+import DoctorList from "./Screen/Admin/DoctorList";
+import AddDoctor from "./Screen/Admin/AddDoctor";
+import Messages from "./Screen/Admin/Messages";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -135,6 +139,10 @@ const AppLayout: React.FC = () => {
               <Route index element={<AdminDashboard />} />
               <Route path="create_admin" element={<CreateAdmin />} />
               <Route path="admin_list" element={<AdminList/>} />
+              <Route path="pending_doctor_list" element={<PendingDoctorlist/>} />
+              <Route path="doctor_list" element={<DoctorList/>} />
+              <Route path="messages" element={<Messages/>} />
+              <Route path="add_doctor" element={<AddDoctor/>} />
             </Route>
 
           </Routes>
