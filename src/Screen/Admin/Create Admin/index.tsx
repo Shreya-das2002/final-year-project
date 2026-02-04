@@ -23,114 +23,145 @@ const CreateAdmin = () => {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      alert("Password and Confirm Password must be same");
+      alert("Password and Confirm Password must match");
       return;
     }
 
-    console.log("Create Admin Data:", form);
-    // API call goes here
+    console.log(form);
   };
 
+  const inputClass =
+    "w-full rounded-md border border-gray-400 px-3 py-2 text-sm " +
+    "focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none bg-white";
+
   return (
-    <div className="bg-white rounded-lg shadow p-6 max-w-4xl">
+    <div className="w-full px-6 py-4">
       <h2 className="text-xl font-semibold mb-6">Create Admin</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-      >
-        <input
-          name="firstName"
-          value={form.firstName}
-          onChange={handleChange}
-          className="input"
-          placeholder="First Name"
-          required
-        />
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* PERSONAL DETAILS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-1">First Name</label>
+            <input
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
 
-        <input
-          name="middleName"
-          value={form.middleName}
-          onChange={handleChange}
-          className="input"
-          placeholder="Middle Name"
-        />
+          <div>
+            <label className="block text-sm font-medium mb-1">Middle Name</label>
+            <input
+              name="middleName"
+              value={form.middleName}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
 
-        <input
-          name="lastName"
-          value={form.lastName}
-          onChange={handleChange}
-          className="input"
-          placeholder="Last Name"
-          required
-        />
+          <div>
+            <label className="block text-sm font-medium mb-1">Last Name</label>
+            <input
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+        </div>
 
-        <input
-          name="phone"
-          value={form.phone}
-          onChange={handleChange}
-          className="input"
-          placeholder="Phone Number"
-          required
-        />
+        {/* CONTACT DETAILS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Phone Number
+            </label>
+            <input
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
 
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          className="input"
-          placeholder="Email"
-          required
-        />
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+        </div>
 
-        <select
-          name="adminType"
-          value={form.adminType}
-          onChange={handleChange}
-          className="input"
-          required
-        >
-          <option value="">Select Admin Type</option>
-          <option>Super Admin</option>
-          <option>Admin</option>
-          <option>Sub Admin</option>
-        </select>
+        {/* ROLE DETAILS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-1">Admin Type</label>
+            <select
+              name="adminType"
+              value={form.adminType}
+              onChange={handleChange}
+              className={inputClass}
+            >
+              <option value="">Select Admin Type</option>
+              <option>Super Admin</option>
+              <option>Admin</option>
+              <option>Sub Admin</option>
+            </select>
+          </div>
 
-        <select
-          name="gender"
-          value={form.gender}
-          onChange={handleChange}
-          className="input"
-          required
-        >
-          <option value="">Select Gender</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
+          <div>
+            <label className="block text-sm font-medium mb-1">Gender</label>
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className={inputClass}
+            >
+              <option value="">Select Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          className="input"
-          placeholder="Password"
-          required
-        />
+        {/* SECURITY */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
 
-        <input
-          type="password"
-          name="confirmPassword"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          className="input"
-          placeholder="Confirm Password"
-          required
-        />
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+        </div>
 
-        <div className="md:col-span-2 flex justify-end gap-3 mt-4">
+        {/* ACTIONS */}
+        <div className="flex justify-end gap-4 pt-4">
           <button
             type="reset"
             onClick={() =>
@@ -146,14 +177,14 @@ const CreateAdmin = () => {
                 confirmPassword: "",
               })
             }
-            className="border px-5 py-2 rounded-lg"
+            className="px-6 py-2 border border-gray-400 rounded-md text-sm"
           >
-            Reset
+            Clear
           </button>
 
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            className="px-6 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
           >
             Create Admin
           </button>
