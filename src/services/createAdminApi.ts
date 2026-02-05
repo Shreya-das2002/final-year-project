@@ -21,3 +21,8 @@ export const createAdminApi = (data: CreateAdminPayload) => {
     validateStatus: () => true, // accept all status codes
   });
 };
+
+export const getAllAdminsApi = async () => {
+  const response = await API.get(urls.getAllAdminsUrl);
+  return response.data.data;
+};

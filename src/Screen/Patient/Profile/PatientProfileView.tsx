@@ -68,8 +68,8 @@ const PatientProfileView: React.FC = () => {
   /* ================= UI ================= */
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-3xl bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl shadow-xl p-10 text-center">
+    <div className="min-h-screen w-full flex items-center justify-center p-6">
+      <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl shadow-xl p-10 text-center">
 
         {/* ================= PROFILE HEADER ================= */}
         <div className="flex flex-col items-center">

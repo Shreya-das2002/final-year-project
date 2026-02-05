@@ -307,7 +307,8 @@ export const urls ={
   loginUrl :'auth/login',
   signupUrl : 'auth/signup',
   profileurl : 'patient/profile',
-  createAdminUrl : 'admin/create'
+  createAdminUrl : 'admin/create',
+  getAllAdminsUrl: 'admin/alladmins'
 }
 
 

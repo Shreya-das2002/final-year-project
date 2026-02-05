@@ -1,31 +1,53 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { getAllAdminsApi } from "../../src/services/createAdminApi";
+import type { RootState } from "../store";
 
 /* ================= ADMIN TYPES ================= */
+
+interface AdminUserInfo {
+  user_type: string;
+}
 
 interface Admin {
   admin_user_id: number;
   first_name: string;
-  middle_name: string | null;
+  middle_name?: string | null;
   last_name: string;
-  email: string;
-  phone_no: string;
-  gender: number | null;
-  user_type: number;
-  status?: string;
+  email?: string;
+  created_on?: string;
+  user?: AdminUserInfo;
 }
 
 /* ================= ADMIN STATE ================= */
 
 interface AdminState {
   admins: Admin[];
+  loading: boolean;
 }
 
 /* ================= INITIAL STATE ================= */
 
 const initialState: AdminState = {
   admins: [],
+  loading: false,
 };
+
+/* ================= THUNK ================= */
+
+export const fetchAllAdmins = createAsyncThunk<Admin[]>(
+  "admin/alladmins",
+  async () => {
+    return await getAllAdminsApi();
+  },
+  {
+    condition: (_, { getState }) => {
+      const state = getState() as RootState;
+      if (state.admin.loading) return false;
+      return true;
+    },
+  }
+);
 
 /* ================= SLICE ================= */
 
@@ -33,17 +55,11 @@ const adminSlice = createSlice({
   name: "admin",
   initialState,
   reducers: {
-    addAdmin(
-      state,
-      action: PayloadAction<Admin>
-    ) {
+    addAdmin(state, action: PayloadAction<Admin>) {
       state.admins.push(action.payload);
     },
 
-    setAdmins(
-      state,
-      action: PayloadAction<Admin[]>
-    ) {
+    setAdmins(state, action: PayloadAction<Admin[]>) {
       state.admins = action.payload;
     },
 
@@ -51,14 +67,26 @@ const adminSlice = createSlice({
       state.admins = [];
     },
   },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAllAdmins.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        fetchAllAdmins.fulfilled,
+        (state, action: PayloadAction<Admin[]>) => {
+          state.loading = false;
+          state.admins = action.payload;
+        }
+      )
+      .addCase(fetchAllAdmins.rejected, (state) => {
+        state.loading = false;
+      });
+  },
 });
 
 /* ================= EXPORTS ================= */
 
-export const {
-  addAdmin,
-  setAdmins,
-  clearAdmins,
-} = adminSlice.actions;
-
+export const { addAdmin, setAdmins, clearAdmins } = adminSlice.actions;
 export default adminSlice.reducer;
