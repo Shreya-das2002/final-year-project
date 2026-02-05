@@ -24,5 +24,5 @@ export const createAdminApi = (data: CreateAdminPayload) => {
 
 export const getAllAdminsApi = async () => {
   const response = await API.get(urls.getAllAdminsUrl);
-  return response.data;
+  return response.data.data;
 };
