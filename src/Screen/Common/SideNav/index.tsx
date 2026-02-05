@@ -5,6 +5,10 @@ import type { RootState } from "../../../../store/store";
 import { logout } from "../../../../store/slices/authSlice";
 import { MENU_ROUTE_MAP, SIDE_NAV_CONTROLS } from "../../../Environment";
 
+interface SideNavProps {
+  onProfileClick?: () => void;
+}
+
 interface Menu {
   control_master_id: number;
   control_key: string;
@@ -14,31 +18,38 @@ interface Menu {
   status: string;
 }
 
-const SideNav: React.FC = () => {
+const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.auth.user);
   const menus = useSelector((state: RootState) => state.auth.menus);
+  const role = useSelector((state: RootState) => state.auth.role);
 
-  /* ================= ORDER (FRONTEND) + VISIBILITY (BACKEND) ================= */
+  const normalizedRole = role?.toLowerCase();
 
   const orderedMenus: Menu[] = SIDE_NAV_CONTROLS
     .map(key => menus.find(menu => menu.control_key === key))
     .filter((menu): menu is Menu => Boolean(menu));
 
-  /* ================= AVATAR ================= */
-
   const firstLetter = user?.first_name?.charAt(0)?.toUpperCase() || "";
   const lastLetter = user?.last_name?.charAt(0)?.toUpperCase() || "";
 
-  /* ================= PROFILE NAV ================= */
-
   const handleProfileClick = () => {
-    navigate("/patient/profile_edit"); // or generic profile route
-  };
+    console.log("PROFILE CLICK", normalizedRole); // 🔍 debug
 
-  /* ================= MENU CLICK ================= */
+    if (!user) return;
+
+    if (normalizedRole === "patient") {
+      navigate("/patient/profile_edit");
+      return;
+    }
+
+  // Any type of admin (super admin, standard admin, guest admin)
+  if (normalizedRole?.includes("admin")) {
+    onProfileClick?.(); // ✅ OPENS DRAWER
+  }
+  };
 
   const handleMenuClick = (controlKey: string) => {
     if (controlKey === "logout") {
@@ -53,15 +64,15 @@ const SideNav: React.FC = () => {
   };
 
   return (
-    <aside className=" fixed top-16 bottom-12 left-0 w-64 bg-blue-900 text-white flex flex-col z-40">
-
+    <aside className="fixed top-16 bottom-12 left-0 w-64 bg-blue-900 text-white flex flex-col z-40">
       {/* PROFILE */}
       <div
         className="flex flex-col items-center py-6 border-b border-blue-700 cursor-pointer"
         onClick={handleProfileClick}
       >
         <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold mb-2">
-          {firstLetter}{lastLetter}
+          {firstLetter}
+          {lastLetter}
         </div>
 
         <p className="font-semibold text-center">
