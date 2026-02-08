@@ -129,6 +129,10 @@ export interface  FAQItem  {
 
 ];
 
+export const HEALTH_TIPS = [
+  
+];
+
 
 // Password strength levels
 export type PasswordStrength = "Weak" | "Medium" | "Strong";
@@ -323,11 +327,12 @@ export const SIDE_NAV_CONTROLS: string[] = [
 
   "admin dashboard",
   "create admin",
+  "add doctor",
   "admin list",
   "pending doctor list",
   "doctor list",
   "messages",
-  "add doctor",
+  
 
   "doctor dashboard",
   "doctor appointment",
@@ -364,3 +369,20 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
 export const getRoute = (controlKey: string): string => {
   return MENU_ROUTE_MAP[controlKey] || "/";
 };
+
+
+
+export const DOCTOR_SPECIALIZATIONS = [
+  "General Physician",
+  "Cardiologist",
+  "Dermatologist",
+  "Pediatrician",
+  "Gynecologist",
+  "Orthopedic",
+  "Neurologist",
+  "Psychiatrist",
+  "ENT Specialist",
+  "Ophthalmologist",
+  "Dentist",
+  "General Surgeon"
+];

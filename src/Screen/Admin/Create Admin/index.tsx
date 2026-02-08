@@ -5,6 +5,15 @@ import { toast } from "react-hot-toast";
 import { createAdminApi } from "../../../services/createAdminApi";
 import { addAdmin } from "../../../../store/slices/adminSlice";
 
+// ✅ import from environment.ts
+import {
+  isStrongPassword,
+  doPasswordsMatch,
+  getPasswordStrength,
+  genderOptions,
+  isValidGender,
+} from "../../../Environment";
+
 const CreateAdmin = () => {
   const dispatch = useDispatch();
 
@@ -22,6 +31,15 @@ const CreateAdmin = () => {
 
   const [loading, setLoading] = useState(false);
 
+  /* ================= PASSWORD UI STATE ================= */
+
+  // ✅ calculate outside submit so UI updates live
+  const passwordStrength = getPasswordStrength(form.password);
+
+  const passwordsMatch =
+    form.confirmPassword.length === 0 ||
+    doPasswordsMatch(form.password, form.confirmPassword);
+
   /* ================= HANDLERS ================= */
 
   const handleChange = (
@@ -31,13 +49,14 @@ const CreateAdmin = () => {
   };
 
   const mapAdminType = (value: string): number | undefined => {
-    if (value === "Super Admin") return 1;
     if (value === "Standard Admin") return 2;
     if (value === "Guest Admin") return 3;
     return undefined;
   };
 
   const mapGender = (value: string): number | undefined => {
+    if (!isValidGender(value.toLowerCase())) return undefined;
+
     if (value === "Male") return 1;
     if (value === "Female") return 2;
     if (value === "Other") return 3;
@@ -49,17 +68,21 @@ const CreateAdmin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // password validation (same pattern as signup)
-    if (form.password !== form.confirmPassword) {
+    if (!doPasswordsMatch(form.password, form.confirmPassword)) {
       toast.error("Password and Confirm Password must match");
       return;
     }
 
-    // resolve required values FIRST
+    if (!isStrongPassword(form.password)) {
+      toast.error(
+        "Password must be at least 8 characters with uppercase, lowercase, number and special character"
+      );
+      return;
+    }
+
     const adminTypeValue = mapAdminType(form.adminType);
     const genderValue = mapGender(form.gender);
 
-    // admin type is REQUIRED
     if (!adminTypeValue) {
       toast.error("Please select Admin Type");
       return;
@@ -71,8 +94,8 @@ const CreateAdmin = () => {
       last_name: form.lastName,
       phone_no: form.phone,
       email: form.email,
-      admin_type: adminTypeValue, // now always number
-      gender: genderValue,         // optional
+      admin_type: adminTypeValue,
+      gender: genderValue,
       password: form.password,
     };
 
@@ -82,12 +105,10 @@ const CreateAdmin = () => {
       const res = await createAdminApi(payload);
 
       if (res.data.success) {
-        // store in redux (same style as auth/profile)
         dispatch(addAdmin(res.data.data));
 
         toast.success("Admin created successfully");
 
-        // reset form
         setForm({
           firstName: "",
           middleName: "",
@@ -173,7 +194,6 @@ const CreateAdmin = () => {
             className={inputClass}
           >
             <option value="">Select Admin Type</option>
-            <option>Super Admin</option>
             <option>Standard Admin</option>
             <option>Guest Admin</option>
           </select>
@@ -185,30 +205,68 @@ const CreateAdmin = () => {
             className={inputClass}
           >
             <option value="">Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
+
+            {genderOptions.map((g) => (
+              <option key={g.value} value={g.label}>
+                {g.label}
+              </option>
+            ))}
           </select>
         </div>
 
         {/* SECURITY */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            className={inputClass}
-            placeholder="Password"
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            className={inputClass}
-            placeholder="Confirm Password"
-          />
+
+          {/* Password */}
+          <div>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="Password"
+            />
+
+            {form.password && (
+              <p
+                className={`text-sm mt-1 ${
+                  passwordStrength === "Strong"
+                    ? "text-green-600"
+                    : passwordStrength === "Medium"
+                    ? "text-yellow-600"
+                    : "text-red-600"
+                }`}
+              >
+                {passwordStrength}
+              </p>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="Confirm Password"
+            />
+
+            {form.confirmPassword && !passwordsMatch && (
+              <p className="text-red-600 text-sm mt-1">
+                Password does not match
+              </p>
+            )}
+
+            {form.confirmPassword && passwordsMatch && (
+              <p className="text-green-600 text-sm mt-1">
+                Password match
+              </p>
+            )}
+          </div>
+
         </div>
 
         {/* ACTIONS */}
@@ -221,6 +279,7 @@ const CreateAdmin = () => {
             {loading ? "Creating..." : "Create Admin"}
           </button>
         </div>
+
       </form>
     </div>
   );

@@ -4,15 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
-import { FaEdit, FaUserCircle } from "react-icons/fa";
+import { FaEdit, FaUserCircle, FaTimes } from "react-icons/fa";
 import { MdEmail, MdPhone, MdCake } from "react-icons/md";
 import { GiMedicalPack } from "react-icons/gi";
 import { RiVirusLine } from "react-icons/ri";
 
 import { getGenderLabel } from "../../../Environment";
 import { setProfile } from "../../../../store/slices/authSlice";
-
-/* ================= BLOOD GROUP MAP ================= */
 
 const bloodGroupMap: Record<number, string> = {
   1: "A+",
@@ -25,16 +23,17 @@ const bloodGroupMap: Record<number, string> = {
   8: "O-",
 };
 
-const PatientProfileView: React.FC = () => {
+interface Props {
+  open: boolean;
+  onClose: () => void;
+}
+
+const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  /* ================= REDUX ================= */
-
   const user = useSelector((state: RootState) => state.auth.user);
   const profile = useSelector((state: RootState) => state.auth.profile);
-
-  /* ================= LOCALSTORAGE FALLBACK (ONCE) ================= */
 
   const hydrated = useRef(false);
 
@@ -48,11 +47,7 @@ const PatientProfileView: React.FC = () => {
     }
   }, [profile, dispatch]);
 
-  if (!user) {
-    return <p className="text-center mt-10">No profile data</p>;
-  }
-
-  /* ================= DERIVED DATA ================= */
+  if (!user) return null;
 
   const dob = profile?.dob || user?.dob || null;
   const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
@@ -65,81 +60,110 @@ const PatientProfileView: React.FC = () => {
 
   const image = localStorage.getItem("profileImage");
 
-  /* ================= UI ================= */
-
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6">
-      <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl shadow-xl p-10 text-center">
+    <>
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
+          open ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+        onClick={onClose}
+      />
 
-        {/* ================= PROFILE HEADER ================= */}
-        <div className="flex flex-col items-center">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-2xl font-semibold shadow-md">
-            {image ? (
-              <img src={image} alt="profile" className="w-full h-full object-cover" />
-            ) : (
-              initials || "P"
-            )}
-          </div>
-
-          <h2 className="mt-4 text-2xl font-semibold text-gray-800">
-            {fullName}
-          </h2>
-
-          <p className="text-gray-500 flex items-center gap-2">
-            <MdEmail /> {user.email}
-          </p>
-
-          <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm">
-            <span className="px-4 py-2 bg-blue-50 rounded-full flex items-center gap-2 shadow text-gray-700">
-              <MdPhone /> {user.phone_no || "—"}
-            </span>
-
-            <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-              <FaUserCircle /> {getGenderLabel(user.gender) || "—"}
-            </span>
-
-            <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-              <MdCake /> Age: {age ?? "—"}
-            </span>
-          </div>
-
-          <button
-            onClick={() => navigate("/patient/profile")}
-            className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
-          >
-            <FaEdit />
-            Edit Profile
+      {/* Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-[420px] shadow-2xl z-50 transform transition-transform duration-300 ${
+          open ? "translate-x-0" : "translate-x-full"
+        } overflow-y-auto`}
+      >
+        {/* Close button */}
+      
+          <button onClick={onClose}>
+            <FaTimes className="text-gray-500 hover:text-red-500" />
           </button>
-        </div>
+        
 
-        {/* ================= MEDICAL + ALLERGIES ================= */}
-        <div className="mt-10 bg-gradient-to-br from-sky-50 to-blue-100 rounded-xl shadow-md p-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+        {/* Your existing UI */}
+        <div className="p-6">
+          <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl shadow-xl p-6 text-center">
 
-          <div>
-            <h3 className="text-blue-600 font-semibold mb-2 flex items-center gap-2">
-              <GiMedicalPack /> Medical Details
-            </h3>
-            <p className="text-gray-700 text-sm">
-              <span className="font-medium">Blood Group:</span>{" "}
-              {profile?.blood_group
-                ? bloodGroupMap[profile.blood_group]
-                : "—"}
-            </p>
-          </div>
+            {/* Profile Header */}
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-2xl font-semibold shadow-md">
+                {image ? (
+                  <img src={image} alt="profile" className="w-full h-full object-cover" />
+                ) : (
+                  initials || "P"
+                )}
+              </div>
 
-          <div>
-            <h3 className="text-pink-600 font-semibold mb-2 flex items-center gap-2">
-              <RiVirusLine /> Allergies
-            </h3>
-            <p className="text-gray-700 text-sm">
-              {profile?.allergies?.length
-                ? profile.allergies.join(", ")
-                : "—"}
-            </p>
+              <h2 className="mt-4 text-xl font-semibold text-gray-800">
+                {fullName}
+              </h2>
+
+              <p className="text-gray-500 flex items-center gap-2">
+                <MdEmail /> {user.email}
+              </p>
+
+              <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm">
+                <span className="px-4 py-2 bg-blue-50 rounded-full flex items-center gap-2 shadow text-gray-700">
+                  <MdPhone /> {user.phone_no || "—"}
+                </span>
+
+                <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
+                  <FaUserCircle /> {getGenderLabel(user.gender) || "—"}
+                </span>
+
+                <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
+                  <MdCake /> Age: {age ?? "—"}
+                </span>
+              </div>
+
+              <button
+                onClick={() => {
+                navigate("/patient/profile");
+                onClose();
+                  }}
+
+                className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+              >
+                <FaEdit />
+                Edit Profile
+              </button>
+            </div>
+
+            {/* Medical + Allergies */}
+            <div className="mt-6 bg-gradient-to-br from-sky-50 to-blue-100 rounded-xl shadow-md p-4 grid grid-cols-1 gap-4 text-left">
+
+              <div>
+                <h3 className="text-blue-600 font-semibold mb-1 flex items-center gap-2">
+                  <GiMedicalPack /> Medical Details
+                </h3>
+                <p className="text-gray-700 text-sm">
+                  <span className="font-medium">Blood Group:</span>{" "}
+                  {profile?.blood_group
+                    ? bloodGroupMap[profile.blood_group]
+                    : "—"}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-pink-600 font-semibold mb-1 flex items-center gap-2">
+                  <RiVirusLine /> Allergies
+                </h3>
+                <p className="text-gray-700 text-sm">
+                  {profile?.allergies?.length
+                    ? profile.allergies.join(", ")
+                    : "—"}
+                </p>
+              </div>
+
+            </div>
+
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
