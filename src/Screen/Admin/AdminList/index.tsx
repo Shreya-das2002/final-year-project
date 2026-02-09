@@ -13,26 +13,31 @@ type AdminRoleUI = {
 
 /* ================= ROLE LABEL HELPER ================= */
 
-const getAdminTypeLabel = (userType?: number): AdminRoleUI => {
-  switch (userType) {
-    case 1:
+const getAdminTypeLabel = (role?: string): AdminRoleUI => {
+  const normalized = role?.toLowerCase();
+
+  switch (normalized) {
+    case "super admin":
       return {
         label: "Super Admin",
         className: "bg-purple-100 text-purple-700",
       };
-    case 2:
+
+    case "standard admin":
       return {
         label: "Standard Admin",
         className: "bg-blue-100 text-blue-700",
       };
-    case 3:
+
+    case "guest admin":
       return {
         label: "Guest Admin",
         className: "bg-gray-100 text-gray-700",
       };
+
     default:
       return {
-        label: "Unknown",
+        label: role || "Unknown",
         className: "bg-red-100 text-red-700",
       };
   }
@@ -45,31 +50,29 @@ const AdminList = () => {
     (state: RootState) => state.admin
   );
 
-  /* ================= SEARCH ================= */
-
   const [search, setSearch] = useState("");
+
+  /* ================= FETCH ADMINS ================= */
 
   useEffect(() => {
     dispatch(fetchAllAdmins());
   }, [dispatch]);
 
-  /* ================= FILTERED ADMINS (FIXED) ================= */
+  /* ================= FILTER ADMINS ================= */
 
   const filteredAdmins = useMemo(() => {
     const q = search.toLowerCase();
 
-    // ✅ SAFE ARRAY INSIDE useMemo (NO WARNING)
     const safeAdmins = Array.isArray(admins) ? admins : [];
 
     return safeAdmins.filter((admin) => {
-      const userType = Number(admin.user?.user_type);
-      const roleText = getAdminTypeLabel(userType).label.toLowerCase();
+      const roleText = getAdminTypeLabel(admin.role).label.toLowerCase();
 
       return (
         `${admin.first_name} ${admin.last_name}`
           .toLowerCase()
           .includes(q) ||
-        (admin.email ?? "").includes(q) ||
+        (admin.email ?? "").toLowerCase().includes(q) ||
         roleText.includes(q)
       );
     });
@@ -79,6 +82,7 @@ const AdminList = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen rounded-xl shadow-sm">
+
       {/* Header + Search */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-blue-600">
@@ -87,28 +91,31 @@ const AdminList = () => {
 
         <input
           type="text"
-          placeholder="Search by name, phone, or type..."
+          placeholder="Search by name, email, or role..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-72 px-4 py-2 border rounded-full shadow-sm
-                     focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
       {/* Table */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <table className="w-full text-left">
+
           <thead className="bg-blue-50">
             <tr>
               <th className="p-4">Sl. No.</th>
               <th className="p-4">Name</th>
               <th className="p-4">Email</th>
-              <th className="p-4">Admin Type</th>
+              <th className="p-4">Role</th>
               <th className="p-4 text-center">Action</th>
             </tr>
           </thead>
 
           <tbody>
+
+            {/* Loading */}
             {loading && (
               <tr>
                 <td colSpan={5} className="p-6 text-center">
@@ -117,6 +124,7 @@ const AdminList = () => {
               </tr>
             )}
 
+            {/* No Data */}
             {!loading && filteredAdmins.length === 0 && (
               <tr>
                 <td
@@ -128,22 +136,23 @@ const AdminList = () => {
               </tr>
             )}
 
+            {/* Admin Rows */}
             {!loading &&
               filteredAdmins.map((admin, index) => {
-                const userType = Number(admin.user?.user_type);
-                const role = getAdminTypeLabel(userType);
+                const role = getAdminTypeLabel(admin.role);
 
                 return (
                   <tr
                     key={admin.admin_user_id}
                     className="border-t hover:bg-gray-50"
                   >
+
                     <td className="p-4 font-medium">
                       {index + 1}
                     </td>
 
                     <td className="p-4 font-medium">
-                      {admin.first_name} {admin.last_name}
+                      {admin.first_name} {admin.middle_name ?? ""} {admin.last_name}
                     </td>
 
                     <td className="p-4">
@@ -160,6 +169,8 @@ const AdminList = () => {
 
                     <td className="p-4">
                       <div className="flex justify-center gap-4">
+
+                        {/* View */}
                         <button
                           type="button"
                           className="text-gray-600 hover:text-blue-600"
@@ -167,18 +178,23 @@ const AdminList = () => {
                           <EyeIcon className="w-5 h-5" />
                         </button>
 
+                        {/* Edit */}
                         <button
                           type="button"
                           className="text-gray-600 hover:text-green-600"
                         >
                           <PencilSquareIcon className="w-5 h-5" />
                         </button>
+
                       </div>
                     </td>
+
                   </tr>
                 );
               })}
+
           </tbody>
+
         </table>
       </div>
     </div>

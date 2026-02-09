@@ -14,6 +14,7 @@ interface Admin {
   first_name: string;
   middle_name?: string | null;
   last_name: string;
+  role: string;
   email?: string;
   created_on?: string;
   user?: AdminUserInfo;
