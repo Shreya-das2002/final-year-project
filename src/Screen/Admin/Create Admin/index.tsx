@@ -97,6 +97,7 @@ const CreateAdmin = () => {
       admin_type: adminTypeValue,
       gender: genderValue,
       password: form.password,
+      confirm_password: form.confirmPassword, 
     };
 
     setLoading(true);

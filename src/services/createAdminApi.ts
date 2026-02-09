@@ -27,6 +27,7 @@ export interface CreateAdminPayload {
   admin_type: number;   // 1,2,3
   gender?: number;
   password: string;
+  confirm_password: string; 
 }
 
 /* ================= CREATE ADMIN API ================= */
