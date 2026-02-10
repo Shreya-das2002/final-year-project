@@ -474,7 +474,8 @@ export const urls ={
   signupUrl : 'auth/signup',
   profileurl : 'patient/profile',
   createAdminUrl : 'admin/create',
-  getAllAdminsUrl: 'admin/alladmins'
+  getAllAdminsUrl: 'admin/alladmins',
+  createDoctorUrl: 'doctor/create'
 }
 
 
@@ -534,17 +535,28 @@ export const getRoute = (controlKey: string): string => {
 
 
 
+/* ================= GENDER OPTIONS ================= */
+
+export const genderOption = [
+  { label: "Male", value: 1 },
+  { label: "Female", value: 2 },
+  { label: "Others", value: 3 },
+];
+
+
+/* ================= SPECIALIZATION OPTIONS ================= */
+
 export const DOCTOR_SPECIALIZATIONS = [
-  "General Physician",
-  "Cardiologist",
-  "Dermatologist",
-  "Pediatrician",
-  "Gynecologist",
-  "Orthopedic",
-  "Neurologist",
-  "Psychiatrist",
-  "ENT Specialist",
-  "Ophthalmologist",
-  "Dentist",
-  "General Surgeon"
+  { label: "General Physician", value: 1 },
+  { label: "Cardiologist", value: 2 },
+  { label: "Dermatologist", value: 3 },
+  { label: "Pediatrician", value: 4 },
+  { label: "General Surgeon", value: 5 },
+  { label: "Dentist", value: 6 },
+  { label: "Ophthalmologist", value: 7 },
+  { label: "ENT Specialist", value: 8 },
+  { label: "Psychiatrist", value: 9 },
+  { label: "Neurologist", value: 10 },
+  { label: "Orthopedic", value: 11 },
+  { label: "Gynecologist", value: 12 },
 ];

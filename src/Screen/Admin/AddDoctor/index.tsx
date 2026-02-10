@@ -1,126 +1,172 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-hot-toast";
-import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
-// import { createDoctorApi } from "../../../services/createDoctorApi";
-// import { addDoctor } from "../../../../store/slices/doctorSlice";
+import type { AppDispatch } from "../../../../store/store";
+import { createDoctorThunk } from "../../../../store/slices/doctorSlice";
 
 import {
   isStrongPassword,
   doPasswordsMatch,
   getPasswordStrength,
-  genderOptions,
+  genderOption,
+  DOCTOR_SPECIALIZATIONS
 } from "../../../Environment";
+
 
 const AddDoctor: React.FC = () => {
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+
+
+  /* ================= STATE ================= */
 
   const [form, setForm] = useState({
+
     firstName: "",
     middleName: "",
     lastName: "",
     email: "",
     phone: "",
     gender: "",
-    specializationId: "",
+    specialization: "",
     password: "",
-    confirmPassword: "",
-    status: "active",
+    confirmPassword: ""
+
   });
+
 
   const [loading, setLoading] = useState(false);
 
-  /* Password strength */
+
+  /* ================= PASSWORD CHECK ================= */
+
   const passwordStrength = getPasswordStrength(form.password);
 
   const passwordsMatch =
     form.confirmPassword.length === 0 ||
     doPasswordsMatch(form.password, form.confirmPassword);
 
-  /* Handle change */
+
+  /* ================= HANDLE CHANGE ================= */
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ): void => {
+  ) => {
 
     setForm({
+
       ...form,
-      [e.target.name]: e.target.value,
+
+      [e.target.name]: e.target.value
+
     });
 
   };
 
-  /* Submit */
-  const handleSubmit = async (
-    e: React.FormEvent
-  ): Promise<void> => {
+
+  /* ================= SUBMIT ================= */
+
+  const handleSubmit = async (e: React.FormEvent) => {
 
     e.preventDefault();
 
-    if (!doPasswordsMatch(form.password, form.confirmPassword)) {
-      toast.error("Password and Confirm Password must match");
+
+    if (!form.gender) {
+
+      toast.error("Please select gender");
       return;
+
     }
 
-    if (!isStrongPassword(form.password)) {
-      toast.error("Password is not strong enough");
-      return;
-    }
 
-    if (!form.specializationId) {
+    if (!form.specialization) {
+
       toast.error("Please select specialization");
       return;
+
     }
 
+
+    if (!doPasswordsMatch(form.password, form.confirmPassword)) {
+
+      toast.error("Passwords do not match");
+      return;
+
+    }
+
+
+    if (!isStrongPassword(form.password)) {
+
+      toast.error("Password is not strong enough");
+      return;
+
+    }
+
+
     const payload = {
-      first_name: form.firstName,
-      middle_name: form.middleName || undefined,
-      last_name: form.lastName,
-      email: form.email,
-      phone_no: form.phone,
-      gender: form.gender,
-      specialization_id: Number(form.specializationId),
-      password: form.password,
-      status: form.status,
-    };
+
+  first_name: form.firstName,
+
+  middle_name: form.middleName || undefined,
+
+  last_name: form.lastName,
+
+  email: form.email,
+
+  phone_no: form.phone,
+
+  gender: Number(form.gender),
+
+  specialization: Number(form.specialization),
+
+  password: form.password,
+
+  confirm_password: form.confirmPassword
+
+};
 
     setLoading(true);
 
+
     try {
 
-      const res = await createDoctorApi(payload);
+      const result = await dispatch(createDoctorThunk(payload));
 
-      if (res.data.success) {
 
-        dispatch(addDoctor(res.data.data));
+      if (createDoctorThunk.fulfilled.match(result)) {
 
-        toast.success("Doctor account created successfully");
+        toast.success("Doctor created successfully and pending for approval");
+
 
         setForm({
+
           firstName: "",
           middleName: "",
           lastName: "",
           email: "",
           phone: "",
           gender: "",
-          specializationId: "",
+          specialization: "",
           password: "",
-          confirmPassword: "",
-          status: "active",
+          confirmPassword: ""
+
         });
 
-      } else {
+      }
+      else {
 
-        toast.error(res.data.message);
+        toast.error(result.payload as string);
 
       }
 
-    } catch {
+    }
+    catch {
 
       toast.error("Something went wrong");
 
-    } finally {
+    }
+    finally {
 
       setLoading(false);
 
@@ -128,9 +174,15 @@ const AddDoctor: React.FC = () => {
 
   };
 
+
+  /* ================= INPUT STYLE ================= */
+
   const inputClass =
     "w-full rounded-md border border-gray-300 px-3 py-2 text-sm " +
-    "focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none bg-white";
+    "focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none";
+
+
+  /* ================= UI ================= */
 
   return (
 
@@ -140,25 +192,29 @@ const AddDoctor: React.FC = () => {
         Add Doctor
       </h2>
 
+
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* Personal Information */}
+
+        {/* PERSONAL */}
+
         <div className="bg-white border rounded-lg p-6 space-y-4">
 
           <h3 className="font-semibold">
             Personal Information
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-6">
 
             <input
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
               className={inputClass}
-              placeholder="First Name *"
+              placeholder="First Name"
               required
             />
+
 
             <input
               name="middleName"
@@ -168,12 +224,13 @@ const AddDoctor: React.FC = () => {
               placeholder="Middle Name"
             />
 
+
             <input
               name="lastName"
               value={form.lastName}
               onChange={handleChange}
               className={inputClass}
-              placeholder="Last Name *"
+              placeholder="Last Name"
               required
             />
 
@@ -181,14 +238,16 @@ const AddDoctor: React.FC = () => {
 
         </div>
 
-        {/* Contact Information */}
+
+        {/* CONTACT */}
+
         <div className="bg-white border rounded-lg p-6 space-y-4">
 
           <h3 className="font-semibold">
             Contact Information
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6">
 
             <input
               type="email"
@@ -196,16 +255,17 @@ const AddDoctor: React.FC = () => {
               value={form.email}
               onChange={handleChange}
               className={inputClass}
-              placeholder="Email *"
+              placeholder="Email"
               required
             />
+
 
             <input
               name="phone"
               value={form.phone}
               onChange={handleChange}
               className={inputClass}
-              placeholder="Phone Number *"
+              placeholder="Phone Number"
               required
             />
 
@@ -213,53 +273,89 @@ const AddDoctor: React.FC = () => {
 
         </div>
 
-        {/* Professional Information */}
+
+        {/* PROFESSIONAL */}
+
         <div className="bg-white border rounded-lg p-6 space-y-4">
 
           <h3 className="font-semibold">
             Professional Information
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6">
+
+
+            {/* GENDER */}
+
+           <select
+  name="gender"
+  value={form.gender}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      gender: e.target.value
+    })
+  }
+  className={inputClass}
+  required
+>
+  <option value="">
+    Select Gender
+  </option>
+
+  {genderOption.map((g) => (
+    <option key={g.value} value={g.value}>
+      {g.label}
+    </option>
+  ))}
+
+</select>
+
+
+            {/* SPECIALIZATION */}
 
             <select
-              name="gender"
-              value={form.gender}
+              name="specialization"
+              value={form.specialization}
               onChange={handleChange}
               className={inputClass}
               required
             >
-              <option value="">Select Gender *</option>
 
-              {genderOptions.map((g) => (
-                <option key={g.value} value={g.value}>
-                  {g.label}
+              <option value="">
+                Select Specialization
+              </option>
+
+              {DOCTOR_SPECIALIZATIONS.map((spec) => (
+
+                <option key={spec.value} value={spec.value}>
+
+                  {spec.label}
+
                 </option>
+
               ))}
 
             </select>
 
-            <select name="specialization" className="input">
-  <option value="">Select Specialization</option>
 
-  {DOCTOR_SPECIALIZATIONS.map((spec) => (
-    <option key={spec} value={spec}>
-      {spec}
-    </option>
-  ))}
-</select>
           </div>
 
         </div>
 
-        {/* Security */}
+
+        {/* SECURITY */}
+
         <div className="bg-white border rounded-lg p-6 space-y-4">
 
           <h3 className="font-semibold">
             Account Security
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6">
+
+
+            {/* PASSWORD */}
 
             <div>
 
@@ -269,27 +365,24 @@ const AddDoctor: React.FC = () => {
                 value={form.password}
                 onChange={handleChange}
                 className={inputClass}
-                placeholder="Password *"
+                placeholder="Password"
                 required
               />
 
               {form.password && (
 
-                <p
-                  className={`text-sm mt-1 ${
-                    passwordStrength === "Strong"
-                      ? "text-green-600"
-                      : passwordStrength === "Medium"
-                      ? "text-yellow-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {passwordStrength}
+                <p className="text-sm mt-1 text-blue-600">
+
+                  Strength: {passwordStrength}
+
                 </p>
 
               )}
 
             </div>
+
+
+            {/* CONFIRM PASSWORD */}
 
             <div>
 
@@ -299,40 +392,56 @@ const AddDoctor: React.FC = () => {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 className={inputClass}
-                placeholder="Confirm Password *"
+                placeholder="Confirm Password"
                 required
               />
 
+
               {form.confirmPassword && !passwordsMatch && (
+
                 <p className="text-red-600 text-sm mt-1">
-                  Password does not match
+
+                  Passwords do not match
+
                 </p>
+
               )}
 
+
               {form.confirmPassword && passwordsMatch && (
+
                 <p className="text-green-600 text-sm mt-1">
-                  Password match
+
+                  Passwords match
+
                 </p>
+
               )}
 
             </div>
+
 
           </div>
 
         </div>
 
-        {/* Submit */}
+
+        {/* SUBMIT */}
+
         <div className="flex justify-end">
 
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-6 py-2 bg-blue-600 text-white rounded-md"
           >
+
             {loading ? "Creating..." : "Add Doctor"}
+
           </button>
 
         </div>
+
 
       </form>
 
@@ -341,5 +450,6 @@ const AddDoctor: React.FC = () => {
   );
 
 };
+
 
 export default AddDoctor;

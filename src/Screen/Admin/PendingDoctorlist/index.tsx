@@ -6,4 +6,4 @@ const PendingDoctorlist = () => {
   )
 }
 
-export default PendingDoctorlist
+export default PendingDoctorlist;
