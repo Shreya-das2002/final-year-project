@@ -40,6 +40,7 @@ import PendingDoctorlist from "./Screen/Admin/PendingDoctorlist";
 import DoctorList from "./Screen/Admin/DoctorList";
 import AddDoctor from "./Screen/Admin/AddDoctor";
 import Messages from "./Screen/Admin/Messages";
+import Doctor from "./Screen/Doctor";
 
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
@@ -148,6 +149,19 @@ const AppLayout: React.FC = () => {
               <Route path="doctor_list" element={<DoctorList/>} />
               <Route path="messages" element={<Messages/>} />
               <Route path="add_doctor" element={<AddDoctor/>} />
+            </Route>
+
+            {/* Doctor */}
+            <Route
+              path="/doctor"
+              element={
+                <PrivateRoute allowedRoles={["doctor"]}>
+                  <Doctor/>
+                </PrivateRoute>
+              }
+            >
+              {/* <Route index element={</>} />
+              <Route path="" element={< />} /> */}
             </Route>
 
           </Routes>
