@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ================= TYPES ================= */
 
@@ -10,6 +11,7 @@ interface StatCardProps {
 
 interface QuickButtonProps {
   title: string;
+  onclick?: () => void;
 }
 
 interface AppointmentRowProps {
@@ -21,7 +23,8 @@ interface AppointmentRowProps {
 
 /* ================= MAIN COMPONENT ================= */
 
-const DoctorDashboard: React.FC = () => {
+const DoctorDashboard: React.FC = () => { 
+  const navigate = useNavigate();
   return (
     <main className="flex-1 p-8 bg-gray-100 min-h-screen">
 
@@ -106,7 +109,7 @@ const DoctorDashboard: React.FC = () => {
             Quick Actions
           </h2>
 
-          <QuickButton title="View All Appointments" />
+          <QuickButton title="View All Appointments" onclick={() => navigate("/doctor/appointment_requests")}/>
           <QuickButton title="View Patient List" />
           <QuickButton title="Update Profile" />
           <QuickButton title="Check Earnings" />
@@ -147,9 +150,11 @@ const StatCard: React.FC<StatCardProps> = ({
 
 
 const QuickButton: React.FC<QuickButtonProps> = ({
-  title,
+  title,onclick
 }) => (
-  <button className="w-full p-4 border rounded-lg hover:bg-gray-100 text-left">
+  <button 
+  onClick={onclick}
+  className="w-full p-4 border rounded-lg hover:bg-gray-100 text-left">
     {title}
   </button>
 );
