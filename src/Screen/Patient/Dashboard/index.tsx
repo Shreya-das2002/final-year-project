@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface StatCardProps {
   title: string;
@@ -8,9 +9,13 @@ interface StatCardProps {
 
 interface QuickButtonProps {
   title: string;
+  onclick?: () => void;
 }
 
+
+
 const Patientpage: React.FC = () => {
+  const navigate = useNavigate();
   return (
 
       <main className="flex-1 p-8">
@@ -69,9 +74,9 @@ const Patientpage: React.FC = () => {
           <section className="bg-white rounded-xl shadow p-6 space-y-4">
             <h2 className="text-xl font-semibold">Quick Access</h2>
 
-            <QuickButton title="Start Symptom Check" />
-            <QuickButton title="Chat with AI Assistant" />
-            <QuickButton title="Give Feedback" />
+            <QuickButton title="Check Your Symptoms" onclick={() => navigate("/patient/symptom_checker")}/>
+            <QuickButton title="Chat with AI" onclick={() => navigate("/patient/chatbot")}/>
+            <QuickButton title="Give Feedback" onclick={() => navigate("/patient/feedback")}/>
           </section>
         </div>
 
@@ -93,8 +98,10 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, color }) => (
   </div>
 );
 
-const QuickButton: React.FC<QuickButtonProps> = ({ title }) => (
-  <button className="w-full p-4 border rounded-lg hover:bg-gray-100 text-left">
+const QuickButton: React.FC<QuickButtonProps> = ({ title, onclick }) => (
+  <button 
+  onClick={onclick}
+  className="w-full p-4 border rounded-lg hover:bg-gray-100 text-left">
     {title}
   </button>
 );
