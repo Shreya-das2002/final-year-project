@@ -61,6 +61,7 @@ const AppLayout: React.FC = () => {
     const user = localStorage.getItem("user");
     const role = localStorage.getItem("role");
     const menus = localStorage.getItem("menus");
+    const buttons = localStorage.getItem("buttons");
 
     if (!token || !user || !role) {
       dispatch(logout());
@@ -79,6 +80,7 @@ const AppLayout: React.FC = () => {
         user: JSON.parse(user),
         role,
         menus: menus ? JSON.parse(menus) : [],
+        buttons: buttons ? JSON.parse(buttons) : []  
       })
     );
   }, [dispatch]);

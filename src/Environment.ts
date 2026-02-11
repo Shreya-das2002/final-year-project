@@ -475,7 +475,8 @@ export const urls ={
   profileurl : 'patient/profile',
   createAdminUrl : 'admin/create',
   getAllAdminsUrl: 'admin/alladmins',
-  createDoctorUrl: 'doctor/create'
+  createDoctorUrl: 'doctor/create',
+  getPendingDoctorsUrl: '/doctor/pending-doctors'
 }
 
 

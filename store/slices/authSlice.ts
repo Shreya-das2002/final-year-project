@@ -24,6 +24,15 @@ interface Menu {
   status: string;
 }
 
+interface Button {
+  control_master_id: number;
+  control_type: string;
+  control_key: string;
+  control_name: string;
+  control_desc: string | null;
+  status: string;
+}
+
 /* ================= PROFILE TYPES ================= */
 
 interface Address {
@@ -58,6 +67,7 @@ interface AuthState {
   role: string | null;
   isAuthenticated: boolean;
   menus: Menu[];
+  buttons: Button[]; 
   authChecked: boolean;
 
   profile: PatientProfile | null; // ✅ IMPORTANT
@@ -70,6 +80,7 @@ interface LoginSuccessPayload {
   user: User;
   role: string;
   menus: Menu[];
+  buttons: Button[];
 }
 
 /* ================= INITIAL STATE ================= */
@@ -80,9 +91,9 @@ const initialState: AuthState = {
   role: null,
   isAuthenticated: false,
   menus: [],
+  buttons: [],
   authChecked: false,
-
-  profile: null, // ✅ IMPORTANT
+  profile: null, // IMPORTANT
 };
 
 /* ================= SLICE ================= */
@@ -99,6 +110,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.role = action.payload.role;
       state.menus = action.payload.menus;
+      state.buttons = action.payload.buttons; 
       state.isAuthenticated = true;
       state.authChecked = true;
     },
@@ -116,6 +128,7 @@ const authSlice = createSlice({
       state.profile = null;
       state.role = null;
       state.menus = [];
+      state.buttons = [];  
       state.isAuthenticated = false;
       state.authChecked = true;
     },
