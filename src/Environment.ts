@@ -486,7 +486,6 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "symptom checker",
   "symptobot",
   "patient appointments",
-  "feedback",
 
   "admin dashboard",
   "create admin",
@@ -501,6 +500,7 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "doctor appointment",
   "appointment requests",
 
+  "feedback",
   "logout",
 ];
 
