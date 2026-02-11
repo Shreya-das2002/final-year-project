@@ -1,8 +1,8 @@
-import React from 'react'
 
-const Dashbord = () => {
+
+const DoctorDashbord = () => {
   return (
     <div>index</div>
   )
 }
-export default Dashbord
+export default DoctorDashbord;

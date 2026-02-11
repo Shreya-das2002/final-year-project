@@ -41,6 +41,7 @@ import DoctorList from "./Screen/Admin/DoctorList";
 import AddDoctor from "./Screen/Admin/AddDoctor";
 import Messages from "./Screen/Admin/Messages";
 import Doctor from "./Screen/Doctor";
+import DoctorDashbord from "./Screen/Doctor/Dashbord";
 
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
@@ -160,8 +161,8 @@ const AppLayout: React.FC = () => {
                 </PrivateRoute>
               }
             >
-              {/* <Route index element={</>} />
-              <Route path="" element={< />} /> */}
+              <Route index element={< DoctorDashbord/>} />
+              {/* <Route path="" element={</>} /> */}
             </Route>
 
           </Routes>
