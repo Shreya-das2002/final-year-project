@@ -2,17 +2,23 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
-import { getPendingDoctorsApi } from "../../../services/doctorApi";
+import {
+  getPendingDoctorsApi,
+  updateDoctorStatusApi
+} from "../../../services/doctorApi";
+
 import type { Doctor } from "../../../services/doctorApi";
 
 const PendingDoctorList: React.FC = () => {
+
+  /* ================= STATE ================= */
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
 
   const calledRef = useRef(false);
 
-  /* ================= GET BUTTON PERMISSIONS ================= */
+  /* ================= BUTTON PERMISSIONS ================= */
 
   const buttons = useSelector(
     (state: RootState) => state.auth.buttons
@@ -25,7 +31,6 @@ const PendingDoctorList: React.FC = () => {
   const canDecline = buttons?.some(
     (btn) => btn.control_key === "doctor decline"
   );
-
 
   /* ================= FETCH PENDING DOCTORS ================= */
 
@@ -43,13 +48,11 @@ const PendingDoctorList: React.FC = () => {
 
         setDoctors(data);
 
-      }
-      catch (error) {
+      } catch (error) {
 
-        console.error("Error fetching pending doctors:", error);
+        console.error("Fetch doctors error:", error);
 
-      }
-      finally {
+      } finally {
 
         setLoading(false);
 
@@ -61,23 +64,66 @@ const PendingDoctorList: React.FC = () => {
 
   }, []);
 
+  /* ================= ACCEPT HANDLER ================= */
 
-  /* ================= HANDLERS ================= */
+  const handleAccept = async (doctorId: number) => {
 
-  const handleAccept = (doctorId: number) => {
+    try {
 
-    console.log("Accept doctor:", doctorId);
+      const res = await updateDoctorStatusApi({
+        doctor_id: doctorId,
+        status: "Active"
+      });
+
+      if (res.data.success) {
+
+        // remove doctor from UI
+        setDoctors(prev =>
+          prev.filter(d => d.doctor_id !== doctorId)
+        );
+
+        console.log("Doctor accepted successfully");
+
+      }
+
+    } catch (error) {
+
+      console.error("Accept error:", error);
+
+    }
 
   };
 
-  const handleDecline = (doctorId: number) => {
+  /* ================= DECLINE HANDLER ================= */
 
-    console.log("Decline doctor:", doctorId);
+  const handleDecline = async (doctorId: number) => {
+
+    try {
+
+      const res = await updateDoctorStatusApi({
+        doctor_id: doctorId,
+        status: "Rejected"
+      });
+
+      if (res.data.success) {
+
+        setDoctors(prev =>
+          prev.filter(d => d.doctor_id !== doctorId)
+        );
+
+        console.log("Doctor rejected successfully");
+
+      }
+
+    } catch (error) {
+
+      console.error("Decline error:", error);
+
+    }
 
   };
 
-
-  /* ================= LOADING ================= */
+  /* ================= LOADING UI ================= */
 
   if (loading) {
 
@@ -89,8 +135,7 @@ const PendingDoctorList: React.FC = () => {
 
   }
 
-
-  /* ================= UI ================= */
+  /* ================= MAIN UI ================= */
 
   return (
 
@@ -99,7 +144,6 @@ const PendingDoctorList: React.FC = () => {
       <h1 className="text-2xl font-semibold mb-6">
         Pending Doctor Approvals
       </h1>
-
 
       {doctors.length === 0 ? (
 
@@ -116,48 +160,40 @@ const PendingDoctorList: React.FC = () => {
               className="bg-white rounded-xl shadow-md p-6 relative"
             >
 
-              {/* Status Badge */}
+              {/* STATUS */}
               <span className="absolute top-4 right-4 bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
                 {doctor.status}
               </span>
 
-
-              {/* Doctor Name */}
+              {/* NAME */}
               <h2 className="text-lg font-semibold mb-2">
-
                 Dr. {doctor.first_name}
                 {doctor.middle_name ? ` ${doctor.middle_name}` : ""}
                 {" "}
                 {doctor.last_name}
-
               </h2>
 
-
-              {/* Email */}
+              {/* EMAIL */}
               <p className="text-sm text-gray-600 mb-1">
                 📧 {doctor.email}
               </p>
 
-
-              {/* Gender */}
+              {/* GENDER */}
               <p className="text-sm text-gray-600 mb-1">
                 👤 {doctor.gender}
               </p>
 
-
-              {/* Specialization */}
+              {/* SPECIALIZATION */}
               <p className="text-sm text-gray-600 mb-1">
                 🩺 {doctor.specialization}
               </p>
 
-
-              {/* Phone */}
+              {/* PHONE */}
               <p className="text-sm text-gray-600 mb-4">
                 📱 {doctor.phone_no}
               </p>
 
-
-              {/* Buttons (permission based) */}
+              {/* BUTTONS */}
               {(canAccept || canDecline) && (
 
                 <div className="flex justify-end gap-3">
