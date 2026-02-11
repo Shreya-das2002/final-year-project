@@ -24,6 +24,13 @@ export interface Doctor {
 }
 
 
+export interface UpdateDoctorStatusPayload {
+  doctor_id: number;
+  status: "Active" | "Rejected";
+}
+
+
+
 /* ================= CREATE DOCTOR PAYLOAD ================= */
 
 export interface CreateDoctorPayload {
@@ -70,4 +77,18 @@ export const getPendingDoctorsApi = async (): Promise<Doctor[]> => {
 
   return response.data.data;
 
+};
+
+/* ================= UPDATE DOCTOR STATUS ================= */
+
+export const updateDoctorStatusApi = (
+  data: UpdateDoctorStatusPayload
+) => {
+  return API.put(
+    urls.updateDoctorStatusUrl,
+    data,
+    {
+      validateStatus: () => true
+    }
+  );
 };
