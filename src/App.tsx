@@ -42,7 +42,8 @@ import AddDoctor from "./Screen/Admin/AddDoctor";
 import Messages from "./Screen/Admin/Messages";
 import Doctor from "./Screen/Doctor";
 import DoctorDashbord from "./Screen/Doctor/Dashbord";
-
+import DoctorAppointments from "./Screen/Doctor/DoctorAppointments";
+import AppointmentRequests from "./Screen/Doctor/AppointmentRequests";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -162,7 +163,8 @@ const AppLayout: React.FC = () => {
               }
             >
               <Route index element={< DoctorDashbord/>} />
-              {/* <Route path="" element={</>} /> */}
+              <Route path="appointment" element={<DoctorAppointments/>} />
+              <Route path="appointment_requests" element={<AppointmentRequests/>} />
             </Route>
 
           </Routes>
