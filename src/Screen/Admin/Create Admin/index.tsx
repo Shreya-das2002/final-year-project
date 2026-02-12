@@ -11,6 +11,7 @@ import {
   doPasswordsMatch,
   getPasswordStrength,
   genderOption,
+  DOCTOR_SPECIALIZATIONS
 } from "../../../Environment";
 
 const CreateAdmin = () => {
@@ -23,6 +24,7 @@ const CreateAdmin = () => {
     phone: "",
     email: "",
     adminType: "",
+    department:"",
     gender: "",
     password: "",
     confirmPassword: "",
@@ -57,6 +59,12 @@ const CreateAdmin = () => {
     return Number(value); // ✅ FIX: use value directly from genderOptions
   };
 
+  const mapDepartment = (value: string): number | undefined => {
+  if (!value) return undefined;
+  return Number(value);
+  };
+
+
   /* ================= SUBMIT ================= */
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,10 +83,16 @@ const CreateAdmin = () => {
     }
 
     const adminTypeValue = mapAdminType(form.adminType);
+    const departmentValue = mapDepartment(form.department);
     const genderValue = mapGender(form.gender);
 
     if (!adminTypeValue) {
       toast.error("Please select Admin Type");
+      return;
+    }
+
+    if (!departmentValue) {
+      toast.error("Please select Department");
       return;
     }
 
@@ -89,7 +103,8 @@ const CreateAdmin = () => {
       phone_no: form.phone,
       email: form.email,
       admin_type: adminTypeValue,
-      gender: genderValue, // ✅ now sends correct value (1,2,3)
+      // department: departmentValue,
+      gender: genderValue, // now sends correct value (1,2,3)
       password: form.password,
       confirm_password: form.confirmPassword,
     };
@@ -111,6 +126,7 @@ const CreateAdmin = () => {
           phone: "",
           email: "",
           adminType: "",
+          department: "",
           gender: "",
           password: "",
           confirmPassword: "",
@@ -181,7 +197,7 @@ const CreateAdmin = () => {
         </div>
 
         {/* ROLE DETAILS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <select
             name="adminType"
             value={form.adminType}
@@ -191,6 +207,22 @@ const CreateAdmin = () => {
             <option value="">Select Admin Type</option>
             <option>Standard Admin</option>
             <option>Guest Admin</option>
+          </select>
+
+          {/* DEPARTMENT */}
+          <select
+            name="department"
+            value={form.department}
+            onChange={handleChange}
+            className={inputClass}
+          >
+            <option value="">Select Department</option>
+
+            {DOCTOR_SPECIALIZATIONS.map((dept) => (
+              <option key={dept.value} value={dept.value}>
+                {dept.label}
+              </option>
+            ))}
           </select>
 
           {/* FIXED: using genderOptions from environment.ts */}
