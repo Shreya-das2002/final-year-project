@@ -492,8 +492,8 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "admin dashboard",
   "create admin",
   "add doctor",
-  "admin list",
   "pending doctor list",
+  "admin list",
   "doctor list",
   "messages",
   
