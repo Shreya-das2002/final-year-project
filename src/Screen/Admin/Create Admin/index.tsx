@@ -5,13 +5,12 @@ import { toast } from "react-hot-toast";
 import { createAdminApi } from "../../../services/createAdminApi";
 import { addAdmin } from "../../../../store/slices/adminSlice";
 
-// ✅ import from environment.ts
+// import from environment.ts
 import {
   isStrongPassword,
   doPasswordsMatch,
   getPasswordStrength,
-  genderOptions,
-  isValidGender,
+  genderOption,
 } from "../../../Environment";
 
 const CreateAdmin = () => {
@@ -33,7 +32,6 @@ const CreateAdmin = () => {
 
   /* ================= PASSWORD UI STATE ================= */
 
-  // ✅ calculate outside submit so UI updates live
   const passwordStrength = getPasswordStrength(form.password);
 
   const passwordsMatch =
@@ -55,12 +53,8 @@ const CreateAdmin = () => {
   };
 
   const mapGender = (value: string): number | undefined => {
-    if (!isValidGender(value.toLowerCase())) return undefined;
-
-    if (value === "Male") return 1;
-    if (value === "Female") return 2;
-    if (value === "Other") return 3;
-    return undefined;
+    if (!value) return undefined;
+    return Number(value); // ✅ FIX: use value directly from genderOptions
   };
 
   /* ================= SUBMIT ================= */
@@ -95,9 +89,9 @@ const CreateAdmin = () => {
       phone_no: form.phone,
       email: form.email,
       admin_type: adminTypeValue,
-      gender: genderValue,
+      gender: genderValue, // ✅ now sends correct value (1,2,3)
       password: form.password,
-      confirm_password: form.confirmPassword, 
+      confirm_password: form.confirmPassword,
     };
 
     setLoading(true);
@@ -199,6 +193,7 @@ const CreateAdmin = () => {
             <option>Guest Admin</option>
           </select>
 
+          {/* FIXED: using genderOptions from environment.ts */}
           <select
             name="gender"
             value={form.gender}
@@ -207,8 +202,8 @@ const CreateAdmin = () => {
           >
             <option value="">Select Gender</option>
 
-            {genderOptions.map((g) => (
-              <option key={g.value} value={g.label}>
+            {genderOption.map((g) => (
+              <option key={g.value} value={g.value}>
                 {g.label}
               </option>
             ))}
