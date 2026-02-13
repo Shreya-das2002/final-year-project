@@ -180,11 +180,10 @@ const CreateAdmin = () => {
       gender: genderValue,
       password: form.password,
       confirm_password: form.confirmPassword,
-      department_id:
-    adminTypeValue === 2
-      ? form.department[0]  
-      : null
-
+    department_id:
+  adminTypeValue === 2
+    ? [...form.department]   
+    : []
 
     };
 
@@ -397,7 +396,7 @@ const CreateAdmin = () => {
 />
 
 
-                    {dept.label}
+                    {dept.department}
 
                   </label>
 

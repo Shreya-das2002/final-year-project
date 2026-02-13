@@ -10,7 +10,7 @@ export interface Admin {
   last_name: string;
   email: string;
   phone_no: string;
-
+  department_id?: number[];  
   role: string;   //  IMPORTANT (fixes your error)
 
   created_on: string;
@@ -26,6 +26,7 @@ export interface CreateAdminPayload {
   phone_no: string;
   admin_type: number;   // 1,2,3
   gender?: number;
+  department_id?: number[];
   password: string;
   confirm_password: string; 
 }

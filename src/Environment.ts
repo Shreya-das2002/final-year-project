@@ -549,16 +549,29 @@ export const genderOption = [
 /* ================= SPECIALIZATION OPTIONS ================= */
 
 export const DOCTOR_SPECIALIZATIONS = [
-  { label: "General Physician", value: 1 },
-  { label: "Cardiologist", value: 2 },
-  { label: "Dermatologist", value: 3 },
-  { label: "Pediatrician", value: 4 },
-  { label: "General Surgeon", value: 5 },
-  { label: "Dentist", value: 6 },
-  { label: "Ophthalmologist", value: 7 },
-  { label: "ENT Specialist", value: 8 },
-  { label: "Psychiatrist", value: 9 },
-  { label: "Neurologist", value: 10 },
-  { label: "Orthopedic", value: 11 },
-  { label: "Gynecologist", value: 12 },
+
+  { label: "General Physician", value: 1, department: "General Medicine" },
+
+  { label: "Cardiologist", value: 2, department: "Cardiology" },
+
+  { label: "Dermatologist", value: 3, department: "Dermatology" },
+
+  { label: "Pediatrician", value: 4, department: "Pediatrics" },
+
+  { label: "General Surgeon", value: 5, department: "Surgery" },
+
+  { label: "Dentist", value: 6, department: "Dental" },
+
+  { label: "Ophthalmologist", value: 7, department: "Ophthalmology" },
+
+  { label: "ENT Specialist", value: 8, department: "ENT" },
+
+  { label: "Psychiatrist", value: 9, department: "Psychiatry" },
+
+  { label: "Neurologist", value: 10, department: "Neurology" },
+
+  { label: "Orthopedic", value: 11, department: "Orthopedics" },
+
+  { label: "Gynecologist", value: 12, department: "Gynecology" }
+
 ];
