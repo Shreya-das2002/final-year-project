@@ -92,3 +92,15 @@ export const updateDoctorStatusApi = (
     }
   );
 };
+
+/* ================= GET DOCTOR LIST API ================= */
+
+export const getDoctorListApi = async (): Promise<Doctor[]> => {
+
+  const response = await API.get(
+    urls.getDoctorListUrl
+  );
+
+  return response.data.data;
+
+};

@@ -477,7 +477,8 @@ export const urls ={
   getAllAdminsUrl: 'admin/alladmins',
   createDoctorUrl: 'doctor/create',
   getPendingDoctorsUrl: '/doctor/pending-doctors',
-  updateDoctorStatusUrl: '/doctor/update-status'
+  updateDoctorStatusUrl: '/doctor/update-status',
+  getDoctorListUrl: '/doctor/doctor-list'
 }
 
 

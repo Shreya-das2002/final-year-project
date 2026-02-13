@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-import { createDoctorApi } from "../../src/services/doctorApi";
+import { createDoctorApi, getDoctorListApi } from "../../src/services/doctorApi";
 import type { RootState } from "../store";
 
 
@@ -21,6 +21,10 @@ interface Doctor {
   phone_no: string;
 
   status: string;
+
+  specialization?: string;  
+
+  gender?: string;
 
 }
 
@@ -71,7 +75,7 @@ interface CreateDoctorPayload {
 }
 
 
-/* ================= THUNK ================= */
+/* ================= CREATE DOCTOR THUNK ================= */
 
 export const createDoctorThunk = createAsyncThunk<Doctor, CreateDoctorPayload>(
 
@@ -100,6 +104,51 @@ export const createDoctorThunk = createAsyncThunk<Doctor, CreateDoctorPayload>(
       }
 
       return rejectWithValue("Failed to create doctor");
+
+    }
+
+  },
+
+  {
+    condition: (_, { getState }) => {
+
+      const state = getState() as RootState;
+
+      if (state.doctor.loading) return false;
+
+      return true;
+
+    }
+
+  }
+
+);
+
+
+/* ================= FETCH DOCTOR LIST THUNK ================= */
+
+export const fetchDoctorListThunk = createAsyncThunk<Doctor[]>(
+
+  "doctor/doctor-list",
+
+  async (_, { rejectWithValue }) => {
+
+    try {
+
+      const data = await getDoctorListApi();
+
+      return data;
+
+    }
+    catch (error: unknown) {
+
+      if (error instanceof Error) {
+
+        return rejectWithValue(error.message);
+
+      }
+
+      return rejectWithValue("Failed to fetch doctors");
 
     }
 
@@ -155,6 +204,8 @@ const doctorSlice = createSlice({
 
     builder
 
+      /* CREATE DOCTOR */
+
       .addCase(createDoctorThunk.pending, (state) => {
 
         state.loading = true;
@@ -176,6 +227,35 @@ const doctorSlice = createSlice({
       )
 
       .addCase(createDoctorThunk.rejected, (state) => {
+
+        state.loading = false;
+
+      })
+
+
+      /* FETCH DOCTOR LIST */
+
+      .addCase(fetchDoctorListThunk.pending, (state) => {
+
+        state.loading = true;
+
+      })
+
+      .addCase(
+
+        fetchDoctorListThunk.fulfilled,
+
+        (state, action: PayloadAction<Doctor[]>) => {
+
+          state.loading = false;
+
+          state.doctors = action.payload;
+
+        }
+
+      )
+
+      .addCase(fetchDoctorListThunk.rejected, (state) => {
 
         state.loading = false;
 
