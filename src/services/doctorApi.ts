@@ -23,6 +23,15 @@ export interface Doctor {
 
 }
 
+export interface HomepageDoctor {
+
+  doctor_id: number;
+
+  name: string;
+
+  specialization: string;
+
+}
 
 export interface UpdateDoctorStatusPayload {
   doctor_id: number;
@@ -99,6 +108,18 @@ export const getDoctorListApi = async (): Promise<Doctor[]> => {
 
   const response = await API.get(
     urls.getDoctorListUrl
+  );
+
+  return response.data.data;
+
+};
+
+/* ================= GET HOMEPAGE DOCTORS ================= */
+
+export const getHomepageDoctorsApi = async () => {
+
+  const response = await API.get(
+    urls.getHomepageDoctorsUrl
   );
 
   return response.data.data;

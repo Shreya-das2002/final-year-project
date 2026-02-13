@@ -1,6 +1,60 @@
 import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping } from "react-icons/fa";
+import { useEffect, useState, useRef } from "react";
+
+import { getHomepageDoctorsApi } from "../../services/doctorApi";
+
+import type { HomepageDoctor } from "../../services/doctorApi";
 
 const Cards = () => {
+
+    const hasFetched = useRef(false);
+
+    const [doctors, setDoctors] =
+        useState<HomepageDoctor[]>([]);
+
+    const [loading, setLoading] =
+        useState(true);
+
+
+    const fetchDoctors = async () => {
+
+        try {
+
+            const data =
+                await getHomepageDoctorsApi();
+
+            setDoctors(data);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+        finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+
+   useEffect(() => {
+
+    if (hasFetched.current) return;
+
+    hasFetched.current = true;
+
+    fetchDoctors();
+
+    const interval =
+        setInterval(fetchDoctors, 600000);
+
+    return () => clearInterval(interval);
+
+}, []);
+
     return (
         <div className="bg-cyan-50">
     <div className="grid gap-6 md:grid-cols-3 p-8 bg-cyan-50 dark:bg-gray-800">
@@ -70,6 +124,77 @@ const Cards = () => {
 
         </div>
     </div>
+    {/* ================= DOCTOR CARDS ================= */}
+
+<div className="py-14 px-6 bg-cyan-50 dark:bg-gray-800">
+
+    <h2 className="text-2xl font-semibold text-center text-blue-600 dark:text-gray-300 mb-10">
+        Connect With Our Doctors
+    </h2>
+
+
+    {loading ? (
+
+        <div className="text-center">
+            Loading doctors...
+        </div>
+
+    ) : (
+
+        <div className="grid gap-8 md:grid-cols-3 text-center">
+
+            {doctors.map((doc) => (
+
+                <div
+                    key={doc.doctor_id}
+                    className="bg-gradient-to-r from-blue-200 to-cyan-400 dark:bg-gray-700 p-6 rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
+                >
+
+                    {/* Avatar */}
+                    <div className="
+                        w-16 h-16
+                        mx-auto
+                        bg-white
+                        rounded-full
+                        flex
+                        items-center
+                        justify-center
+                        text-blue-600
+                        font-bold
+                        text-xl
+                        mb-4
+                    ">
+                        {doc.name.charAt(0)}
+                    </div>
+
+
+                    {/* Name */}
+                    <h3 className="
+                        text-blue-900
+                        font-bold
+                        text-lg
+                        mb-2
+                    ">
+                        {doc.name}
+                    </h3>
+
+
+                    {/* Specialization */}
+                    <p className="
+                        text-blue-800
+                    ">
+                        {doc.specialization}
+                    </p>
+                        
+                </div>
+
+            ))}
+
+        </div>
+
+    )}
+
+</div>
     </div>
     );
 };
