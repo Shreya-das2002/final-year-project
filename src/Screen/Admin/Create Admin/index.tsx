@@ -32,6 +32,7 @@ const CreateAdmin = () => {
 
   const [loading, setLoading] = useState(false);
 
+
   /* KEEP password strength */
   const passwordStrength = getPasswordStrength(form.password);
 
@@ -158,12 +159,15 @@ const CreateAdmin = () => {
 
     }
 
-    if (form.department.length === 0) {
+    if (
+  form.adminType === "Standard Admin" &&
+  form.department.length === 0
+) {
 
-      toast.error("Please select Department");
-      return;
+  toast.error("Please select Department");
+  return;
 
-    }
+}
 
     const payload = {
 
@@ -176,6 +180,11 @@ const CreateAdmin = () => {
       gender: genderValue,
       password: form.password,
       confirm_password: form.confirmPassword,
+      department_id:
+    adminTypeValue === 2
+      ? form.department[0]  
+      : null
+
 
     };
 
@@ -302,11 +311,25 @@ const CreateAdmin = () => {
           {/* ADMIN TYPE */}
 
           <select
-            name="adminType"
-            value={form.adminType}
-            onChange={handleChange}
-            className={inputClass}
-          >
+  name="adminType"
+  value={form.adminType}
+  onChange={(e) => {
+
+    const value = e.target.value;
+
+    setForm({
+      ...form,
+      adminType: value,
+
+      // clear department if Guest Admin selected
+      department: value === "Guest Admin" ? [] : form.department
+
+    });
+
+  }}
+  className={inputClass}
+>
+
             <option value="">Select Admin Type</option>
             <option>Standard Admin</option>
             <option>Guest Admin</option>
@@ -318,9 +341,23 @@ const CreateAdmin = () => {
           <div className="relative" ref={dropdownRef}>
 
             <div
-              className={inputClass + " cursor-pointer"}
-              onClick={() => setShowDepartmentDropdown(!showDepartmentDropdown)}
-            >
+  className={
+    inputClass +
+    " cursor-pointer " +
+    (form.adminType === "Guest Admin"
+      ? "bg-gray-200 cursor-not-allowed"
+      : "")
+  }
+
+  onClick={() => {
+
+    if (form.adminType === "Guest Admin") return;
+
+    setShowDepartmentDropdown(!showDepartmentDropdown);
+
+  }}
+>
+
               {
                 form.department.length > 0
                   ? DOCTOR_SPECIALIZATIONS
@@ -343,11 +380,22 @@ const CreateAdmin = () => {
                   >
 
                     <input
-                      type="checkbox"
-                      checked={form.department.includes(dept.value)}
-                      onChange={() => handleDepartmentChange(dept.value)}
-                      className="mr-2"
-                    />
+  type="checkbox"
+  checked={form.department.includes(dept.value)}
+
+  onChange={() => {
+
+    if (form.adminType === "Guest Admin") return;
+
+    handleDepartmentChange(dept.value);
+
+  }}
+
+  disabled={form.adminType === "Guest Admin"}
+
+  className="mr-2"
+/>
+
 
                     {dept.label}
 
