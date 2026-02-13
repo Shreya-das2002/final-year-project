@@ -1,5 +1,6 @@
-import React from "react";
+import {useEffect, useState, useRef} from "react";
 import { useNavigate } from "react-router-dom";
+import { HEALTH_TIPS } from "../../../Environment";
 
 interface StatCardProps {
   title: string;
@@ -16,6 +17,37 @@ interface QuickButtonProps {
 
 const Patientpage: React.FC = () => {
   const navigate = useNavigate();
+  const [tipIndex, setTipIndex] = useState(0);
+
+  const hasStarted = useRef(false);
+
+  useEffect(() => {
+
+    if (hasStarted.current)
+      return;
+
+    hasStarted.current = true;
+
+
+    const interval =
+      setInterval(() => {
+
+        setTipIndex(prev =>
+
+          (prev + 1) %
+          HEALTH_TIPS.length
+
+        );
+
+      }, 300000); // 5 minutes
+
+
+    return () =>
+      clearInterval(interval);
+
+  }, []);
+
+
   return (
 
       <main className="flex-1 p-8">
@@ -83,7 +115,7 @@ const Patientpage: React.FC = () => {
         <section className="bg-white rounded-xl shadow p-6">
           <h2 className="text-xl font-semibold mb-2">Daily Health Tip</h2>
           <p className="text-gray-600">
-            💡 Drink at least 8 glasses of water to stay hydrated and healthy.
+            {HEALTH_TIPS[tipIndex]}
           </p>
         </section>
 
