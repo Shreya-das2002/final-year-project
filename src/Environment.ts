@@ -490,6 +490,7 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "symptom checker",
   "symptobot",
   "patient appointments",
+  "patient feedback",
 
   "admin dashboard",
   "create admin",
@@ -503,6 +504,7 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "doctor dashboard",
   "doctor appointment",
   "appointment requests",
+  "doctor feedback",
 
   "feedback",
   "logout",
@@ -512,13 +514,14 @@ export const SIDE_NAV_CONTROLS: string[] = [
 export const MENU_ROUTE_MAP: Record<string, string> = {
   "patient dashboard": "/patient",
   "symptom checker": "/patient/symptom_checker",
-  "symptobot": "/patient/chatbot",
+  "symptobot": "/patient/symptobot",
   "patient appointments": "/patient/appointments",
-  "feedback": "/patient/feedback",
+  "patient feedback": "/patient/feedback",
 
   "doctor dashboard": "/doctor",
   "doctor appointment": "/doctor/appointments",
   "appointment requests": "/doctor/appointment_requests",
+  "doctor feedback": "/doctor/doctor_feedback",
 
   "admin dashboard": "/admin",
   "create admin": "/admin/create_admin",
