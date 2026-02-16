@@ -70,7 +70,7 @@ interface AuthState {
   buttons: Button[]; 
   authChecked: boolean;
 
-  profile: PatientProfile | null; // ✅ IMPORTANT
+  profile: PatientProfile | null;
 }
 
 /* ================= PAYLOAD ================= */
@@ -78,6 +78,7 @@ interface AuthState {
 interface LoginSuccessPayload {
   token: string;
   user: User;
+  profile: PatientProfile;
   role: string;
   menus: Menu[];
   buttons: Button[];
@@ -108,6 +109,7 @@ const authSlice = createSlice({
     ) {
       state.token = action.payload.token;
       state.user = action.payload.user;
+      state.profile = action.payload.profile;
       state.role = action.payload.role;
       state.menus = action.payload.menus;
       state.buttons = action.payload.buttons; 

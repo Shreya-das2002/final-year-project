@@ -62,6 +62,7 @@ const AppLayout: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
+    const profile = localStorage.getItem("profile");
     const role = localStorage.getItem("role");
     const menus = localStorage.getItem("menus");
     const buttons = localStorage.getItem("buttons");
@@ -81,6 +82,7 @@ const AppLayout: React.FC = () => {
       loginSuccess({
         token,
         user: JSON.parse(user),
+        profile: profile ? JSON.parse(profile) : null,
         role,
         menus: menus ? JSON.parse(menus) : [],
         buttons: buttons ? JSON.parse(buttons) : []  

@@ -50,13 +50,14 @@ const Login: React.FC = () => {
 
       /* ================= SUCCESS ================= */
       if (res.data.success) {
-        const { token, role, user, menus, buttons } = res.data.data;
+        const { token, role, user, profile, menus, buttons } = res.data.data;
 
         //  REDUX UPDATE (IMPORTANT)
         dispatch(
           loginSuccess({
             token,
             user,
+            profile,
             role,
             menus,
             buttons
@@ -66,6 +67,7 @@ const Login: React.FC = () => {
         //  Persist
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("profile", JSON.stringify(profile));
         localStorage.setItem("role", role);
         localStorage.setItem("menus", JSON.stringify(menus));
         localStorage.setItem("buttons", JSON.stringify(buttons));
