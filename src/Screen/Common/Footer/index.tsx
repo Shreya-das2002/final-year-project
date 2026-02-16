@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
             onClick={() => handleNavigate("/apply_doctor")}
             className="hover:text-green-800 dark:hover:text-teal-600 cursor-pointer"
           >
-            Apply as Doctor
+            Join as Doctor
           </span>
         </div>
       </div>

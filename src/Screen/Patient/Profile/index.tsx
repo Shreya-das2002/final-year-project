@@ -51,6 +51,7 @@ const ALLERGY_OPTIONS = [
   "Pet / Animal",
   "Chemical",
   "Other",
+  "None"
 ];
 
 /* ================= BLOOD GROUP MAP ================= */

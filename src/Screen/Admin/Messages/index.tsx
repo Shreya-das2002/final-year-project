@@ -1,4 +1,3 @@
-import React from 'react'
 
 const Messages = () => {
   return (
@@ -6,4 +5,4 @@ const Messages = () => {
   )
 }
 
-export default Messages
+export default Messages;
