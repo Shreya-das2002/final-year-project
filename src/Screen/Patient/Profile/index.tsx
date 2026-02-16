@@ -684,7 +684,7 @@ permanent_address: permanentAddress.addressLine1
      onClick={async () => {   //  async added here
       const ok = await handleSave();
       if (ok) {
-        navigate("/patient/Patientpage");
+        navigate("/patient");
       }
     }}
       className="px-8 py-2 bg-green-600 text-white rounded-md"
