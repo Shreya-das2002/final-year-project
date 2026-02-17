@@ -129,6 +129,7 @@ const AdminProfile = ({
                 <span className="font-medium">Email:</span> {user.email}
               </p>
 
+
             </div>
 
           </div>
