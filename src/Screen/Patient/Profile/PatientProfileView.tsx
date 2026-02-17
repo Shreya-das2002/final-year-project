@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
 import { FaEdit, FaUserCircle, FaTimes } from "react-icons/fa";
-import { MdEmail, MdPhone, MdCake } from "react-icons/md";
+import { MdEmail, MdPhone, MdCake, MdWork } from "react-icons/md";
 import { GiMedicalPack } from "react-icons/gi";
 import { RiVirusLine } from "react-icons/ri";
 
@@ -106,6 +106,15 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                 <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
                   <MdCake /> Age: {age ?? "—"}
                 </span>
+
+        <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
+        <MdWork/> {profile?.occupation}
+        </span>
+
+        <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
+          ❤️ {profile?.marital_status}
+        </span>
+
               </div>
 
               <button
@@ -134,6 +143,8 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                     ? bloodGroupMap[profile.blood_group]
                     : "—"}
                 </p>
+
+                
               </div>
 
               <div>
