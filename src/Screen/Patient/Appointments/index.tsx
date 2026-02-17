@@ -1,25 +1,23 @@
 import React from "react";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
-// import images
-// import general from "../../../assets/specialties/general.png";
-// import cardiology from "../../../assets/specialties/cardiology.png";
-// import dermatology from "../../../assets/specialties/dermatology.png";
-// import pediatrics from "../../../assets/specialties/pediatrics.png";
-// import surgeon from "../../../assets/specialties/surgeon.png";
-// import dentist from "../../../assets/specialties/dentist.png";
-// import eye from "../../../assets/specialties/eye.png";
-// import ent from "../../../assets/specialties/ent.png";
-// import psychiatry from "../../../assets/specialties/psychiatry.png";
-// import neurology from "../../../assets/specialties/neurology.png";
-// import orthopedic from "../../../assets/specialties/orthopedic.png";
-// import gynecology from "../../../assets/specialties/gynecology.png";
+import general from "../../../assets/general.png";
+//  import cardiology from "../../../assets/specialties/cardiology.png";
+//  import dermatology from "../../../assets/specialties/dermatology.png";
+//  import pediatrics from "../../../assets/specialties/pediatrics.png";
+//  import surgeon from "../../../assets/specialties/surgeon.png";
+//  import dentist from "../../../assets/specialties/dentist.png";
+//  import eye from "../../../assets/specialties/eye.png";
+//  import ent from "../../../assets/specialties/ent.png";
+//  import psychiatry from "../../../assets/specialties/psychiatry.png";
+//  import neurology from "../../../assets/specialties/neurology.png";
+//  import orthopedic from "../../../assets/specialties/orthopedic.png";
+//  import gynecology from "../../../assets/specialties/gynecology.png";
 
 
-// image mapping
 const IMAGES: Record<number, string> = {
 
-  // 1: general,
+  1: general,
   // 2: cardiology,
   // 3: dermatology,
   // 4: pediatrics,
