@@ -13,6 +13,7 @@ interface User {
   phone_no: string;
   gender: string;
   dob?: string;
+  department_id: string;
 }
 
 interface Menu {
@@ -94,7 +95,7 @@ const initialState: AuthState = {
   menus: [],
   buttons: [],
   authChecked: false,
-  profile: null, // IMPORTANT
+  profile: null, 
 };
 
 /* ================= SLICE ================= */

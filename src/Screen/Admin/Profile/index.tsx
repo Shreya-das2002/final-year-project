@@ -1,32 +1,42 @@
+import React from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../store/store";
+import {getGenderLabel, DOCTOR_SPECIALIZATIONS} from "../../../Environment";
 
-import { FaTimes, FaUserShield, FaEnvelope } from "react-icons/fa";
+import {
+  FaTimes,
+  FaUserShield,
+  FaEnvelope,
+  FaUserCircle,
+  FaIdCard, 
+  FaPhone, 
+  FaVenusMars,
+  FaHospital
+} from "react-icons/fa";
 
-interface AdminUser {
-  first_name: string;
-  last_name: string;
-  email: string;
-  role?: string;
-}
 
-interface AdminProfileDrawerProps {
+interface Props {
   open: boolean;
   onClose: () => void;
-  user: AdminUser | null;
 }
 
-const AdminProfile = ({
-  open,
-  onClose,
-  user,
-}: AdminProfileDrawerProps) => {
+const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
+  // Get admin user from Redux store
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  // If no user, don't render
   if (!user) return null;
 
+  // Admin initials
   const initials =
     user.first_name?.charAt(0).toUpperCase() +
     user.last_name?.charAt(0).toUpperCase();
 
-  const fullName = `${user.first_name} ${user.last_name}`;
+  // Full name
+  const fullName =
+    `${user.first_name} ${user.middle_name || ""} ${user.last_name}`.trim();
+
 
   return (
     <>
@@ -38,16 +48,19 @@ const AdminProfile = ({
         onClick={onClose}
       />
 
+
       {/* Drawer */}
       <div
         className={`fixed top-16 bottom-0 right-0 w-[420px]
         bg-gradient-to-br from-sky-100 to-blue-200
-        z-50 transform transition-transform duration-300
+        shadow-2xl z-50
+        transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}
         overflow-y-auto`}
       >
 
-        {/* Close button */}
+
+        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 left-4 text-gray-500 hover:text-red-500"
@@ -56,7 +69,9 @@ const AdminProfile = ({
         </button>
 
 
+        {/* Content */}
         <div className="p-6 text-center">
+
 
           {/* Avatar */}
           <div className="flex justify-center">
@@ -86,7 +101,7 @@ const AdminProfile = ({
           </p>
 
 
-          {/* Role chip */}
+          {/* Role Chip */}
           <div className="mt-4 flex justify-center">
 
             <span className="
@@ -101,10 +116,11 @@ const AdminProfile = ({
               {user.role || "Admin"}
             </span>
 
+
           </div>
 
 
-          {/* Admin Info Card */}
+          {/* Admin Details Card */}
           <div className="
             mt-6
             bg-white/60
@@ -115,24 +131,65 @@ const AdminProfile = ({
             text-left
           ">
 
-            <h3 className="text-blue-600 font-semibold mb-3">
+            <h3 className="text-blue-600 font-semibold mb-3 flex items-center gap-2">
+              <FaIdCard />
               Admin Details
             </h3>
 
-            <div className="space-y-2 text-sm text-gray-700">
 
-              <p>
-                <span className="font-medium">Name:</span> {fullName}
+            <div className="space-y-3 text-sm text-gray-700">
+
+
+              <p className="flex items-center gap-2">
+                <FaUserCircle className="text-blue-500" />
+                <span className="font-medium">Name:</span>
+                {fullName}
               </p>
 
-              <p>
-                <span className="font-medium">Email:</span> {user.email}
+
+              <p className="flex items-center gap-2">
+                <FaEnvelope className="text-green-500" />
+                <span className="font-medium">Email:</span>
+                {user.email}
               </p>
 
+
+              <p className="flex items-center gap-2">
+                <FaPhone className="text-purple-500" />
+                <span className="font-medium">Phone no:</span>
+                {user.phone_no}
+              </p>
+
+              <p className="flex items-center gap-2">
+                <FaVenusMars className="text-orange-500" />
+                <span className="font-medium">Gender:</span>
+                {getGenderLabel(user.gender) || "—"}
+              </p>
+              
+          {user.role === "standard admin" && (
+  <p className="flex items-center gap-2">
+    <FaHospital className="text-blue-500" />
+    <span className="font-medium">Department:</span>
+    {
+    user.department_id
+      ? user.department_id
+          .split(",")
+          .map(id =>
+            DOCTOR_SPECIALIZATIONS.find(
+              spec => spec.value === Number(id)
+            )?.department
+          )
+          .filter(Boolean)
+          .join(", ")
+      : "-"
+  }
+  </p>
+)}
 
             </div>
 
           </div>
+
 
         </div>
 
