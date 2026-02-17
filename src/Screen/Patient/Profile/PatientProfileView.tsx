@@ -4,8 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
-import { FaEdit, FaUserCircle, FaTimes } from "react-icons/fa";
-import { MdEmail, MdPhone, MdCake, MdWork } from "react-icons/md";
+import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat,
+  FaSmoking,
+  FaWineGlassAlt,
+  FaMapMarkerAlt,  } from "react-icons/fa";
+import { MdEmail, MdPhone, MdCake, MdWork, MdHeight, MdMonitorWeight } from "react-icons/md";
 import { GiMedicalPack } from "react-icons/gi";
 import { RiVirusLine } from "react-icons/ri";
 
