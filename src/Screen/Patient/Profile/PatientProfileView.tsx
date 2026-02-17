@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
-import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat, FaTint,
+import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat, FaTint, FaWalking, FaHome,
   FaSmoking,
   FaWineGlassAlt,
   FaMapMarkerAlt,  } from "react-icons/fa";
@@ -67,7 +67,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
     <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl ">
         {/* Drawer */}
       <div
-        className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-[420px] shadow-2xl z-50 bg-gradient-to-br from-sky-100 to-blue-200  transform transition-transform duration-300 ${
+        className={`fixed top-16 right-0 h-[calc(100vh-80px-30px)] w-[420px] shadow-2xl z-50 bg-gradient-to-br from-sky-100 to-blue-200  transform transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         } overflow-y-auto`}
         onClick={onClose}
@@ -148,14 +148,16 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                     </span>
                 
 
-                <p className= "text-gray-700 text-sm">
-                  <span className="font-medium"> Height: </span> {""}
-                  <MdHeight/> {profile?.height}
-                </p>
-                <p className= "text-gray-700 text-sm">
-                  <span className="font-medium"> Weight: </span> {""}
-                  <MdMonitorWeight/> {profile?.weight}
-                </p>
+              
+                  <span className="font-medium flex items-center gap-2">
+                  <MdHeight className="text-amber-500"/>  Height:{profile?.height}
+                  </span>
+                
+                
+                  <span className="font-medium flex items-center gap-2"> 
+                  <MdMonitorWeight className="text-amber-500"/> Weight:{profile?.weight}
+                  </span> 
+                
                 
               </div>
 
@@ -174,7 +176,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 <div className="mt-4">
 
   <h3 className="text-purple-600 font-semibold flex items-center gap-2">
-    🚶 Lifestyle
+    <FaWalking/> Lifestyle
   </h3>
 
   <div className="text-gray-700 text-sm mt-1 space-y-1">
@@ -182,14 +184,14 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
     <p>
       Smoking:{" "}
       <span className="font-medium">
-        {profile?.smoking ? "Yes" : "No"}
+        <FaSmoking/> {profile?.smoking ? "Yes" : "No"}
       </span>
     </p>
 
     <p>
       Alcohol:{" "}
       <span className="font-medium">
-        {profile?.alcohol ? "Yes" : "No"}
+       <FaWineGlassAlt/> {profile?.alcohol ? "Yes" : "No"}
       </span>
     </p>
 
@@ -200,7 +202,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 <div className="mt-4">
 
   <h3 className="text-blue-600 font-semibold flex items-center gap-2">
-    📍 Current Address
+    <FaMapMarkerAlt/> Current Address
   </h3>
 
   <div className="text-gray-700 text-sm mt-1">
@@ -225,7 +227,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 <div className="mt-4">
 
   <h3 className="text-blue-600 font-semibold flex items-center gap-2">
-    🏠 Permanent Address
+    <FaHome/> Permanent Address
   </h3>
 
   <div className="text-gray-700 text-sm mt-1">
