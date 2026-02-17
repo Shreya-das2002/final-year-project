@@ -14,15 +14,18 @@ const Patient = () => {
       <SideNav onProfileClick={() => setOpenProfileDrawer(true)} />
 
       {/* MAIN CONTENT */}
-      <main className="ml-64 w-screen">
-        <Outlet />
-      </main>
+      <main className="relative ml-64 w-screen">
 
-      {/* RIGHT PROFILE DRAWER */}
+{/* RIGHT PROFILE DRAWER */}
       <PatientProfileView
         open={openProfileDrawer}
         onClose={() => setOpenProfileDrawer(false)}
       />
+
+        <Outlet />
+      </main>
+
+      
 
     </div>
   );

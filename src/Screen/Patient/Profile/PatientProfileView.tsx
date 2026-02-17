@@ -61,31 +61,20 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   const image = localStorage.getItem("profileImage");
 
   return (
-    <>
-      {/* Overlay */}
+    <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl ">
+        {/* Drawer */}
       <div
-        className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
-          open ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-        onClick={onClose}
-      />
-
-      {/* Drawer */}
-      <div
-        className={`fixed top-0 right-0 h-full w-[420px] shadow-2xl z-50 transform transition-transform duration-300 ${
+        className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-[420px] shadow-2xl z-50 bg-gradient-to-br from-sky-100 to-blue-200  transform transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         } overflow-y-auto`}
+        onClick={onClose}
       >
         {/* Close button */}
       
           <button onClick={onClose}>
             <FaTimes className="text-gray-500 hover:text-red-500" />
           </button>
-        
-
-        {/* Your existing UI */}
-        <div className="p-6">
-          <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl shadow-xl p-6 text-center">
+          <div className=" text-center">
 
             {/* Profile Header */}
             <div className="flex flex-col items-center">
@@ -125,7 +114,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                 onClose();
                   }}
 
-                className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+                className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium  hover:bg-blue-700 transition"
               >
                 <FaEdit />
                 Edit Profile
@@ -133,10 +122,10 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
             </div>
 
             {/* Medical + Allergies */}
-            <div className="mt-6 bg-gradient-to-br from-sky-50 to-blue-100 rounded-xl shadow-md p-4 grid grid-cols-1 gap-4 text-left">
+            <div className="mt-6 p-4 grid grid-cols-1 gap-4 text-left">
 
               <div>
-                <h3 className="text-blue-600 font-semibold mb-1 flex items-center gap-2">
+                <h3 className="text-blue-600 font-semibold  flex items-center gap-2">
                   <GiMedicalPack /> Medical Details
                 </h3>
                 <p className="text-gray-700 text-sm">
@@ -148,7 +137,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
               </div>
 
               <div>
-                <h3 className="text-pink-600 font-semibold mb-1 flex items-center gap-2">
+                <h3 className="text-pink-600 font-semibold  flex items-center gap-2">
                   <RiVirusLine /> Allergies
                 </h3>
                 <p className="text-gray-700 text-sm">
@@ -162,8 +151,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 
           </div>
         </div>
-      </div>
-    </>
+    </div>
   );
 };
 
