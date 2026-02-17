@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
-import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat,
+import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat, FaTint, FaWalking, FaHome,
   FaSmoking,
   FaWineGlassAlt,
   FaMapMarkerAlt,  } from "react-icons/fa";
@@ -67,7 +67,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
     <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl ">
         {/* Drawer */}
       <div
-        className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-[420px] shadow-2xl z-50 bg-gradient-to-br from-sky-100 to-blue-200  transform transition-transform duration-300 ${
+        className={`fixed top-16 right-0 h-[calc(100vh-80px-30px)] w-[420px] shadow-2xl z-50 bg-gradient-to-br from-sky-100 to-blue-200  transform transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         } overflow-y-auto`}
         onClick={onClose}
@@ -115,7 +115,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
         </span>
 
         <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-          ❤️ {profile?.marital_status}
+          <FaRing/> {profile?.marital_status}
         </span>
 
               </div>
@@ -140,20 +140,24 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                 <h3 className="text-blue-600 font-semibold  flex items-center gap-2">
                   <GiMedicalPack /> Medical Details
                 </h3>
-                <p className="text-gray-700 text-sm">
-                  <span className="font-medium">Blood Group:</span>{" "}
-                  {profile?.blood_group
+
+                  <span className="font-medium flex items-center gap-2"> 
+                    <FaTint className="text-red-600"/> Blood Group: {profile?.blood_group
                     ? bloodGroupMap[profile.blood_group]
                     : "—"}
-                </p>
-                <p className= "text-gray-700 text-sm">
-                  <span className="font-medium"> Height: </span> {""}
-                  {profile?.height}
-                </p>
-                <p className= "text-gray-700 text-sm">
-                  <span className="font-medium"> Weight: </span> {""}
-                  {profile?.weight}
-                </p>
+                    </span>
+                
+
+              
+                  <span className="font-medium flex items-center gap-2">
+                  <MdHeight className="text-amber-500"/>  Height:{profile?.height}
+                  </span>
+                
+                
+                  <span className="font-medium flex items-center gap-2"> 
+                  <MdMonitorWeight className="text-amber-500"/> Weight:{profile?.weight}
+                  </span> 
+                
                 
               </div>
 
@@ -167,6 +171,86 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                     : "—"}
                 </p>
               </div>
+
+              {/* Lifestyle */}
+<div className="mt-4">
+
+  <h3 className="text-purple-600 font-semibold flex items-center gap-2">
+    <FaWalking/> Lifestyle
+  </h3>
+
+  <div className="text-gray-700 text-sm mt-1 space-y-1">
+
+    <p>
+      Smoking:{" "}
+      <span className="font-medium">
+        <FaSmoking/> {profile?.smoking ? "Yes" : "No"}
+      </span>
+    </p>
+
+    <p>
+      Alcohol:{" "}
+      <span className="font-medium">
+        <FaWineGlassAlt/> {profile?.alcohol ? "Yes" : "No"}
+      </span>
+    </p>
+
+  </div>
+
+</div>
+{/* Current Address */}
+<div className="mt-4">
+
+  <h3 className="text-blue-600 font-semibold flex items-center gap-2">
+    <FaMapMarkerAlt/> Current Address
+  </h3>
+
+  <div className="text-gray-700 text-sm mt-1">
+
+    <p>
+      {profile?.current_address?.address_line_1}
+    </p>
+
+    <p>
+      {profile?.current_address?.city},{" "}
+      {profile?.current_address?.state}
+    </p>
+
+    <p>
+      PIN: {profile?.current_address?.pin}
+    </p>
+
+  </div>
+
+</div>
+{/* Permanent Address */}
+<div className="mt-4">
+
+  <h3 className="text-blue-600 font-semibold flex items-center gap-2">
+    <FaHome/> Permanent Address
+  </h3>
+
+  <div className="text-gray-700 text-sm mt-1">
+
+    <p>
+      Address line-1: {profile?.permanent_address?.address_line_1}
+      Address line-2: {profile?.permanent_address?.address_line_2}
+    </p>
+
+    <p>
+      City: {profile?.permanent_address?.city},{" "}
+      District: {profile?.permanent_address?.district},{" "}
+      State: {profile?.permanent_address?.state},{""}
+      Country: {profile?.permanent_address?.country},{""}
+    </p>
+
+    <p>
+      PIN: {profile?.permanent_address?.pin}
+    </p>
+
+  </div>
+
+</div>
 
             </div>
 
