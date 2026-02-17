@@ -8,7 +8,6 @@ import {
   FaUserShield,
   FaEnvelope,
   FaUserCircle,
-  FaIdCard, 
   FaPhone, 
   FaVenusMars,
   FaHospital
@@ -130,11 +129,6 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             p-4
             text-left
           ">
-
-            <h3 className="text-blue-600 font-semibold mb-3 flex items-center gap-2">
-              <FaIdCard />
-              Admin Details
-            </h3>
 
 
             <div className="space-y-3 text-sm text-gray-700">
