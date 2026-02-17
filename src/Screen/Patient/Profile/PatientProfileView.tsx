@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
-import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat,
+import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat, FaTint,
   FaSmoking,
   FaWineGlassAlt,
   FaMapMarkerAlt,  } from "react-icons/fa";
@@ -115,7 +115,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
         </span>
 
         <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-          ❤️ {profile?.marital_status}
+          <FaRing/> {profile?.marital_status}
         </span>
 
               </div>
@@ -142,17 +142,17 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                 </h3>
                 <p className="text-gray-700 text-sm">
                   <span className="font-medium">Blood Group:</span>{" "}
-                  {profile?.blood_group
+                 <FaTint/> {profile?.blood_group
                     ? bloodGroupMap[profile.blood_group]
                     : "—"}
                 </p>
                 <p className= "text-gray-700 text-sm">
                   <span className="font-medium"> Height: </span> {""}
-                  {profile?.height}
+                  <MdHeight/> {profile?.height}
                 </p>
                 <p className= "text-gray-700 text-sm">
                   <span className="font-medium"> Weight: </span> {""}
-                  {profile?.weight}
+                  <MdMonitorWeight/> {profile?.weight}
                 </p>
                 
               </div>
