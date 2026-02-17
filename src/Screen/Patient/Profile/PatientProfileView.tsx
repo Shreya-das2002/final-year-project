@@ -146,7 +146,14 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                     ? bloodGroupMap[profile.blood_group]
                     : "—"}
                 </p>
-
+                <p className= "text-gray-700 text-sm">
+                  <span className="font-medium"> Height: </span> {""}
+                  {profile?.height}
+                </p>
+                <p className= "text-gray-700 text-sm">
+                  <span className="font-medium"> Weight: </span> {""}
+                  {profile?.weight}
+                </p>
                 
               </div>
 
