@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
-import { FaEdit, FaUserCircle, FaTimes, FaRing,  FaHeartbeat, FaTint, FaWalking, FaHome,
+import { FaEdit, FaUserCircle, FaTimes, FaRing, FaTint, FaWalking, FaHome,
   FaSmoking,
   FaWineGlassAlt,
   FaMapMarkerAlt,  } from "react-icons/fa";
@@ -182,16 +182,16 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   <div className="text-gray-700 text-sm mt-1 space-y-1">
 
     <p>
-      Smoking:{" "}
-      <span className="font-medium">
-        <FaSmoking/> {profile?.smoking ? "Yes" : "No"}
+     
+      <span className="font-medium flex items-center gap-2">
+        <FaSmoking className="text-red-500"/> Smoking: {profile?.smoking ? "Yes" : "No"}
       </span>
     </p>
 
     <p>
-      Alcohol:{" "}
-      <span className="font-medium">
-        <FaWineGlassAlt/> {profile?.alcohol ? "Yes" : "No"}
+      
+      <span className="font-medium flex items-center gap-2">
+        <FaWineGlassAlt/> Alcohol: {profile?.alcohol ? "Yes" : "No"}
       </span>
     </p>
 
@@ -212,8 +212,15 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
     </p>
 
     <p>
-      {profile?.current_address?.city},{" "}
-      {profile?.current_address?.state}
+     Address line-1: {profile?.current_address?.city}
+     Address line-2: {profile?.current_address?.state}
+    </p>
+
+    <p>
+      City: {profile?.current_address?.city},{" "}
+      District: {profile?.current_address?.district},{" "}
+      State: {profile?.current_address?.state},{""}
+      Country: {profile?.current_address?.country},{""}
     </p>
 
     <p>
