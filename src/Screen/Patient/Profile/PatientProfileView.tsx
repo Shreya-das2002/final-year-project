@@ -191,7 +191,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
     <p>
       
       <span className="font-medium flex items-center gap-2">
-        <FaWineGlassAlt/> Alcohol: {profile?.alcohol ? "Yes" : "No"}
+        <FaWineGlassAlt className="text-red-500"/> Alcohol: {profile?.alcohol ? "Yes" : "No"}
       </span>
     </p>
 
@@ -207,12 +207,10 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 
   <div className="text-gray-700 text-sm mt-1">
 
-    <p>
-      {profile?.current_address?.address_line_1}
-    </p>
+ 
 
     <p>
-     Address line-1: {profile?.current_address?.city}
+     Address line-1: {profile?.current_address?.city},
      Address line-2: {profile?.current_address?.state}
     </p>
 
@@ -240,7 +238,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   <div className="text-gray-700 text-sm mt-1">
 
     <p>
-      Address line-1: {profile?.permanent_address?.address_line_1}
+      Address line-1: {profile?.permanent_address?.address_line_1},
       Address line-2: {profile?.permanent_address?.address_line_2}
     </p>
 

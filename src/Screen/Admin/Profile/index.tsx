@@ -1,24 +1,20 @@
 
-import { FaTimes, FaUserShield, FaEnvelope } from "react-icons/fa";
+import { FaTimes, FaUserShield, FaEnvelope, FaUser, FaPhone, FaHospital, FaInfoCircle } from "react-icons/fa";
+import type { RootState } from "../../../../store/store";
+import { useSelector } from "react-redux";
 
-interface AdminUser {
-  first_name: string;
-  last_name: string;
-  email: string;
-  role?: string;
-}
 
-interface AdminProfileDrawerProps {
+
+interface Props {
   open: boolean;
   onClose: () => void;
-  user: AdminUser | null;
 }
 
-const AdminProfile = ({
-  open,
-  onClose,
-  user,
-}: AdminProfileDrawerProps) => {
+const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
+
+  // ✅ Get admin user from Redux
+  const user = useSelector((state: RootState) => state.auth.user);
+
 
   if (!user) return null;
 
@@ -100,6 +96,33 @@ const AdminProfile = ({
               <FaUserShield />
               {user.role || "Admin"}
             </span>
+
+            <span className="
+            px-4 py-2
+            bg-white/70 rounded-full
+            shadow
+            flex items-center gap-2
+            text-gray-700">
+              <FaUser/> {user.gender || "—"}
+            </span>
+            <span className="
+            px-4 py-2
+            bg-white/70 rounded-full
+            shadow
+            flex items-center gap-2 
+            text-gray-700">
+              <FaPhone /> {user.phone_no || "—"}
+            </span>
+
+            <span className="
+            bg-white/70 rounded-full
+            shadow flex items-center gap-2
+            text-gray-700">
+            <FaHospital/> {profile?.occupation}
+            </span>
+
+
+
 
           </div>
 
