@@ -140,12 +140,14 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                 <h3 className="text-blue-600 font-semibold  flex items-center gap-2">
                   <GiMedicalPack /> Medical Details
                 </h3>
-                <p className="text-gray-700 text-sm">
-                  <span className="font-medium">Blood Group:</span>{" "}
-                 <FaTint/> {profile?.blood_group
+
+                  <span className="font-medium flex items-center gap-2"> 
+                    <FaTint className="text-red-600"/> Blood Group: {profile?.blood_group
                     ? bloodGroupMap[profile.blood_group]
                     : "—"}
-                </p>
+                    </span>
+                
+
                 <p className= "text-gray-700 text-sm">
                   <span className="font-medium"> Height: </span> {""}
                   <MdHeight/> {profile?.height}
@@ -167,6 +169,83 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
                     : "—"}
                 </p>
               </div>
+
+              {/* Lifestyle */}
+<div className="mt-4">
+
+  <h3 className="text-purple-600 font-semibold flex items-center gap-2">
+    🚶 Lifestyle
+  </h3>
+
+  <div className="text-gray-700 text-sm mt-1 space-y-1">
+
+    <p>
+      Smoking:{" "}
+      <span className="font-medium">
+        {profile?.smoking ? "Yes" : "No"}
+      </span>
+    </p>
+
+    <p>
+      Alcohol:{" "}
+      <span className="font-medium">
+        {profile?.alcohol ? "Yes" : "No"}
+      </span>
+    </p>
+
+  </div>
+
+</div>
+{/* Current Address */}
+<div className="mt-4">
+
+  <h3 className="text-blue-600 font-semibold flex items-center gap-2">
+    📍 Current Address
+  </h3>
+
+  <div className="text-gray-700 text-sm mt-1">
+
+    <p>
+      {profile?.current_address?.address_line_1}
+    </p>
+
+    <p>
+      {profile?.current_address?.city},{" "}
+      {profile?.current_address?.state}
+    </p>
+
+    <p>
+      PIN: {profile?.current_address?.pin}
+    </p>
+
+  </div>
+
+</div>
+{/* Permanent Address */}
+<div className="mt-4">
+
+  <h3 className="text-blue-600 font-semibold flex items-center gap-2">
+    🏠 Permanent Address
+  </h3>
+
+  <div className="text-gray-700 text-sm mt-1">
+
+    <p>
+      {profile?.permanent_address?.address_line_1}
+    </p>
+
+    <p>
+      {profile?.permanent_address?.city},{" "}
+      {profile?.permanent_address?.state}
+    </p>
+
+    <p>
+      PIN: {profile?.permanent_address?.pin}
+    </p>
+
+  </div>
+
+</div>
 
             </div>
 
