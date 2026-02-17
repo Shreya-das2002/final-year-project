@@ -50,9 +50,9 @@ const Appointments: React.FC = () => {
         grid
         grid-cols-2
         sm:grid-cols-3
-        md:grid-cols-4
-        lg:grid-cols-4
-        gap-4
+        md:grid-cols-3
+        lg:grid-cols-3
+        gap-12
       ">
 
         {DOCTOR_SPECIALIZATIONS.map((item) => {
@@ -81,14 +81,14 @@ const Appointments: React.FC = () => {
                 bg-gray-100
                 p-3
                 rounded-lg
-                w-16 h-16
+                w-22 h-22
                 flex items-center justify-center
               ">
 
                 <img
                   src={image}
                   alt={item.label}
-                  className="w-10 h-10 object-contain"
+                  className="w-20 h-20 object-contain"
                 />
 
               </div>
