@@ -1,7 +1,7 @@
 import React from "react";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
- import general from "../../../assets/general.png";
+import general from "../../../assets/general.png";
 //  import cardiology from "../../../assets/specialties/cardiology.png";
 //  import dermatology from "../../../assets/specialties/dermatology.png";
 //  import pediatrics from "../../../assets/specialties/pediatrics.png";
