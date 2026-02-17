@@ -18,17 +18,17 @@ import general from "../../../assets/general.png";
 const IMAGES: Record<number, string> = {
 
   1: general,
-  2: cardiology,
-  3: dermatology,
-  4: pediatrics,
-  5: surgeon,
-  6: dentist,
-  7: eye,
-  8: ent,
-  9: psychiatry,
-  10: neurology,
-  11: orthopedic,
-  12: gynecology
+  // 2: cardiology,
+  // 3: dermatology,
+  // 4: pediatrics,
+  // 5: surgeon,
+  // 6: dentist,
+  // 7: eye,
+  // 8: ent,
+  // 9: psychiatry,
+  // 10: neurology,
+  // 11: orthopedic,
+  // 12: gynecology
 
 };
 
