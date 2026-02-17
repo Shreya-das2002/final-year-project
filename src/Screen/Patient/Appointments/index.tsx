@@ -65,7 +65,7 @@ const Appointments: React.FC = () => {
               key={item.value}
               className="
                 flex items-center gap-3
-                bg-white
+                bg-gray-100
                 border
                 rounded-xl
                 p-4
@@ -95,7 +95,7 @@ const Appointments: React.FC = () => {
 
 
               {/* Label */}
-              <span className="text-sm font-medium text-gray-800">
+              <span className="font-medium text-gray-700 text-lg">
                 {item.label}
               </span>
 
