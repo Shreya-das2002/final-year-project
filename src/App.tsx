@@ -158,6 +158,8 @@ const AppLayout: React.FC = () => {
               <Route path="doctor_list" element={<DoctorList/>} />
               <Route path="messages" element={<Messages/>} />
               <Route path="add_doctor" element={<AddDoctor/>} />
+              {/* <Route path="doctor_view_profile" element={<DoctorViewProfile />} />
+              <Route path="doctor_edit_profile" element={<DoctorEditProfile/>} /> */}
             </Route>
 
             {/* Doctor */}
