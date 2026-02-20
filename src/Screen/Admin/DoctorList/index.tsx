@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
@@ -53,6 +54,7 @@ const getStatusLabel = (status?: string): StatusUI => {
 const DoctorList = () => {
 
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
 
   const { doctors, loading } = useSelector(
@@ -278,6 +280,9 @@ const DoctorList = () => {
                       <div className="flex justify-center gap-4">
 
                         <button
+                        onClick={() => {
+                          navigate(`/admin/doctor-view-profile/${doc.doctor_id}`);
+                        }}
                           type="button"
                           className="text-gray-600 hover:text-blue-600"
                         >
