@@ -46,6 +46,7 @@ import DoctorDashbord from "./Screen/Doctor/Dashbord";
 import DoctorAppointments from "./Screen/Doctor/DoctorAppointments";
 import AppointmentRequests from "./Screen/Doctor/AppointmentRequests";
 import DoctorFeedback from "./Screen/Doctor/Feedback";
+import DoctorEditProfile from "./Screen/Admin/DoctorProfile/DoctorEditProfile";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -158,8 +159,8 @@ const AppLayout: React.FC = () => {
               <Route path="doctor_list" element={<DoctorList/>} />
               <Route path="messages" element={<Messages/>} />
               <Route path="add_doctor" element={<AddDoctor/>} />
-              {/* <Route path="doctor_view_profile" element={<DoctorViewProfile />} />
-              <Route path="doctor_edit_profile" element={<DoctorEditProfile/>} /> */}
+              {/* <Route path="doctor_view_profile" element={<DoctorViewProfile />} /> */}
+              <Route path="doctor_edit_profile" element={<DoctorEditProfile/>} />
             </Route>
 
             {/* Doctor */}

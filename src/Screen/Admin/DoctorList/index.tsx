@@ -281,7 +281,7 @@ const DoctorList = () => {
 
                         <button
                         onClick={() => {
-                          navigate(`/admin/doctor_view_profile/${doc.doctor_id}`);
+                          navigate(`/admin/doctor_view_profile`);
                         }}
                           type="button"
                           className="text-gray-600 hover:text-blue-600"
@@ -291,7 +291,7 @@ const DoctorList = () => {
 
                         <button
                         onClick={() => {
-                          navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`);
+                          navigate(`/admin/doctor_edit_profile`);
                         }}
                           type="button"
                           className="text-gray-600 hover:text-green-600"
