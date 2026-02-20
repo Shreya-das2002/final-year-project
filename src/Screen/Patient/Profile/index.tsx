@@ -110,7 +110,7 @@ const [permanentAddress, setPermanentAddress] = useState({
 });
 
   const [profile, setProfileState] = useState<EditableProfile>({
-     firstName: user?.first_name || "",
+  firstName: user?.first_name || "",
   middleName: user?.middle_name || "",
   lastName: user?.last_name || "",
   email: user?.email || "",
