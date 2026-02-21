@@ -607,7 +607,7 @@ permanent_address: permanentAddress.addressLine1
           <h3 className="text-lg font-semibold mb-6">Medical Information</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-           <div>
+          <div>
   <label className="block text-sm font-medium mb-1">Blood Group</label>
   <select
     value={profile.bloodGroup}

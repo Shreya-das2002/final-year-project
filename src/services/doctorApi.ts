@@ -14,9 +14,8 @@ export interface Doctor {
   email: string;
   phone_no: string;
 
-  gender?: string;          // ADD THIS
-  specialization?: string;  // ADD THIS
-
+  gender?: string;          
+  specialization?: string;  
   status: string;
 
   created_on?: string;
