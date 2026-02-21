@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import authReducer from "./slices/authSlice";
 import adminReducer from "./slices/adminSlice";
-import doctorReducer from "./slices/doctorSlice";   // ✅ ADD THIS
+import doctorReducer from "./slices/doctorSlice"; 
 
 
 export const store = configureStore({
@@ -13,7 +13,7 @@ export const store = configureStore({
 
     admin: adminReducer,
 
-    doctor: doctorReducer,   // ✅ ADD THIS
+    doctor: doctorReducer,   //  ADD THIS
 
   },
 

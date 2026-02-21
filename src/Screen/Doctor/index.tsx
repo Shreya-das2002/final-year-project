@@ -1,25 +1,27 @@
 import { Outlet } from "react-router-dom";
+import { useState } from "react";
 import SideNav from "../Common/SideNav";
+import DoctorProfile from "./Profile";
 
 
 const Doctor = () => {
-  // const [openProfileDrawer, setOpenProfileDrawer] = useState(false);
-  // const user = useSelector((state: RootState) => state.auth.user);
+  const [openProfileDrawer, setOpenProfileDrawer] = useState(false);
 
   return (
     <div className="flex">
-      <SideNav  />
+      <SideNav onProfileClick={() => setOpenProfileDrawer(true)}   />
 
       <main className="ml-64 w-screen">
-        <Outlet />
-      </main>
 
-      {/* RIGHT DRAWER
-      <AdminProfile
+         
+      <DoctorProfile
         open={openProfileDrawer}
         onClose={() => setOpenProfileDrawer(false)}
-        user={user}
-      /> */}
+      />
+      
+        <Outlet />
+      </main>
+     
     </div>
   );
 };

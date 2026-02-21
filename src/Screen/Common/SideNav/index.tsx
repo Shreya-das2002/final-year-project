@@ -67,6 +67,11 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
       return;
     }
 
+    if (normalizedRole?.includes("doctor")) {
+      onProfileClick?.();
+      return;
+    }
+
   };
 
   /* ================= MENU CLICK ================= */
