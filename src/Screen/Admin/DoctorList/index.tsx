@@ -39,6 +39,12 @@ const getStatusLabel = (status?: string): StatusUI => {
         className: "bg-red-100 text-red-700"
       };
 
+      case "inactive":
+      return {
+        label: "Inactive",
+        className: "bg-red-100 text-gray-700"
+      };
+
     default:
       return {
         label: status || "Unknown",
@@ -280,9 +286,11 @@ const DoctorList = () => {
                       <div className="flex justify-center gap-4">
 
                         <button
-                        onClick={() => {
-                          navigate(`/admin/doctor_view_profile`);
-                        }}
+                        onClick={() =>
+                          navigate(`/admin/doctor_view_profile/${doc.doctor_id}`, {
+                            state: doc,
+                          })
+                        }
                           type="button"
                           className="text-gray-600 hover:text-blue-600"
                         >
@@ -291,7 +299,7 @@ const DoctorList = () => {
 
                         <button
                         onClick={() => {
-                          navigate(`/admin/doctor_edit_profile`);
+                          navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`);
                         }}
                           type="button"
                           className="text-gray-600 hover:text-green-600"
