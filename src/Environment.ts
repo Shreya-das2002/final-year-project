@@ -17,7 +17,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 1,
     name: "Shreya Das",
-    role: "Full-Stack Developer",
+    role: "Full Stack + Database Developer (Main Developer)",
     desc: "Works on both frontend and backend parts of the project. Focuses on implementing features and ensuring smooth application functionality.",
     img: shreyaImg,
     email: "das.shreya.sid@gmail.com",
@@ -26,7 +26,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 2,
     name: "Subhankar Basak",
-    role: "Designer",
+    role: "UI/UX Designer + Frontend Developer (Helper)",
     desc: "Handles the visual layout and user interface design. Pays attention to clarity, usability, and consistent design across the application.",
     img: subhaImg,
     email: "subhankar612003@gmail.com",
@@ -35,7 +35,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 3,
     name: "Ranabir Basak",
-    role: "ML Engineer",
+    role: "ML Designer + Frontend Developer (Helper)",
     desc: "Works on machine learning components and data handling tasks. Assists in building and testing models used within the project.",
     img: ranaImg,
     email: "ranabirbasak2004@gmail.com",
@@ -44,8 +44,8 @@ export const teamMembers: TeamMember[] = [
     {
     id: 4,
     name: "Rinki Singha Roy",
-    role: "Database Engineer",
-    desc: "Manages database structure and basic data organization. Supports data storage, retrieval, and overall system consistency.",
+    role: "---",
+    desc: "-----",
     img: rinkiImg,
     email: "rinkisingharoy850@gmail.com",
     num: 7797185159
