@@ -13,6 +13,7 @@ interface DoctorProfile {
   dob: string;
   docNumber: string;
   license: string;
+  registration: string;
   experience: string;
   specialization: string;
   bio: string;
@@ -50,6 +51,7 @@ const DoctorEditProfile: React.FC = () => {
     dob: "",
     docNumber: "",
     license: "",
+    registration: "",
     experience: "",
     specialization: "",
     bio: "",
@@ -184,6 +186,7 @@ const DoctorEditProfile: React.FC = () => {
               <div className="grid md:grid-cols-3 gap-4">
                 <Field label="Doctor ID" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} />
                 <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)} />
+                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} />
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Experience" value={profile.experience} onChange={(v)=>handleProfileChange("experience",v)} />
