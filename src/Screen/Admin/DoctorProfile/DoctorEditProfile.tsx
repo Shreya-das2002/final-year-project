@@ -94,20 +94,20 @@ const DoctorEditProfile: React.FC = () => {
     setProfile((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleCurrentChange = (key: string, value: string) => {
-    const updated = { ...currentAddress, [key]: value };
-    setCurrentAddress(updated);
-    if (sameAddress) setPermanentAddress(updated);
+  const handlePermanentChange = (key: string, value: string) => {
+    const updated = { ...permanentAddress, [key]: value };
+    setPermanentAddress(updated);
+    if (sameAddress) setCurrentAddress(updated);
   };
 
-  const handlePermanentChange = (key: string, value: string) => {
-    setPermanentAddress((prev) => ({ ...prev, [key]: value }));
+  const handleCurrentChange = (key: string, value: string) => {
+    setCurrentAddress((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSameAddress = () => {
     const checked = !sameAddress;
     setSameAddress(checked);
-    if (checked) setPermanentAddress(currentAddress);
+    if (checked) setCurrentAddress(permanentAddress);
   };
 
   const handleExpChange = (
@@ -192,17 +192,17 @@ const DoctorEditProfile: React.FC = () => {
 
     if (res.data.success) {
       if(step === 2){
-        alert( "Doctor profile update successfully ");
+        toast( "Doctor profile update successfully ");
         navigate("/admin/doctor_list");
       }
       
     } else {
-      alert(res.data.message || "Failed");
+      toast(res.data.message || "Failed");
     }
 
   } catch (error) {
     console.error(error);
-    alert("Something went wrong");
+    toast("Something went wrong");
   }
 };
 
@@ -234,29 +234,28 @@ return (
                 </legend>
               <div className="grid md:grid-cols-3 gap-4">
                 <Field label="First Name" value={profile.firstName} onChange={(v)=>handleProfileChange("firstName",v)} disabled />
-                <Field label="Middle Name" value={profile.middleName} onChange={(v)=>handleProfileChange("middleName",v)} />
-                <Field label="Last Name" value={profile.lastName} onChange={(v)=>handleProfileChange("lastName",v)} />
+                <Field label="Middle Name" value={profile.middleName} onChange={(v)=>handleProfileChange("middleName",v)} disabled />
+                <Field label="Last Name" value={profile.lastName} onChange={(v)=>handleProfileChange("lastName",v)} disabled />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4 mt-4 items-end">
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <DatePicker
-      label="Date of Birth"
-      value={profile.dob ? dayjs(profile.dob) : null}
-      onChange={(v: Dayjs | null) =>
-        handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
-      }
-      slotProps={{
-        textField: {
-          fullWidth: true,
-          size: "small",
-        },
-      }}
-    />
-  </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Date of Birth"
+                  value={profile.dob ? dayjs(profile.dob) : null}
+                  onChange={(v: Dayjs | null) =>
+                    handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
+                  }
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                    },
+                  }}
+                />
+              </LocalizationProvider>
 
-
-                <Field label="Gender" value={profile.gender} onChange={(v)=>handleProfileChange("gender",v)} />
+                <Field label="Gender" value={profile.gender} onChange={(v)=>handleProfileChange("gender",v)} disabled />
               </div>
             </fieldset>
 
@@ -265,13 +264,13 @@ return (
               <legend className="text-sm font-semibold">Professional Information</legend>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <Field label="Doctor ID" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} />
-                <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)} />
-                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} />
+                <Field label="Doctor ID" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} disabled />
+                <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)} disabled />
+                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} disabled />
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Experience" value={profile.experience} onChange={(v)=>handleProfileChange("experience",v)} />
-                <Field label="Specialization" value={profile.specialization} onChange={(v)=>handleProfileChange("specialization",v)} />
+                <Field label="Specialization" value={profile.specialization} onChange={(v)=>handleProfileChange("specialization",v)} disabled />
               </div>
 
               <textarea
@@ -288,23 +287,23 @@ return (
 
               <div className="grid md:grid-cols-2 gap-6">
 
-                {/* CURRENT */}
-                <div className="border p-4">
-                  <p className="text-sm font-semibold mb-2">Current Address</p>
-
-                  <AddressFields state={currentAddress} handler={handleCurrentChange} />
-                </div>
-
                 {/* PERMANENT */}
                 <div className="border p-4">
+                  <p className="text-sm font-semibold mb-2">Permanent Address</p>
+
+                  <AddressFields state={permanentAddress} handler={handlePermanentChange} />
+                </div>
+
+                {/* CURRENT */}
+                <div className="border p-4">
                   <div className="flex justify-between mb-2">
-                    <p className="text-sm font-semibold">Permanent Address</p>
+                    <p className="text-sm font-semibold">Current Address</p>
                     <label className="text-xs">
                       <input type="checkbox" checked={sameAddress} onChange={handleSameAddress}/> Same as
                     </label>
                   </div>
 
-                  <AddressFields state={permanentAddress} handler={handlePermanentChange} disabled={sameAddress}/>
+                  <AddressFields state={currentAddress} handler={handleCurrentChange} disabled={sameAddress}/>
                 </div>
 
               </div>
