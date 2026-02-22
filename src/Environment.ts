@@ -480,7 +480,8 @@ export const urls ={
   updateDoctorStatusUrl: '/doctor/update-status',
   getDoctorListUrl: '/doctor/doctor-list',
   getHomepageDoctorsUrl: '/doctor/homepage-doctors',
-  applyDoctorUrl: "/apply-doctor"
+  applyDoctorUrl: "/apply-doctor",
+  docProfileUrl: "/doctor/profile",
 }
 
 

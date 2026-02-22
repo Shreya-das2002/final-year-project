@@ -1,23 +1,13 @@
 import React, { useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 
-/* ================= TYPES ================= */
+import { saveDoctorProfileApi } from "../../../services/doctorProfileApi";
 
-interface DoctorProfile {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  gender: string;
-  dob: string;
-  docNumber: string;
-  license: string;
-  registration: string;
-  experience: string;
-  specialization: string;
-  bio: string;
-}
+/* ================= TYPES ================= */
 
 interface Address {
   addressLine1: string;
@@ -40,20 +30,24 @@ interface Experience {
 /* ================= COMPONENT ================= */
 
 const DoctorEditProfile: React.FC = () => {
+  const { doctor_id } = useParams();
+  const location = useLocation();
+  const doctor = location.state;
+
   const [step, setStep] = useState<number>(1);
   const [sameAddress, setSameAddress] = useState<boolean>(false);
 
-  const [profile, setProfile] = useState<DoctorProfile>({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    gender: "",
+  const [profile, setProfile] = useState({
+    firstName: doctor?.first_name || "",
+    middleName: doctor?.middle_name || "",
+    lastName: doctor?.last_name || "",
+    gender: doctor?.gender || "",
     dob: "",
-    docNumber: "",
+    docNumber: doctor?.doctor_no || "",
     license: "",
     registration: "",
     experience: "",
-    specialization: "",
+    specialization: doctor?.specialization || "",
     bio: "",
   });
 
@@ -89,18 +83,18 @@ const DoctorEditProfile: React.FC = () => {
 
   /* ================= HANDLERS ================= */
 
-  const handleProfileChange = (key: keyof DoctorProfile, value: string) => {
-    setProfile(prev => ({ ...prev, [key]: value }));
+  const handleProfileChange = (key: string, value: string) => {
+    setProfile((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleCurrentChange = (key: keyof Address, value: string) => {
+  const handleCurrentChange = (key: string, value: string) => {
     const updated = { ...currentAddress, [key]: value };
     setCurrentAddress(updated);
     if (sameAddress) setPermanentAddress(updated);
   };
 
-  const handlePermanentChange = (key: keyof Address, value: string) => {
-    setPermanentAddress(prev => ({ ...prev, [key]: value }));
+  const handlePermanentChange = (key: string, value: string) => {
+    setPermanentAddress((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSameAddress = () => {
@@ -132,14 +126,72 @@ const DoctorEditProfile: React.FC = () => {
     ]);
   };
 
-  const handleSave = () => {
-    console.log(profile, currentAddress, permanentAddress, experiences);
-    alert("Saved (Frontend Only)");
+  /* ================= SAVE ================= */
+
+  const handleSave = async () => {
+    try {
+      if (!doctor_id) {
+        alert("Doctor ID missing");
+        return;
+      }
+
+      const payload = {
+        dob: profile.dob,
+        licence_number: profile.license,
+        registration_number: profile.registration,
+        experience: profile.experience,
+        bio: profile.bio,
+
+        current_address: {
+          address_line_1: currentAddress.addressLine1,
+          address_line_2: currentAddress.addressLine2,
+          city: currentAddress.city,
+          district: currentAddress.district,
+          state: currentAddress.state,
+          country: currentAddress.country,
+          pin_code: currentAddress.pincode,
+        },
+
+        permanent_address: {
+          address_line_1: permanentAddress.addressLine1,
+          address_line_2: permanentAddress.addressLine2,
+          city: permanentAddress.city,
+          district: permanentAddress.district,
+          state: permanentAddress.state,
+          country: permanentAddress.country,
+          pin_code: permanentAddress.pincode,
+        },
+
+        experiences: experiences.map((exp) => ({
+          organization: exp.organization,
+          start_date: exp.startDate,
+          end_date: exp.endDate,
+          designation: exp.designation,
+          responsibilities: exp.responsibilities,
+        })),
+      };
+
+      const res = await saveDoctorProfileApi(doctor_id, payload);
+
+      if (res.data.success) {
+        alert("Profile saved successfully ✅");
+      } else {
+        alert(res.data.message || "Failed ❌");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+    }
   };
 
-  /* ================= UI ================= */
+  /* ================= SAFETY ================= */
 
-  return (
+  if (!doctor) {
+    return <div className="p-10">No doctor data found</div>;
+  }
+
+  /* ================= UI ================= */
+return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded shadow">
 
