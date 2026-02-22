@@ -164,7 +164,7 @@ const DoctorEditProfile: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-4 mt-4">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                    label="D.O.B"
+                    label="Date of Birth"
                     value={profile.dob ? dayjs(profile.dob) : null}
                     onChange={(v: Dayjs | null) =>
                       handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
@@ -181,9 +181,11 @@ const DoctorEditProfile: React.FC = () => {
             <fieldset className="border p-4">
               <legend className="text-sm font-semibold">Professional Information</legend>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <Field label="DOC Number" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} />
+              <div className="grid md:grid-cols-3 gap-4">
+                <Field label="Doctor ID" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} />
                 <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)} />
+                </div>
+              <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Experience" value={profile.experience} onChange={(v)=>handleProfileChange("experience",v)} />
                 <Field label="Specialization" value={profile.specialization} onChange={(v)=>handleProfileChange("specialization",v)} />
               </div>
