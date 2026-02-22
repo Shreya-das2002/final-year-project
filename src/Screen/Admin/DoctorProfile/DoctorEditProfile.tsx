@@ -265,8 +265,8 @@ return (
 
               <div className="grid md:grid-cols-3 gap-4">
                 <Field label="Doctor ID" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} disabled />
-                <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)} disabled />
-                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} disabled />
+                <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)}  />
+                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} />
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Experience" value={profile.experience} onChange={(v)=>handleProfileChange("experience",v)} />
