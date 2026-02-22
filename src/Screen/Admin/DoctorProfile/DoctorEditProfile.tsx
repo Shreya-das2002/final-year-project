@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -36,7 +37,9 @@ interface Experience {
 const DoctorEditProfile: React.FC = () => {
   const { doctor_id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const doctor = location.state;
+  const finalDoctorId = doctor_id || doctor?.doctor_id;
 
   const [step, setStep] = useState<number>(1);
   const [sameAddress, setSameAddress] = useState<boolean>(false);
@@ -133,13 +136,17 @@ const DoctorEditProfile: React.FC = () => {
   /* ================= SAVE ================= */
 
   const handleSave = async () => {
-    try {
-      if (!doctor_id) {
-        alert("Doctor ID missing");
-        return;
-      }
+  try {
+    if (!finalDoctorId) {
+      toast("Doctor ID missing");
+      return;
+    }
 
-      const payload: DoctorProfilePayload = {
+    let payload: DoctorProfilePayload = {};
+
+    /* ================= STEP 1 SAVE ================= */
+    if (step === 1) {
+      payload = {
         dob: profile.dob,
         licence_number: profile.license,
         registration_number: profile.registration,
@@ -165,7 +172,12 @@ const DoctorEditProfile: React.FC = () => {
           country: permanentAddress.country,
           pin_code: permanentAddress.pincode,
         },
+      };
+    }
 
+    /* ================= STEP 2 SAVE ================= */
+    if (step === 2) {
+      payload = {
         experiences: experiences.map((exp) => ({
           organization: exp.organization,
           start_date: exp.startDate,
@@ -174,23 +186,29 @@ const DoctorEditProfile: React.FC = () => {
           responsibilities: exp.responsibilities,
         })),
       };
-
-      const res = await saveDoctorProfileApi(doctor_id, payload);
-
-      if (res.data.success) {
-        alert("Profile saved successfully ✅");
-      } else {
-        alert(res.data.message || "Failed ❌");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong");
     }
-  };
+
+    const res = await saveDoctorProfileApi(finalDoctorId, payload);
+
+    if (res.data.success) {
+      if(step === 2){
+        alert( "Doctor profile update successfully ");
+        navigate("/admin/doctor_list");
+      }
+      
+    } else {
+      alert(res.data.message || "Failed");
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
 
   /* ================= SAFETY ================= */
 
-  if (!doctor) {
+  if (!finalDoctorId) {
     return <div className="p-10">No doctor data found</div>;
   }
 
