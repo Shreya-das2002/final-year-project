@@ -6,6 +6,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 
 import { saveDoctorProfileApi } from "../../../services/doctorProfileApi";
+import type {
+  DoctorProfilePayload,
+
+} from "../../../services/doctorProfileApi";
 
 /* ================= TYPES ================= */
 
@@ -135,7 +139,7 @@ const DoctorEditProfile: React.FC = () => {
         return;
       }
 
-      const payload = {
+      const payload: DoctorProfilePayload = {
         dob: profile.dob,
         licence_number: profile.license,
         registration_number: profile.registration,
@@ -203,29 +207,36 @@ return (
 
         {/* ================= STEP 1 ================= */}
         {step === 1 && (
-          <div className="bg-white p-6 rounded space-y-6">
+          <div className="bg-gray-50 p-6 rounded space-y-6">
 
             {/* PERSONAL */}
-            <fieldset className="border p-4">
-              <legend className="text-sm font-semibold">Personal Details</legend>
-
+          <fieldset className="border p-5 bg-blue-50 rounded">
+                <legend className="px-2 text-sm font-semibold">
+                        Personal Details
+                </legend>
               <div className="grid md:grid-cols-3 gap-4">
-                <Field label="First Name" value={profile.firstName} onChange={(v)=>handleProfileChange("firstName",v)} />
+                <Field label="First Name" value={profile.firstName} onChange={(v)=>handleProfileChange("firstName",v)} disabled />
                 <Field label="Middle Name" value={profile.middleName} onChange={(v)=>handleProfileChange("middleName",v)} />
                 <Field label="Last Name" value={profile.lastName} onChange={(v)=>handleProfileChange("lastName",v)} />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4 mt-4">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    label="Date of Birth"
-                    value={profile.dob ? dayjs(profile.dob) : null}
-                    onChange={(v: Dayjs | null) =>
-                      handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
-                    }
-                    slotProps={{ textField: { fullWidth: true } }}
-                  />
-                </LocalizationProvider>
+              <div className="grid md:grid-cols-2 gap-4 mt-4 items-end">
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <DatePicker
+      label="Date of Birth"
+      value={profile.dob ? dayjs(profile.dob) : null}
+      onChange={(v: Dayjs | null) =>
+        handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
+      }
+      slotProps={{
+        textField: {
+          fullWidth: true,
+          size: "small",
+        },
+      }}
+    />
+  </LocalizationProvider>
+
 
                 <Field label="Gender" value={profile.gender} onChange={(v)=>handleProfileChange("gender",v)} />
               </div>
@@ -354,20 +365,32 @@ export default DoctorEditProfile;
 
 /* ================= COMPONENTS ================= */
 
-const Field = ({label,value,onChange,type="text"}:{
-  label:string; value:string; onChange:(v:string)=>void; type?:string
-})=>(
+const Field = ({
+  label,
+  value,
+  onChange,
+  type = "text",
+  disabled = false, 
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  disabled?: boolean; 
+}) => (
   <div>
     <label className="text-sm">{label}</label>
     <input
       type={type}
       value={value}
-      onChange={(e)=>onChange(e.target.value)}
-      className="w-full border p-2"
+      disabled={disabled}  
+      onChange={(e) => onChange(e.target.value)}
+      className={`w-full border p-2 ${
+        disabled ? "bg-gray-100 cursor-not-allowed" : ""
+      }`}
     />
   </div>
 );
-
 const AddressFields = ({
   state,
   handler,
