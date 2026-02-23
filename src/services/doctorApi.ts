@@ -3,6 +3,16 @@ import { API } from "./api";
 
 /* ================= DOCTOR TYPE ================= */
 
+interface Address {
+  address_line_1: string | null;
+  address_line_2: string | null;
+  city: string | null;
+  district: string | null;
+  state: string | null;
+  country: string | null;
+  pin: string | null;
+
+}
 export interface Doctor {
 
   doctor_id: number;
@@ -10,17 +20,27 @@ export interface Doctor {
   first_name: string;
   middle_name?: string | null;
   last_name: string;
+  dob?: string | null;
+
 
   email: string;
   phone_no: string;
 
-  gender?: string;          
-  specialization?: string;  
+  gender?: string;    
+  doctor_no?: string;
+  license_number?: string;
+  registration_number?: string;
+  experience?: number;      
+  specialization?: string;
+  bio?: string;  
   status: string;
+  current_address: Address | null;
+  permanent_address: Address | null;
 
   created_on?: string;
 
 }
+
 
 export interface HomepageDoctor {
 

@@ -7,48 +7,80 @@ import type { RootState } from "../store";
 
 /* ================= DOCTOR TYPE ================= */
 
+
+
+interface Address {
+  address_line_1: string | null;
+  address_line_2: string | null;
+  city: string | null;
+  district: string | null;
+  state: string | null;
+  country: string | null;
+  pin: string | null;
+
+}
+
+interface Experience {
+  organization_name: string | null;
+  designation: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  responsibilities: string | null;
+}
 interface Doctor {
 
   doctor_id: number;
 
   first_name: string;
   middle_name?: string | null;
-
   last_name: string;
+  dob?: string | null;
+
 
   email: string;
-
   phone_no: string;
 
+  gender?: string;    
+  doctor_no?: string;
+  license_number?: string;
+  registration_number?: string;
+  experience?: number;      
+  specialization?: string;
+  bio?: string;  
   status: string;
+ 
+  current_address: Address | null;
+  permanent_address: Address | null;
 
-  specialization?: string;  
+  doctor_experiences?: Experience[];
 
-  gender?: string;
+  created_on?: string;
+
+
 
 }
+
+
+
 
 
 /* ================= DOCTOR STATE ================= */
 
 interface DoctorState {
-
   doctors: Doctor[];
-
+  experiences: Experience[];
   loading: boolean;
-
+  selectedDoctor: Doctor | null;
 }
 
-
-/* ================= INITIAL STATE ================= */
-
 const initialState: DoctorState = {
-
   doctors: [],
-
+  experiences: [],
   loading: false,
-
+  selectedDoctor: null,
 };
+
+
 
 
 /* ================= CREATE PAYLOAD TYPE ================= */
@@ -129,13 +161,15 @@ export const createDoctorThunk = createAsyncThunk<Doctor, CreateDoctorPayload>(
 
 export const fetchDoctorListThunk = createAsyncThunk<
   Doctor[],
-  number | undefined
+  number | undefined,
+  { rejectValue: string }
 >(
   "doctor/doctor-list",
   async (specializationId, { rejectWithValue }) => {
     try {
-      const data = await getDoctorListApi(specializationId);
-      return data;
+      const res = await getDoctorListApi(specializationId);
+
+      return res; // ✅ FIXED (already Doctor[])
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -165,6 +199,12 @@ const doctorSlice = createSlice({
     addDoctor(state, action: PayloadAction<Doctor>) {
 
       state.doctors.push(action.payload);
+
+    },
+
+    setSelectedDoctor(state, action: PayloadAction<Doctor | null>) {
+
+  state.selectedDoctor = action.payload;
 
     },
 
@@ -256,7 +296,9 @@ export const {
 
   setDoctors,
 
-  clearDoctors
+  clearDoctors, 
+
+  setSelectedDoctor
 
 } = doctorSlice.actions;
 

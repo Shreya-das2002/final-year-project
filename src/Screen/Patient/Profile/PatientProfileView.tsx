@@ -210,8 +210,8 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
  
 
     <p>
-     Address line-1: {profile?.current_address?.city},
-     Address line-2: {profile?.current_address?.state}
+     Address line-1: {profile?.current_address?.address_line_1},
+     Address line-2: {profile?.current_address?.address_line_2}
     </p>
 
     <p>

@@ -240,8 +240,7 @@ const CreateAdmin = () => {
   /* UI */
 
   const inputClass =
-    "w-full rounded-md border border-gray-400 px-3 py-2 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none bg-white";
-
+  "w-full h-11 rounded-md border border-gray-400 px-3 pr-10 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none bg-white";
 
   return (
 
@@ -439,22 +438,22 @@ const CreateAdmin = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-
-          <div className="relative">
+              <div>
+          <div className="relative ">
 
             <input
               type={showPassword ? "text" : "password"}
               name="password"
               value={form.password}
               onChange={handleChange}
-              className={inputClass}
+              className={`${inputClass} h-11 pr-10`}
               placeholder="Password"
             />
             {/* Eye Icon */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              className="absolute right-3 top-[50%] translate-y-[-50%] pointer-events-auto"
             >
               {showPassword ? (
                 <EyeIcon className="w-5 h-5" />
@@ -463,29 +462,31 @@ const CreateAdmin = () => {
               )}
             </button>          
 
-            {form.password && (
+          </div>
+
+           {form.password && (
               <p className="text-sm mt-1">
                 Strength: {passwordStrength}
               </p>
             )}
 
-          </div>
+            </div>
 
-
+              <div>
           <div className="relative">
             <input
-              type={showPassword ? "text" : "password"}
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
-              className={inputClass}
+              className={`${inputClass} h-11  pr-10`}
               placeholder="Confirm Password"
             />
             {/* Eye Icon */}
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500"
             >
               {showConfirmPassword ? (
                 <EyeIcon className="w-5 h-5" />
@@ -493,14 +494,14 @@ const CreateAdmin = () => {
                 <EyeSlashIcon className="w-5 h-5" />
               )}
             </button>  
+          </div>
 
-            {form.confirmPassword && !passwordsMatch && (
-              <p className="text-red-600 text-sm mt-1">
+          {form.confirmPassword && !passwordsMatch && (
+              <p className="text-red-600 h-5 text-sm mt-1">
                 Password does not match
               </p>
             )}
-
-          </div>
+</div>
 
         </div>
 
