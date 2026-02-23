@@ -99,19 +99,32 @@ const DoctorViewProfile: React.FC = () => {
               <GiMedicalPack /> Professional Details
             </h3>
 
+            <p><strong>Doctor ID:</strong> {doctor.doctor_no}</p>
+            <p><strong>Licence:</strong> {doctor.licence_number || "—"}</p>
             <p><strong>Specialization:</strong> {doctor.specialization || "—"}</p>
-            <p><strong>Experience:</strong> {doctor.experience || "—"} years</p>
+            <p><strong>Bio :</strong>{doctor.bio || "-"}</p>
+            
           </div>
 
           {/* BIO */}
           <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h3 className="text-purple-600 font-semibold mb-3">
-              About Doctor
+            <h3 className="text-blue-600 font-semibold flex items-center gap-2 mb-3">
+             <MdWork /> Experience
             </h3>
 
-            <p className="text-gray-700 text-sm">
-              {doctor.bio || "—"}
-            </p>
+            
+
+            <p><strong>Previous Experience :</strong>{doctor.organization_name || "-"}</p>
+
+            <p><strong>Previous Role :</strong>{doctor.designation || "-"}</p>
+
+            <p><strong>Start Date :</strong>{doctor.start_date || "-"}</p>
+
+            <p><strong>End Date :</strong>{doctor.end_date || "-"}</p>
+
+            
+
+          
           </div>
 
           {/* CURRENT ADDRESS */}
@@ -120,22 +133,30 @@ const DoctorViewProfile: React.FC = () => {
               <FaMapMarkerAlt /> Current Address
             </h3>
 
-            <p>
-              {doctor.current_address?.addressLine1},{" "}
-              {doctor.current_address?.addressLine2}
-            </p>
+            <p><strong>Address Line 1:</strong>
+              {doctor.addressLine1 || "—"}</p>
 
-            <p>
-              City: {doctor.current_address?.city},{" "}
-              District: {doctor.current_address?.district}
-            </p>
+            <p><strong>Address Line 2:</strong>
+              {doctor.addressLine2 || "—"}</p>
+            
 
-            <p>
-              State: {doctor.current_address?.state},{" "}
-              Country: {doctor.current_address?.country}
-            </p>
+            <p><strong>City :</strong>
+               {doctor.city || "—"}</p>
 
-            <p>PIN: {doctor.current_address?.pincode}</p>
+            <p><strong>District :</strong>
+               {doctor.district || "—"}</p>
+            
+
+            <p><strong>State :</strong>
+               {doctor.state ||"—"}</p>
+
+            <p><strong>Country :</strong>
+               {doctor.country ||"—"}</p>
+            
+
+            <p><strong>PIN :</strong>
+            {doctor.pin ||"-"}</p>
+
           </div>
 
           {/* PERMANENT ADDRESS */}
@@ -144,26 +165,51 @@ const DoctorViewProfile: React.FC = () => {
               <FaHome /> Permanent Address
             </h3>
 
-            <p>
-              {doctor.permanent_address?.addressLine1},{" "}
-              {doctor.permanent_address?.addressLine2}
-            </p>
+            <p><strong>Address Line 1:</strong>
+              {doctor.addressLine1 || "—"}</p>
 
-            <p>
-              City: {doctor.permanent_address?.city},{" "}
-              District: {doctor.permanent_address?.district}
-            </p>
+            <p><strong>Address Line 2:</strong>
+              {doctor.addressLine2 || "—"}</p>
+            
 
-            <p>
-              State: {doctor.permanent_address?.state},{" "}
-              Country: {doctor.permanent_address?.country}
-            </p>
+            <p><strong>City :</strong>
+               {doctor.city || "—"}</p>
 
-            <p>PIN: {doctor.permanent_address?.pincode}</p>
+            <p><strong>District :</strong>
+               {doctor.district || "—"}</p>
+            
+
+            <p><strong>State :</strong>
+               {doctor.state ||"—"}</p>
+
+            <p><strong>Country :</strong>
+               {doctor.country ||"—"}</p>
+            
+
+            <p><strong>PIN :</strong>
+            {doctor.pin ||"-"}</p>
           </div>
+     
+<div style={{ display: "flex", justifyContent: "flex-end" }}>
+  <button
+    style={{
+      backgroundColor: "blue",
+      color: "white",
+      padding: "8px 16px",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+    }}
 
-        </div>
-      </div>
+    className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+  >
+    Delete Account
+  </button>
+</div>
+
+
+    </div>
+    </div>
     </div>
   );
 };
