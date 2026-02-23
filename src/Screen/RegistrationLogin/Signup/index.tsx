@@ -9,6 +9,7 @@ import {
   doPasswordsMatch,
   isStrongPassword,
 } from "../../../Environment";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 /* ================= CONSTANTS ================= */
 
@@ -62,6 +63,8 @@ const Signup: React.FC = () => {
     formData.password,
     formData.confirmPassword
   );
+
+  const [showPassword, setShowPassword] = useState(false);
 
   /* ================= INPUT HANDLER ================= */
 
@@ -256,7 +259,7 @@ const Signup: React.FC = () => {
           <div className="md:col-span-3 relative">
             <RequiredStar required />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -264,6 +267,18 @@ const Signup: React.FC = () => {
               required
               className="w-full px-4 py-2 border rounded-md"
             />
+             {/* Eye Icon */}
+               <button
+                 type="button"
+                 onClick={() => setShowPassword(!showPassword)}
+                 className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500"
+               >
+                 {showPassword ? (
+                   <EyeIcon className="w-5 h-5" />
+                 ) : (
+                   <EyeSlashIcon className="w-5 h-5" />
+                 )}
+               </button>
             <small>{passwordStrength}</small>
           </div>
 
@@ -278,6 +293,18 @@ const Signup: React.FC = () => {
               required
               className="w-full px-4 py-2 border rounded-md"
             />
+          {/* Eye Icon */}
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500"
+                    >
+                      {showPassword ? (
+                        <EyeIcon className="w-5 h-5" />
+                      ) : (
+                        <EyeSlashIcon className="w-5 h-5" />
+                      )}
+                    </button>
           </div>
 
           <button
