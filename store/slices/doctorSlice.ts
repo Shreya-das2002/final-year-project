@@ -19,6 +19,14 @@ interface Address {
   pin: string | null;
 
 }
+
+interface Experience {
+  organization_name: string | null;
+  designation: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  responsibilities: string | null;
+}
 interface Doctor {
 
   doctor_id: number;
@@ -34,7 +42,8 @@ interface Doctor {
 
   gender?: string;    
   doctor_no?: string;
-  license_no?: string;
+  license_number?: string;
+  registration_number?: string;
   experience?: number;      
   specialization?: string;
   bio?: string;  
@@ -43,7 +52,7 @@ interface Doctor {
   current_address: Address | null;
   permanent_address: Address | null;
 
-  
+  doctor_experiences?: Experience[];
 
   created_on?: string;
 
@@ -53,13 +62,7 @@ interface Doctor {
 
 
 
-interface Experience {
-  organization_name: string | null;
-  designation: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  responsibilities: string | null;
-}
+
 
 /* ================= DOCTOR STATE ================= */
 
@@ -67,7 +70,7 @@ interface DoctorState {
   doctors: Doctor[];
   experiences: Experience[];
   loading: boolean;
-  selectedDoctor: Doctor | null; // ✅ ADD THIS
+  selectedDoctor: Doctor | null;
 }
 
 const initialState: DoctorState = {
@@ -78,17 +81,6 @@ const initialState: DoctorState = {
 };
 
 
-/* ================= INITIAL STATE ================= */
-
-const initialState: DoctorState = {
-
-  doctors: [],
-
-  experiences: [],
-
-  loading: false,
-
-};
 
 
 /* ================= CREATE PAYLOAD TYPE ================= */
@@ -210,6 +202,12 @@ const doctorSlice = createSlice({
 
     },
 
+    setSelectedDoctor(state, action: PayloadAction<Doctor | null>) {
+
+  state.selectedDoctor = action.payload;
+
+    },
+
     setDoctors(state, action: PayloadAction<Doctor[]>) {
 
       state.doctors = action.payload;
@@ -298,7 +296,9 @@ export const {
 
   setDoctors,
 
-  clearDoctors
+  clearDoctors, 
+
+  setSelectedDoctor
 
 } = doctorSlice.actions;
 

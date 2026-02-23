@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
 
 import {
   FaEdit,
@@ -18,12 +17,41 @@ import {
 
 import { GiMedicalPack } from "react-icons/gi";
 
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "../../../../store/store";
+import { setSelectedDoctor } from "../../../../store/slices/doctorSlice";
 
 const DoctorViewProfile: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const doctor = location.state;
+  // ✅ EXISTING (kept)
+  const doctorFromState = location.state;
+
+  // ✅ REDUX
+  const doctorFromStore = useSelector(
+    (state: RootState) => state.doctor.selectedDoctor
+  );
+
+  // ✅ LOCAL STORAGE
+  const doctorFromStorage = localStorage.getItem("selectedDoctor");
+
+  // ✅ FINAL DOCTOR SOURCE (priority)
+  const doctor =
+    doctorFromState ||
+    doctorFromStore ||
+    (doctorFromStorage ? JSON.parse(doctorFromStorage) : null);
+
+  // ✅ HYDRATE REDUX + STORAGE
+  useEffect(() => {
+    if (doctorFromState) {
+      dispatch(setSelectedDoctor(doctorFromState));
+      localStorage.setItem("selectedDoctor", JSON.stringify(doctorFromState));
+    } else if (!doctorFromStore && doctorFromStorage) {
+      dispatch(setSelectedDoctor(JSON.parse(doctorFromStorage)));
+    }
+  }, [doctorFromState, doctorFromStore, doctorFromStorage, dispatch]);
 
   if (!doctor) {
     return <div className="p-10">No doctor data found</div>;
@@ -100,32 +128,43 @@ const DoctorViewProfile: React.FC = () => {
             </h3>
 
             <p><strong>Doctor ID:</strong> {doctor.doctor_no}</p>
-            <p><strong>Licence:</strong> {doctor.licence_number || "—"}</p>
+            <p><strong>Licence:</strong> {doctor.licence_number || "—"}</p> 
             <p><strong>Specialization:</strong> {doctor.specialization || "—"}</p>
             <p><strong>Bio :</strong>{doctor.bio || "-"}</p>
-            
           </div>
 
-          {/* BIO */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h3 className="text-blue-600 font-semibold flex items-center gap-2 mb-3">
-             <MdWork /> Experience
-            </h3>
+{/* EXPERIENCE */}
+<div className="bg-white rounded-lg p-6 shadow-sm">
+  <h3 className="text-blue-600 font-semibold flex items-center gap-2 mb-3">
+    <MdWork /> Experience
+  </h3>
 
-            
+  {doctor?.doctor_experiences?.length ? (
+    <>
+      <p>
+        <strong>Previous Experience :</strong>{" "}
+        {doctor.doctor_experiences[0]?.organization_name || "-"}
+      </p>
 
-            <p><strong>Previous Experience :</strong>{doctor.organization_name || "-"}</p>
+      <p>
+        <strong>Previous Role :</strong>{" "}
+        {doctor.doctor_experiences[0]?.designation || "-"}
+      </p>
 
-            <p><strong>Previous Role :</strong>{doctor.designation || "-"}</p>
+      <p>
+        <strong>Start Date :</strong>{" "}
+        {doctor.doctor_experiences[0]?.start_date || "-"}
+      </p>
 
-            <p><strong>Start Date :</strong>{doctor.start_date || "-"}</p>
-
-            <p><strong>End Date :</strong>{doctor.end_date || "-"}</p>
-
-            
-
-          
-          </div>
+      <p>
+        <strong>End Date :</strong>{" "}
+        {doctor.doctor_experiences[0]?.end_date || "-"}
+      </p>
+    </>
+  ) : (
+    <p>-</p>
+  )}
+</div>
 
           {/* CURRENT ADDRESS */}
           <div className="bg-white rounded-lg p-6 shadow-sm">
@@ -133,30 +172,13 @@ const DoctorViewProfile: React.FC = () => {
               <FaMapMarkerAlt /> Current Address
             </h3>
 
-            <p><strong>Address Line 1:</strong>
-              {doctor?.current_address?.address_line_1 || "—"}</p>
-
-            <p><strong>Address Line 2:</strong>
-              {doctor.addressLine2 || "—"}</p>
-            
-
-            <p><strong>City :</strong>
-               {doctor.city || "—"}</p>
-
-            <p><strong>District :</strong>
-               {doctor.district || "—"}</p>
-            
-
-            <p><strong>State :</strong>
-               {doctor.state ||"—"}</p>
-
-            <p><strong>Country :</strong>
-               {doctor.country ||"—"}</p>
-            
-
-            <p><strong>PIN :</strong>
-            {doctor.pin ||"-"}</p>
-
+            <p><strong>Address Line 1:</strong> {doctor?.doctor_address?.current_address?.address_line_1 || "—"}</p>
+            <p><strong>Address Line 2:</strong> {doctor?.doctor_address?.current_address?.address_line_2 || "—"}</p>
+            <p><strong>City:</strong> {doctor?.doctor_address?.current_address?.city || "—"}</p>
+            <p><strong>District:</strong> {doctor?.doctor_address?.current_address?.district || "—"}</p>
+            <p><strong>State:</strong> {doctor?.doctor_address?.current_address?.state || "—"}</p>
+            <p><strong>Country:</strong> {doctor?.doctor_address?.current_address?.country || "—"}</p>
+            <p><strong>PIN:</strong> {doctor?.doctor_address?.current_address?.pin || "—"}</p>
           </div>
 
           {/* PERMANENT ADDRESS */}
@@ -165,39 +187,25 @@ const DoctorViewProfile: React.FC = () => {
               <FaHome /> Permanent Address
             </h3>
 
-            <p><strong>Address Line 1:</strong>
-              {doctor.addressLine1 || "—"}</p>
-
-            <p><strong>Address Line 2:</strong>
-              {doctor.addressLine2 || "—"}</p>
-            
-
-            <p><strong>City :</strong>
-               {doctor.city || "—"}</p>
-
-            <p><strong>District :</strong>
-               {doctor.district || "—"}</p>
-            
-
-            <p><strong>State :</strong>
-               {doctor.state ||"—"}</p>
-
-            <p><strong>Country :</strong>
-               {doctor.country ||"—"}</p>
-            
-
-            <p><strong>PIN :</strong>
-            {doctor.pin ||"-"}</p>
+            <p><strong>Address Line 1:</strong> {doctor?.doctor_address?.permanent_address?.address_line_1 || "—"}</p>
+            <p><strong>Address Line 2:</strong> {doctor?.doctor_address?.permanent_address?.address_line_2 || "—"}</p>
+            <p><strong>City:</strong> {doctor?.doctor_address?.permanent_address?.city || "—"}</p>
+            <p><strong>District:</strong> {doctor?.doctor_address?.permanent_address?.district || "—"}</p>
+            <p><strong>State:</strong> {doctor?.doctor_address?.permanent_address?.state || "—"}</p>
+            <p><strong>Country:</strong> {doctor?.doctor_address?.permanent_address?.country || "—"}</p>
+            <p><strong>PIN:</strong> {doctor?.doctor_address?.permanent_address?.pin || "—"}</p>
           </div>
-    </div>
-    <div className="w-full flex justify-end mt-6 items-end">
-  <button
-    className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-  >
-    Delete Account
-  </button>
-</div>
-    </div>
+
+        </div>
+
+        {/* DELETE BUTTON */}
+        <div className="w-full flex justify-end mt-6 items-end">
+          <button className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+            Delete Account
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };

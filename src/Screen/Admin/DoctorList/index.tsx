@@ -5,8 +5,7 @@ import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
 
-import { fetchDoctorListThunk } from "../../../../store/slices/doctorSlice";
-
+import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
 
 /* ================= STATUS UI HELPER ================= */
 
@@ -299,11 +298,10 @@ const DoctorList = () => {
     {/* VIEW */}
     {canView && (
       <button
-        onClick={() =>
-dispatch(setSelectedDoctor(doc));
-navigate(`/admin/doctor_view_profile/${doc.doctor_id}`)
-          })
-        }
+      onClick={() => {
+  dispatch(setSelectedDoctor(doc));
+  navigate(`/admin/doctor_view_profile/${doc.doctor_id}`);
+}}
         type="button"
         className="text-gray-600 hover:text-blue-600"
         title="View Doctor"
@@ -315,11 +313,10 @@ navigate(`/admin/doctor_view_profile/${doc.doctor_id}`)
     {/* EDIT */}
     {canEdit && (
       <button
-        onClick={() =>
-          navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`, {
-            state: doc,
-          })
-        }
+        onClick={() => {
+  dispatch(setSelectedDoctor(doc));
+  navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`);
+}}
         type="button"
         className="text-gray-600 hover:text-green-600"
         title="Edit Doctor"

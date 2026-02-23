@@ -11,7 +11,9 @@ import type {
   DoctorProfilePayload,
 
 } from "../../../services/doctorProfileApi";
-
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "../../../../store/store";
+import { setSelectedDoctor } from "../../../../store/slices/doctorSlice";
 /* ================= TYPES ================= */
 
 interface Address {
@@ -38,24 +40,46 @@ const DoctorEditProfile: React.FC = () => {
   const { doctor_id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const doctor = location.state;
+  const dispatch = useDispatch();
+
+const doctorFromState = location.state;
+
+const doctorFromStore = useSelector(
+  (state: RootState) => state.doctor.selectedDoctor
+);
+
+const doctorFromStorage = localStorage.getItem("selectedDoctor");
+
+const doctor =
+  doctorFromState ||
+  doctorFromStore ||
+  (doctorFromStorage ? JSON.parse(doctorFromStorage) : null);
   const finalDoctorId = doctor_id || doctor?.doctor_id;
 
   const [step, setStep] = useState<number>(1);
   const [sameAddress, setSameAddress] = useState<boolean>(false);
+
+  useState(() => {
+  if (doctorFromState) {
+    dispatch(setSelectedDoctor(doctorFromState));
+    localStorage.setItem("selectedDoctor", JSON.stringify(doctorFromState));
+  } else if (!doctorFromStore && doctorFromStorage) {
+    dispatch(setSelectedDoctor(JSON.parse(doctorFromStorage)));
+  }
+});
 
   const [profile, setProfile] = useState({
     firstName: doctor?.first_name || "",
     middleName: doctor?.middle_name || "",
     lastName: doctor?.last_name || "",
     gender: doctor?.gender || "",
-    dob: "",
+    dob: doctor?.dob ||"",
     docNumber: doctor?.doctor_no || "",
-    license: "",
-    registration: "",
-    experience: "",
+    license: doctor?.licence_number ||"",
+    registration: doctor?.registration_number ||"",
+    experience: doctor?.experience ||"",
     specialization: doctor?.specialization || "",
-    bio: "",
+    bio: doctor?.bio || "",
   });
 
   const [currentAddress, setCurrentAddress] = useState<Address>({

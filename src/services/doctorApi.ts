@@ -28,7 +28,8 @@ export interface Doctor {
 
   gender?: string;    
   doctor_no?: string;
-  license_no?: string;
+  license_number?: string;
+  registration_number?: string;
   experience?: number;      
   specialization?: string;
   bio?: string;  
@@ -39,6 +40,7 @@ export interface Doctor {
   created_on?: string;
 
 }
+
 
 export interface HomepageDoctor {
 
