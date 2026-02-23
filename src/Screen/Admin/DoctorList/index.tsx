@@ -300,8 +300,8 @@ const DoctorList = () => {
     {canView && (
       <button
         onClick={() =>
-          navigate(`/admin/doctor_view_profile/${doc.doctor_id}`, {
-            state: doc,
+dispatch(setSelectedDoctor(doc));
+navigate(`/admin/doctor_view_profile/${doc.doctor_id}`)
           })
         }
         type="button"

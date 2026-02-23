@@ -134,7 +134,7 @@ const DoctorViewProfile: React.FC = () => {
             </h3>
 
             <p><strong>Address Line 1:</strong>
-              {doctor.addressLine1 || "—"}</p>
+              {doctor?.current_address?.address_line_1 || "—"}</p>
 
             <p><strong>Address Line 2:</strong>
               {doctor.addressLine2 || "—"}</p>

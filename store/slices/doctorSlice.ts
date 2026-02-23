@@ -7,37 +7,75 @@ import type { RootState } from "../store";
 
 /* ================= DOCTOR TYPE ================= */
 
+
+
+interface Address {
+  address_line_1: string | null;
+  address_line_2: string | null;
+  city: string | null;
+  district: string | null;
+  state: string | null;
+  country: string | null;
+  pin: string | null;
+
+}
 interface Doctor {
 
   doctor_id: number;
 
   first_name: string;
   middle_name?: string | null;
-
   last_name: string;
+  dob?: string | null;
+
 
   email: string;
-
   phone_no: string;
 
+  gender?: string;    
+  doctor_no?: string;
+  license_no?: string;
+  experience?: number;      
+  specialization?: string;
+  bio?: string;  
   status: string;
+ 
+  current_address: Address | null;
+  permanent_address: Address | null;
 
-  specialization?: string;  
+  
 
-  gender?: string;
+  created_on?: string;
+
+
 
 }
 
+
+
+interface Experience {
+  organization_name: string | null;
+  designation: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  responsibilities: string | null;
+}
 
 /* ================= DOCTOR STATE ================= */
 
 interface DoctorState {
-
   doctors: Doctor[];
-
+  experiences: Experience[];
   loading: boolean;
-
+  selectedDoctor: Doctor | null; // ✅ ADD THIS
 }
+
+const initialState: DoctorState = {
+  doctors: [],
+  experiences: [],
+  loading: false,
+  selectedDoctor: null,
+};
 
 
 /* ================= INITIAL STATE ================= */
@@ -45,6 +83,8 @@ interface DoctorState {
 const initialState: DoctorState = {
 
   doctors: [],
+
+  experiences: [],
 
   loading: false,
 
@@ -129,13 +169,15 @@ export const createDoctorThunk = createAsyncThunk<Doctor, CreateDoctorPayload>(
 
 export const fetchDoctorListThunk = createAsyncThunk<
   Doctor[],
-  number | undefined
+  number | undefined,
+  { rejectValue: string }
 >(
   "doctor/doctor-list",
   async (specializationId, { rejectWithValue }) => {
     try {
-      const data = await getDoctorListApi(specializationId);
-      return data;
+      const res = await getDoctorListApi(specializationId);
+
+      return res; // ✅ FIXED (already Doctor[])
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
