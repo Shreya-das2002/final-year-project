@@ -189,26 +189,14 @@ const DoctorViewProfile: React.FC = () => {
             <p><strong>PIN :</strong>
             {doctor.pin ||"-"}</p>
           </div>
-     
-<div style={{ display: "flex", justifyContent: "flex-end" }}>
+    </div>
+    <div className="w-full flex justify-end mt-6 items-end">
   <button
-    style={{
-      backgroundColor: "blue",
-      color: "white",
-      padding: "8px 16px",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-    }}
-
-    className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+    className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
   >
     Delete Account
   </button>
 </div>
-
-
-    </div>
     </div>
     </div>
   );
