@@ -295,7 +295,7 @@ const DoctorList = () => {
 
                       <div className="flex justify-center gap-4">
 
-                       
+                      
     {/* VIEW */}
     {canView && (
       <button

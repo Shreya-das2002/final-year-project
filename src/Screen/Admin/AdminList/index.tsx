@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
@@ -45,6 +46,7 @@ const getAdminTypeLabel = (role?: string): AdminRoleUI => {
 
 const AdminList = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const { admins, loading } = useSelector(
     (state: RootState) => state.admin
@@ -172,14 +174,25 @@ const AdminList = () => {
 
                         {/* View */}
                         <button
-                          type="button"
-                          className="text-gray-600 hover:text-blue-600"
-                        >
+        onClick={() =>
+          navigate(`/admin/admin_view_profile/${admin.admin_user_id}`, {
+            state: admin,
+          })
+        }
+        type="button"
+        className="text-gray-600 hover:text-blue-600"
+        title="View Doctor"
+      >
                           <EyeIcon className="w-5 h-5" />
                         </button>
 
                         {/* Edit */}
                         <button
+                        onClick={() =>
+          navigate(`/admin/admin_edit_profile/${admin.admin_user_id}`, {
+            state: admin,
+          })
+        }
                           type="button"
                           className="text-gray-600 hover:text-green-600"
                         >
