@@ -1,22 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 import general from "../../../assets/general.png";
- import cardiology from "../../../assets/cardiology.png";
- import dermatology from "../../../assets/dermatology.png";
- import pediatrics from "../../../assets/pediatrics.png";
- import surgeon from "../../../assets/surgeon.png";
- import dentist from "../../../assets/dentist.png";
- import eye from "../../../assets/eye.png";
- import ent from "../../../assets/ent.png";
- import psychiatry from "../../../assets/psychiatry.png";
- import neurology from "../../../assets/neurology.png";
- import orthopedic from "../../../assets/orthopedic.png";
- import gynecology from "../../../assets/gynecology.png";
-
+import cardiology from "../../../assets/cardiology.png";
+import dermatology from "../../../assets/dermatology.png";
+import pediatrics from "../../../assets/pediatrics.png";
+import surgeon from "../../../assets/surgeon.png";
+import dentist from "../../../assets/dentist.png";
+import eye from "../../../assets/eye.png";
+import ent from "../../../assets/ent.png";
+import psychiatry from "../../../assets/psychiatry.png";
+import neurology from "../../../assets/neurology.png";
+import orthopedic from "../../../assets/orthopedic.png";
+import gynecology from "../../../assets/gynecology.png";
 
 const IMAGES: Record<number, string> = {
-
   1: general,
   2: cardiology,
   3: dermatology,
@@ -29,21 +28,17 @@ const IMAGES: Record<number, string> = {
   10: neurology,
   11: orthopedic,
   12: gynecology
-
 };
 
-
 const Appointments: React.FC = () => {
+  const navigate = useNavigate(); // 
 
   return (
-
     <div className="p-6">
-
       {/* Title */}
       <h2 className="text-xl font-semibold mb-5">
         Browse by Specialties
       </h2>
-
 
       {/* Grid */}
       <div className="
@@ -54,15 +49,13 @@ const Appointments: React.FC = () => {
         lg:grid-cols-3
         gap-12
       ">
-
         {DOCTOR_SPECIALIZATIONS.map((item) => {
-
           const image = IMAGES[item.value];
 
           return (
-
             <div
               key={item.value}
+              onClick={() => navigate(`/patient/doctors/${item.value}`)} 
               className="
                 flex items-center gap-3
                 bg-gray-100
@@ -75,7 +68,6 @@ const Appointments: React.FC = () => {
                 cursor-pointer
               "
             >
-
               {/* Image */}
               <div className="
                 bg-gray-100
@@ -84,33 +76,23 @@ const Appointments: React.FC = () => {
                 w-22 h-22
                 flex items-center justify-center
               ">
-
                 <img
                   src={image}
                   alt={item.label}
                   className="w-20 h-20 object-contain"
                 />
-
               </div>
-
 
               {/* Label */}
               <span className="font-medium text-gray-700 text-lg">
                 {item.label}
               </span>
-
             </div>
-
           );
-
         })}
-
       </div>
-
     </div>
-
   );
-
 };
 
 export default Appointments;

@@ -70,7 +70,17 @@ const DoctorList = () => {
 
   const [search, setSearch] = useState("");
 
+ const buttons = useSelector(
+    (state: RootState) => state.auth.buttons
+  );
 
+  const canEdit = buttons?.some(
+    (btn) => btn.control_key === "doctor edit"
+  );
+
+  const canView = buttons?.some(
+    (btn) => btn.control_key === "doctor view"
+  );
 
   /* ================= FETCH DOCTORS ================= */
 
@@ -285,31 +295,40 @@ const DoctorList = () => {
 
                       <div className="flex justify-center gap-4">
 
-                        <button
-                        onClick={() =>
-                          navigate(`/admin/doctor_view_profile/${doc.doctor_id}`, {
-                            state: doc,
-                          })
-                        }
-                          type="button"
-                          className="text-gray-600 hover:text-blue-600"
-                        >
-                          <EyeIcon className="w-5 h-5" />
-                        </button>
+                       
+    {/* VIEW */}
+    {canView && (
+      <button
+        onClick={() =>
+          navigate(`/admin/doctor_view_profile/${doc.doctor_id}`, {
+            state: doc,
+          })
+        }
+        type="button"
+        className="text-gray-600 hover:text-blue-600"
+        title="View Doctor"
+      >
+        <EyeIcon className="w-5 h-5" />
+      </button>
+    )}
 
-                        <button
-                        onClick={() => {
-                          navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`, {
-                            state: doc,
-                          })
-                        }}
-                          type="button"
-                          className="text-gray-600 hover:text-green-600"
-                        >
-                          <PencilSquareIcon className="w-5 h-5" />
-                        </button>
+    {/* EDIT */}
+    {canEdit && (
+      <button
+        onClick={() =>
+          navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`, {
+            state: doc,
+          })
+        }
+        type="button"
+        className="text-gray-600 hover:text-green-600"
+        title="Edit Doctor"
+      >
+        <PencilSquareIcon className="w-5 h-5" />
+      </button>
+    )}
 
-                      </div>
+  </div>
 
                     </td>
 

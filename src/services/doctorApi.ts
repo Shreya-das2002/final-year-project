@@ -103,14 +103,20 @@ export const updateDoctorStatusApi = (
 
 /* ================= GET DOCTOR LIST API ================= */
 
-export const getDoctorListApi = async (): Promise<Doctor[]> => {
+export const getDoctorListApi = async (
+  specializationId?: number
+): Promise<Doctor[]> => {
 
   const response = await API.get(
-    urls.getDoctorListUrl
+    urls.getDoctorListUrl,
+    {
+      params: {
+        specializationId
+      }
+    }
   );
 
   return response.data.data;
-
 };
 
 /* ================= GET HOMEPAGE DOCTORS ================= */
