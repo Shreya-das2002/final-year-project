@@ -30,6 +30,8 @@ export interface HomepageDoctor {
 
   specialization: string;
 
+  bio?: string;
+
 }
 
 export interface UpdateDoctorStatusPayload {
