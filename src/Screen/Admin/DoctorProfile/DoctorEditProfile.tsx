@@ -239,34 +239,34 @@ return (
               </div>
 
               <div className="grid md:grid-cols-2 gap-4 mt-4 items-end">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Date of Birth"
-                  value={profile.dob ? dayjs(profile.dob) : null}
-                  onChange={(v: Dayjs | null) =>
-                    handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
-                  }
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                    },
-                  }}
-                />
-              </LocalizationProvider>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Date of Birth"
+                    value={profile.dob ? dayjs(profile.dob) : null}
+                    onChange={(v: Dayjs | null) =>
+                      handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
+                    }
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        size: "small",
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
 
                 <Field label="Gender" value={profile.gender} onChange={(v)=>handleProfileChange("gender",v)} disabled />
               </div>
             </fieldset>
 
             {/* PROFESSIONAL */}
-            <fieldset className="border p-4">
-              <legend className="text-sm font-semibold">Professional Information</legend>
+            <fieldset className="border p-5 bg-blue-50 rounded">
+              <legend className="px-2 text-sm font-semibold">Professional Information</legend>
 
               <div className="grid md:grid-cols-3 gap-4">
                 <Field label="Doctor ID" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} disabled />
-                <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)} disabled />
-                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} disabled />
+                <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)}  />
+                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} />
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Experience" value={profile.experience} onChange={(v)=>handleProfileChange("experience",v)} />
@@ -282,20 +282,20 @@ return (
             </fieldset>
 
             {/* ADDRESS */}
-            <fieldset className="border p-4 bg-blue-50">
-              <legend className="text-sm font-semibold">Address Details</legend>
+            <fieldset className="border p-4 bg-blue-50 rounded">
+              <legend className="px-2 text-sm font-semibold">Address Details</legend>
 
               <div className="grid md:grid-cols-2 gap-6">
 
                 {/* PERMANENT */}
-                <div className="border p-4">
+                <div className="border p-4 bg-lime-50 rounded">
                   <p className="text-sm font-semibold mb-2">Permanent Address</p>
 
                   <AddressFields state={permanentAddress} handler={handlePermanentChange} />
                 </div>
 
                 {/* CURRENT */}
-                <div className="border p-4">
+                <div className="border p-4 bg-lime-50 rounded">
                   <div className="flex justify-between mb-2">
                     <p className="text-sm font-semibold">Current Address</p>
                     <label className="text-xs">
@@ -314,9 +314,9 @@ return (
 
         {/* ================= STEP 2 ================= */}
         {step === 2 && (
-          <div className="bg-white p-6 rounded space-y-6">
+          <div className="bg-gray-50 p-6 rounded space-y-6">
             {experiences.map((exp,index)=>(
-              <div key={index} className="border p-4">
+              <div key={index} className="border p-4 bg-blue-50 rounded">
                 <Field label="Organization" value={exp.organization} onChange={(v)=>handleExpChange(index,"organization",v)} />
                 <Field label="Start Date" type="date" value={exp.startDate} onChange={(v)=>handleExpChange(index,"startDate",v)} />
                 <Field label="End Date" type="date" value={exp.endDate} onChange={(v)=>handleExpChange(index,"endDate",v)} />
@@ -331,7 +331,7 @@ return (
               </div>
             ))}
 
-            <button onClick={addExperience} className="border px-4 py-2">
+            <button onClick={addExperience} className="border px-4 py-2 bg-lime-100 rounded">
               + Add Another
             </button>
           </div>

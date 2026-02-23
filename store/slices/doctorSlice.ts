@@ -127,48 +127,30 @@ export const createDoctorThunk = createAsyncThunk<Doctor, CreateDoctorPayload>(
 
 /* ================= FETCH DOCTOR LIST THUNK ================= */
 
-export const fetchDoctorListThunk = createAsyncThunk<Doctor[]>(
-
+export const fetchDoctorListThunk = createAsyncThunk<
+  Doctor[],
+  number | undefined
+>(
   "doctor/doctor-list",
-
-  async (_, { rejectWithValue }) => {
-
+  async (specializationId, { rejectWithValue }) => {
     try {
-
-      const data = await getDoctorListApi();
-
+      const data = await getDoctorListApi(specializationId);
       return data;
-
-    }
-    catch (error: unknown) {
-
+    } catch (error: unknown) {
       if (error instanceof Error) {
-
         return rejectWithValue(error.message);
-
       }
-
       return rejectWithValue("Failed to fetch doctors");
-
     }
-
   },
-
   {
     condition: (_, { getState }) => {
-
       const state = getState() as RootState;
-
       if (state.doctor.loading) return false;
-
       return true;
-
     }
-
   }
-
 );
-
 
 /* ================= SLICE ================= */
 

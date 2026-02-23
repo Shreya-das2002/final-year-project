@@ -48,6 +48,7 @@ import AppointmentRequests from "./Screen/Doctor/AppointmentRequests";
 import DoctorFeedback from "./Screen/Doctor/Feedback";
 import DoctorEditProfile from "./Screen/Admin/DoctorProfile/DoctorEditProfile";
 import DoctorViewProfile from "./Screen/Admin/DoctorProfile/DoctorViewProfile";
+import SpDoctorList from "./Screen/Patient/Appointments/DoctorList";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -142,6 +143,7 @@ const AppLayout: React.FC = () => {
               <Route path="symptom_checker" element={<SymptoChecker/>} />
               <Route path="symptobot" element={<SymptoBot/>} />
               <Route path="appointments" element={<Appointments/>} />
+              <Route path="doctors/:specializationId" element={<SpDoctorList />} />
             </Route>
 
             {/* ADMIN */}
