@@ -500,6 +500,7 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "pending doctor list",
   "admin list",
   "doctor list",
+  "slot availability",
   "messages",
   
 
@@ -532,6 +533,7 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
   "doctor list": "/admin/doctor_list",
   "messages": "/admin/messages",
   "add doctor": "/admin/add_doctor",
+  "slot availability": "/admin/slot_availability",
 
   "logout": "/logout",
 };

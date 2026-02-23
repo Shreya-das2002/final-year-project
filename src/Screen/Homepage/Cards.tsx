@@ -185,6 +185,14 @@ const Cards = () => {
                     ">
                         {doc.specialization}
                     </p>
+
+                    {/* Bio */}
+                    <p className="
+                        text-blue-700
+                        mt-2
+                    ">
+                        {doc.bio}
+                    </p>
                         
                 </div>
 

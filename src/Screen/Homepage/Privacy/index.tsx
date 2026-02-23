@@ -120,7 +120,7 @@ const PrivacyPolicy: React.FC = () => {
             <FaEnvelope className="text-blue-500 dark:text-white" />
             If you have any questions, contact us at:
             <span className="font-semibold text-blue-600 dark:text-gray-200">
-              support@symptonexus.com
+              symptonexus333@gmail.com
             </span>
           </p>
         </section>
