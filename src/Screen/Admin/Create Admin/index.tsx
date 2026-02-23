@@ -13,6 +13,8 @@ import {
   DOCTOR_SPECIALIZATIONS
 } from "../../../Environment";
 
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+
 const CreateAdmin = () => {
 
   const dispatch = useDispatch();
@@ -31,7 +33,7 @@ const CreateAdmin = () => {
   });
 
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
 
   /* KEEP password strength */
   const passwordStrength = getPasswordStrength(form.password);
@@ -437,16 +439,28 @@ const CreateAdmin = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
 
-          <div>
+          <div className="relative">
 
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={form.password}
               onChange={handleChange}
               className={inputClass}
               placeholder="Password"
             />
+            {/* Eye Icon */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+            >
+              {showPassword ? (
+                <EyeIcon className="w-5 h-5" />
+              ) : (
+                <EyeSlashIcon className="w-5 h-5" />
+              )}
+            </button>          
 
             {form.password && (
               <p className="text-sm mt-1">
@@ -457,16 +471,27 @@ const CreateAdmin = () => {
           </div>
 
 
-          <div>
-
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
               className={inputClass}
               placeholder="Confirm Password"
             />
+            {/* Eye Icon */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+            >
+              {showPassword ? (
+                <EyeIcon className="w-5 h-5" />
+              ) : (
+                <EyeSlashIcon className="w-5 h-5" />
+              )}
+            </button>  
 
             {form.confirmPassword && !passwordsMatch && (
               <p className="text-red-600 text-sm mt-1">

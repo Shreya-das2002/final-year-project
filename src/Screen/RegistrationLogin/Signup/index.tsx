@@ -46,6 +46,7 @@ const Signup: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -63,8 +64,6 @@ const Signup: React.FC = () => {
     formData.password,
     formData.confirmPassword
   );
-
-  const [showPassword, setShowPassword] = useState(false);
 
   /* ================= INPUT HANDLER ================= */
 
