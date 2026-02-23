@@ -47,6 +47,7 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -126,7 +127,7 @@ const Signup: React.FC = () => {
       navigate("/registrationlogin/login?role=patient", { replace: true });
 
     } catch (error: unknown) {
-      // ✅ HANDLE BUSINESS ERRORS (400)
+      // HANDLE BUSINESS ERRORS (400)
       if (
         typeof error === "object" &&
         error !== null &&
@@ -284,7 +285,7 @@ const Signup: React.FC = () => {
           <div className="md:col-span-3 relative">
             <RequiredStar required />
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
@@ -295,10 +296,10 @@ const Signup: React.FC = () => {
           {/* Eye Icon */}
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500"
                     >
-                      {showPassword ? (
+                      {showConfirmPassword ? (
                         <EyeIcon className="w-5 h-5" />
                       ) : (
                         <EyeSlashIcon className="w-5 h-5" />
