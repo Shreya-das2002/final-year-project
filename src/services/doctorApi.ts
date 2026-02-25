@@ -10,7 +10,7 @@ export interface Address {
   district: string | null;
   state: string | null;
   country: string | null;
-  pin: string | null;
+  pin: string ;
 
 }
 

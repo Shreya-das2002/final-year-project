@@ -68,32 +68,32 @@ const doctor =
   });
 
   const [currentAddress, setCurrentAddress] = useState<Address>({
-    address_line_1: "",
-    address_line_2: "",
-    city: "",
-    district: "",
-    state: "",
-    country: "",
-    pin: "",
+    address_line_1: doctor?.doctor_address?.current_address?.address_line_1 || "",
+    address_line_2: doctor?.doctor_address?.current_address?.address_line_2 || "",
+    city:  doctor?.doctor_address?.current_address?.city || "",
+    district:  doctor?.doctor_address?.current_address?.district || "",
+    state:  doctor?.doctor_address?.current_address?.state || "",
+    country:  doctor?.doctor_address?.current_address?.country || "",
+    pin:  doctor?.doctor_address?.current_address?.pin || "",
   });
 
   const [permanentAddress, setPermanentAddress] = useState<Address>({
-    address_line_1: "",
-    address_line_2: "",
-    city: "",
-    district: "",
-    state: "",
-    country: "",
-    pin: "",
+    address_line_1:  doctor?.doctor_address?.permanent_address?.address_line_1 || "",
+    address_line_2:  doctor?.doctor_address?.permanent_address?.address_line_2 || "",
+    city:  doctor?.doctor_address?.permanent_address?.city || "",
+    district:  doctor?.doctor_address?.permanent_address?.district || "",
+    state:  doctor?.doctor_address?.permanent_address?.state || "",
+    country:  doctor?.doctor_address?.permanent_address?.country || "",
+    pin:  doctor?.doctor_address?.permanent_address?.pin || "",
   });
 
   const [experiences, setExperiences] = useState<Experience[]>([
     {
-      organization_name: "",
-      start_date: "",
-      end_date: "",
-      designation: "",
-      responsibilities: "",
+      organization_name:  doctor?.doctor_experiences?.[0]?.organization_name || "",
+      start_date:  doctor?.doctor_experiences?.[0].start_date || "",
+      end_date:  doctor?.doctor_experiences?.[0].end_date || "",
+      designation:  doctor?.doctor_experiences?.[0].designation || "",
+      responsibilities:  doctor?.doctor_experiences?.[0].responsibilities || "",
     },
   ]);
 
