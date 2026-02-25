@@ -43,7 +43,7 @@ const DoctorViewProfile: React.FC = () => {
     doctorFromStore ||
     (doctorFromStorage ? JSON.parse(doctorFromStorage) : null);
 
-  // ✅ HYDRATE REDUX + STORAGE
+  // HYDRATE REDUX + STORAGE
   useEffect(() => {
     if (doctorFromState) {
       dispatch(setSelectedDoctor(doctorFromState));

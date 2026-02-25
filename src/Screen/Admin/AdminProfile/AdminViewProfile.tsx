@@ -39,7 +39,7 @@ const AdminProfileView: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center p-6">
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-5xl ">
 
         <div className="bg-blue-200 rounded-xl p-10 text-center shadow">
 
@@ -73,7 +73,9 @@ const AdminProfileView: React.FC = () => {
 
           </div>
 
-          <button className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 mx-auto">
+          <button
+          
+          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 mx-auto">
             <FaEdit /> Edit Profile
           </button>
         </div>
@@ -97,6 +99,12 @@ const AdminProfileView: React.FC = () => {
             <p>System administrator of platform</p>
           </div>
 
+        </div>
+        {/* DELETE BUTTON */}
+        <div className="w-full flex justify-end mt-6 items-end">
+          <button className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+            Delete Account
+          </button>
         </div>
       </div>
     </div>

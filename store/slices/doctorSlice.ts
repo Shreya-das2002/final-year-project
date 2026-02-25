@@ -48,7 +48,6 @@ interface Doctor {
   specialization?: string;
   bio?: string;  
   status: string;
- 
   current_address: Address | null;
   permanent_address: Address | null;
 

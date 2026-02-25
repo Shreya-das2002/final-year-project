@@ -183,11 +183,18 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             </div>
 
           </div>
-
-
+ 
+        </div>
+{/* DELETE BUTTON */}
+        <div className="w-full flex justify-end mt-6 pr-2 pt-10 items-end">
+          <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
+            Delete My Account
+          </button>
         </div>
 
       </div>
+
+      
     </>
   );
 };
