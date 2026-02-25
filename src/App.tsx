@@ -125,9 +125,8 @@ const AppLayout: React.FC = () => {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<FAQ />} />
-            <Route path="/apply_doctor" element={<ApplyDoctor />} >
-              <Route path="response" element={<ApplicationSubmitted />} />
-            </Route>
+            <Route path="/apply_doctor" element={<ApplyDoctor />} />
+            <Route path="/apply_doctor/response" element={<ApplicationSubmitted />} />
 
             <Route path="/registrationlogin" element={<RegistrationLogin />}>
               <Route path="login" element={<Login />} />

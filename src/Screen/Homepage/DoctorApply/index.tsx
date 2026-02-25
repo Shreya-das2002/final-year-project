@@ -68,87 +68,70 @@ const ApplyDoctor: React.FC = () => {
 
   /* ================= HANDLE SUBMIT ================= */
 
-  const handleSubmit = async () => {
+ const handleSubmit = async (): Promise<boolean> => {
 
-    if (!form.name || !form.specialization || !form.email || !form.phone) {
+  if (!form.name || !form.specialization || !form.email || !form.phone) {
+    toast.error("Please fill all fields");
+    return false;
+  }
 
-      toast.error("Please fill all fields");
-      return false;
+  if (!cv) {
+    toast.error("Please upload CV");
+    return false;
+  }
 
+  try {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("specialization", form.specialization);
+    formData.append("email", form.email);
+    formData.append("phone", form.phone);
+    formData.append("cv", cv);
+
+    const response = await applyDoctorApi(formData);
+
+    if (response.status === 200) {
+
+      toast.success("Application sent successfully!");
+
+      setForm({
+        name: "",
+        specialization: "",
+        email: "",
+        phone: "",
+      });
+
+      handleRemoveFile();
+
+      return true;
+
+    } else {
+      toast.error(response.data?.message || "Failed to send application");
+      return false; 
     }
 
-    if (!cv) {
+  } catch (error: unknown) {
 
-      toast.error("Please upload CV");
-      return false;
+    console.error("Apply Doctor Error:", error);
 
+    if (axios.isAxiosError(error)) {
+      toast.error(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to send application"
+      );
+    } else {
+      toast.error("Unexpected error occurred");
     }
 
-    try {
+    return false; 
 
-      setLoading(true);
-
-      const formData = new FormData();
-
-      formData.append("name", form.name);
-      formData.append("specialization", form.specialization);
-      formData.append("email", form.email);
-      formData.append("phone", form.phone);
-      formData.append("cv", cv);
-
-      const response = await applyDoctorApi(formData);
-
-      if (response.status === 200) {
-
-        toast.success("Application sent successfully!");
-
-        setForm({
-          name: "",
-          specialization: "",
-          email: "",
-          phone: "",
-        });
-
-        handleRemoveFile();
-
-      } else {
-
-        toast.error(
-          response.data?.message || "Failed to send application"
-        );
-
-      }
-
-    }
-
-    catch (error: unknown) {
-
-      console.error("Apply Doctor Error:", error);
-
-      if (axios.isAxiosError(error)) {
-
-        toast.error(
-          error.response?.data?.message ||
-          error.message ||
-          "Failed to send application"
-        );
-
-      } else {
-
-        toast.error("Unexpected error occurred");
-
-      }
-
-    }
-
-    finally {
-
-      setLoading(false);
-
-    }
-
-  };
-
+  } finally {
+    setLoading(false);
+  }
+};
   /* ================= UI ================= */
 
   return (
