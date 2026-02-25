@@ -142,7 +142,7 @@ const SlotAvailability = () => {
         <table className="w-full">
           <thead className="bg-blue-50">
             <tr>
-              <th className="p-4">#</th>
+              <th className="p-4">Sl No.</th>
               <th className="p-4">Name</th>
               <th className="p-4">Email</th>
               <th className="p-4">Phone</th>
