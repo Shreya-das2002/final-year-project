@@ -13,6 +13,7 @@ import {
   DOCTOR_SPECIALIZATIONS
 } from "../../../Environment";
 
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const AddDoctor: React.FC = () => {
 
@@ -37,7 +38,8 @@ const AddDoctor: React.FC = () => {
 
 
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   /* ================= PASSWORD CHECK ================= */
 
@@ -358,9 +360,10 @@ const AddDoctor: React.FC = () => {
             {/* PASSWORD */}
 
             <div>
+            <div className="relative">
 
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
@@ -368,6 +371,19 @@ const AddDoctor: React.FC = () => {
                 placeholder="Password"
                 required
               />
+             {/* Eye Icon */}
+               <button
+                 type="button"
+                 onClick={() => setShowPassword(!showPassword)}
+                 className="absolute inset-y-0 right-3 flex items-center pb-0 text-gray-500"
+               >
+                 {showPassword ? (
+                   <EyeIcon className="w-5 h-5" />
+                 ) : (
+                   <EyeSlashIcon className="w-5 h-5" />
+                 )}
+               </button>
+              </div>
 
               {form.password && (
 
@@ -385,9 +401,9 @@ const AddDoctor: React.FC = () => {
             {/* CONFIRM PASSWORD */}
 
             <div>
-
+              <div className="relative">
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={form.confirmPassword}
                 onChange={handleChange}
@@ -395,7 +411,19 @@ const AddDoctor: React.FC = () => {
                 placeholder="Confirm Password"
                 required
               />
-
+            {/* Eye Icon */}
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-3 flex items-center pb-0 text-gray-500"
+              >
+                {showConfirmPassword ? (
+                  <EyeIcon className="w-5 h-5" />
+                  ) : (
+                    <EyeSlashIcon className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
 
               {form.confirmPassword && !passwordsMatch && (
 

@@ -294,17 +294,17 @@ const Signup: React.FC = () => {
               className="w-full px-4 py-2 border rounded-md"
             />
           {/* Eye Icon */}
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeIcon className="w-5 h-5" />
-                      ) : (
-                        <EyeSlashIcon className="w-5 h-5" />
-                      )}
-                    </button>
+             <button
+               type="button"
+               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+               className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500"
+             >
+               {showConfirmPassword ? (
+                 <EyeIcon className="w-5 h-5" />
+                ) : (
+                  <EyeSlashIcon className="w-5 h-5" />
+                )}
+              </button>
           </div>
 
           <button
