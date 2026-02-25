@@ -3,7 +3,7 @@ import { API } from "./api";
 
 /* ================= DOCTOR TYPE ================= */
 
-interface Address {
+export interface Address {
   address_line_1: string | null;
   address_line_2: string | null;
   city: string | null;
@@ -12,6 +12,14 @@ interface Address {
   country: string | null;
   pin: string | null;
 
+}
+
+export interface Experience {
+  organization_name: string | null;
+  designation: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  responsibilities: string | null;
 }
 export interface Doctor {
 
@@ -36,7 +44,7 @@ export interface Doctor {
   status: string;
   current_address: Address | null;
   permanent_address: Address | null;
-
+  doctor_experiences?: Experience[];
   created_on?: string;
 
 }

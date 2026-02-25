@@ -5,7 +5,8 @@ import toast from "react-hot-toast";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-
+import type { Address } from "../../../services/doctorApi";
+import type { Experience } from "../../../services/doctorApi";
 import { saveDoctorProfileApi } from "../../../services/doctorProfileApi";
 import type {
   DoctorProfilePayload,
@@ -16,23 +17,7 @@ import type { RootState } from "../../../../store/store";
 import { setSelectedDoctor } from "../../../../store/slices/doctorSlice";
 /* ================= TYPES ================= */
 
-interface Address {
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  district: string;
-  state: string;
-  country: string;
-  pincode: string;
-}
 
-interface Experience {
-  organization: string;
-  startDate: string;
-  endDate: string;
-  designation: string;
-  responsibilities: string;
-}
 
 /* ================= COMPONENT ================= */
 
@@ -83,30 +68,30 @@ const doctor =
   });
 
   const [currentAddress, setCurrentAddress] = useState<Address>({
-    addressLine1: "",
-    addressLine2: "",
+    address_line_1: "",
+    address_line_2: "",
     city: "",
     district: "",
     state: "",
     country: "",
-    pincode: "",
+    pin: "",
   });
 
   const [permanentAddress, setPermanentAddress] = useState<Address>({
-    addressLine1: "",
-    addressLine2: "",
+    address_line_1: "",
+    address_line_2: "",
     city: "",
     district: "",
     state: "",
     country: "",
-    pincode: "",
+    pin: "",
   });
 
   const [experiences, setExperiences] = useState<Experience[]>([
     {
-      organization: "",
-      startDate: "",
-      endDate: "",
+      organization_name: "",
+      start_date: "",
+      end_date: "",
       designation: "",
       responsibilities: "",
     },
@@ -148,9 +133,9 @@ const doctor =
     setExperiences([
       ...experiences,
       {
-        organization: "",
-        startDate: "",
-        endDate: "",
+        organization_name: "",
+        start_date: "",
+        end_date: "",
         designation: "",
         responsibilities: "",
       },
@@ -178,39 +163,42 @@ const doctor =
         bio: profile.bio,
 
         current_address: {
-          address_line_1: currentAddress.addressLine1,
-          address_line_2: currentAddress.addressLine2,
-          city: currentAddress.city,
-          district: currentAddress.district,
-          state: currentAddress.state,
-          country: currentAddress.country,
-          pin_code: currentAddress.pincode,
+          address_line_1: doctor?.doctor_address?.current_address.address_line_1 || "",
+          address_line_2: doctor?.doctor_address?.current_address.address_line_2 || "",
+          city: doctor?.doctor_address?.current_address.city || "",
+          district: doctor?.doctor_address?.current_address.district || "",
+          state: doctor?.doctor_address?.current_address.state || "",
+          country: doctor?.doctor_address?.current_address.country || "",
+          pin_code: doctor?.doctor_address?.current_address.pin || "",
         },
 
         permanent_address: {
-          address_line_1: permanentAddress.addressLine1,
-          address_line_2: permanentAddress.addressLine2,
-          city: permanentAddress.city,
-          district: permanentAddress.district,
-          state: permanentAddress.state,
-          country: permanentAddress.country,
-          pin_code: permanentAddress.pincode,
+          address_line_1: doctor?.doctor_address?.permanent_address.address_line_1 || "",
+          address_line_2: doctor?.doctor_address?.permanent_address.address_line_2 || "",
+          city: doctor?.doctor_address?.permanent_address.city || "",
+          district: doctor?.doctor_address?.permanent_address.district || "",
+          state: doctor?.doctor_address?.permanent_address.state || "",
+          country: doctor?.doctor_address?.permanent_address.country || "",
+          pin_code: doctor?.doctor_address?.permanent_address.pin || "",
         },
       };
     }
 
     /* ================= STEP 2 SAVE ================= */
-    if (step === 2) {
-      payload = {
-        experiences: experiences.map((exp) => ({
-          organization: exp.organization,
-          start_date: exp.startDate,
-          end_date: exp.endDate,
-          designation: exp.designation,
-          responsibilities: exp.responsibilities,
-        })),
-      };
-    }
+if (step === 2) {
+  payload = {
+    ...payload,
+
+    experiences: doctor.doctor_experiences?.map((exp: Experience
+    ) => ({
+      organization_name: exp.organization_name || "",
+      start_date: exp.start_date,
+      end_date: exp.end_date,
+      designation: exp.designation,
+      responsibilities: exp.responsibilities,
+    })) || [],
+  };
+}
 
     const res = await saveDoctorProfileApi(finalDoctorId, payload);
 
@@ -341,15 +329,15 @@ return (
           <div className="bg-gray-50 p-6 rounded space-y-6">
             {experiences.map((exp,index)=>(
               <div key={index} className="border p-4 bg-blue-50 rounded">
-                <Field label="Organization" value={exp.organization} onChange={(v)=>handleExpChange(index,"organization",v)} />
-                <Field label="Start Date" type="date" value={exp.startDate} onChange={(v)=>handleExpChange(index,"startDate",v)} />
-                <Field label="End Date" type="date" value={exp.endDate} onChange={(v)=>handleExpChange(index,"endDate",v)} />
+                <Field label="Organization" value={exp.organization_name} onChange={(v)=>handleExpChange(index,"organization_name",v)} />
+                <Field label="Start Date" type="date" value={exp.start_date} onChange={(v)=>handleExpChange(index,"start_date",v)} />
+                <Field label="End Date" type="date" value={exp.end_date} onChange={(v)=>handleExpChange(index,"end_date",v)} />
                 <Field label="Designation" value={exp.designation} onChange={(v)=>handleExpChange(index,"designation",v)} />
 
                 <textarea
                   className="w-full mt-2 border p-2"
                   placeholder= "Responsibilities"
-                  value={exp.responsibilities}
+                  value={exp.responsibilities || ""}
                   onChange={(e)=>handleExpChange(index,"responsibilities",e.target.value)}
                 />
               </div>
@@ -414,7 +402,7 @@ const Field = ({
   disabled = false, 
 }: {
   label: string;
-  value: string;
+  value:  string | null;
   onChange: (v: string) => void;
   type?: string;
   disabled?: boolean; 
@@ -423,7 +411,7 @@ const Field = ({
     <label className="text-sm">{label}</label>
     <input
       type={type}
-      value={value}
+      value={value || ""}
       disabled={disabled}  
       onChange={(e) => onChange(e.target.value)}
       className={`w-full border p-2 ${
@@ -441,13 +429,13 @@ const AddressFields = ({
   disabled?: boolean;
 }) => (
   <div className="grid grid-cols-2 gap-2">
-    <Field label="Address Line 1" value={state.addressLine1} onChange={(v)=>handler("addressLine1",v)} />
-    <Field label="Address Line 2" value={state.addressLine2} onChange={(v)=>handler("addressLine2",v)} />
+    <Field label="Address Line 1" value={state.address_line_1} onChange={(v)=>handler("address_line_1",v)} />
+    <Field label="Address Line 2" value={state.address_line_2} onChange={(v)=>handler("address_line_2",v)} />
     <Field label="City" value={state.city} onChange={(v)=>handler("city",v)} />
     <Field label="District" value={state.district} onChange={(v)=>handler("district",v)} />
     <Field label="State" value={state.state} onChange={(v)=>handler("state",v)} />
     <Field label="Country" value={state.country} onChange={(v)=>handler("country",v)} />
-    <Field label="PIN Code" value={state.pincode} onChange={(v)=>handler("pincode",v)} />
+    <Field label="PIN Code" value={state.pin} onChange={(v)=>handler("pin",v)} />
   </div>
 );
 
