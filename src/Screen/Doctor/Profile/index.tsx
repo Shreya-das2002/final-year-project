@@ -187,6 +187,12 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
               <p>PIN: {profile?.permanent_address?.pin}</p>
             </div>
           </div>
+          {/* DELETE BUTTON */}
+          <div className="w-full pb-5 pr-5 flex justify-end mt-6 items-end">
+            <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
+              Delete Account
+            </button>
+          </div>
         </div>
       </div>
     </div>

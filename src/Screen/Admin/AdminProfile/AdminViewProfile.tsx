@@ -102,7 +102,7 @@ const AdminProfileView: React.FC = () => {
         </div>
         {/* DELETE BUTTON */}
         <div className="w-full flex justify-end mt-6 items-end">
-          <button className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+          <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
             Delete Account
           </button>
         </div>
