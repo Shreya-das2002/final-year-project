@@ -3,8 +3,10 @@ import { applyDoctorApi } from "../../../services/applyDoctorApi";
 import type { ApplyDoctorForm } from "../../../services/applyDoctorApi";
 import { toast } from "react-hot-toast";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ApplyDoctor: React.FC = () => {
+    const navigate = useNavigate();
 
   /* ================= STATE ================= */
 
@@ -71,14 +73,14 @@ const ApplyDoctor: React.FC = () => {
     if (!form.name || !form.specialization || !form.email || !form.phone) {
 
       toast.error("Please fill all fields");
-      return;
+      return false;
 
     }
 
     if (!cv) {
 
       toast.error("Please upload CV");
-      return;
+      return false;
 
     }
 
@@ -231,7 +233,12 @@ const ApplyDoctor: React.FC = () => {
 
       {/* Submit */}
       <button
-        onClick={handleSubmit}
+        onClick= { async () => {
+          const success = await handleSubmit();
+          if (success) {
+            navigate("/apply_doctor/response");
+          }
+        } }
         disabled={loading}
         className={`w-full text-white p-2 rounded transition ${
           loading
