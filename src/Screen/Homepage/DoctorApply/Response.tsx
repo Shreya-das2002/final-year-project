@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const ApplicationSubmitted: React.FC = () => {
+    const navigate = useNavigate();
+    
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white shadow-xl rounded-2xl p-10 max-w-md w-full text-center">
@@ -19,7 +22,7 @@ const ApplicationSubmitted: React.FC = () => {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
-            onClick={() => (window.location.href = "/")}
+            onClick={() => navigate("/")}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
           >
             Go to Home
