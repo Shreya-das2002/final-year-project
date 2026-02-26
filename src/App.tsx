@@ -67,35 +67,55 @@ const AppLayout: React.FC = () => {
 
   /* ---------- AUTH BOOTSTRAP ---------- */
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-    const profile = localStorage.getItem("profile");
-    const role = localStorage.getItem("role");
-    const menus = localStorage.getItem("menus");
-    const buttons = localStorage.getItem("buttons");
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+  const profile = localStorage.getItem("profile");
+  const role = localStorage.getItem("role");
+  const menus = localStorage.getItem("menus");
+  const buttons = localStorage.getItem("buttons");
 
-    if (!token || !user || !role) {
-      dispatch(logout());
-      return;
-    }
+  if (!token || !user || !role || user === "undefined") {
+    dispatch(logout());
+    return;
+  }
 
-    if (isTokenExpired(token)) {
-      localStorage.clear();
-      dispatch(logout());
-      return;
-    }
+  if (isTokenExpired(token)) {
+    localStorage.clear();
+    dispatch(logout());
+    return;
+  }
+
+  try {
+    const parsedUser = JSON.parse(user);
+
+    const parsedProfile =
+      profile && profile !== "undefined" ? JSON.parse(profile) : null;
+
+    const parsedMenus =
+      menus && menus !== "undefined" ? JSON.parse(menus) : [];
+
+    const parsedButtons =
+      buttons && buttons !== "undefined" ? JSON.parse(buttons) : [];
 
     dispatch(
       loginSuccess({
         token,
-        user: JSON.parse(user),
-        profile: profile ? JSON.parse(profile) : null,
+        user: parsedUser,
+        profile: parsedProfile,
         role,
-        menus: menus ? JSON.parse(menus) : [],
-        buttons: buttons ? JSON.parse(buttons) : []  
+        menus: parsedMenus,
+        buttons: parsedButtons,
       })
     );
-  }, [dispatch]);
+  } catch (error) {
+    console.error("JSON parse error:", error);
+
+    // important: clear bad data
+    localStorage.clear();
+
+    dispatch(logout());
+  }
+}, [dispatch]);
 
   /* ---------- AUTO LOGOUT ---------- */
   useEffect(() => {
