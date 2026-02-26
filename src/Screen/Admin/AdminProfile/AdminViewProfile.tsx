@@ -20,6 +20,7 @@ const AdminProfileView: React.FC = () => {
   const { admins, loading } = useSelector(
     (state: RootState) => state.admin
   );
+  
 
   useEffect(() => {
     dispatch(fetchAllAdmins());
@@ -102,9 +103,11 @@ const AdminProfileView: React.FC = () => {
         </div>
         {/* DELETE BUTTON */}
         <div className="w-full flex justify-end mt-6 items-end">
-          <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
-            Delete Account
-          </button>
+         {admin?.role !== "super admin" && (
+  <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
+    Delete Account
+  </button>
+)}
         </div>
       </div>
     </div>

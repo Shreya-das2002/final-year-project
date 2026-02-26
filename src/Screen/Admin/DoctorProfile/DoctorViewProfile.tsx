@@ -38,7 +38,7 @@ const DoctorViewProfile: React.FC = () => {
   );
 
   const canEditProfile = buttons?.some(
-    (btn) => btn.control_key === "edit profile"
+    (btn) => btn.control_key === "edit doc profile"
   );
 
     const canDeleteProfile = buttons?.some(
