@@ -442,6 +442,14 @@ export const calculateAge = (dob: string): string => {
   return age.toString();
 };
 
+export const isValidEmail = (email: string): boolean => {
+  return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email);
+};
+
+export const isValidPhone = (phone: string): boolean => {
+  return /^[0-9]{10}$/.test(phone);
+};
+
 /* ================= GENDER MAP ================= */
 
 export const GENDER_MAP: Record<string, string> = {
@@ -584,3 +592,5 @@ export const DOCTOR_SPECIALIZATIONS = [
   { label: "Gynecologist", value: 12, department: "Gynecology" }
 
 ];
+
+

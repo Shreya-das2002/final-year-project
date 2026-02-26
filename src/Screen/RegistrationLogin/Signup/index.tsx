@@ -8,6 +8,8 @@ import {
   getPasswordStrength,
   doPasswordsMatch,
   isStrongPassword,
+  isValidEmail,
+  isValidPhone
 } from "../../../Environment";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
@@ -100,10 +102,15 @@ const Signup: React.FC = () => {
       return;
     }
 
-    if (!/^[0-9]{10}$/.test(formData.phone.trim())) {
-      toast.error("Please enter a valid 10-digit phone number");
-      return;
-    }
+  if (!isValidEmail(formData.email.trim())) {
+  toast.error("Please select a valid email");
+  return;
+}
+
+if (!isValidPhone(formData.phone.trim())) {
+  toast.error("Please enter a valid 10-digit phone number");
+  return;
+}
 
     try {
       setLoading(true);
