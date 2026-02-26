@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
+import { saveAdminProfileApi } from "../../../services/adminProfileApi";
+import { toast } from "react-hot-toast";
 
 /* ================= TYPES ================= */
 
@@ -41,21 +46,23 @@ const AdminEditProfile: React.FC = () => {
     adminFromStore.find((a) => a.admin_user_id === Number(id)) ||
     (adminFromStorage ? JSON.parse(adminFromStorage) : null);
 
+    const isSuperAdmin = admin?.role === "super admin";
+
   /* ================= STATE ================= */
 
   const [step, setStep] = useState(1);
   const [sameAddress, setSameAddress] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [profile, setProfile] = useState({
-    first_name: admin.first_name || "",
-    middle_name: admin.middle_name || "",
-    last_name: admin.last_name || "",
-    dob: admin.dob || "",
+    first_name: admin?.first_name || "",
+    middle_name: admin?.middle_name || "",
+    last_name: admin?.last_name || "",
+    dob: admin?.dob || "",
     gender: "",
     email: "",
     department_id: "",
     created_on: "",
-    created_by: "",
     phone: "",
   });
 
@@ -74,8 +81,6 @@ const AdminEditProfile: React.FC = () => {
     state: "",
     pincode: "",
   });
-
-  /* ================= FIX: NO CASCADING RENDER ================= */
 
 
   /* ================= HANDLERS ================= */
@@ -107,15 +112,41 @@ const AdminEditProfile: React.FC = () => {
 
   /* ================= SAVE ================= */
 
-  const handleSave = () => {
+  
+const handleSave = async () => {
+  try {
+    if (!id) {
+      toast.error("Admin ID missing");
+      return;
+    }
+
+    setLoading(true);
+
     const finalData = {
-      ...profile,
-      permanent_address: permanentAddress,
+      dob: profile.dob,
       current_address: currentAddress,
+      permanent_address: permanentAddress,
     };
 
-    console.log("Saved:", finalData);
-  };
+    console.log("Sending:", finalData);
+
+    const res = await saveAdminProfileApi(id, finalData);
+
+    if (res?.data?.success) {
+      toast.success(res.data.message || "Profile saved");
+    } else {
+      toast.error(res?.data?.message || "Failed");
+    }
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Server error");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  
 
   /* ================= SAFETY ================= */
 
@@ -139,10 +170,27 @@ const AdminEditProfile: React.FC = () => {
               <legend className="text-sm font-semibold">Personal Details</legend>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} disabled />
+                
+                <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} disabled={!isSuperAdmin} />
                 <Field label="Middle Name" value={profile.middle_name} onChange={(v) => handleChange("middle_name", v)} />
                 <Field label="Last Name" value={profile.last_name} onChange={(v) => handleChange("last_name", v)} />
-                <Field label="Date of Birth" value={profile.dob} onChange={(v) => handleChange("dob", v)} />
+            
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                  <DatePicker
+                                    label="Date of Birth"
+                                    value={profile.dob ? dayjs(profile.dob) : null}
+                                    onChange={(v: Dayjs | null) =>
+                                      handleChange("dob", v ? v.format("YYYY-MM-DD") : "")
+                                    }
+                                    slotProps={{
+                                      textField: {
+                                        fullWidth: true,
+                                        size: "small",
+                                      },
+                                    }}
+                                  />
+                                </LocalizationProvider>
+
                 <Field label="Gender" value={profile.gender} onChange={(v) => handleChange("gender", v)} />
                 
               </div>
@@ -158,7 +206,13 @@ const AdminEditProfile: React.FC = () => {
               <legend className="text-sm font-semibold">Professional Details</legend>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <Field label="Department" value={profile.department_id} onChange={(v) => handleChange("department_id", v)} />
+                {admin?.role === "standard admin" && (
+  <Field
+    label="Department"
+    value={profile.department_id}
+    onChange={(v) => handleChange("department_id", v)}
+  />
+)}
                 <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} /> 
                 <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} />  
 
@@ -218,9 +272,13 @@ const AdminEditProfile: React.FC = () => {
           </button>
 
           <div className="flex gap-4">
-            <button onClick={handleSave} className="px-6 py-2 bg-green-600 text-white rounded">
-              Save
-            </button>
+            <button
+          onClick={handleSave}
+        disabled={loading}
+        className="px-6 py-2 bg-green-600 text-white rounded disabled:bg-gray-400"
+        >
+  {loading ? "Saving..." : "Save"}
+</button>
 
             {step === 1 && (
               <button onClick={() => setStep(2)} className="px-6 py-2 bg-blue-600 text-white rounded">
