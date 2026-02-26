@@ -47,7 +47,7 @@ const AdminEditProfile: React.FC = () => {
   const [sameAddress, setSameAddress] = useState(false);
 
   const [profile, setProfile] = useState({
-    first_name: "",
+    first_name: admin.first_name || "",
     middle_name: "",
     last_name: "",
     dob: "",
@@ -130,10 +130,7 @@ const AdminEditProfile: React.FC = () => {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded">
 
-        <ProfileAvatar
-          firstName={profile.first_name}
-          lastName={profile.last_name}
-        />
+          <ProfileAvatar firstName={profile.first_name} lastName={profile.last_name} />
 
         <StepIndicator step={step} onStepClick={setStep} />
 
