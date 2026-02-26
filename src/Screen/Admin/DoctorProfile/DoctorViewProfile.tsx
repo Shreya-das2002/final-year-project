@@ -26,24 +26,33 @@ const DoctorViewProfile: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // ✅ EXISTING (kept)
   const doctorFromState = location.state;
 
-  // ✅ REDUX
   const doctorFromStore = useSelector(
     (state: RootState) => state.doctor.selectedDoctor
   );
 
-  // ✅ LOCAL STORAGE
+  
+  const buttons = useSelector(
+    (state: RootState) => state.auth.buttons
+  );
+
+  const canEditProfile = buttons?.some(
+    (btn) => btn.control_key === "edit profile"
+  );
+
+    const canDeleteProfile = buttons?.some(
+    (btn) => btn.control_key === "delete doc account"
+  );
+
+  
   const doctorFromStorage = localStorage.getItem("selectedDoctor");
 
-  // ✅ FINAL DOCTOR SOURCE (priority)
   const doctor =
     doctorFromState ||
     doctorFromStore ||
     (doctorFromStorage ? JSON.parse(doctorFromStorage) : null);
 
-  // HYDRATE REDUX + STORAGE
   useEffect(() => {
     if (doctorFromState) {
       dispatch(setSelectedDoctor(doctorFromState));
@@ -107,6 +116,7 @@ const DoctorViewProfile: React.FC = () => {
             </span>
           </div>
 
+  {canEditProfile && (
           <button
             onClick={() =>
               navigate(`/admin/doctor_edit_profile/${doctor.doctor_id}`, { state: doctor })
@@ -116,6 +126,7 @@ const DoctorViewProfile: React.FC = () => {
             <FaEdit />
             Edit Profile
           </button>
+  )}
         </div>
 
         {/* DETAILS */}
@@ -200,9 +211,11 @@ const DoctorViewProfile: React.FC = () => {
 
         {/* DELETE BUTTON */}
         <div className="w-full flex justify-end mt-6 items-end">
+            {canDeleteProfile && (
           <button className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
             Delete Account
           </button>
+            )}
         </div>
 
       </div>

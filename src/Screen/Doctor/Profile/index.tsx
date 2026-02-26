@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
 import {
-  FaEdit,
+   FaEdit,
   FaUserCircle,
   FaTimes,
   FaRing,
@@ -32,6 +33,7 @@ interface Props {
 
 const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.auth.user);
@@ -116,7 +118,7 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
                 <FaRing /> {profile?.marital_status}
               </span>
             </div>
-
+            
             <button
               onClick={() => {
                 navigate("/doctor/profile");

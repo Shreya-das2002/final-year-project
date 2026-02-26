@@ -4,6 +4,7 @@ import type { RootState } from "../../../../store/store";
 import {getGenderLabel, DOCTOR_SPECIALIZATIONS} from "../../../Environment";
 
 import {
+  FaEdit,
   FaTimes,
   FaUserShield,
   FaEnvelope,
@@ -23,6 +24,19 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
   // Get admin user from Redux store
   const user = useSelector((state: RootState) => state.auth.user);
+  
+ const buttons = useSelector(
+    (state: RootState) => state.auth.buttons
+  );
+
+  const canDeleteMyProfile = buttons?.some(
+    (btn) => btn.control_key === "delete my acc"
+  );
+
+
+  const canEditProfile = buttons?.some(
+    (btn) => btn.control_key === "edit profile"
+  );
 
   // If no user, don't render
   if (!user) return null;
@@ -117,6 +131,15 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
 
           </div>
+            {canEditProfile && (
+                    <button
+            
+            className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+          >
+            <FaEdit />
+            Edit Profile
+          </button>
+          )}
 
 
           {/* Admin Details Card */}
@@ -183,13 +206,14 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             </div>
 
           </div>
- 
         </div>
 {/* DELETE BUTTON */}
         <div className="w-full flex justify-end mt-6 pr-2 pt-10 items-end">
+          {canDeleteMyProfile && (
           <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
             Delete My Account
           </button>
+          )}
         </div>
 
       </div>

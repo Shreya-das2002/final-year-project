@@ -81,6 +81,8 @@ const DoctorList = () => {
     (btn) => btn.control_key === "doctor view"
   );
 
+  
+
   /* ================= FETCH DOCTORS ================= */
 
   useEffect(() => {
