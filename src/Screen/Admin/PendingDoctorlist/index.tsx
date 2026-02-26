@@ -128,10 +128,22 @@ const PendingDoctorList: React.FC = () => {
             <div key={doctor.doctor_id} className="bg-white p-6 rounded shadow">
 
               <h2 className="font-semibold">
-                Dr. {doctor.first_name} {doctor.last_name}
+                Dr. {doctor.first_name} {doctor.middle_name} {doctor.last_name}
               </h2>
 
               <p>{doctor.email}</p>
+
+              <h2 className="font-semibold mt-4">
+                {doctor.gender}
+              </h2>
+
+              <h2 className="font-semibold mt-4">
+                {doctor.specialization}
+              </h2>
+
+              <h2 className="font-semibold mt-4">
+                {doctor.phone_no}
+              </h2>
 
               <div className="flex gap-3 mt-4">
 
