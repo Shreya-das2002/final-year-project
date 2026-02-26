@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import {
+  FaPhoneAlt,
+  FaUser,
+  FaBirthdayCake,
+  FaBriefcase,
+  FaEdit,
+} from "react-icons/fa";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
 
+<<<<<<< HEAD
 /* ================= TYPES ================= */
 
 type AddressType = {
@@ -20,8 +29,13 @@ type AddressType = {
 const AdminEditProfile: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
+=======
+const AdminProfileView: React.FC = () => {
+>>>>>>> 990ba967761a019aff75f41744d9d7b27e6da0c3
   const dispatch = useDispatch<AppDispatch>();
+  const { id } = useParams();
 
+<<<<<<< HEAD
   /* ================= DATA ================= */
 
   const adminFromState = location.state;
@@ -32,10 +46,17 @@ const AdminEditProfile: React.FC = () => {
 
   const adminFromStorage = localStorage.getItem("selectedAdmin");
 
+=======
+  const { admins, loading } = useSelector(
+    (state: RootState) => state.admin
+  );
+
+>>>>>>> 990ba967761a019aff75f41744d9d7b27e6da0c3
   useEffect(() => {
     dispatch(fetchAllAdmins());
   }, [dispatch]);
 
+<<<<<<< HEAD
   const admin =
     adminFromState ||
     adminFromStore.find((a) => a.admin_user_id === Number(id)) ||
@@ -119,11 +140,25 @@ const AdminEditProfile: React.FC = () => {
   }
 
   /* ================= UI ================= */
+=======
+  const admin = admins.find(
+    (a) => a.admin_user_id === Number(id)
+  );
+
+  const getInitials = () => {
+    if (!admin) return "";
+    return `${admin.first_name?.[0] || ""}${admin.last_name?.[0] || ""}`;
+  };
+
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (!admin) return <p className="text-center mt-10">Admin Not Found</p>;
+>>>>>>> 990ba967761a019aff75f41744d9d7b27e6da0c3
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded">
+    <div className="min-h-screen bg-gray-100 flex justify-center p-6">
+      <div className="w-full max-w-5xl">
 
+<<<<<<< HEAD
         <ProfileAvatar
           firstName={profile.first_name}
           lastName={profile.last_name}
@@ -182,31 +217,69 @@ const AdminEditProfile: React.FC = () => {
               </div>
             </fieldset>
 
+=======
+        {/* HEADER CARD */}
+        <div className="bg-blue-200 rounded-xl p-10 text-center">
+
+          <div className="w-24 h-24 mx-auto rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold">
+            {getInitials()}
           </div>
-        )}
 
-        {/* NAV */}
-        <div className="flex justify-between mt-10">
+          <h2 className="mt-4 text-2xl font-semibold">
+            {admin.first_name} {admin.last_name}
+          </h2>
 
-          <button
-            onClick={() => setStep((s) => Math.max(1, s - 1))}
-            disabled={step === 1}
-            className="px-6 py-2 bg-blue-600 text-white rounded disabled:bg-gray-300"
-          >
-            ← Back
-          </button>
+          <p className="text-gray-600">{admin.email}</p>
 
-          <div className="flex gap-4">
-            <button onClick={handleSave} className="px-6 py-2 bg-green-600 text-white rounded">
-              Save
+          {/* INFO PILLS */}
+          <div className="flex flex-wrap justify-center gap-4 mt-6">
+
+            <div className="pill flex items-center gap-2">
+              <FaPhoneAlt /> 
+            </div>
+
+            <div className="pill flex items-center gap-2">
+              <FaUser /> {admin.role}
+            </div>
+
+            <div className="pill flex items-center gap-2">
+              <FaBirthdayCake /> 
+            </div>
+
+            <div className="pill flex items-center gap-2">
+              <FaBriefcase /> Admin
+            </div>
+
+        {/* DETAILS */}
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
+
+          <div className="bg-white rounded-xl p-6">
+            <h3 className="text-blue-600 font-semibold mb-3">
+              Professional Details
+            </h3>
+
+            <p><strong>Role:</strong> {admin.role}</p>
+            <p><strong>Admin ID:</strong> {admin.admin_user_id}</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6">
+            <h3 className="text-purple-600 font-semibold mb-3">
+              About Admin
+            </h3>
+
+            <p>System administrator of platform</p>
+          </div>
+
+        </div>
+
+        {/* DELETE BUTTON */}
+        <div className="w-full flex justify-end mt-6">
+          {admin?.role !== "super_admin" && (
+            <button className="px-6 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">
+              Delete Account
             </button>
-
-            {step === 1 && (
-              <button onClick={() => setStep(2)} className="px-6 py-2 bg-blue-600 text-white rounded">
-                Next →
-              </button>
-            )}
-          </div>
+          )}
+>>>>>>> 990ba967761a019aff75f41744d9d7b27e6da0c3
         </div>
 
       </div>
@@ -214,6 +287,7 @@ const AdminEditProfile: React.FC = () => {
   );
 };
 
+<<<<<<< HEAD
 export default AdminEditProfile;
 
 /* ================= COMPONENTS ================= */
@@ -304,3 +378,6 @@ const StepIndicator = ({
     </div>
   );
 };
+=======
+export default AdminProfileView;
+>>>>>>> 990ba967761a019aff75f41744d9d7b27e6da0c3
