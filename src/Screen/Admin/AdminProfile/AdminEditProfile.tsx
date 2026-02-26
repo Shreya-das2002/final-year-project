@@ -50,8 +50,13 @@ const AdminEditProfile: React.FC = () => {
     first_name: "",
     middle_name: "",
     last_name: "",
-    role: "",
+    dob: "",
+    gender: "",
     email: "",
+    department_id: "",
+    created_on: "",
+    created_by: "",
+    phone: "",
   });
 
   const [permanentAddress, setPermanentAddress] = useState<AddressType>({
@@ -68,6 +73,7 @@ const AdminEditProfile: React.FC = () => {
     city: "",
     state: "",
     pincode: "",
+   
   });
 
   /* ================= FIX: NO CASCADING RENDER ================= */
@@ -142,11 +148,14 @@ const AdminEditProfile: React.FC = () => {
                 <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} />
                 <Field label="Middle Name" value={profile.middle_name} onChange={(v) => handleChange("middle_name", v)} />
                 <Field label="Last Name" value={profile.last_name} onChange={(v) => handleChange("last_name", v)} />
+                <Field label="Date of Birth" value={profile.dob} onChange={(v) => handleChange("dob", v)} />
+                <Field label="Gender" value={profile.gender} onChange={(v) => handleChange("gender", v)} />
+                
               </div>
 
               <div className="grid md:grid-cols-2 gap-4 mt-4">
-                <Field label="Email" value={profile.email} onChange={(v) => handleChange("email", v)} />
-                <Field label="Role" value={profile.role} onChange={(v) => handleChange("role", v)} />
+              
+               
               </div>
             </fieldset>
 
@@ -184,6 +193,38 @@ const AdminEditProfile: React.FC = () => {
 
           </div>
         )}
+
+
+        {step === 2 && (
+          <div className="bg-gray-50 p-6 rounded space-y-6">
+
+            {/* PERSONAL */}
+            <fieldset className="border p-5 bg-blue-50 rounded">
+              <legend className="text-sm font-semibold">Professional Details</legend>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <Field label="Department" value={profile.department_id} onChange={(v) => handleChange("department_id", v)} />
+                <Field label="Created On" value={profile.created_on} onChange={(v) => handleChange("created_on", v)} />
+                <Field label="Created By" value={profile.created_by} onChange={(v) => handleChange("created_by", v)} />
+                <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} /> 
+                <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} />  
+
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mt-4">
+
+              </div>
+            </fieldset>
+
+           
+
+              </div>
+            
+        
+        )}
+
+
+
 
         {/* NAV */}
         <div className="flex justify-between mt-10">
@@ -275,7 +316,7 @@ const StepIndicator = ({
 }) => {
   const steps = [
     { id: 1, label: "Basic Information" },
-    { id: 2, label: "Permissions" },
+    { id: 2, label: "Professional Details" },
   ];
 
   return (
