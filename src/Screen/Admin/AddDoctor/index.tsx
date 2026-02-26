@@ -7,6 +7,8 @@ import { createDoctorThunk } from "../../../../store/slices/doctorSlice";
 
 import {
   isStrongPassword,
+  isValidEmail,
+  isValidPhone,
   doPasswordsMatch,
   getPasswordStrength,
   genderOption,
@@ -88,6 +90,16 @@ const AddDoctor: React.FC = () => {
       return;
 
     }
+
+      if (!isValidEmail(form.email.trim())) {
+      toast.error("Please select a valid email");
+      return;
+    }
+    
+    if (!isValidPhone(form.phone.trim())) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return;
+    }    
 
 
     if (!doPasswordsMatch(form.password, form.confirmPassword)) {

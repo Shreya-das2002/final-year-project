@@ -7,6 +7,8 @@ import { addAdmin } from "../../../../store/slices/adminSlice";
 
 import {
   isStrongPassword,
+  isValidEmail,
+  isValidPhone,
   doPasswordsMatch,
   getPasswordStrength,
   genderOption,
@@ -140,6 +142,16 @@ const CreateAdmin = () => {
       toast.error("Password and Confirm Password must match");
       return;
 
+    }
+
+      if (!isValidEmail(form.email.trim())) {
+      toast.error("Please select a valid email");
+      return;
+    }
+    
+    if (!isValidPhone(form.phone.trim())) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return;
     }
 
     if (!isStrongPassword(form.password)) {
