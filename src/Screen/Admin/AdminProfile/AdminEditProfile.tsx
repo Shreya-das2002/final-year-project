@@ -48,9 +48,9 @@ const AdminEditProfile: React.FC = () => {
 
   const [profile, setProfile] = useState({
     first_name: admin.first_name || "",
-    middle_name: "",
-    last_name: "",
-    dob: "",
+    middle_name: admin.middle_name || "",
+    last_name: admin.last_name || "",
+    dob: admin.dob || "",
     gender: "",
     email: "",
     department_id: "",
@@ -131,9 +131,7 @@ const AdminEditProfile: React.FC = () => {
 
           <ProfileAvatar firstName={profile.first_name} lastName={profile.last_name} />
 
-        <StepIndicator step={step} onStepClick={setStep} />
 
-        {step === 1 && (
           <div className="bg-gray-50 p-6 rounded space-y-6">
 
             {/* PERSONAL */}
@@ -141,7 +139,7 @@ const AdminEditProfile: React.FC = () => {
               <legend className="text-sm font-semibold">Personal Details</legend>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} />
+                <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} disabled />
                 <Field label="Middle Name" value={profile.middle_name} onChange={(v) => handleChange("middle_name", v)} />
                 <Field label="Last Name" value={profile.last_name} onChange={(v) => handleChange("last_name", v)} />
                 <Field label="Date of Birth" value={profile.dob} onChange={(v) => handleChange("dob", v)} />
@@ -151,7 +149,23 @@ const AdminEditProfile: React.FC = () => {
 
               <div className="grid md:grid-cols-2 gap-4 mt-4">
               
-               
+          
+              </div>
+            </fieldset>
+
+                    {/* PERSONAL */}
+            <fieldset className="border p-5 bg-blue-50 rounded">
+              <legend className="text-sm font-semibold">Professional Details</legend>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <Field label="Department" value={profile.department_id} onChange={(v) => handleChange("department_id", v)} />
+                <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} /> 
+                <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} />  
+
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mt-4">
+
               </div>
             </fieldset>
 
@@ -187,38 +201,8 @@ const AdminEditProfile: React.FC = () => {
               </div>
             </fieldset>
 
+
           </div>
-        )}
-
-
-        {step === 2 && (
-          <div className="bg-gray-50 p-6 rounded space-y-6">
-
-            {/* PERSONAL */}
-            <fieldset className="border p-5 bg-blue-50 rounded">
-              <legend className="text-sm font-semibold">Professional Details</legend>
-
-              <div className="grid md:grid-cols-3 gap-4">
-                <Field label="Department" value={profile.department_id} onChange={(v) => handleChange("department_id", v)} />
-                <Field label="Created On" value={profile.created_on} onChange={(v) => handleChange("created_on", v)} />
-                <Field label="Created By" value={profile.created_by} onChange={(v) => handleChange("created_by", v)} />
-                <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} /> 
-                <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} />  
-
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4 mt-4">
-
-              </div>
-            </fieldset>
-
-           
-
-              </div>
-            
-        
-        )}
-
 
 
 
@@ -254,26 +238,32 @@ const AdminEditProfile: React.FC = () => {
 export default AdminEditProfile;
 
 /* ================= COMPONENTS ================= */
-
 const Field = ({
   label,
   value,
   onChange,
+  type = "text",
+  disabled = false, 
 }: {
   label: string;
-  value: string;
+  value:  string | null;
   onChange: (v: string) => void;
+  type?: string;
+  disabled?: boolean; 
 }) => (
   <div>
     <label className="text-sm">{label}</label>
     <input
-      value={value}
+      type={type}
+      value={value || ""}
+      disabled={disabled}  
       onChange={(e) => onChange(e.target.value)}
-      className="w-full border p-2 rounded"
+      className={`w-full border p-2 ${
+        disabled ? "bg-gray-100 cursor-not-allowed" : ""
+      }`}
     />
   </div>
 );
-
 const AddressFields = ({
   state,
   handler,
@@ -292,52 +282,15 @@ const AddressFields = ({
   </div>
 );
 
-const ProfileAvatar = ({ firstName, lastName }: { firstName: string; lastName: string }) => {
-  const initials = (firstName?.[0] || "") + (lastName?.[0] || "");
-  return (
+const ProfileAvatar = ({firstName,lastName}:{firstName:string;lastName:string})=>{
+  const initials = (firstName[0]||"")+(lastName[0]||"");
+  return(
     <div className="text-center mb-6">
       <div className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-2xl">
         {initials}
       </div>
+      <button className="mt-2 border px-4 py-1 rounded">Edit Profile</button>
     </div>
   );
 };
-
-const StepIndicator = ({
-  step,
-  onStepClick,
-}: {
-  step: number;
-  onStepClick: (n: number) => void;
-}) => {
-  const steps = [
-    { id: 1, label: "Basic Information" },
-    { id: 2, label: "Professional Details" },
-  ];
-
-  return (
-    <div className="mb-10 w-full px-10">
-      <div className="flex items-center w-full">
-        {steps.map((s, index) => (
-          <React.Fragment key={s.id}>
-            <div className="flex flex-col items-center">
-              <div
-                onClick={() => onStepClick(s.id)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
-                  step >= s.id ? "bg-blue-600 text-white" : "bg-gray-300"
-                }`}
-              >
-                {s.id}
-              </div>
-              <span className="mt-2 text-xs">{s.label}</span>
-            </div>
-
-            {index !== steps.length - 1 && (
-              <div className="flex-1 h-[3px] mx-6 bg-gray-300" />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
-  );
-};
+  
