@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -14,7 +14,9 @@ import type {
 } from "../../../services/doctorProfileApi";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import { setSelectedDoctor } from "../../../../store/slices/doctorSlice";
+import  { fetchDoctorListThunk } from "../../../../store/slices/doctorSlice";
+import type { AppDispatch } from "../../../../store/store";
+
 /* ================= TYPES ================= */
 
 
@@ -22,10 +24,10 @@ import { setSelectedDoctor } from "../../../../store/slices/doctorSlice";
 /* ================= COMPONENT ================= */
 
 const DoctorEditProfile: React.FC = () => {
-  const { doctor_id } = useParams();
+  const { doctorId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>()
 
 const doctorFromState = location.state;
 
@@ -39,19 +41,14 @@ const doctor =
   doctorFromState ||
   doctorFromStore ||
   (doctorFromStorage ? JSON.parse(doctorFromStorage) : null);
-  const finalDoctorId = doctor_id || doctor?.doctor_id;
+  const finalDoctorId = doctorId || doctor?.doctor_id;
 
   const [step, setStep] = useState<number>(1);
   const [sameAddress, setSameAddress] = useState<boolean>(false);
 
-  useState(() => {
-  if (doctorFromState) {
-    dispatch(setSelectedDoctor(doctorFromState));
-    localStorage.setItem("selectedDoctor", JSON.stringify(doctorFromState));
-  } else if (!doctorFromStore && doctorFromStorage) {
-    dispatch(setSelectedDoctor(JSON.parse(doctorFromStorage)));
-  }
-});
+useEffect(() => {
+  dispatch(fetchDoctorListThunk());
+}, [dispatch]);
 
   const [profile, setProfile] = useState({
     firstName: doctor?.first_name || "",
@@ -90,12 +87,14 @@ const doctor =
   const [experiences, setExperiences] = useState<Experience[]>([
     {
       organization_name:  doctor?.doctor_experiences?.[0]?.organization_name || "",
-      start_date:  doctor?.doctor_experiences?.[0].start_date || "",
-      end_date:  doctor?.doctor_experiences?.[0].end_date || "",
-      designation:  doctor?.doctor_experiences?.[0].designation || "",
-      responsibilities:  doctor?.doctor_experiences?.[0].responsibilities || "",
+      start_date:  doctor?.doctor_experiences?.[0]?.start_date || "",
+      end_date:  doctor?.doctor_experiences?.[0]?.end_date || "",
+      designation:  doctor?.doctor_experiences?.[0]?.designation || "",
+      responsibilities:  doctor?.doctor_experiences?.[0]?.responsibilities || "",
     },
   ]);
+
+  
 
   /* ================= HANDLERS ================= */
 
@@ -146,9 +145,8 @@ const doctor =
 
   const handleSave = async () => {
   try {
-    if (!finalDoctorId) {
-      toast("Doctor ID missing");
-      return;
+if (!doctor) {
+  return <div className="p-10">Loading doctor...</div>;
     }
 
     let payload: DoctorProfilePayload = {};
@@ -192,10 +190,10 @@ if (step === 2) {
     experiences: doctor.doctor_experiences?.map((exp: Experience
     ) => ({
       organization_name: exp.organization_name || "",
-      start_date: exp.start_date,
-      end_date: exp.end_date,
-      designation: exp.designation,
-      responsibilities: exp.responsibilities,
+      start_date: exp.start_date || "",
+      end_date: exp.end_date || "",
+      designation: exp.designation || "",
+      responsibilities: exp.responsibilities || "",
     })) || [],
   };
 }
@@ -220,9 +218,10 @@ if (step === 2) {
 
   /* ================= SAFETY ================= */
 
-  if (!finalDoctorId) {
-    return <div className="p-10">No doctor data found</div>;
-  }
+ if (!doctor) {
+  toast("Doctor data not found");
+  return;
+}
 
   /* ================= UI ================= */
 return (
