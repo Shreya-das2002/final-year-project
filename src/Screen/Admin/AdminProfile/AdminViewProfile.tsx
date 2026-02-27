@@ -6,7 +6,7 @@ import {
   FaBriefcase,
   FaEdit,
 } from "react-icons/fa";
-
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -16,6 +16,7 @@ import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
 const AdminProfileView: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { admins, loading } = useSelector(
     (state: RootState) => state.admin
@@ -75,7 +76,11 @@ const AdminProfileView: React.FC = () => {
           </div>
 
           <button
-          
+            onClick={() =>
+          navigate(`/admin/admin_edit_profile/${admin.admin_user_id}`, {
+            state: admin,
+          })
+        }
           className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 mx-auto">
             <FaEdit /> Edit Profile
           </button>
