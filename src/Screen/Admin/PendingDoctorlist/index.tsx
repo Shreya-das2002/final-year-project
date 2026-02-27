@@ -111,7 +111,8 @@ const PendingDoctorList: React.FC = () => {
     return <div className="p-6">Loading pending doctors...</div>;
   }
 
-  return (
+ return (
+
     <div className="p-6 bg-gray-100 min-h-screen">
 
       <h1 className="text-2xl font-semibold mb-6">
@@ -119,51 +120,95 @@ const PendingDoctorList: React.FC = () => {
       </h1>
 
       {doctors.length === 0 ? (
+
         <div>No pending doctors found.</div>
+
       ) : (
-        <div className="grid grid-cols-3 gap-6">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {doctors.map((doctor) => (
 
-            <div key={doctor.doctor_id} className="bg-white p-6 rounded shadow">
+            <div
+              key={doctor.doctor_id}
+              className="bg-white rounded-xl shadow-md p-6 relative"
+            >
 
-              <h2 className="font-semibold">
-                Dr. {doctor.first_name} {doctor.last_name}
+              {/* STATUS */}
+              <span className="absolute top-4 right-4 bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
+                {doctor.status}
+              </span>
+
+              {/* NAME */}
+              <h2 className="text-lg font-semibold mb-2">
+                Dr. {doctor.first_name}
+                {doctor.middle_name ? ` ${doctor.middle_name}` : ""}
+                {" "}
+                {doctor.last_name}
               </h2>
 
-              <p>{doctor.email}</p>
+              {/* EMAIL */}
+              <p className="text-sm text-gray-600 mb-1">
+                📧 {doctor.email}
+              </p>
 
-              <div className="flex gap-3 mt-4">
+              {/* GENDER */}
+              <p className="text-sm text-gray-600 mb-1">
+                👤 {doctor.gender}
+              </p>
 
-                {canAccept && (
-                  <button
-                    onClick={() => handleAccept(doctor.doctor_id)}
-                    className="bg-green-600 text-white px-4 py-1 rounded"
-                  >
-                    Accept
-                  </button>
-                )}
+              {/* SPECIALIZATION */}
+              <p className="text-sm text-gray-600 mb-1">
+                🩺 {doctor.specialization}
+              </p>
 
-                {canDecline && (
-                  <button
-                    onClick={() => handleDecline(doctor.doctor_id)}
-                    className="bg-red-600 text-white px-4 py-1 rounded"
-                  >
-                    Decline
-                  </button>
-                )}
+              {/* PHONE */}
+              <p className="text-sm text-gray-600 mb-4">
+                📱 {doctor.phone_no}
+              </p>
 
-              </div>
+              {/* BUTTONS */}
+              {(canAccept || canDecline) && (
+
+                <div className="flex justify-end gap-3">
+
+                  {canAccept && (
+
+                    <button
+                      onClick={() => handleAccept(doctor.doctor_id)}
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-md text-sm"
+                    >
+                      Accept
+                    </button>
+
+                  )}
+
+                  {canDecline && (
+
+                    <button
+                      onClick={() => handleDecline(doctor.doctor_id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-md text-sm"
+                    >
+                      Decline
+                    </button>
+
+                  )}
+
+                </div>
+
+              )}
 
             </div>
 
           ))}
 
         </div>
+
       )}
 
     </div>
-  );
-};
 
+  );
+
+};
 export default PendingDoctorList;

@@ -490,6 +490,8 @@ export const urls ={
   getHomepageDoctorsUrl: '/doctor/homepage-doctors',
   applyDoctorUrl: "/apply-doctor",
   docProfileUrl: "/doctor/profile",
+  adminProfileUrl: "/admin/profile",
+
 }
 
 

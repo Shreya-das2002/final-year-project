@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
+import { saveAdminProfileApi } from "../../../services/adminProfileApi";
+import { toast } from "react-hot-toast";
 
 /* ================= TYPES ================= */
 
@@ -41,17 +46,24 @@ const AdminEditProfile: React.FC = () => {
     adminFromStore.find((a) => a.admin_user_id === Number(id)) ||
     (adminFromStorage ? JSON.parse(adminFromStorage) : null);
 
+    const isSuperAdmin = admin?.role === "super admin";
+
   /* ================= STATE ================= */
 
   const [step, setStep] = useState(1);
   const [sameAddress, setSameAddress] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [profile, setProfile] = useState({
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    role: "",
+    first_name: admin?.first_name || "",
+    middle_name: admin?.middle_name || "",
+    last_name: admin?.last_name || "",
+    dob: admin?.dob || "",
+    gender: "",
     email: "",
+    department_id: "",
+    created_on: "",
+    phone: "",
   });
 
   const [permanentAddress, setPermanentAddress] = useState<AddressType>({
@@ -69,8 +81,6 @@ const AdminEditProfile: React.FC = () => {
     state: "",
     pincode: "",
   });
-
-  /* ================= FIX: NO CASCADING RENDER ================= */
 
 
   /* ================= HANDLERS ================= */
@@ -102,15 +112,41 @@ const AdminEditProfile: React.FC = () => {
 
   /* ================= SAVE ================= */
 
-  const handleSave = () => {
+  
+const handleSave = async () => {
+  try {
+    if (!id) {
+      toast.error("Admin ID missing");
+      return;
+    }
+
+    setLoading(true);
+
     const finalData = {
-      ...profile,
-      permanent_address: permanentAddress,
+      dob: profile.dob,
       current_address: currentAddress,
+      permanent_address: permanentAddress,
     };
 
-    console.log("Saved:", finalData);
-  };
+    console.log("Sending:", finalData);
+
+    const res = await saveAdminProfileApi(id, finalData);
+
+    if (res?.data?.success) {
+      toast.success(res.data.message || "Profile saved");
+    } else {
+      toast.error(res?.data?.message || "Failed");
+    }
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Server error");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  
 
   /* ================= SAFETY ================= */
 
@@ -124,14 +160,9 @@ const AdminEditProfile: React.FC = () => {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded">
 
-        <ProfileAvatar
-          firstName={profile.first_name}
-          lastName={profile.last_name}
-        />
+          <ProfileAvatar firstName={profile.first_name} lastName={profile.last_name} />
 
-        <StepIndicator step={step} onStepClick={setStep} />
 
-        {step === 1 && (
           <div className="bg-gray-50 p-6 rounded space-y-6">
 
             {/* PERSONAL */}
@@ -139,14 +170,56 @@ const AdminEditProfile: React.FC = () => {
               <legend className="text-sm font-semibold">Personal Details</legend>
 
               <div className="grid md:grid-cols-3 gap-4">
-                <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} />
+                
+                <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} disabled={!isSuperAdmin} />
                 <Field label="Middle Name" value={profile.middle_name} onChange={(v) => handleChange("middle_name", v)} />
                 <Field label="Last Name" value={profile.last_name} onChange={(v) => handleChange("last_name", v)} />
+            
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                  <DatePicker
+                                    label="Date of Birth"
+                                    value={profile.dob ? dayjs(profile.dob) : null}
+                                    onChange={(v: Dayjs | null) =>
+                                      handleChange("dob", v ? v.format("YYYY-MM-DD") : "")
+                                    }
+                                    slotProps={{
+                                      textField: {
+                                        fullWidth: true,
+                                        size: "small",
+                                      },
+                                    }}
+                                  />
+                                </LocalizationProvider>
+
+                <Field label="Gender" value={profile.gender} onChange={(v) => handleChange("gender", v)} />
+                
               </div>
 
               <div className="grid md:grid-cols-2 gap-4 mt-4">
-                <Field label="Email" value={profile.email} onChange={(v) => handleChange("email", v)} />
-                <Field label="Role" value={profile.role} onChange={(v) => handleChange("role", v)} />
+              
+          
+              </div>
+            </fieldset>
+
+                    {/* PERSONAL */}
+            <fieldset className="border p-5 bg-blue-50 rounded">
+              <legend className="text-sm font-semibold">Professional Details</legend>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                {admin?.role === "standard admin" && (
+  <Field
+    label="Department"
+    value={profile.department_id}
+    onChange={(v) => handleChange("department_id", v)}
+  />
+)}
+                <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} /> 
+                <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} />  
+
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mt-4">
+
               </div>
             </fieldset>
 
@@ -182,8 +255,10 @@ const AdminEditProfile: React.FC = () => {
               </div>
             </fieldset>
 
+
           </div>
-        )}
+
+
 
         {/* NAV */}
         <div className="flex justify-between mt-10">
@@ -197,9 +272,13 @@ const AdminEditProfile: React.FC = () => {
           </button>
 
           <div className="flex gap-4">
-            <button onClick={handleSave} className="px-6 py-2 bg-green-600 text-white rounded">
-              Save
-            </button>
+            <button
+          onClick={handleSave}
+        disabled={loading}
+        className="px-6 py-2 bg-green-600 text-white rounded disabled:bg-gray-400"
+        >
+  {loading ? "Saving..." : "Save"}
+</button>
 
             {step === 1 && (
               <button onClick={() => setStep(2)} className="px-6 py-2 bg-blue-600 text-white rounded">
@@ -217,26 +296,32 @@ const AdminEditProfile: React.FC = () => {
 export default AdminEditProfile;
 
 /* ================= COMPONENTS ================= */
-
 const Field = ({
   label,
   value,
   onChange,
+  type = "text",
+  disabled = false, 
 }: {
   label: string;
-  value: string;
+  value:  string | null;
   onChange: (v: string) => void;
+  type?: string;
+  disabled?: boolean; 
 }) => (
   <div>
     <label className="text-sm">{label}</label>
     <input
-      value={value}
+      type={type}
+      value={value || ""}
+      disabled={disabled}  
       onChange={(e) => onChange(e.target.value)}
-      className="w-full border p-2 rounded"
+      className={`w-full border p-2 ${
+        disabled ? "bg-gray-100 cursor-not-allowed" : ""
+      }`}
     />
   </div>
 );
-
 const AddressFields = ({
   state,
   handler,
@@ -255,52 +340,15 @@ const AddressFields = ({
   </div>
 );
 
-const ProfileAvatar = ({ firstName, lastName }: { firstName: string; lastName: string }) => {
-  const initials = (firstName?.[0] || "") + (lastName?.[0] || "");
-  return (
+const ProfileAvatar = ({firstName,lastName}:{firstName:string;lastName:string})=>{
+  const initials = (firstName[0]||"")+(lastName[0]||"");
+  return(
     <div className="text-center mb-6">
       <div className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-2xl">
         {initials}
       </div>
+      <button className="mt-2 border px-4 py-1 rounded">Edit Profile</button>
     </div>
   );
 };
-
-const StepIndicator = ({
-  step,
-  onStepClick,
-}: {
-  step: number;
-  onStepClick: (n: number) => void;
-}) => {
-  const steps = [
-    { id: 1, label: "Basic Information" },
-    { id: 2, label: "Permissions" },
-  ];
-
-  return (
-    <div className="mb-10 w-full px-10">
-      <div className="flex items-center w-full">
-        {steps.map((s, index) => (
-          <React.Fragment key={s.id}>
-            <div className="flex flex-col items-center">
-              <div
-                onClick={() => onStepClick(s.id)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
-                  step >= s.id ? "bg-blue-600 text-white" : "bg-gray-300"
-                }`}
-              >
-                {s.id}
-              </div>
-              <span className="mt-2 text-xs">{s.label}</span>
-            </div>
-
-            {index !== steps.length - 1 && (
-              <div className="flex-1 h-[3px] mx-6 bg-gray-300" />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
-  );
-};
+  
