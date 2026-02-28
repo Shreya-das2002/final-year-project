@@ -491,6 +491,7 @@ export const urls ={
   applyDoctorUrl: "/apply-doctor",
   docProfileUrl: "/doctor/profile",
   adminProfileUrl: "/admin/profile",
+  slotBookingUrl: "/doctor/slot-booking",
 
 }
 

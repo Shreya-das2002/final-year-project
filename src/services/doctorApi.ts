@@ -67,6 +67,12 @@ export interface UpdateDoctorStatusPayload {
   status: "Active" | "Rejected";
 }
 
+export interface UpsertSlotPayload {
+  doctor_id: number;
+  date: string;
+  slot_count: number;
+  fees: number;
+}
 
 
 /* ================= CREATE DOCTOR PAYLOAD ================= */
@@ -159,4 +165,18 @@ export const getHomepageDoctorsApi = async () => {
 
   return response.data.data;
 
+};
+
+/* ================= UPSERT SLOT API ================= */
+
+export const upsertSlotApi = (
+  data: UpsertSlotPayload
+) => {
+  return API.post(
+    urls.slotBookingUrl,
+    data,
+    {
+      validateStatus: () => true,
+    }
+  );
 };
