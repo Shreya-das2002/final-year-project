@@ -27,6 +27,12 @@ interface Experience {
   end_date: string | null;
   responsibilities: string | null;
 }
+
+interface Slot {
+  date: string;
+  slot_count: number;
+  fees: number;
+}
 interface Doctor {
 
   doctor_id: number;
@@ -52,6 +58,8 @@ interface Doctor {
   permanent_address: Address | null;
 
   doctor_experiences?: Experience[];
+  
+  doctor_availability?: Slot[];
 
   created_on?: string;
 
@@ -68,6 +76,7 @@ interface Doctor {
 interface DoctorState {
   doctors: Doctor[];
   experiences: Experience[];
+  slot: Record< number, Record<string, { slots: number; fee: string }>>;
   loading: boolean;
   selectedDoctor: Doctor | null;
 }
@@ -75,6 +84,7 @@ interface DoctorState {
 const initialState: DoctorState = {
   doctors: [],
   experiences: [],
+  slot: {},
   loading: false,
   selectedDoctor: null,
 };
@@ -210,6 +220,7 @@ const doctorSlice = createSlice({
     setDoctors(state, action: PayloadAction<Doctor[]>) {
 
       state.doctors = action.payload;
+      
 
     },
 
@@ -271,6 +282,25 @@ const doctorSlice = createSlice({
           state.loading = false;
 
           state.doctors = action.payload;
+
+          state.slot = {};
+
+action.payload.forEach((doc) => {
+  const availability = Array.isArray(doc.doctor_availability)
+    ? doc.doctor_availability
+    : [];
+
+  if (!state.slot[doc.doctor_id]) {
+    state.slot[doc.doctor_id] = {};
+  }
+
+  availability.forEach((slot) => {
+    state.slot[doc.doctor_id][slot.date] = {
+      slots: slot.slot_count,
+      fee: String(slot.fees),
+    };
+  });
+});
 
         }
 

@@ -11,16 +11,15 @@ import { upsertSlotApi } from "../../../services/doctorApi";
 import type { UpsertSlotPayload } from "../../../services/doctorApi";
 
 import type { Doctor } from "../../../services/doctorApi";
-
+import toast from "react-hot-toast";
 
 const SlotAvailability = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { doctors, selectedDoctor } = useSelector(
+
+  const { doctors, selectedDoctor, slot } = useSelector(
     (state: RootState) => state.doctor
   );
-
-
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [showSlotModal, setShowSlotModal] = useState(false);
@@ -31,7 +30,7 @@ const SlotAvailability = () => {
   const [fee, setFee] = useState("");
   const [slotCount, setSlotCount] = useState(1);
 
-  // store slots
+  // store slots (local for instant UI)
   const [slotData, setSlotData] = useState<
     Record<string, { slots: number; fee: string }>
   >({});
@@ -54,71 +53,78 @@ const SlotAvailability = () => {
     dispatch(setSelectedDoctor(doc));
     setShowCalendar(true);
 
+    const docSlots = slot[doc.doctor_id];
+    if (docSlots) {
+      const firstDate = Object.keys(docSlots)[0];
+      if (firstDate) {
+        setCurrentDate(new Date(firstDate));
+      }
+    }
+
     setSelectedDate(null);
     setFee("");
     setSlotCount(1);
   };
 
-const handleAddSlot = async () => {
-  if (!selectedDoctor) {
-    alert("Doctor not selected");
-    return;
-  }
-
-  if (!selectedDate || !fee) {
-    alert("Please select date and enter fee");
-    return;
-  }
-
-  try {
-    const formattedDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
-
-    const payload: UpsertSlotPayload = {
-      doctor_id: selectedDoctor.doctor_id,   
-      date: formattedDate,                  
-      slot_count: slotCount,
-      fees: Number(fee),                    
-    };
-
-    const res = await upsertSlotApi(payload);
-
-    if (res.data.success) {
-      const key = formattedDate;
-
-      setSlotData((prev) => ({
-        ...prev,
-        [key]: {
-          slots: slotCount,
-          fee,
-        },
-      }));
-
-      alert(res.data.message);
-
-      // Reset
-      setShowSlotModal(false);
-      setSelectedDate(null);
-      setFee("");
-      setSlotCount(1);
-
-    } else {
-      alert(res.data.message);
+  const handleAddSlot = async () => {
+    if (!selectedDoctor) {
+      toast("Doctor not selected");
+      return;
     }
 
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong");
-  }
-};
+    if (!selectedDate || !fee) {
+      toast("Please select date and enter fee");
+      return;
+    }
+
+    try {
+      const formattedDate = `${year}-${String(month + 1).padStart(
+        2,
+        "0"
+      )}-${String(selectedDate).padStart(2, "0")}`;
+
+      const payload: UpsertSlotPayload = {
+        doctor_id: selectedDoctor.doctor_id,
+        date: formattedDate,
+        slot_count: slotCount,
+        fees: Number(fee),
+      };
+
+      const res = await upsertSlotApi(payload);
+
+      if (res.data.success) {
+        const key = formattedDate;
+
+      
+        setSlotData((prev) => ({
+          ...prev,
+          [key]: {
+            slots: slotCount,
+            fee,
+          },
+        }));
+
+        toast(res.data.message);
+
+        setShowSlotModal(false);
+        setSelectedDate(null);
+        setFee("");
+        setSlotCount(1);
+      } else {
+        toast(res.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast("Something went wrong");
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-
-      {/* HEADER */}
       <h2 className="text-2xl font-semibold text-blue-600 mb-6">
         Doctor List
       </h2>
 
-      {/* TABLE */}
       <table className="w-full bg-white border rounded-xl">
         <thead className="bg-blue-50">
           <tr>
@@ -153,13 +159,10 @@ const handleAddSlot = async () => {
         </tbody>
       </table>
 
-      {/* ================= CALENDAR MODAL ================= */}
+      {/* ================= CALENDAR ================= */}
       {showCalendar && selectedDoctor && (
         <div className="fixed inset-0 bg-black/30 flex items-start justify-center z-40 pt-24">
-
           <div className="bg-white w-[600px] rounded-2xl p-6 border shadow-lg">
-
-            {/* HEADER */}
             <div className="flex justify-between mb-4">
               <h2 className="font-semibold">
                 Slot for Dr. {selectedDoctor.first_name}{" "}
@@ -168,50 +171,75 @@ const handleAddSlot = async () => {
               <button onClick={() => setShowCalendar(false)}>✕</button>
             </div>
 
-            {/* CALENDAR */}
             <div className="border rounded-xl p-4">
-
               <div className="flex justify-between mb-3">
-                <button onClick={() => setCurrentDate(new Date(year, month - 1))}>
+                <button
+                  onClick={() => setCurrentDate(new Date(year, month - 1))}
+                >
                   ◀
                 </button>
 
-                <h3>{monthName} {year}</h3>
+                <h3>
+                  {monthName} {year}
+                </h3>
 
-                <button onClick={() => setCurrentDate(new Date(year, month + 1))}>
+                <button
+                  onClick={() => setCurrentDate(new Date(year, month + 1))}
+                >
                   ▶
                 </button>
               </div>
 
               <div className="grid grid-cols-7 text-sm text-gray-400 text-center mb-2">
-                {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>(
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                   <div key={d}>{d}</div>
                 ))}
               </div>
 
               <div className="grid grid-cols-7 gap-2">
-
-                {[...Array(firstDay)].map((_,i)=>(
+                {[...Array(firstDay)].map((_, i) => (
                   <div key={i}></div>
                 ))}
 
-                {[...Array(daysInMonth)].map((_,i)=>{
-                  const day = i+1;
-                  const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                  const slotInfo = slotData[key];
+                {[...Array(daysInMonth)].map((_, i) => {
+                  const day = i + 1;
+                  const key = `${year}-${String(month + 1).padStart(
+                    2,
+                    "0"
+                  )}-${String(day).padStart(2, "0")}`;
+
+                  const slotInfo =
+                    (selectedDoctor &&
+                      slot[selectedDoctor.doctor_id]?.[key]) ||
+                    slotData[key];
 
                   return (
                     <div
                       key={day}
-                      onClick={() => {
-                        setSelectedDate(day);
-                        setFee("");
-                        setSlotCount(1);
-                        setShowSlotModal(true);
-                      }}
+        onClick={() => {
+  setSelectedDate(day);
+
+  const existingSlot =
+    (selectedDoctor &&
+      slot[selectedDoctor.doctor_id]?.[key]) ||
+    slotData[key];
+
+  if (existingSlot) {
+    setSlotCount(existingSlot.slots);
+    setFee(existingSlot.fee);
+  } else {
+    setSlotCount(1);
+    setFee("");
+  }
+
+  setShowSlotModal(true);
+}}
                       className={`h-16 flex flex-col items-center justify-center border rounded-lg cursor-pointer
-                      ${slotInfo ? "bg-green-50 border-green-400" : "hover:bg-blue-50"}
-                      `}
+                      ${
+                        slotInfo
+                          ? "bg-green-50 border-green-400"
+                          : "hover:bg-blue-50"
+                      }`}
                     >
                       <span>{day}</span>
 
@@ -225,7 +253,6 @@ const handleAddSlot = async () => {
                 })}
               </div>
             </div>
-
           </div>
         </div>
       )}
@@ -233,9 +260,7 @@ const handleAddSlot = async () => {
       {/* ================= SLOT MODAL ================= */}
       {showSlotModal && selectedDate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
           <div className="bg-white w-[400px] p-6 rounded-xl border shadow-xl">
-
             <div className="flex justify-between mb-4">
               <h2 className="font-semibold">
                 Add Slot - {selectedDate} {monthName}
@@ -243,7 +268,6 @@ const handleAddSlot = async () => {
               <button onClick={() => setShowSlotModal(false)}>✕</button>
             </div>
 
-            {/* SLOT */}
             <div className="flex justify-between mb-4 items-center">
               <span>Slots</span>
 
@@ -281,19 +305,17 @@ const handleAddSlot = async () => {
               </div>
             </div>
 
-            {/* FEE */}
             <div className="mb-4">
               <label className="block mb-1 text-sm text-gray-600">Fee</label>
               <input
                 type="number"
                 value={fee}
-                onChange={(e)=>setFee(e.target.value)}
+                onChange={(e) => setFee(e.target.value)}
                 className="w-full border px-3 py-2 rounded"
                 placeholder="Enter fee"
               />
             </div>
 
-            {/* SAVE */}
             <button
               onClick={() => {
                 handleAddSlot();
@@ -303,11 +325,9 @@ const handleAddSlot = async () => {
             >
               Save Slot
             </button>
-
           </div>
         </div>
       )}
-
     </div>
   );
 };
