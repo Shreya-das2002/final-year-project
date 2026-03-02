@@ -168,7 +168,7 @@ export const fetchDoctorListThunk = createAsyncThunk<
     try {
       const res = await getDoctorListApi(specializationId);
 
-      return res; // ✅ FIXED (already Doctor[])
+      return res; 
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
