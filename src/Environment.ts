@@ -484,13 +484,14 @@ export const urls ={
   createAdminUrl : 'admin/create',
   getAllAdminsUrl: 'admin/alladmins',
   createDoctorUrl: 'doctor/create',
-  getPendingDoctorsUrl: '/doctor/pending-doctors',
-  updateDoctorStatusUrl: '/doctor/update-status',
-  getDoctorListUrl: '/doctor/doctor-list',
-  getHomepageDoctorsUrl: '/doctor/homepage-doctors',
-  applyDoctorUrl: "/apply-doctor",
-  docProfileUrl: "/doctor/profile",
-  adminProfileUrl: "/admin/profile",
+  getPendingDoctorsUrl: 'doctor/pending-doctors',
+  updateDoctorStatusUrl: 'doctor/update-status',
+  getDoctorListUrl: 'doctor/doctor-list',
+  getHomepageDoctorsUrl: 'doctor/homepage-doctors',
+  applyDoctorUrl: 'apply-doctor',
+  docProfileUrl: 'doctor/profile',
+  adminProfileUrl: 'admin/profile',
+  slotBookingUrl: 'doctor/slot-booking',
 
 }
 

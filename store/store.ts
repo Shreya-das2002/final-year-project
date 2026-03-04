@@ -13,7 +13,8 @@ export const store = configureStore({
 
     admin: adminReducer,
 
-    doctor: doctorReducer,   //  ADD THIS
+    doctor: doctorReducer,
+
 
   },
 
