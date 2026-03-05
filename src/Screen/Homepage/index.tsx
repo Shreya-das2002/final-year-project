@@ -34,13 +34,23 @@ const HomePage: React.FC = () => {
 
         </div>
 
-        <div className="overflow-hidden whitespace-nowrap bg-cyan-50 dark:bg-slate-800 py-4">
-        <p className="text-xl font-sans font-semibold text-blue-800 dark:text-gray-200 animate-slide">
-            Think of SymptoNexus as your first step to understanding and relief. We
-            provide helpful knowledge and connect you with doctors, but never
-            replace professional medical care or medication.
-        </p>
-        </div>
+        <div className="overflow-hidden bg-cyan-50 dark:bg-slate-800 py-4">
+  <div className="flex whitespace-nowrap animate-slide">
+
+    <p className="mx-40 text-xl font-sans font-semibold text-blue-800 dark:text-gray-200">
+      Think of SymptoNexus as your first step to understanding and relief. We
+      provide helpful knowledge and connect you with doctors, but never
+      replace professional medical care or medication.
+    </p>
+
+    <p className="mx-40 text-xl font-sans font-semibold text-blue-800 dark:text-gray-200">
+      Think of SymptoNexus as your first step to understanding and relief. We
+      provide helpful knowledge and connect you with doctors, but never
+      replace professional medical care or medication.
+    </p>
+
+  </div>
+</div>
         <div>
             <Cards/>
         </div>
