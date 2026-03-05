@@ -4,15 +4,16 @@
 
 @keyframes slide {
   0% {
-    transform: translateX(100%);
+    transform: translateX(0);
   }
+
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 }
 
-@layer utilities {
-  .animate-slide {
-    animation: slide 40s linear infinite;
-  }
+.animate-slide {
+  display: flex;
+  width: max-content;
+  animation: slide 25s linear infinite;
 }

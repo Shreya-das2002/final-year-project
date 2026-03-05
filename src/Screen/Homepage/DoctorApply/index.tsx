@@ -1,12 +1,27 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { applyDoctorApi } from "../../../services/applyDoctorApi";
 import type { ApplyDoctorForm } from "../../../services/applyDoctorApi";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import background from "../../../assets/Background.jpg";
+import dark_background from "../../../assets/dark_background.jpg";
+
 
 const ApplyDoctor: React.FC = () => {
     const navigate = useNavigate();
+
+  const [isDark, setIsDark] = useState(
+    document.documentElement.classList.contains("dark")
+  ); 
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   /* ================= STATE ================= */
 
@@ -136,9 +151,19 @@ const ApplyDoctor: React.FC = () => {
 
   return (
 
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow rounded">
+        <div
+      className="flex items-center justify-center min-h-screen bg-cover bg-center"
+      style={{
+        backgroundImage: `url(${isDark ? dark_background : background})`,
+      }}
+    >
 
-      <h2 className="text-2xl font-bold text-blue-600 mb-6 text-center">
+
+    <div className="relative h-full w-full bg-gradient-to-r from-sky-50 to-sky-300 dark:from-sky-800 dark:to-blue-950 backdrop-blur-md p-8 rounded-3xl max-w-lg mx-auto"
+
+    >
+
+      <h2 className="text-2xl font-bold text-blue-400 dark:text-gray-100 mb-6 text-center">
         Apply as Doctor
       </h2>
 
@@ -146,10 +171,10 @@ const ApplyDoctor: React.FC = () => {
       <input
         type="text"
         name="name"
-        placeholder="Full Name"
+        placeholder="Enter your full name"
         value={form.name}
         onChange={handleChange}
-        className="w-full border p-2 mb-3 rounded"
+        className="w-full px-4 py-2 pr-12 dark:text-gray-200 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Specialization */}
@@ -159,27 +184,27 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Specialization"
         value={form.specialization}
         onChange={handleChange}
-        className="w-full border p-2 mb-3 rounded"
+        className="w-full px-4 py-2 pr-12 dark:text-gray-300 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Email */}
       <input
         type="email"
         name="email"
-        placeholder="Email"
+        placeholder="Enter your email"
         value={form.email}
         onChange={handleChange}
-        className="w-full border p-2 mb-3 rounded"
+        className="w-full px-4 py-2 pr-12  dark:text-gray-300 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Phone */}
       <input
         type="text"
         name="phone"
-        placeholder="Phone Number"
+        placeholder="Enter your phone number"
         value={form.phone}
         onChange={handleChange}
-        className="w-full border p-2 mb-3 rounded"
+        className="w-full px-4 py-2 pr-12  dark:text-gray-300 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Hidden File Input */}
@@ -193,11 +218,11 @@ const ApplyDoctor: React.FC = () => {
       />
 
       {/* File Display */}
-      <div className="w-full border p-2 mb-4 rounded bg-white flex justify-between items-center">
+      <div className="w-full px-4 py-2 pr-12  dark:text-gray-300 rounded-full border focus:ring-2 mb-3 flex items-center">
 
         <label
           htmlFor="cvUpload"
-          className="cursor-pointer flex-1 text-gray-600"
+          className="cursor-pointer flex-1 text-gray-500 dark:text-gray-400"
         >
           {fileName ? ` ${fileName}` : " Choose a File"}
         </label>
@@ -221,18 +246,22 @@ const ApplyDoctor: React.FC = () => {
           if (success) {
             navigate("/apply_doctor/response");
           }
+
         } }
         disabled={loading}
-        className={`w-full text-white p-2 rounded transition ${
+        className={`w-full text-white p-2 px-4 py-2 pr-12 rounded-full transition ${
           loading
             ? "bg-gray-400 cursor-not-allowed"
-            : "bg-blue-600 hover:bg-blue-700"
+            : "bg-gradient-to-r from-blue-300  to-blue-700 hover:from-blue-700 hover:to-blue-300 dark:from-cyan-900 dark:to-gray-400 dark:hover:from-gray-400 dark:hover:to-cyan-900"
         }`}
       >
         {loading ? "Sending..." : "Apply"}
       </button>
 
     </div>
+    </div>
+    
+
 
   );
 

@@ -67,7 +67,7 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 flex items-center justify-between px-6 shadow-md">
+      <header className="h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 flex items-center justify-between px-3 shadow-md">
         <div
           onClick={goToHome}
           className="cursor-pointer select-none"
@@ -80,24 +80,33 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
           </span>
         </div>
 
-        {/* DATE & TIME */}
-        <div className="flex items-center gap-10 text-sm text-white font-medium">
-          <Theme />
+      {/* RIGHT NAV ITEMS */}
+<div className="flex items-center text-sm text-white font-medium pl-10">
 
-          <div className="relative flex items-center">
-            <span className="absolute -left-7 bg-white/30 p-2 rounded-full">
-              <FaRegCalendarAlt className="text-lg" />
-            </span>
-            <span className="ml-4">{date}</span>
-          </div>
+  {/* THEME */}
+  <div className="w-20 flex justify-center">
+    <Theme />
+  </div>
 
-          <div className="relative flex items-center">
-            <span className="absolute -left-7 bg-white/30 p-2 rounded-full">
-              <FaRegClock className="text-lg" />
-            </span>
-            <span className="ml-4">{time}</span>
-          </div>
-        </div>
+  {/* DATE */}
+  <div className="w-40 flex items-center gap-3">
+    <span className="bg-white/30 p-2 rounded-full">
+      <FaRegCalendarAlt className="text-lg" />
+    </span>
+
+    <span className="whitespace-nowrap">{date}</span>
+  </div>
+
+  {/* TIME */}
+  <div className="w-36 flex items-center gap-3">
+    <span className="bg-white/30 p-2 rounded-full ">
+      <FaRegClock className="text-lg" />
+    </span>
+
+    <span className="whitespace-nowrap">{time}</span>
+  </div>
+
+</div>
       </header>
 
       {/* ================= NAV BAR ================= */}
