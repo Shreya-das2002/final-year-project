@@ -11,10 +11,8 @@ const About: React.FC = () => {
         <h1 className="text-3xl font-bold mb-3 text-blue-500 dark:text-white">
           About Us
         </h1>
-        <p className="text-blue-700 dark:text-gray-300">
-          SymptoNexus is a healthcare support platform built to help users understand their symptoms, 
-          explore safe home remedies, and connect easily with doctors. 
-          Our goal is to reduce uncertainty and improve access to healthcare through simple, ethical, and user-friendly technology.
+        <p className="text-blue-700 dark:text-gray-300 text-justify">
+          SymptoNexus is a healthcare support platform developed to assist users in understanding their symptoms, exploring safe home remedies, and connecting with healthcare professionals. The platform aims to reduce uncertainty in health-related situations and improve accessibility to medical guidance. By combining intuitive design with ethical and user-friendly technology, SymptoNexus provides a reliable and approachable digital healthcare support system.
 
         </p>
         <p className="text-blue-700 dark:text-gray-200 mt-2">
@@ -38,7 +36,7 @@ const About: React.FC = () => {
             <div className="p-4 text-center">
               <h3 className="text-xl font-bold text-blue-600 dark:text-white">{member.name}</h3>
               <p className="text-sky-500 dark:text-gray-400">{member.role}</p>
-              <p className="text-blue-500 dark:text-gray-300 mt-2">{member.desc}</p>
+              <p className="text-blue-500 dark:text-gray-300 mt-2 text-justify">{member.desc}</p>
             </div>
           </div>
         ))}
