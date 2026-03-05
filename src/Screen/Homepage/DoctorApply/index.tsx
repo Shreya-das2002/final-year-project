@@ -6,8 +6,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import background from "../../../assets/Background.jpg";
 import dark_background from "../../../assets/dark_background.jpg";
-import dark_signup from "../../../assets/dark_signup.jpg";    
-import signup_logo from "../../../assets/signup_logo.jpg";
+
 
 const ApplyDoctor: React.FC = () => {
     const navigate = useNavigate();
