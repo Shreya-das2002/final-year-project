@@ -34,7 +34,7 @@ const HomePage: React.FC = () => {
 
         </div>
 
-        <div className="overflow-hidden bg-cyan-50 dark:bg-slate-800 py-4">
+        <div className="overflow-hidden bg-gradient-to-r from-sky-300 via-sky-50 to-sky-300 dark:bg-slate-800 py-4">
   <div className="flex whitespace-nowrap animate-slide">
 
     <p className="mx-40 text-xl font-sans font-semibold text-blue-800 dark:text-gray-200">

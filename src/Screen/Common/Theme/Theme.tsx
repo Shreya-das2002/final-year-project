@@ -28,7 +28,7 @@ const Theme: React.FC = () => {
       {/* Sliding Circle */}
       <span
         className={`absolute flex items-center justify-center w-7 h-7 rounded-full shadow-md transform transition-transform duration-300
-        ${theme === "dark" ? "translate-x-8  bg-indigo-400  " : "translate-x-1  bg-yellow-300 "}`}
+        ${theme === "dark" ? "translate-x-8  bg-indigo-400  " : "translate-x-1  bg-yellow-400 "}`}
       >
         {theme === "dark" ? (
           <MoonIcon className="w-4 h-4 text-white" />
