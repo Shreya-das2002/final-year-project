@@ -1,4 +1,4 @@
-import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping } from "react-icons/fa";
+import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping, FaUser, FaStethoscope, FaFileMedical } from "react-icons/fa";
 import { useEffect, useState, useRef } from "react";
 
 import { getHomepageDoctorsApi } from "../../services/doctorApi";
@@ -59,7 +59,7 @@ const Cards = () => {
         <div className="bg-cyan-50">
     <div className="grid gap-6 md:grid-cols-3 p-8 bg-cyan-50 dark:bg-gray-800">
         
-        <div className="bg-gradient-to-r from-zinc-200 to-stone-400 dark:bg-gradient-to-r from-rose-100 to-red-900 shadow-lg rounded-xl p-6 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
+        <div className="bg-gradient-to-r from-zinc-200 to-stone-400 dark:bg-gradient-to-r dark:from-rose-100 dark:to-red-900 shadow-lg rounded-xl p-6 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
         <FaClipboardCheck className="text-gray-800 dark:text-blue-950 text-4xl mx-auto mb-4" />
         <h3 className="text-gray-700 dark:text-blue-900 font-semibold text-lg mb-3">
             Symptom Checker
@@ -149,51 +149,46 @@ const Cards = () => {
                     key={doc.doctor_id}
                     className="bg-gradient-to-r from-blue-200 to-cyan-400 dark:bg-gray-700 p-6 rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
+                    <div className="flex items-center gap-6">
 
-                    {/* Avatar */}
-                    <div className="
-                        w-16 h-16
-                        mx-auto
-                        bg-white
-                        rounded-full
-                        flex
-                        items-center
-                        justify-center
-                        text-blue-600
-                        font-bold
-                        text-xl
-                        mb-4
-                    ">
-                        {doc.name.charAt(0)}
+                        {/* Avatar */}
+                        <div className="
+                            w-28 h-28
+                            bg-white
+                            rounded-full
+                            flex
+                            items-center
+                            justify-center
+                            text-blue-600
+                            font-bold
+                            text-2xl
+                            shrink-0
+                        ">
+                            {doc.name.charAt(0)}
+                        </div>
+
+                        <div className="flex flex-col gap-2 text-left">
+                            {/* Name */}
+                            <h2 className="text-blue-900 font-bold text-lg mb-2 flex items-center text-center gap-2">
+                                <FaUser /> {doc.name}
+                            </h2>
+
+                            {/* Specialization */}
+                            <p className="text-blue-800 font-bold flex items-center text-center gap-2">
+                                <FaStethoscope /> {doc.specialization}
+                            </p>
+
+                        </div>
                     </div>
 
+                    <div>
+                        {/* Bio */}
+                        <p className="text-blue-700 text-justify flex shrink-0 items-baseline text-center pt-4 gap-2">
+                            <FaFileMedical className="shrink-0 " /> {doc.bio}
+                        </p>
+                            
+                    </div>
 
-                    {/* Name */}
-                    <h3 className="
-                        text-blue-900
-                        font-bold
-                        text-lg
-                        mb-2
-                    ">
-                        {doc.name}
-                    </h3>
-
-
-                    {/* Specialization */}
-                    <p className="
-                        text-blue-800
-                    ">
-                        {doc.specialization}
-                    </p>
-
-                    {/* Bio */}
-                    <p className="
-                        text-blue-700
-                        mt-2
-                    ">
-                        {doc.bio}
-                    </p>
-                        
                 </div>
 
             ))}
