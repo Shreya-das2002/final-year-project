@@ -55,11 +55,23 @@ const Cards = () => {
 
 }, []);
 
+    const gradients = [
+        "from-green-200 to-emerald-400",
+        "from-violet-200 to-indigo-400",
+        "from-slate-200 to-zinc-400"
+    ]
+
+    const textColours = [
+        "text-green-900",
+        "text-indigo-900",
+        "text-slate-900"
+    ]
+
     return (
         <div className="bg-cyan-50">
     <div className="grid gap-6 md:grid-cols-3 p-8 bg-cyan-50 dark:bg-gray-800">
         
-        <div className="bg-gradient-to-r from-zinc-200 to-stone-400 dark:bg-gradient-to-r dark:from-rose-100 dark:to-red-900 shadow-lg rounded-xl p-6 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
+        <div className="bg-gradient-to-r from-zinc-200 to-stone-400 shadow-lg rounded-xl p-6 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-gray-700">
         <FaClipboardCheck className="text-gray-800 dark:text-blue-950 text-4xl mx-auto mb-4" />
         <h3 className="text-gray-700 dark:text-blue-900 font-semibold text-lg mb-3">
             Symptom Checker
@@ -143,38 +155,43 @@ const Cards = () => {
 
         <div className="grid gap-8 md:grid-cols-3 text-center">
 
-            {doctors.map((doc) => (
+            {doctors.map((doc, index) => {
+                
+                const gradient = gradients[index % gradients.length];
+                const textColour = textColours[index % textColours.length]
+            
+            return(
 
                 <div
                     key={doc.doctor_id}
-                    className="bg-gradient-to-r from-blue-200 to-cyan-400 dark:bg-gray-700 p-6 rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
+                    className= {`bg-gradient-to-r ${gradient} p-6 rounded-xl shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl`}
                 >
                     <div className="flex items-center gap-6">
 
                         {/* Avatar */}
-                        <div className="
+                        <div className={`
                             w-28 h-28
                             bg-white
                             rounded-full
                             flex
                             items-center
                             justify-center
-                            text-blue-600
+                            ${textColour}
                             font-bold
                             text-2xl
                             shrink-0
-                        ">
+                        `}>
                             {doc.name.charAt(0)}
                         </div>
 
                         <div className="flex flex-col gap-2 text-left">
                             {/* Name */}
-                            <h2 className="text-blue-900 font-bold text-lg mb-2 flex items-center text-center gap-2">
+                            <h2 className={` ${textColour} font-bold text-lg mb-2 flex items-center text-center gap-2`}>
                                 <FaUser /> {doc.name}
                             </h2>
 
                             {/* Specialization */}
-                            <p className="text-blue-800 font-bold flex items-center text-center gap-2">
+                            <p className={` ${textColour} font-bold flex items-center text-center gap-2`}>
                                 <FaStethoscope /> {doc.specialization}
                             </p>
 
@@ -183,7 +200,7 @@ const Cards = () => {
 
                     <div>
                         {/* Bio */}
-                        <p className="text-blue-700 text-justify flex shrink-0 items-baseline text-center pt-4 gap-2">
+                        <p className={` ${textColour} text-justify flex shrink-0 items-baseline text-center pt-4 gap-2`}>
                             <FaFileMedical className="shrink-0 " /> {doc.bio}
                         </p>
                             
@@ -191,7 +208,7 @@ const Cards = () => {
 
                 </div>
 
-            ))}
+            )})}
 
         </div>
 
