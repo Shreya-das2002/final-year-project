@@ -1,5 +1,5 @@
 import React from "react";
-import { FaLock, FaUserShield, FaDatabase, FaEnvelope } from "react-icons/fa";
+import { FaUserShield, FaDatabase, FaEnvelope } from "react-icons/fa";
 
 const PrivacyPolicy: React.FC = () => {
   return (
@@ -10,8 +10,9 @@ const PrivacyPolicy: React.FC = () => {
           Privacy Policy
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
-          Your privacy matters. This policy explains how SymptoNexus collects,
-          uses, and protects your information.
+          SymptoNexus is committed to protecting your privacy. This policy explains
+          how we collect, use, and safeguard your personal and health-related
+          information when you use our platform.
         </p>
       </div>
 
@@ -24,9 +25,8 @@ const PrivacyPolicy: React.FC = () => {
             1. Introduction
           </h2>
           <p>
-            At SymptoNexus, we respect your privacy and are committed to protecting
-            your personal and health-related information. This Privacy Policy
-            outlines how we handle your data when you use our platform.
+            SymptoNexus is a healthcare support platform designed to help users understand symptoms, explore home remedies, and connect with doctors.
+            Protecting your privacy is a priority for us. This Privacy Policy explains how we collect, use, and protect information when you interact with our website and services.
           </p>
         </section>
 
@@ -39,15 +39,22 @@ const PrivacyPolicy: React.FC = () => {
           <div className="space-y-2">
             <p className="flex items-center gap-2">
               <FaUserShield className="text-blue-500 dark:text-white" />
-              Personal details such as name, email, and login credentials
+              Personal details such as name, email address, and account credentials
             </p>
+
+            <p className="flex items-baseline gap-2">
+              <FaDatabase className="text-blue-500 dark:text-white" />
+              Health-related inputs such as symptoms entered for informational guidance
+            </p>
+
+            <p className="flex items-baseline gap-2">
+              <FaDatabase className="text-blue-500 dark:text-white" />
+              Technical information including browser type, device information, and usage data
+            </p>
+
             <p className="flex items-center gap-2">
               <FaDatabase className="text-blue-500 dark:text-white" />
-              Health-related inputs like symptoms provided by users
-            </p>
-            <p className="flex items-center gap-2">
-              <FaDatabase className="text-blue-500 dark:text-white" />
-              Usage data including browser type and device information
+              Interaction data such as searches, health queries, and platform activity
             </p>
           </div>
         </section>
@@ -58,9 +65,11 @@ const PrivacyPolicy: React.FC = () => {
             3. How We Use Your Information
           </h2>
           <ul className="list-disc pl-6 space-y-1">
-            <li>To provide accurate health guidance and services</li>
-            <li>To improve platform performance and user experience</li>
-            <li>To maintain security and prevent unauthorized access</li>
+            <li>Provide symptom guidance and health-related information</li>
+            <li>Suggest possible home remedies and healthcare resources</li>
+            <li>Improve platform performance and user experience</li>
+            <li>Maintain security and prevent misuse of the platform</li>
+            <li>Support doctor connection and consultation features</li>
           </ul>
         </section>
 
@@ -69,10 +78,11 @@ const PrivacyPolicy: React.FC = () => {
           <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
             4. Data Protection & Security
           </h2>
-          <p className="flex items-center gap-2">
-            <FaLock className="text-blue-500 dark:text-white " />
-            We use secure technologies and best practices to protect your data.
-            We do not sell or share your personal information with third parties.
+          <p className="flex items-baseline gap-2">
+            SymptoNexus uses secure technologies and best practices to protect
+            user information. We implement authentication mechanisms, secure
+            database storage, and encrypted communication where possible.
+            We do not sell or trade personal data to third parties.
           </p>
         </section>
 
@@ -82,9 +92,10 @@ const PrivacyPolicy: React.FC = () => {
             5. Cookies & Tracking
           </h2>
           <p>
-            SymptoNexus may use cookies to enhance functionality and improve your
-            browsing experience. You can manage cookie preferences through your
-            browser settings.
+            SymptoNexus may use cookies or similar technologies to maintain
+            user sessions, analyze platform usage, and improve functionality.
+            Users can manage or disable cookies through their browser settings,
+            although some features of the platform may not work properly.
           </p>
         </section>
 
@@ -94,16 +105,32 @@ const PrivacyPolicy: React.FC = () => {
             6. Your Rights
           </h2>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Access your personal information</li>
-            <li>Update or correct your data</li>
-            <li>Request deletion of your data</li>
+            <li>Access the personal information associated with your account</li>
+            <li>Update or correct inaccurate information</li>
+            <li>Request deletion of your account and associated data</li>
+            <li>Contact the team regarding privacy-related concerns</li>
           </ul>
+        </section>
+
+        {/* Medical Disclaimer */}
+
+        <section>
+          <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
+            7. Medical Disclaimer
+          </h2>
+          <p>
+            SymptoNexus provides health-related information and guidance for
+            educational purposes only. The information available on this platform
+            should not be considered professional medical advice, diagnosis, or
+            treatment. Users should consult qualified healthcare professionals
+            for proper medical evaluation and treatment.
+          </p>
         </section>
 
         {/* Policy Changes */}
         <section>
           <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
-            7. Changes to This Policy
+            8. Changes to This Policy
           </h2>
           <p>
             We may update this Privacy Policy from time to time. Any changes will
@@ -114,11 +141,16 @@ const PrivacyPolicy: React.FC = () => {
         {/* Contact */}
         <section>
           <h2 className="text-2xl font-semibold text-blue-500 dark:text-white mb-2">
-            8. Contact Us
+            9. Contact Us
           </h2>
-          <p className="flex items-center gap-2">
+
+          <p className="mb-3">
+            If you have questions about this Privacy Policy or how your data is handled,
+            please contact the SymptoNexus team at:
+          </p>
+
+          <p className="flex items-center justify-center gap-2">
             <FaEnvelope className="text-blue-500 dark:text-white" />
-            If you have any questions, contact us at:
             <span className="font-semibold text-blue-600 dark:text-gray-200">
               symptonexus333@gmail.com
             </span>
@@ -127,7 +159,7 @@ const PrivacyPolicy: React.FC = () => {
 
         {/* Footer Note */}
         <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-6 border-t border-gray-300 dark:border-gray-700">
-          Last updated: March 2025
+          Last updated: March 2026
         </div>
       </div>
     </div>
@@ -135,4 +167,3 @@ const PrivacyPolicy: React.FC = () => {
 };
 
 export default PrivacyPolicy;
-

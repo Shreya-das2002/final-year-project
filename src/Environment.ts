@@ -1,7 +1,7 @@
-import shreyaImg from "./assets/Shreya.jpg";
-import subhaImg from "./assets/Subhankar.jpg";
-import ranaImg from "./assets/Ranabir.jpg";
-import rinkiImg from "./assets/Rinki.jpg";
+import shreyaImg from "./assets/Shreya.png";
+import subhaImg from "./assets/Subhankar.png";
+import ranaImg from "./assets/Ranabir.png";
+import rinkiImg from "./assets/Rinki.png";
 
 export interface TeamMember {
   id: number;
