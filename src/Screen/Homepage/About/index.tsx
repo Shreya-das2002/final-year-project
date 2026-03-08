@@ -21,17 +21,23 @@ const About: React.FC = () => {
       </div>
 
       {/* Team Section */}
-      <h2 className="text-2xl font-semibold mt-10 mb-6 text-blue-600 dark:text-white text-center flex items-center gap-2">
+      <h2 className="text-3xl font-semibold mt-10 mb-6 text-blue-600 dark:text-white text-center flex items-center gap-2">
         <FaUsers/> Our Team
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-7xl">
         {teamMembers.map((member) => (
           <div
             key={member.name}
-            className="bg-teal-50 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+            className="bg-emerald-100 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
           >
-            <img src={member.img} alt={member.name} className="w-full h-60 object-cover" />
+            <div className="flex justify-center pt-6">
+              <img
+                src={member.img}
+                alt={member.name}
+                className="w-40 h-40 object-cover rounded-full border-3 border-blue-300 shadow-md"
+              />
+            </div>
 
             <div className="p-4 text-center">
               <h3 className="text-xl font-bold text-blue-600 dark:text-white">{member.name}</h3>
