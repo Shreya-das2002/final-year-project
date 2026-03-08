@@ -31,7 +31,7 @@ const ApplicationSubmitted: React.FC = () => {
 
 
    
-      <div className="bg-gradient-to-r  from-sky-50 to-sky-300 dark:from-sky-800 dark:to-blue-950 shadow-xl rounded-2xl p-10 max-w-fit w-fit text-center">
+      <div className="bg-linear-to-r  from-sky-50 to-sky-300 dark:from-sky-800 dark:to-blue-950 shadow-xl rounded-2xl p-10 max-w-fit w-fit text-center">
 
         {/* Title */}
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">

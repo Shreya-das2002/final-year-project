@@ -16,18 +16,18 @@ const FAQ: React.FC = () => {
 
   return (
     <div className=" bg-gray-100 dark:bg-gray-900 max-w-3xl mx-auto p-6">
-      <h2 className=" text-blue-500 dark:text-white text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+      <h2 className="inline-block text-4xl font-bold bg-linear-to-r from-blue-600 via-blue-400 to-blue-600 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-500 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
 
       <div className="space-y-4">
         {faqData.map((item, index) => (
           <div
             key={index}
-            className="border rounded-lg bg-[#fffaf1] cursor-pointer"
+            className="border rounded-lg bg-linear-to-r from-blue-200 via-blue-50 to-blue-200 dark:from-gray-600 dark:via-gray-700 dark:to-gray-600 cursor-pointer"
             onClick={() => toggleFAQ(index)}
           >
             {/* Question */}
             <div className="flex justify-between items-center px-4 py-3">
-              <p className="text-lg font-medium">{item.question}</p>
+              <p className="text-black dark:text-gray-100 text-lg font-medium">{item.question}</p>
               <span className="text-2xl font-bold">
                 {openIndex === index ? "−" : "+"}
               </span>
@@ -35,7 +35,7 @@ const FAQ: React.FC = () => {
 
             {/* Answer */}
             {openIndex === index && (
-              <div className="px-4 pb-4 text-gray-700">
+              <div className="px-4 pb-4 text-gray-700 dark:text-gray-300">
                 {item.answer}
               </div>
             )}
@@ -57,7 +57,7 @@ const FAQ: React.FC = () => {
         {/* Button */}
         <button 
             onClick={() => handleClick()}
-            className="bg-blue-600 dark:bg-gray-600 hover:bg-blue-700 dark:hover:bg-gray-700 text-white dark:text-gray-200 px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition">
+            className="bg-linear-to-r from-blue-600 to-blue-400 dark:from-gray-600 dark:to-gray-500 hover:from-blue-800 hover:to-blue-600 dark:hover:from-gray-500 dark:hover:to-gray-400 text-white dark:text-gray-200 px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition">
           SUBMIT A REQUEST
         </button>
       </div>

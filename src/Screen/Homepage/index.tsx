@@ -34,16 +34,16 @@ const HomePage: React.FC = () => {
 
         </div>
 
-        <div className="overflow-hidden bg-gradient-to-r from-sky-300 via-sky-50 to-sky-300 dark:bg-slate-800 py-4">
+        <div className="overflow-hidden bg-linear-to-r from-sky-300 via-sky-50 to-sky-300 dark:from-sky-900 dark:via-sky-950 dark:to-sky-900 py-4">
   <div className="flex whitespace-nowrap animate-slide">
 
-    <p className="mx-40 text-xl font-sans font-semibold text-blue-800 dark:text-gray-200">
+    <p className="mx-40 text-xl font-sans font-semibold text-blue-800 dark:text-gray-300">
       Think of SymptoNexus as your first step to understanding and relief. We
       provide helpful knowledge and connect you with doctors, but never
       replace professional medical care or medication.
     </p>
 
-    <p className="mx-40 text-xl font-sans font-semibold text-blue-800 dark:text-gray-200">
+    <p className="mx-40 text-xl font-sans font-semibold text-blue-800 dark:text-gray-300">
       Think of SymptoNexus as your first step to understanding and relief. We
       provide helpful knowledge and connect you with doctors, but never
       replace professional medical care or medication.

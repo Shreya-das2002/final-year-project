@@ -67,12 +67,12 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-gradient-to-r from-blue-100 via-blue-400 to-blue-700 flex items-center justify-between px-3 shadow-md">
+      <header className="h-16 bg-linear-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-sky-700 dark:via-sky-950 dark:to-sky-900 flex items-center justify-between px-3 shadow-md">
         <div
           onClick={goToHome}
           className="cursor-pointer select-none"
         >
-          <span className="text-xl text-blue-950 dark:text-gray-800 font-bold">
+          <span className="text-xl text-blue-950 dark:text-gray-950 font-bold">
             Sympto
           </span>
           <span className="text-xl text-sky-600 dark:text-gray-300 font-bold">
@@ -111,13 +111,13 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
 
       {/* ================= NAV BAR ================= */}
       {!shouldHideNav&& (
-        <nav className="h-16 bg-blue-100 dark:bg-gray-200 flex items-center justify-between px-6 shadow">
+        <nav className="h-16 bg-linear-to-r from-blue-100 via-blue-300 to-blue-200 dark:from-sky-600 dark:via-sky-900 dark:to-cyan-900 flex items-center justify-between px-6 shadow">
           <div className="flex items-center">
             <span className="text-xl text-blue-950 dark:text-gray-950 font-bold">
               Guiding Your Path
             </span>
             &ensp;
-            <span className="text-xl text-blue-500 dark:text-gray-500 font-bold">
+            <span className="text-xl text-blue-500 dark:text-gray-300 font-bold">
               From Concern to Calm
             </span>
           </div>
@@ -125,9 +125,9 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
           {/* SIGN IN / BACK */}
           <button
             onClick={handleSignInClick}
-            className="px-6 h-11 rounded-lg font-semibold text-white
-                       bg-gradient-to-r from-blue-500 to-blue-700
-                       hover:from-blue-600 hover:to-blue-800
+            className="px-6 h-11 rounded-lg font-semibold text-white 
+                       bg-linear-to-r from-blue-600 to-blue-400 hover:from-blue-300 hover:to-blue-600 dark:from-blue-900 dark:to-blue-600
+                       dark:hover:from-blue-600 dark:hover:to-gray-800
                        transition-all"
           >
             {location.pathname.startsWith("/registrationlogin")}
