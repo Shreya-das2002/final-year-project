@@ -155,18 +155,6 @@ export const getDoctorListApi = async (
   return response.data.data;
 };
 
-/* ================= GET HOMEPAGE DOCTORS ================= */
-
-export const getHomepageDoctorsApi = async () => {
-
-  const response = await API.get(
-    urls.getHomepageDoctorsUrl
-  );
-
-  return response.data.data;
-
-};
-
 /* ================= UPSERT SLOT API ================= */
 
 export const upsertSlotApi = (

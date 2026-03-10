@@ -487,7 +487,6 @@ export const urls ={
   getPendingDoctorsUrl: 'doctor/pending-doctors',
   updateDoctorStatusUrl: 'doctor/update-status',
   getDoctorListUrl: 'doctor/doctor-list',
-  getHomepageDoctorsUrl: 'doctor/homepage-doctors',
   applyDoctorUrl: 'apply-doctor',
   docProfileUrl: 'doctor/profile',
   adminProfileUrl: 'admin/profile',
