@@ -3,13 +3,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaRegCalendarAlt, FaRegClock } from "react-icons/fa";
 import {FiLogIn} from "react-icons/fi";
 import Theme from "../Theme/Theme";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
+import { logout } from "../../../../store/slices/authSlice";
 
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
 
 
@@ -18,8 +20,10 @@ const Header: React.FC = () => {
 
   /* ---------- HOME ---------- */
   const goToHome = () => {
-    navigate("/");
-  };
+  localStorage.removeItem("token");
+  dispatch(logout());    
+  navigate("/");
+};
 
 
 
@@ -108,20 +112,19 @@ const Header: React.FC = () => {
   </div>
 
   {/* SIGN IN / BACK */}
-    {!user && (
-    <button
-  onClick={handleSignInClick}
-  className="flex items-center gap-2 px-6 h-11 rounded-lg font-semibold text-white 
-             bg-linear-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-800 
-             dark:from-blue-800 dark:to-blue-700
-             dark:hover:from-blue-900 dark:hover:to-blue-950
-             transition-all"
->
-  <FiLogIn />
-  <span>Sign In</span>
-</button>
+    {(!user || Object.keys(user).length === 0) && (
+  <button
+    onClick={handleSignInClick}
+    className="flex items-center gap-2 px-6 h-11 rounded-lg font-semibold text-white 
+               bg-linear-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-800 
+               dark:from-blue-800 dark:to-blue-700
+               dark:hover:from-blue-900 dark:hover:to-blue-950
+               transition-all"
+  >
+    <FiLogIn />
+    <span>Sign In</span>
+  </button>
 )}
-
 </div>
       </header>
 
