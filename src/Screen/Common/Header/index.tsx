@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaRegCalendarAlt, FaRegClock } from "react-icons/fa";
+import { FaRegCalendarAlt, FaRegClock, FiLogIn } from "react-icons/fa";
 import Theme from "../Theme/Theme";
 
 
@@ -78,6 +78,11 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
           <span className="text-xl text-sky-600 dark:text-gray-300 font-bold">
             Nexus
           </span>
+        
+          <h6 className=" text-sky-900 dark:text-white">
+            Guiding Your Path, From Concern to Calm
+          </h6>
+          
         </div>
 
       {/* RIGHT NAV ITEMS */}
@@ -106,24 +111,9 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
     <span className="whitespace-nowrap">{time}</span>
   </div>
 
-</div>
-      </header>
+  {/* SIGN IN / BACK */}
 
-      {/* ================= NAV BAR ================= */}
-      {!shouldHideNav&& (
-        <nav className="h-16 bg-linear-to-r from-blue-100 via-blue-300 to-blue-200 dark:from-sky-600 dark:via-sky-900 dark:to-cyan-900 flex items-center justify-between px-6 shadow">
-          <div className="flex items-center">
-            <span className="text-xl text-blue-950 dark:text-gray-950 font-bold">
-              Guiding Your Path
-            </span>
-            &ensp;
-            <span className="text-xl text-blue-500 dark:text-gray-300 font-bold">
-              From Concern to Calm
-            </span>
-          </div>
-
-          {/* SIGN IN / BACK */}
-          <button
+            <button
             onClick={handleSignInClick}
             className="px-6 h-11 rounded-lg font-semibold text-white 
                        bg-linear-to-r from-blue-600 to-blue-400 hover:from-blue-300 hover:to-blue-600 dark:from-blue-900 dark:to-blue-600
@@ -133,8 +123,12 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
             {location.pathname.startsWith("/registrationlogin")}
             Sign In
           </button>
-        </nav>
-      )}
+
+</div>
+      </header>
+
+      {/* ================= NAV BAR ================= */}
+
     </div>
   );
 };

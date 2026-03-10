@@ -1,8 +1,9 @@
 import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping } from "react-icons/fa";
-
+import { useNavigate } from "react-router-dom";
 
 
 const Cards = () => {
+      const navigate = useNavigate();
 
     
 
@@ -34,13 +35,16 @@ const Cards = () => {
     transition-transform duration-300
     group-hover:-translate-y-1
     group-hover:shadow-xl
-  ">
+  "
+    onClick={() => navigate("/patient/symptom_checker")}
+  >
 
     <FaClipboardCheck className="text-gray-800 dark:text-blue-950 text-4xl mx-auto mb-4" />
 
     <h3 className="text-gray-700 font-bold text-lg mb-3">
       Symptom Checker
     </h3>
+
 
     <p className="text-gray-600 ">
       Understand possible conditions based on your symptoms and get next-step guidance.
