@@ -1,4 +1,4 @@
-import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping, FaUser, FaStethoscope, FaFileMedical } from "react-icons/fa";
+import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping } from "react-icons/fa";
 
 
 
