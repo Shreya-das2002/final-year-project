@@ -28,7 +28,7 @@ const Theme: React.FC = () => {
         w-10 h-10 rounded-full
         border transition-all duration-300
         
-        bg-blue-50 text-blue-600 border-blue-300
+        bg-blue-50 text-blue-700 border-blue-300
         hover:bg-blue-100
         
         dark:bg-slate-800 dark:text-yellow-300 dark:border-slate-600
