@@ -3,11 +3,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaRegCalendarAlt, FaRegClock } from "react-icons/fa";
 import {FiLogIn} from "react-icons/fi";
 import Theme from "../Theme/Theme";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../store/store";
 
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useSelector((state: RootState) => state.auth.user);
+
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -59,7 +63,7 @@ const Header: React.FC = () => {
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-linear-to-r from-blue-100 via-blue-300 to-blue-600 dark:from-sky-700 dark:via-sky-950 dark:to-sky-900 flex items-center justify-between px-3 shadow-md">
+      <header className="h-16 bg-linear-to-r from-blue-100 via-blue-300 to-blue-600 dark:from-sky-700 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
         <div
           onClick={goToHome}
           className="cursor-pointer select-none"
@@ -104,18 +108,19 @@ const Header: React.FC = () => {
   </div>
 
   {/* SIGN IN / BACK */}
-
+    {!user && (
     <button
   onClick={handleSignInClick}
   className="flex items-center gap-2 px-6 h-11 rounded-lg font-semibold text-white 
-             bg-linear-to-r from-blue-600 to-blue-400 hover:from-blue-300 hover:to-blue-600 
-             dark:from-blue-900 dark:to-blue-600
-             dark:hover:from-blue-600 dark:hover:to-gray-800
+             bg-linear-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-800 
+             dark:from-blue-800 dark:to-blue-700
+             dark:hover:from-blue-900 dark:hover:to-blue-950
              transition-all"
 >
   <FiLogIn />
   <span>Sign In</span>
 </button>
+)}
 
 </div>
       </header>
