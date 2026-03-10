@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaRegCalendarAlt, FaRegClock, FiLogIn } from "react-icons/fa";
+import { FaRegCalendarAlt, FaRegClock } from "react-icons/fa";
+import {FiLogIn} from "react-icons/fi";
 import Theme from "../Theme/Theme";
 
 
@@ -16,15 +17,6 @@ const Header: React.FC = () => {
     navigate("/");
   };
 
-  const hideNavOnRoutes = [
-  "/patient",
-  "/doctor",
-  "/admin",
-];
-
-const shouldHideNav = hideNavOnRoutes.some((path) =>
-  location.pathname.startsWith(path)
-);
 
 
   /* ---------- SIGN IN TOGGLE ---------- */
@@ -67,7 +59,7 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-linear-to-r from-blue-100 via-blue-400 to-blue-700 dark:from-sky-700 dark:via-sky-950 dark:to-sky-900 flex items-center justify-between px-3 shadow-md">
+      <header className="h-16 bg-linear-to-r from-blue-100 via-blue-300 to-blue-600 dark:from-sky-700 dark:via-sky-950 dark:to-sky-900 flex items-center justify-between px-3 shadow-md">
         <div
           onClick={goToHome}
           className="cursor-pointer select-none"
@@ -79,7 +71,7 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
             Nexus
           </span>
         
-          <h6 className=" text-sky-900 dark:text-white">
+          <h6 className=" text-sky-900 text-xs pt-1 dark:text-white">
             Guiding Your Path, From Concern to Calm
           </h6>
           
@@ -113,16 +105,17 @@ const shouldHideNav = hideNavOnRoutes.some((path) =>
 
   {/* SIGN IN / BACK */}
 
-            <button
-            onClick={handleSignInClick}
-            className="px-6 h-11 rounded-lg font-semibold text-white 
-                       bg-linear-to-r from-blue-600 to-blue-400 hover:from-blue-300 hover:to-blue-600 dark:from-blue-900 dark:to-blue-600
-                       dark:hover:from-blue-600 dark:hover:to-gray-800
-                       transition-all"
-          >
-            {location.pathname.startsWith("/registrationlogin")}
-            Sign In
-          </button>
+    <button
+  onClick={handleSignInClick}
+  className="flex items-center gap-2 px-6 h-11 rounded-lg font-semibold text-white 
+             bg-linear-to-r from-blue-600 to-blue-400 hover:from-blue-300 hover:to-blue-600 
+             dark:from-blue-900 dark:to-blue-600
+             dark:hover:from-blue-600 dark:hover:to-gray-800
+             transition-all"
+>
+  <FiLogIn />
+  <span>Sign In</span>
+</button>
 
 </div>
       </header>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
 
 const Theme: React.FC = () => {
-  const [theme, setTheme] = useState<string>(
+  const [theme, setTheme] = useState(
     localStorage.getItem("theme") || "light"
   );
 
@@ -12,6 +12,7 @@ const Theme: React.FC = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
+
     localStorage.setItem("theme", theme);
   }, [theme]);
 
@@ -22,20 +23,23 @@ const Theme: React.FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className={`relative flex items-center w-16 h-8 rounded-full transition-colors duration-300 
-      ${theme === "dark" ? "bg-gray-600" : "bg-gray-50"}`}
+      className="
+        flex items-center justify-center
+        w-10 h-10 rounded-full
+        border transition-all duration-300
+        
+        bg-blue-50 text-blue-600 border-blue-300
+        hover:bg-blue-100
+        
+        dark:bg-slate-800 dark:text-yellow-300 dark:border-slate-600
+        dark:hover:bg-slate-700
+      "
     >
-      {/* Sliding Circle */}
-      <span
-        className={`absolute flex items-center justify-center w-7 h-7 rounded-full shadow-md transform transition-transform duration-300
-        ${theme === "dark" ? "translate-x-8  bg-indigo-400  " : "translate-x-1  bg-yellow-400 "}`}
-      >
-        {theme === "dark" ? (
-          <MoonIcon className="w-4 h-4 text-white" />
-        ) : (
-          <SunIcon className="w-4 h-4 text-white" />
-        )}
-      </span>
+      {theme === "dark" ? (
+        <SunIcon className="w-5 h-5" />
+      ) : (
+        <MoonIcon className="w-5 h-5" />
+      )}
     </button>
   );
 };

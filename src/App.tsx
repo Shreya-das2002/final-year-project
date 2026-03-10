@@ -7,7 +7,6 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  useLocation,
 } from "react-router-dom";
 
 import Header from "./Screen/Common/Header";
@@ -58,12 +57,8 @@ import SlotAvailability from "./Screen/Admin/SlotAvailability";
 
 const AppLayout: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const location = useLocation();
 
-  const hideNavOnRoutes = ["/patient", "/doctor", "/admin"];
-  const shouldHideNav = hideNavOnRoutes.some(path =>
-    location.pathname.startsWith(path)
-  );
+
 
   /* ---------- AUTH BOOTSTRAP ---------- */
   useEffect(() => {
@@ -136,7 +131,7 @@ const AppLayout: React.FC = () => {
       <Header />
 
       {/* CONTENT AREA */}
-      <div className={`${shouldHideNav ? "pt-16" : "pt-32"} pb-12 h-full flex`}>
+      <div className= " pt-16 pb-12 h-full flex">
         <main className="flex-1 overflow-y-auto">
           <Routes>
             {/* PUBLIC */}
