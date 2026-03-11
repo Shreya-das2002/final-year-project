@@ -494,7 +494,7 @@ export const urls ={
   docProfileUrl: 'doctor/profile',
   adminProfileUrl: 'admin/profile',
   slotBookingUrl: 'doctor/slot-booking',
-
+  dashboardCountUrl: "/dashboard-count",
 }
 
 

@@ -2,18 +2,35 @@ import Cards from "./Cards";
 import logo from "../../assets/logo_2.0.png";   
 import new_background from "../../assets/new_background.png";
 import { FiArrowRight,FiUsers, FiAward, FiShield, FiClock } from "react-icons/fi";  
- 
-
+import { useState, useEffect, useRef } from "react";
+import{ getDashboardCountApi} from "../../services/homepageCountApi";
 
 const HomePage: React.FC = () => {
 
+  const [patientCount, setPatientCount] = useState(0);
+const [doctorCount, setDoctorCount] = useState(0);
 
+const hasFetched = useRef(false);
 
+useEffect(() => {
 
+  if (hasFetched.current) return;
 
+  hasFetched.current = true;
 
+  const fetchCounts = async () => {
+    try {
+      const data = await getDashboardCountApi();
+      setPatientCount(data.patientCount);
+      setDoctorCount(data.doctorCount);
+    } catch (error) {
+      console.error("COUNT FETCH ERROR:", error);
+    }
+  };
 
+  fetchCounts();
 
+}, []);
 
 
     return (
@@ -99,7 +116,7 @@ const HomePage: React.FC = () => {
           </div>
 
           <h2 className="text-gray-900 text-2xl font-bold flex items-center justify-center ">
-            50,000+
+            {patientCount}+
           </h2>
 
           <p className="text-gray-800  flex items-center justify-center">Patient Served</p>
@@ -115,7 +132,7 @@ const HomePage: React.FC = () => {
             </div>
 
             <h2 className="text-gray-900 text-2xl font-bold flex items-center justify-center ">
-            500+
+            {doctorCount}+
             </h2>
 
             <p className="text-gray-800  flex items-center justify-center">Certified Doctors</p>
