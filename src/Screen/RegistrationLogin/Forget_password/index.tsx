@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { getRoleFromUrl } from "../../../Environment";
 import type { Role } from "../../../Environment";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import {
+  getPasswordStrength,
+  doPasswordsMatch,
+  isStrongPassword
+} from "../../../Environment";
 import {
   sendOtpApi,
   verifyOtpApi,
@@ -13,7 +19,6 @@ const ForgotPassword: React.FC = () => {
 
   const location = useLocation();
 
-  // ROLE FROM URL
   const selected: Role = getRoleFromUrl(location.search);
 
   const [step, setStep] = useState(1);
@@ -24,8 +29,15 @@ const ForgotPassword: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
+
+  /* PASSWORD HELPERS */
+  const passwordStrength = getPasswordStrength(password);
+  const passwordsMatch = doPasswordsMatch(password, confirmPassword);
 
   /* ================= SEND OTP ================= */
 
@@ -126,7 +138,12 @@ const ForgotPassword: React.FC = () => {
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (!isStrongPassword(password)) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    if (!passwordsMatch) {
       toast.error("Passwords do not match");
       return;
     }
@@ -174,8 +191,6 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <div>
-
-      {/* HEADING */}
 
       <h2 className="text-2xl text-center mb-6 text-blue-600 dark:text-gray-100 font-bold">
         Reset {selected.charAt(0).toUpperCase() + selected.slice(1)} Password
@@ -240,41 +255,87 @@ const ForgotPassword: React.FC = () => {
         {/* STEP 3 PASSWORD */}
 
         {step === 3 && (
-          <>
+          <div>
             <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
               New Password
             </label>
+              <div>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                disabled={loading}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter new password"
+                className="w-full px-4 py-2 rounded-full border"
+              />
 
-            <input
-              type="password"
-              value={password}
-              disabled={loading}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-full border"
-              placeholder="Enter new password"
-            />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              >
+                {showPassword ? (
+                  <EyeIcon className="w-5 h-5" />
+                ) : (
+                  <EyeSlashIcon className="w-5 h-5" />
+                )}
+              </button>
+              </div>
+            {password && (
+  <div className="flex justify-end mt-1 pr-3">
+    <span className="text-sm text-gray-500">
+      {passwordStrength}
+    </span>
+  </div>
+)}
+            </div>
 
-            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
+            
+
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300 mt-3">
               Confirm Password
             </label>
 
-            <input
-              type="password"
-              value={confirmPassword}
-              disabled={loading}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-full border"
-              placeholder="Confirm new password"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                disabled={loading}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                className="w-full px-4 py-2 rounded-full border"
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              >
+                {showConfirmPassword ? (
+                  <EyeIcon className="w-5 h-5" />
+                ) : (
+                  <EyeSlashIcon className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+
+            {confirmPassword && !passwordsMatch && (
+              <p className="text-sm text-red-500 pl-3 mt-1">
+                Passwords do not match
+              </p>
+            )}
 
             <button
               onClick={handleResetPassword}
               disabled={loading}
-              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
+              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold mt-4"
             >
               Reset Password
             </button>
-          </>
+          </div>
         )}
 
         {/* BACK LINK */}
