@@ -76,9 +76,9 @@ const Header: React.FC = () => {
   className="cursor-pointer select-none"
 >
   <div className="flex items-center gap-1">
-    
+    <div className="dark:bg-slate-300 rounded-xl">
     <img src={logo} alt="SymptoNexus Logo" className="w-10 h-10" />
-
+      </div>
     <div>
       <span className="text-2xl text-blue-950 dark:text-gray-900 font-bold">
         Sympto

@@ -43,8 +43,8 @@ const Cards = () => {
   <div className="relative group rounded-xl cursor-pointer">
     <div className="bg-gradient-to-r from-emerald-200 to-cyan-700 shadow-lg rounded-xl p-8 h-70 w-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
       
-      <div className="inline-flex items-center justify-center bg-teal-50 border border-blue-300 rounded-xl p-4 mb-4 transition-all duration-300 group-hover:scale-110">
-        <FaHeartbeat className="text-teal-950 dark:text-green-950 text-4xl" />
+      <div className="inline-flex items-center justify-center bg-teal-50 border dark:bg-cyan-950 border-blue-300 rounded-xl p-4 mb-4 transition-all duration-300 group-hover:scale-110">
+        <FaHeartbeat className="text-cyan-950 dark:text-gray-200 dark:bg-cyan-950 text-4xl" />
       </div>
 
       <h3 className="text-neutral-950 font-semibold text-3xl mb-3">
