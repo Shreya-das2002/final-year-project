@@ -52,6 +52,7 @@ import SpDoctorList from "./Screen/Patient/Appointments/DoctorList";
 import AdminProfileView from "./Screen/Admin/AdminProfile/AdminViewProfile";
 import AdminEditProfile from "./Screen/Admin/AdminProfile/AdminEditProfile";
 import SlotAvailability from "./Screen/Admin/SlotAvailability";
+import Forgotpassword from "./Screen/RegistrationLogin/Forget_password";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -146,6 +147,7 @@ const AppLayout: React.FC = () => {
             <Route path="/registrationlogin" element={<RegistrationLogin />}>
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
+              <Route path="forgot-password" element={<Forgotpassword/>} />
             </Route>
 
             {/* PATIENT */}
