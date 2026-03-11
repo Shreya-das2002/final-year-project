@@ -1,8 +1,20 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { getRoleFromUrl } from "../../../Environment";
+import type { Role } from "../../../Environment";
+import {
+  sendOtpApi,
+  verifyOtpApi,
+  resetPasswordApi
+} from "../../../services/authApi";
 import toast from "react-hot-toast";
 
-const Forgotpassword = () => {
+const ForgotPassword: React.FC = () => {
+
+  const location = useLocation();
+
+  // ROLE FROM URL
+  const selected: Role = getRoleFromUrl(location.search);
 
   const [step, setStep] = useState(1);
 
@@ -13,43 +25,68 @@ const Forgotpassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(false);
 
   /* ================= SEND OTP ================= */
 
   const handleSendOtp = async () => {
 
+    if (!email) {
+      toast.error("Please enter email");
+      return;
+    }
+
+    setLoading(true);
+
     try {
 
-      const res = await axios.post("/api/auth/send-otp", {
-        email
+      const res = await sendOtpApi({
+        email,
+        role: selected
       });
 
       if (res.data.success) {
 
         setToken(res.data.data.token);
 
-        toast.success("OTP sent to email");
+        toast.success("OTP sent successfully");
 
         setStep(2);
 
+      } else {
+
+        toast.error(res.data.message || "Failed to send OTP");
+
       }
 
-    } catch {
+    } catch (error) {
 
-      toast.error("Failed to send OTP");
+      console.error("SEND OTP ERROR:", error);
+
+      toast.error("Server error");
+
+    } finally {
+
+      setLoading(false);
 
     }
 
   };
 
-
   /* ================= VERIFY OTP ================= */
 
   const handleVerifyOtp = async () => {
 
+    if (!otp) {
+      toast.error("Enter OTP");
+      return;
+    }
+
+    setLoading(true);
+
     try {
 
-      const res = await axios.post("/api/auth/verify-otp", {
+      const res = await verifyOtpApi({
         otp,
         token
       });
@@ -60,24 +97,45 @@ const Forgotpassword = () => {
 
         setStep(3);
 
+      } else {
+
+        toast.error(res.data.message || "Invalid OTP");
+
       }
 
-    } catch {
+    } catch (error) {
 
-      toast.error("Invalid OTP");
+      console.error("VERIFY OTP ERROR:", error);
+
+      toast.error("Verification failed");
+
+    } finally {
+
+      setLoading(false);
 
     }
 
   };
 
-
   /* ================= RESET PASSWORD ================= */
 
   const handleResetPassword = async () => {
 
+    if (!password || !confirmPassword) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+
     try {
 
-      const res = await axios.post("/api/auth/reset-password", {
+      const res = await resetPasswordApi({
         password,
         confirmPassword,
         token
@@ -89,140 +147,151 @@ const Forgotpassword = () => {
 
         setStep(1);
 
+        setEmail("");
+        setOtp("");
+        setPassword("");
+        setConfirmPassword("");
+
+      } else {
+
+        toast.error(res.data.message || "Reset failed");
+
       }
 
-    } catch {
+    } catch (error) {
 
-      toast.error("Password reset failed");
+      console.error("RESET PASSWORD ERROR:", error);
+
+      toast.error("Server error");
+
+    } finally {
+
+      setLoading(false);
 
     }
 
   };
 
-
-
   return (
+    <div>
 
-    <div className="flex items-center justify-center  ">
+      {/* HEADING */}
 
-      <div className= "p-8 rounded-xl ">
+      <h2 className="text-2xl text-center mb-6 text-blue-600 dark:text-gray-100 font-bold">
+        Reset {selected.charAt(0).toUpperCase() + selected.slice(1)} Password
+      </h2>
 
-        <h2 className="text-2xl font-semibold text-center mb-2">
-          Reset Patient Password
-        </h2>
-
-        <p className="text-center text-gray-500 mb-6">
-          Enter your email address and we'll send you OTP in email address
-        </p>
-
+      <div className="space-y-4">
 
         {/* STEP 1 EMAIL */}
 
         {step === 1 && (
-
-          <div className="flex flex-col gap-4">
-
-            <label className="font-medium">
-              Email Address
+          <>
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
+              Email
             </label>
 
             <input
               type="email"
-              placeholder="Enter your registered email"
-              className="border rounded-lg p-3"
               value={email}
+              disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 rounded-full border"
+              placeholder="Enter your registered email"
             />
 
             <button
               onClick={handleSendOtp}
-              className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+              disabled={loading}
+              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
             >
-              Send OTP
+              {loading ? "Sending..." : "Send OTP"}
             </button>
-
-          </div>
-
+          </>
         )}
-
-
 
         {/* STEP 2 OTP */}
 
         {step === 2 && (
-
-          <div className="flex flex-col gap-4">
-
-            <label className="font-medium">
-              Verification Code
+          <>
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
+              Enter OTP
             </label>
 
             <input
               type="text"
-              placeholder="Enter OTP"
-              className="border rounded-lg p-3"
               value={otp}
+              disabled={loading}
               onChange={(e) => setOtp(e.target.value)}
+              className="w-full px-4 py-2 rounded-full border"
+              placeholder="Enter verification code"
             />
 
             <button
               onClick={handleVerifyOtp}
-              className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+              disabled={loading}
+              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
             >
               Verify OTP
             </button>
-
-          </div>
-
+          </>
         )}
-
-
 
         {/* STEP 3 PASSWORD */}
 
         {step === 3 && (
-
-          <div className="flex flex-col gap-4">
-
-            <label className="font-medium">
+          <>
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
               New Password
             </label>
 
             <input
               type="password"
-              className="border rounded-lg p-3"
               value={password}
+              disabled={loading}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 rounded-full border"
+              placeholder="Enter new password"
             />
 
-            <label className="font-medium">
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
               Confirm Password
             </label>
 
             <input
               type="password"
-              className="border rounded-lg p-3"
               value={confirmPassword}
+              disabled={loading}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-2 rounded-full border"
+              placeholder="Confirm new password"
             />
 
             <button
               onClick={handleResetPassword}
-              className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+              disabled={loading}
+              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
             >
               Reset Password
             </button>
-
-          </div>
-
+          </>
         )}
+
+        {/* BACK LINK */}
+
+        <div className="text-right mt-1">
+          <Link
+            to={`/registrationlogin/login?role=${selected}`}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Back to Login
+          </Link>
+        </div>
 
       </div>
 
     </div>
-
   );
-
 };
 
-export default Forgotpassword;
+export default ForgotPassword;
