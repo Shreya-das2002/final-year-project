@@ -1,4 +1,4 @@
-import { FaClipboardCheck, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping } from "react-icons/fa";
+import { FaSearchPlus, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 
@@ -8,71 +8,53 @@ const Cards = () => {
     
 
     return (
-        <div className="bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200">
+        <div className="bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
 
-        <h1 className="text-4xl pt-7 font-bold text-center text-indigo-700 dark:text-gray-300 mb-3">
-            Why Choose SymptoNexus 
+        <h1 className="text-6xl pt-7 font-bold text-center text-indigo-700 dark:text-gray-100 mb-3">
+            Comprehensive Healthcare Features 
         </h1>
 
-    <div className="grid gap-6 md:grid-cols-3 p-8 bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200 dark:bg-gray-800">
-        
-        <div className="relative group rounded-xl cursor-pointer">
-
-  {/* Glow Layer */}
-  <div className="
-    absolute -inset-[2px]
-    bg-gradient-to-r from-zinc-500 to-stone-500
-    rounded-xl
-    blur-md
-    opacity-0
-    group-hover:opacity-100
-    transition duration-500
-  "></div>
+    <div className="grid gap-6 md:grid-cols-3 p-8 ">
 
   {/* Card */}
-  <div className="
-    relative
-    bg-gradient-to-r from-zinc-200 to-stone-400
-    shadow-lg
-    rounded-xl
-    p-6
-    text-center
-    transition-transform duration-300
-    group-hover:-translate-y-1
-    group-hover:shadow-xl
+  <div className="group relative
+  bg-gradient-to-r from-zinc-200 to-stone-400
+  shadow-lg
+  rounded-xl
+  h-80 w-110
+  p-8
+  transition-all duration-300
+  hover:shadow-2xl hover:-translate-y-2
+  cursor-pointer
   "
     onClick={() => navigate("/patient/symptom_checker")}
   >
+  <div>
+    <div className="inline-flex items-center justify-center bg-zinc-100 border border-zinc-300 rounded-xl 
+    p-4 mb-4
+    transition-all duration-300
+    group-hover:scale-110">
+      <FaSearchPlus className="text-black dark:text-blue-950 text-4xl" />
+    </div>
+  </div>
 
-    <FaClipboardCheck className="text-gray-800 dark:text-blue-950 text-4xl mx-auto mb-4" />
-
-    <h3 className="text-gray-700 font-bold text-lg mb-3">
+    <h3 className="text-neutral-950 font-bold text-2xl mb-3 ">
       Smart Symptom Insights
     </h3>
 
 
-    <p className="text-gray-600 text-justify ">
+    <p className="text-neutral-800 text-justify ">
       Understand your symptoms with clear and structured health information using our AI-powered symptom checker.
     </p>
 
   </div>
 
-</div>
+
     <div className="relative group rounded-xl cursor-pointer">
 
-  {/* Glow Layer */}
-  <div className="
-    absolute -inset-[2px]
-    bg-gradient-to-r from-indigo-500 to-sky-500
-    rounded-xl
-    blur-md
-    opacity-0
-    group-hover:opacity-100
-    transition duration-500
-  "></div>
-        <div className="bg-gradient-to-r from-indigo-200 to-sky-400  shadow-lg rounded-xl p-6 text-center transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
+        <div className="bg-gradient-to-r from-indigo-200 to-sky-400  shadow-lg rounded-xl p-6 h-80 w-110 text-center transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
         <FaHeartbeat className="text-blue-800 dark:text-green-950 text-4xl mx-auto mb-4" />
-        <h3 className="text-blue-700 dark:text-green-900 font-bold text-lg mb-3">
+        <h3 className="text-blue-700 dark:text-green-900 font-bold text-xl mb-3">
             Safe Remedies
         </h3>
         <p className="text-justify text-blue-600 dark:text-green-800">
@@ -83,19 +65,9 @@ const Cards = () => {
 
 <div className="relative group rounded-xl cursor-pointer">
 
-  {/* Glow Layer */}
-  <div className="
-    absolute -inset-[2px]
-    bg-gradient-to-r from-purple-500 to-violet-500
-    rounded-xl
-    blur-md
-    opacity-0
-    group-hover:opacity-100
-    transition duration-500
-  "></div>
-        <div className="bg-gradient-to-r from-purple-200 to-violet-400 dark:bg-gray-800 shadow-lg rounded-xl p-6 text-center transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
-        <FaUserMd className="text-purple-800 dark:text-purple-950 text-4xl mx-auto mb-4" />
-        <h3 className="text-purple-700 dark:text-purple-900 font-bold text-lg mb-3">
+        <div className="bg-gradient-to-r from-purple-200 to-violet-400 dark:bg-gray-800 shadow-lg rounded-xl p-6 h-80 w-110 text-left transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
+        <FaUserMd className="text-purple-800 dark:text-purple-950 text-4xl mx-auto mb-4 " />
+        <h3 className="text-purple-700 dark:text-purple-900 font-bold text-xl mb-3">
             Doctor Consultation
         </h3>
         <p className="text-justify text-purple-600 dark:text-purple-800">
@@ -106,7 +78,7 @@ const Cards = () => {
 
     </div>
 
-    <div className="py-14 px-6 bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200 dark:bg-gray-800">
+    <div className="py-14 px-6 bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
         <h2 className="text-2xl font-bold text-center text-blue-600 dark:text-gray-300 mb-10">
         How SymptoNexus Works
         </h2>
