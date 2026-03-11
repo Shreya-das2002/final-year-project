@@ -28,11 +28,11 @@ const Theme: React.FC = () => {
         w-10 h-10 rounded-full
         border transition-all duration-300
         
-        bg-blue-50 text-blue-700 border-blue-300
+        bg-blue-50 text-cyan-700 border-blue-50
         hover:bg-blue-100
         
-        dark:bg-slate-800 dark:text-yellow-300 dark:border-slate-600
-        dark:hover:bg-slate-700
+        dark:bg-cyan-900 dark:text-yellow-300 dark:border-cyan-900
+        dark:hover:bg-cyan-950
       "
     >
       {theme === "dark" ? (

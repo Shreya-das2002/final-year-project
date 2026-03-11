@@ -67,15 +67,15 @@ const Header: React.FC = () => {
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-linear-to-r from-blue-100 via-blue-300 to-blue-600 dark:from-sky-700 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
+      <header className="h-16 bg-linear-to-r from-sky-100 via-cyan-600 to-cyan-800 dark:from-sky-700 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
         <div
           onClick={goToHome}
           className="cursor-pointer select-none"
         >
-          <span className="text-xl text-blue-950 dark:text-gray-950 font-bold">
+          <span className="text-2xl text-blue-950 dark:text-gray-900 font-bold">
             Sympto
           </span>
-          <span className="text-xl text-sky-600 dark:text-gray-300 font-bold">
+          <span className="text-2xl text-sky-600 dark:text-gray-300 font-bold">
             Nexus
           </span>
         
@@ -103,7 +103,7 @@ const Header: React.FC = () => {
   </div>
 
   {/* TIME */}
-  <div className="w-36 flex items-center gap-3">
+  <div className="w-36 flex pl-3 items-center gap-3">
     <span className="bg-white/30 p-2 rounded-full ">
       <FaRegClock className="text-lg" />
     </span>
@@ -116,9 +116,9 @@ const Header: React.FC = () => {
   <button
     onClick={handleSignInClick}
     className="flex items-center gap-2 px-6 h-11 rounded-lg font-semibold text-white 
-               bg-linear-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-800 
-               dark:from-blue-800 dark:to-blue-700
-               dark:hover:from-blue-900 dark:hover:to-blue-950
+               bg-linear-to-r from-sky-500 to-cyan-700 hover:from-sky-600 hover:to-cyan-900 
+               dark:from-sky-800 dark:to-sky-900
+               dark:hover:from-sky-700 dark:hover:to-sky-800
                transition-all"
   >
     <FiLogIn />
