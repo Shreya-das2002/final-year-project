@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
 import Cards from "./Cards";
-
+import side_poster from "../../assets/side_poster.png";
 
 
 const HomePage: React.FC = () => {
@@ -14,29 +13,28 @@ const HomePage: React.FC = () => {
         <div className="min-w-full min-h-fit">
 
 
-        <div className="overflow-hidden bg-linear-to-r from-sky-300 via-sky-50 to-sky-300 dark:from-sky-900 dark:via-sky-950 dark:to-sky-900 py-4">
- 
+<div className="flex items-center justify-between px-20 py-16 bg-gradient-to-r from-blue-100  to-blue-300 dark:from-sky-700 dark:via-sky-800 dark:to-sky-950">
 
-    <p className="flex items-center justify between mx-40 text-7xl font-sans font-semibold text-blue-900 dark:text-gray-300">
-      Your<br />Symptoms, 
+  {/* Left Side Text */}
+  <div className="max-w-xl">
+    <h1 className="text-6xl font-semibold text-blue-800 dark:text-gray-300">
+      Your Symptoms,
+      <br />
+      <span className="text-blue-400 dark:text-gray-300">Our Responsibility</span>
+    </h1>
+
+    <p className="mt-6 text-blue-900 dark:text-gray-300">
+      Think of SymptoNexus as your first step to understanding and relief.
+      We provide helpful knowledge and connect you with doctors,
+      but never replace professional medical care or medication.
     </p>
+  </div>
 
-    <p className="flex items-center justify between mx-40 text-7xl font-sans font-semibold text-blue-400 dark:text-gray-300">
-        Our<br /> Responsibility 
+  {/* Right Side Image */}
+  <div className="bg-blue-200 p-1 rounded-md shadow ">
+    <img src={side_poster} alt="Side Poster" className="w-100 h-auto" />
+  </div>
 
-    </p>
-
-    <p className="flex items-center justify between px-20 py-16 pl-40 text-xl font-semibold text-blue-800 dark:text-gray-300">
-      Think of SymptoNexus as your first step to understanding and relief. <br />We
-      provide helpful knowledge and connect you with doctors, but never
-      replace <br />professional medical care or medication.
-    </p>
-
-    <div>
-
-    </div>
-
-  
 </div>
         <div>
             <Cards/>
