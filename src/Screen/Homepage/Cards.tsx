@@ -9,6 +9,11 @@ const Cards = () => {
 
     return (
         <div className="bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200">
+
+        <h1 className="text-4xl pt-7 font-bold text-center text-indigo-700 dark:text-gray-300 mb-3">
+            Why Choose SymptoNexus 
+        </h1>
+
     <div className="grid gap-6 md:grid-cols-3 p-8 bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200 dark:bg-gray-800">
         
         <div className="relative group rounded-xl cursor-pointer">
@@ -42,12 +47,12 @@ const Cards = () => {
     <FaClipboardCheck className="text-gray-800 dark:text-blue-950 text-4xl mx-auto mb-4" />
 
     <h3 className="text-gray-700 font-bold text-lg mb-3">
-      Symptom Checker
+      Smart Symptom Insights
     </h3>
 
 
-    <p className="text-gray-600 ">
-      Understand possible conditions based on your symptoms and get next-step guidance.
+    <p className="text-gray-600 text-justify ">
+      Understand your symptoms with clear and structured health information using our AI-powered symptom checker.
     </p>
 
   </div>
@@ -68,10 +73,10 @@ const Cards = () => {
         <div className="bg-gradient-to-r from-indigo-200 to-sky-400  shadow-lg rounded-xl p-6 text-center transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
         <FaHeartbeat className="text-blue-800 dark:text-green-950 text-4xl mx-auto mb-4" />
         <h3 className="text-blue-700 dark:text-green-900 font-bold text-lg mb-3">
-            Wellness Tips
+            Safe Remedies
         </h3>
-        <p className="text-blue-600 dark:text-green-800">
-            Learn lifestyle habits and prevention techniques for better well-being.
+        <p className="text-justify text-blue-600 dark:text-green-800">
+            Discover trusted home remedies and natural health tips that help manage common issues while minimizing the risk of side effects.
         </p>
         </div>
         </div>
@@ -93,8 +98,8 @@ const Cards = () => {
         <h3 className="text-purple-700 dark:text-purple-900 font-bold text-lg mb-3">
             Doctor Consultation
         </h3>
-        <p className="text-purple-600 dark:text-purple-800">
-            Connect with healthcare professionals for personalized medical support.
+        <p className="text-justify text-purple-600 dark:text-purple-800">
+            Connect with doctors when expert advice is needed, bridging basic health guidance with professional medical support. 
         </p>
         </div>
         </div>
