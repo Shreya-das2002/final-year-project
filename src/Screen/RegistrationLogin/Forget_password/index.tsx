@@ -103,16 +103,16 @@ const Forgotpassword = () => {
 
   return (
 
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center  ">
 
-      <div className="bg-white p-8 rounded-xl shadow-lg w-[420px]">
+      <div className= "p-8 rounded-xl ">
 
         <h2 className="text-2xl font-semibold text-center mb-2">
           Reset Patient Password
         </h2>
 
         <p className="text-center text-gray-500 mb-6">
-          Enter your email address and we'll send you a password reset link
+          Enter your email address and we'll send you OTP in email address
         </p>
 
 
