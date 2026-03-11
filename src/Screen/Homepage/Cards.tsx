@@ -8,75 +8,75 @@ const Cards = () => {
     
 
     return (
-        <div className="bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
+        <div className="bg-gradient-to-r from-gray-200 via-slate-50 to-gray-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
 
-        <h1 className="text-6xl pt-7 font-bold text-center text-indigo-700 dark:text-gray-100 mb-3">
-            Comprehensive Healthcare Features 
+        <h1 className="text-6xl pt-7 font-bold text-center text-cyan-800 dark:text-gray-100 mb-3">
+            Comprehensive Healthcare <br/> Features 
         </h1>
+        <p className="text-2xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-3">
+          Everything you need for better health management in one intelligent platform
+        </p >
 
-    <div className="grid gap-6 md:grid-cols-3 p-8 ">
+    <div className="grid gap-8 md:grid-cols-3 p-8 ">
 
   {/* Card */}
-  <div className="group relative
-  bg-gradient-to-r from-zinc-200 to-stone-400
-  shadow-lg
-  rounded-xl
-  h-80 w-110
-  p-8
-  transition-all duration-300
-  hover:shadow-2xl hover:-translate-y-2
-  cursor-pointer
-  "
+  <div className="group relative bg-gradient-to-r from-cyan-600 to-teal-200 shadow-lg rounded-xl p-8 h-70 w-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
     onClick={() => navigate("/patient/symptom_checker")}
   >
   <div>
-    <div className="inline-flex items-center justify-center bg-zinc-100 border border-zinc-300 rounded-xl 
-    p-4 mb-4
-    transition-all duration-300
-    group-hover:scale-110">
+    <div className="inline-flex items-center justify-center bg-cyan-50 border-blue-300 rounded-xl p-4 mb-4 transition-all duration-300 group-hover:scale-110">
       <FaSearchPlus className="text-black dark:text-blue-950 text-4xl" />
     </div>
   </div>
 
-    <h3 className="text-neutral-950 font-bold text-2xl mb-3 ">
+    <h3 className="text-neutral-950 font-semibold text-3xl mb-3 ">
       Smart Symptom Insights
     </h3>
 
 
-    <p className="text-neutral-800 text-justify ">
+    <p className="text-neutral-900 text-[17px]/7">
       Understand your symptoms with clear and structured health information using our AI-powered symptom checker.
     </p>
 
   </div>
 
+  <div className="relative group rounded-xl cursor-pointer">
+    <div className="bg-gradient-to-r from-emerald-200 to-cyan-700 shadow-lg rounded-xl p-8 h-70 w-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
+      
+      <div className="inline-flex items-center justify-center bg-teal-50 border border-blue-300 rounded-xl p-4 mb-4 transition-all duration-300 group-hover:scale-110">
+        <FaHeartbeat className="text-teal-950 dark:text-green-950 text-4xl" />
+      </div>
 
-    <div className="relative group rounded-xl cursor-pointer">
+      <h3 className="text-neutral-950 font-semibold text-3xl mb-3">
+        Safe Remedies
+      </h3>
 
-        <div className="bg-gradient-to-r from-indigo-200 to-sky-400  shadow-lg rounded-xl p-6 h-80 w-110 text-center transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
-        <FaHeartbeat className="text-blue-800 dark:text-green-950 text-4xl mx-auto mb-4" />
-        <h3 className="text-blue-700 dark:text-green-900 font-bold text-xl mb-3">
-            Safe Remedies
-        </h3>
-        <p className="text-justify text-blue-600 dark:text-green-800">
-            Discover trusted home remedies and natural health tips that help manage common issues while minimizing the risk of side effects.
-        </p>
-        </div>
-        </div>
-
-<div className="relative group rounded-xl cursor-pointer">
-
-        <div className="bg-gradient-to-r from-purple-200 to-violet-400 dark:bg-gray-800 shadow-lg rounded-xl p-6 h-80 w-110 text-left transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
-        <FaUserMd className="text-purple-800 dark:text-purple-950 text-4xl mx-auto mb-4 " />
-        <h3 className="text-purple-700 dark:text-purple-900 font-bold text-xl mb-3">
-            Doctor Consultation
-        </h3>
-        <p className="text-justify text-purple-600 dark:text-purple-800">
-            Connect with doctors when expert advice is needed, bridging basic health guidance with professional medical support. 
-        </p>
-        </div>
-        </div>
+      <p className="text-neutral-900 text-[17px]/7">
+        Discover trusted home remedies and natural health tips that help manage common issues while minimizing the risk of side effects.
+      </p>
 
     </div>
+  </div>
+
+  <div className="relative group rounded-xl cursor-pointer">
+    <div className="bg-gradient-to-r from-sky-200 to-teal-700 dark:bg-gray-800 shadow-lg rounded-xl p-8 h-70 w-full text-left transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
+
+      <div className="inline-flex items-center justify-center bg-cyan-50 border border-blue-300 rounded-xl p-4 mb-4 transition-all duration-300 group-hover:scale-110">
+        <FaUserMd className="text-emerald-950 dark:text-purple-950 text-4xl" />
+      </div>
+
+      <h3 className="text-neutral-950 font-semibold text-3xl mb-3">
+        Doctor Consultation
+      </h3>
+
+      <p className="text-neutral-900 text-[17px]/7">
+        Connect with doctors when expert advice is needed, bridging basic health guidance with professional medical support.
+      </p>
+
+    </div>
+  </div>
+
+  </div>
 
     <div className="py-14 px-6 bg-gradient-to-r from-sky-200 via-sky-50 to-sky-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
         <h2 className="text-2xl font-bold text-center text-blue-600 dark:text-gray-300 mb-10">
