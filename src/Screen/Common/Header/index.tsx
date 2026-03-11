@@ -6,6 +6,7 @@ import Theme from "../Theme/Theme";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { logout } from "../../../../store/slices/authSlice";
+import logo from "../../../assets/logo_2.0.png";
 
 
 const Header: React.FC = () => {
@@ -68,23 +69,30 @@ const Header: React.FC = () => {
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
       <header className="h-16 bg-linear-to-r from-sky-100 via-cyan-600 to-cyan-800 dark:from-sky-700 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
-        <div
-          onClick={goToHome}
-          className="cursor-pointer select-none"
-        >
-          <span className="text-2xl text-blue-950 dark:text-gray-900 font-bold">
-            Sympto
-          </span>
-          <span className="text-2xl text-sky-600 dark:text-gray-300 font-bold">
-            Nexus
-          </span>
         
-          <h6 className=" text-sky-900 text-xs pt-1 dark:text-white">
-            Guiding Your Path, From Concern to Calm
-          </h6>
-          
-        </div>
+       
+       <div
+  onClick={goToHome}
+  className="cursor-pointer select-none"
+>
+  <div className="flex items-center gap-1">
+    
+    <img src={logo} alt="SymptoNexus Logo" className="w-10 h-10" />
 
+    <div>
+      <span className="text-2xl text-blue-950 dark:text-gray-900 font-bold">
+        Sympto
+      </span>
+      <span className="text-2xl text-sky-600 dark:text-gray-300 font-bold">
+        Nexus
+      </span>
+
+      <p className="text-xs text-sky-900 pt-1 dark:text-white leading-none">
+        Guiding Your Path, From Concern to Calm
+      </p>
+    </div>
+    </div>
+  </div>
       {/* RIGHT NAV ITEMS */}
 <div className="flex items-center text-sm text-white font-medium pl-10">
 
