@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { getRoleFromUrl } from "../../../Environment";
 import type { Role } from "../../../Environment";
@@ -26,6 +26,9 @@ const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
 
+  const [timer, setTimer] = useState(300);
+  const [canResend, setCanResend] = useState(false);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -36,8 +39,40 @@ const ForgotPassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   /* PASSWORD HELPERS */
+
   const passwordStrength = getPasswordStrength(password);
   const passwordsMatch = doPasswordsMatch(password, confirmPassword);
+
+  /* TIMER EFFECT */
+
+  useEffect(() => {
+
+    if (step === 2 && timer > 0) {
+
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
+
+    }
+
+    if (timer === 0) {
+      setCanResend(true);
+    }
+
+  }, [timer, step]);
+
+  /* FORMAT TIMER */
+
+  const formatTime = (seconds: number) => {
+
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+
+  };
 
   /* ================= SEND OTP ================= */
 
@@ -65,6 +100,9 @@ const ForgotPassword: React.FC = () => {
 
         setStep(2);
 
+        setTimer(300);
+        setCanResend(false);
+
       } else {
 
         toast.error(res.data.message || "Failed to send OTP");
@@ -80,6 +118,36 @@ const ForgotPassword: React.FC = () => {
     } finally {
 
       setLoading(false);
+
+    }
+
+  };
+
+  /* ================= RESEND OTP ================= */
+
+  const handleResendOtp = async () => {
+
+    if (!canResend) return;
+
+    try {
+
+      const res = await sendOtpApi({
+        email,
+        role: selected
+      });
+
+      if (res.data.success) {
+
+        toast.success("OTP resent");
+
+        setTimer(300);
+        setCanResend(false);
+
+      }
+
+    } catch {
+
+      toast.error("Failed to resend OTP");
 
     }
 
@@ -201,7 +269,7 @@ const ForgotPassword: React.FC = () => {
         {/* STEP 1 EMAIL */}
 
         {step === 1 && (
-          <>
+          <div>
             <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
               Email
             </label>
@@ -211,24 +279,24 @@ const ForgotPassword: React.FC = () => {
               value={email}
               disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 rounded-full border"
+              className="w-full px-4 py-2 mb-6 rounded-full border"
               placeholder="Enter your registered email"
             />
 
             <button
               onClick={handleSendOtp}
               disabled={loading}
-              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
+              className="w-full py-2  rounded-full bg-blue-500 text-white font-semibold"
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>
-          </>
+          </div>
         )}
 
         {/* STEP 2 OTP */}
 
         {step === 2 && (
-          <>
+          <div>
             <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
               Enter OTP
             </label>
@@ -238,7 +306,7 @@ const ForgotPassword: React.FC = () => {
               value={otp}
               disabled={loading}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-2 rounded-full border"
+              className="w-full px-4 py-2 mb-6 rounded-full border"
               placeholder="Enter verification code"
             />
 
@@ -249,7 +317,31 @@ const ForgotPassword: React.FC = () => {
             >
               Verify OTP
             </button>
-          </>
+
+            {/* RESEND OTP */}
+
+            <div className="text-center mt-2">
+
+              {canResend ? (
+
+                <button
+                  onClick={handleResendOtp}
+                  className="text-blue-600 bg-blue-100 w-25 rounded-2xl  hover:text-blue-800 hover:bg-blue-200 text-sm font-semibold"
+                >
+                  {loading ? "Resending..." : "Resend OTP"}
+                </button>
+
+              ) : (
+
+                <p className="text-gray-500 text-sm">
+                  Resend OTP in {formatTime(timer)}
+                </p>
+
+              )}
+
+            </div>
+
+          </div>
         )}
 
         {/* STEP 3 PASSWORD */}
@@ -259,45 +351,50 @@ const ForgotPassword: React.FC = () => {
             <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
               New Password
             </label>
-              <div>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                disabled={loading}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter new password"
-                className="w-full px-4 py-2 rounded-full border"
-              />
 
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-              >
-                {showPassword ? (
-                  <EyeIcon className="w-5 h-5" />
-                ) : (
-                  <EyeSlashIcon className="w-5 h-5" />
-                )}
-              </button>
+            <div>
+
+              <div className="relative">
+
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  disabled={loading}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  className="w-full px-4 py-2 rounded-full border"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                >
+                  {showPassword ? (
+                    <EyeIcon className="w-5 h-5" />
+                  ) : (
+                    <EyeSlashIcon className="w-5 h-5" />
+                  )}
+                </button>
+
               </div>
-            {password && (
-  <div className="flex justify-end mt-1 pr-3">
-    <span className="text-sm text-gray-500">
-      {passwordStrength}
-    </span>
-  </div>
-)}
-            </div>
 
-            
+              {password && (
+                <div className="flex justify-end mt-1 pr-3">
+                  <span className="text-sm text-gray-500">
+                    {passwordStrength}
+                  </span>
+                </div>
+              )}
+
+            </div>
 
             <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300 mt-3">
               Confirm Password
             </label>
 
             <div className="relative">
+
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
@@ -320,6 +417,7 @@ const ForgotPassword: React.FC = () => {
                   <EyeSlashIcon className="w-5 h-5" />
                 )}
               </button>
+
             </div>
 
             {confirmPassword && !passwordsMatch && (
@@ -335,6 +433,7 @@ const ForgotPassword: React.FC = () => {
             >
               Reset Password
             </button>
+
           </div>
         )}
 
