@@ -15,8 +15,9 @@ const FAQ: React.FC = () => {
     };
 
   return (
-    <div className=" bg-gray-100 dark:bg-gray-900 max-w-3xl mx-auto p-6">
-      <h2 className="inline-block text-4xl font-bold bg-linear-to-r from-blue-600 via-blue-400 to-blue-600 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-500 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
+    
+    <div className=" bg-gray-100 dark:bg-cyan-900 max-w-3xl mx-auto p-6">
+      <h2 className="inline-block text-4xl font-bold bg-linear-to-r from-cyan-700 via-cyan-600 to-cyan-700 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-500 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
 
       <div className="space-y-4">
         {faqData.map((item, index) => (
