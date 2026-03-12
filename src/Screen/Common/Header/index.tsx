@@ -68,7 +68,7 @@ const Header: React.FC = () => {
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-linear-to-r from-sky-100 via-cyan-600 to-cyan-800 dark:from-sky-700 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
+      <header className="h-16 bg-linear-to-r from-sky-100 via-cyan-600 to-cyan-800 dark:from-slate-500 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
         
        
        <div
@@ -76,7 +76,7 @@ const Header: React.FC = () => {
   className="cursor-pointer select-none"
 >
   <div className="flex items-center gap-1">
-    <div className="dark:bg-slate-300 rounded-xl">
+    <div className="dark:bg-slate-500 rounded-xl">
     <img src={logo} alt="SymptoNexus Logo" className="w-10 h-10" />
       </div>
     <div>
