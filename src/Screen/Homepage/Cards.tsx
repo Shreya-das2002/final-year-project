@@ -110,7 +110,7 @@ const Cards = () => {
 
               <div className="flex gap-4">
                 <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
-                  <FaLightbulb className="text-cyan-500 dark:text-slate-400 text-xl" />
+                  <FaLightbulb className="text-cyan-500 dark:text-slate-400 text-2xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -124,7 +124,7 @@ const Cards = () => {
 
               <div className="flex gap-4">
                 <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
-                  <FaHandsHelping className="text-cyan-500 dark:text-slate-400  text-xl" />
+                  <FaHandsHelping className="text-cyan-500 dark:text-slate-400  text-2xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -138,7 +138,7 @@ const Cards = () => {
 
               <div className="flex gap-4">
                 <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
-                  <FaCommentMedical className="text-cyan-500 dark:text-slate-400  text-xl" />
+                  <FaCommentMedical className="text-cyan-500 dark:text-slate-400  text-2xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -152,7 +152,7 @@ const Cards = () => {
 
               <div className="flex gap-4">
                 <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
-                  <FaSearchPlus className="text-cyan-500 dark:text-slate-400  text-xl" />
+                  <FaSearchPlus className="text-cyan-500 dark:text-slate-400  text-2xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
