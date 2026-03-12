@@ -8,8 +8,7 @@ import type { AppDispatch } from "../../../../store/store";
 const SpDoctorList = () => {
   const { specializationId } = useParams();
 
-  const dispatch = useDispatch<AppDispatch>(); // 🔥 important fix
-
+  const dispatch = useDispatch<AppDispatch>(); 
   const { doctors, loading } = useSelector(
     (state: RootState) => state.doctor
   );
