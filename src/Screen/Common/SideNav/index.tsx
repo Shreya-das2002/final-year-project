@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { logout } from "../../../../store/slices/authSlice";
-import { MENU_ROUTE_MAP, SIDE_NAV_CONTROLS } from "../../../Environment";
+import { MENU_ROUTE_MAP, SIDE_NAV_CONTROLS, MENU_ICONS } from "../../../Environment";
 
 interface SideNavProps {
   onProfileClick?: () => void;
@@ -100,52 +100,64 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
   /* ================= UI ================= */
 
   return (
-    <aside className="fixed top-16 bottom-12 left-0 w-64 bg-blue-900 text-white flex flex-col z-40">
+    <aside className="fixed top-16 bottom-12 left-0 w-64 bg-gradient-to-r from-sky-100 to-cyan-600 dark:from-slate-500 dark:to-cyan-900 text-white flex flex-col z-40">
 
       {/* PROFILE */}
 
       <div
-        className="flex flex-col items-center py-6 border-b border-blue-700 cursor-pointer transition"
+        className="flex flex-col items-center py-6 cursor-pointer "
         onClick={handleProfileClick}
       >
 
-        <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold mb-2">
+<div className="w-16 h-16 rounded-full dark:bg-cyan-700 bg-cyan-500 flex items-center justify-center
+text-xl font-bold mb-2 cursor-pointer
+transform transition-transform duration-300 ease-in-out text-gray-700 dark:text-gray-100
+hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
 
           {firstLetter}{lastLetter}
 
         </div>
 
-        <p className="font-semibold text-center">
+        <p className="font-semibold text-center text-gray-700 dark:text-gray-50">
 
           {user?.first_name} {user?.last_name}
 
         </p>
 
-        <p className="text-sm text-blue-200 text-center break-all px-2">
+        <p className="text-sm dark:text-gray-100 text-gray-600 text-center break-all px-2">
 
           {user?.email}
 
         </p>
 
+        
+
       </div>
+
+      <div className="bg-gradient-to-r from-sky-200 via-cyan-500 to-cyan-800 dark:from-slate-500 dark:via-cyan-900 dark:to-cyan-950 h-0.5 w-64"></div>
 
       {/* MENUS */}
 
       <ul className="flex-1 p-4 space-y-2">
 
-        {orderedMenus.map((menu) => (
+        {orderedMenus.map((menu) => {
 
-          <li
-            key={menu.control_master_id}
-            onClick={() => handleMenuClick(menu.control_key)}
-            className="cursor-pointer px-4 py-2 rounded hover:bg-blue-700 transition"
-          >
+  const Icon = MENU_ICONS[menu.control_key];
 
-            {menu.control_name}
+  return (
+    <li
+      key={menu.control_master_id}
+      onClick={() => handleMenuClick(menu.control_key)}
+      className="flex items-center gap-3 px-4 py-2 rounded cursor-pointer
+transform transition-transform duration-300 ease-in-out
+hover:scale-103 text-gray-700 dark:text-gray-100 dark:hover:bg-cyan-800 hover:bg-sky-500 "
+    >
+      {Icon && <Icon size={20} />}
+      {menu.control_name}
+    </li>
+  );
 
-          </li>
-
-        ))}
+})}
 
       </ul>
 

@@ -1,3 +1,16 @@
+import type { IconType } from "react-icons";
+import {
+  FiHome,
+  FiCheckSquare,
+  FiCpu,
+  FiCalendar,
+  FiMessageSquare,
+  FiLogOut,
+  FiUsers,
+  FiUserPlus,
+  FiClock
+} from "react-icons/fi";
+
 import shreyaImg from "./assets/Shreya.png";
 import subhaImg from "./assets/Subhankar.png";
 import ranaImg from "./assets/Ranabir.png";
@@ -549,6 +562,32 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
   "slot availability": "/admin/slot_availability",
 
   "logout": "/logout",
+};
+
+
+export const MENU_ICONS: Record<string, IconType> = {
+  "patient dashboard": FiHome,
+  "symptom checker": FiCheckSquare,
+  "symptobot": FiCpu,
+  "patient appointments": FiCalendar,
+  "patient feedback": FiMessageSquare,
+
+  "admin dashboard": FiHome,
+  "create admin": FiUserPlus,
+  "add doctor": FiUserPlus,
+  "pending doctor list": FiUsers,
+  "admin list": FiUsers,
+  "doctor list": FiUsers,
+  "slot availability": FiClock,
+  "messages": FiMessageSquare,
+
+  "doctor dashboard": FiHome,
+  "doctor appointment": FiCalendar,
+  "appointment requests": FiCalendar,
+  "doctor feedback": FiMessageSquare,
+
+  "feedback": FiMessageSquare,
+  "logout": FiLogOut,
 };
 
 /* ================= GET ROUTE HELPER ================= */
