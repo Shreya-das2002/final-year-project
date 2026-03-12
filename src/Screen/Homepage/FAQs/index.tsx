@@ -15,21 +15,21 @@ const FAQ: React.FC = () => {
     };
 
   return (
-    <div className="max-w-screen bg-gray-100 dark:bg-cyan-900 ">
-    <div className="  max-w-3xl bg-gray-100 dark:bg-cyan-900 mx-auto p-6">
-      <h2 className="inline-block bg-linear-to-r from-cyan-700 via-cyan-600 to-cyan-700 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-500 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
+    <div className="max-w-screen bg-cyan-100 dark:bg-cyan-950 ">
+    <div className="  max-w-3xl bg-cyan-100 dark:bg-cyan-950 mx-auto p-6">
+      <h2 className="inline-block bg-linear-to-r from-cyan-800 via-cyan-700 to-cyan-800 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-400 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
 
       <div className="space-y-4">
         {faqData.map((item, index) => (
           <div
             key={index}
-            className="border rounded-lg bg-linear-to-r from-blue-200 via-blue-50 to-blue-200 dark:from-gray-600 dark:via-gray-700 dark:to-gray-600 cursor-pointer"
+            className=" border dark:border-cyan-950 rounded-lg bg-linear-to-r from-cyan-200 via-cyan-50 to-cyan-200 dark:from-cyan-900 dark:via-sky-900 dark:to-cyan-900 cursor-pointer"
             onClick={() => toggleFAQ(index)}
           >
             {/* Question */}
             <div className="flex justify-between items-center px-4 py-3">
               <p className="text-black dark:text-gray-100 text-lg font-medium">{item.question}</p>
-              <span className="text-2xl font-bold">
+              <span className="text-2xl font-bold text-black dark:text-gray-100">
                 {openIndex === index ? "−" : "+"}
               </span>
             </div>
@@ -43,22 +43,22 @@ const FAQ: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="w-full bg-gray-100 mt-10 dark:bg-cyan-900 py-20 flex justify-center rounded-lg ">
+      <div className="w-full bg-cyan-100 mt-10 dark:bg-cyan-950 py-20 flex justify-center rounded-lg ">
       <div className="text-center max-w-2xl rounded-lg px-4">
         {/* Heading */}
-        <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+        <h2 className="text-3xl md:text-4xl font-semibold bg-linear-to-r from-cyan-900 via-cyan-700 to-cyan-800 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-400 dark:to-gray-300 mb-4">
           Need more help?
         </h2>
 
         {/* Subtitle */}
-        <p className="text-gray-500 dark:text-gray-400 text-lg mb-8">
+        <p className="text-gray-600 dark:text-gray-300 text-lg mb-8">
           Send us a message with more details about your specific needs.
         </p>
 
         {/* Button */}
         <button 
             onClick={() => handleClick()}
-            className="bg-linear-to-r from-blue-600 to-blue-400 dark:from-gray-600 dark:to-gray-500 hover:from-blue-800 hover:to-blue-600 dark:hover:from-gray-500 dark:hover:to-gray-400 text-white dark:text-gray-200 px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition">
+            className="bg-linear-to-r from-cyan-700 to-cyan-500 dark:from-cyan-800 dark:to-cyan-600 hover:from-cyan-950 hover:to-cyan-700 dark:hover:from-cyan-700 dark:hover:to-cyan-500 text-white dark:text-gray-200 px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition">
           SUBMIT A REQUEST
         </button>
       </div>
