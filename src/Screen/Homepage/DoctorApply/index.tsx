@@ -155,10 +155,21 @@ const ApplyDoctor: React.FC = () => {
   style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}>
 
 
-    <div className="relative backdrop-blur-md p-8 rounded-3xl max-w-lg mx-auto"
+    <div className="relative backdrop-blur-md p-8 mb-6 rounded-3xl max-w-lg mx-auto">
 
+  {/* top-left */}
+  <span className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-gray-300 rounded-tl-3xl"></span>
 
-    >
+  {/* top-right */}
+  <span className="absolute top-0 right-0 w-25 h-25 border-t-2 border-r-2 border-gray-400 rounded-tr-3xl"></span>
+
+  {/* bottom-left */}
+  <span className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-gray-400 rounded-bl-3xl"></span>
+
+  {/* bottom-right */}
+  <span className="absolute bottom-0 right-0 w-10 h-10 border-b-2 border-r-2 border-gray-400 rounded-br-3xl"></span>
+
+    
 
       <h2 className="text-2xl font-bold text-cyan-800 dark:text-gray-600 mb-6 text-center">
         Apply as Doctor
