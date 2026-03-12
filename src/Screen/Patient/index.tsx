@@ -8,13 +8,13 @@ const Patient = () => {
 
 
   return (
-    <div className="flex">
+    <div className="flex bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300">
 
       {/* SIDENAV */}
       <SideNav onProfileClick={() => setOpenProfileDrawer(true)} />
 
       {/* MAIN CONTENT */}
-      <main className="relative ml-64 w-screen">
+      <main className="relative ml-64 w-screen min-h-screen bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300">
 
 {/* RIGHT PROFILE DRAWER */}
       <PatientProfileView

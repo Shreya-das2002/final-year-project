@@ -30,13 +30,29 @@ const IMAGES: Record<number, string> = {
   12: gynecology
 };
 
+const CARD_COLORS: Record<number, string> = {
+    1: "bg-gradient-to-br from-gray-100 to-cyan-700",
+  2: "bg-gradient-to-br from-sky-100 to-blue-400",
+  3: "bg-gradient-to-br from-cyan-100 to-blue-500",
+  4: "bg-gradient-to-br from-blue-100 to-blue-600",
+  5: "bg-gradient-to-br from-blue-100 to-cyan-500",
+  6: "bg-gradient-to-br from-cyan-100 to-blue-400",
+  7: "bg-gradient-to-br from-blue-100 to-blue-700",
+  8: "bg-gradient-to-br from-cyan-100 to-blue-600",
+  9: "bg-gradient-to-br from-sky-100 to-cyan-500",
+  10: "bg-gradient-to-br from-blue-100 to-sky-600",
+  11: "bg-gradient-to-br from-cyan-100 to-blue-700",
+  12: "bg-gradient-to-br from-blue-100 to-sky-500"
+};
+
+
 const Appointments: React.FC = () => {
   const navigate = useNavigate(); // 
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300">
       {/* Title */}
-      <h2 className="text-xl font-semibold mb-5">
+      <h2 className="text-3xl pt-5 font-bold text-cyan-900 mb-5">
         Browse by Specialties
       </h2>
 
@@ -44,35 +60,35 @@ const Appointments: React.FC = () => {
       <div className="
         grid
         grid-cols-2
-        sm:grid-cols-3
-        md:grid-cols-3
-        lg:grid-cols-3
+        sm:grid-cols-4
+        md:grid-cols-4
+        lg:grid-cols-4
         gap-12
+        pt-8
       ">
         {DOCTOR_SPECIALIZATIONS.map((item) => {
           const image = IMAGES[item.value];
+          const color = CARD_COLORS[item.value];
 
           return (
             <div
               key={item.value}
               onClick={() => navigate(`/patient/doctors/${item.value}`)} 
-              className="
-                flex items-center gap-3
-                bg-gray-100
-                border
-                rounded-xl
-                p-4
-                hover:shadow-md
-                hover:border-blue-400
-                transition
-                cursor-pointer
-              "
+              className={`
+    flex items-center gap-3
+    rounded-xl
+    p-4
+    ${color}
+    hover:shadow-md
+    transform transition-transform duration-300 ease-in-out hover:scale-103 dark:hover:scale-103
+    cursor-pointer
+  `}
             >
               {/* Image */}
               <div className="
                 bg-gray-100
                 p-3
-                rounded-lg
+                rounded-full
                 w-22 h-22
                 flex items-center justify-center
               ">
@@ -84,7 +100,7 @@ const Appointments: React.FC = () => {
               </div>
 
               {/* Label */}
-              <span className="font-medium text-gray-700 text-lg">
+              <span className="font-medium text-gray-800 text-lg">
                 {item.label}
               </span>
             </div>
