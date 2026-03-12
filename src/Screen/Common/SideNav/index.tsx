@@ -134,7 +134,7 @@ hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
 
       </div>
 
-      <div className="bg-gradient-to-r from-sky-200 via-cyan-500 to-cyan-800 dark:from-slate-500 dark:via-cyan-900 dark:to-cyan-950 h-0.5 w-64"></div>
+      <div className="bg-gradient-to-r from-sky-100 via-cyan-500 to-cyan-800 dark:from-slate-500 dark:via-cyan-900 dark:to-cyan-950 h-0.5 w-64"></div>
 
       {/* MENUS */}
 
