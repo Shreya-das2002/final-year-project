@@ -1,32 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import background from "../../../assets/Background.jpg";
-import dark_background from "../../../assets/dark_background.jpg";
-import { useEffect, useState } from "react";
+
 
 const ApplicationSubmitted: React.FC = () => {
     const navigate = useNavigate();
-    const [isDark, setIsDark] = useState(
-    document.documentElement.classList.contains("dark")
-      );
-  
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains("dark"));
-    });
-    observer.observe(document.documentElement, { attributes: true });
-    return () => observer.disconnect();
-  }, []);
 
-  
+      
     
   return (
     
             <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${isDark? dark_background : background})`,
-      }}
+      className="bg-gradient-to-r from-cyan-200 via-cyan-100 to-cyan-200 dark:from-gray-800 dark:via-cyan-800 dark:to-sky-900 flex items-center justify-center min-h-screen bg-cover bg-center"
+
     >
 
 

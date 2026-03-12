@@ -4,9 +4,8 @@ import type { ApplyDoctorForm } from "../../../services/applyDoctorApi";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import background from "../../../assets/Background.jpg";
-import dark_background from "../../../assets/dark_background.jpg";
-import login_bg from "../../../assets/login_bg.png"
+import dark_background from "../../../assets/doctor_light.webp";
+import background from "../../../assets/login_bg.png"
 
 
 const ApplyDoctor: React.FC = () => {
@@ -153,17 +152,15 @@ const ApplyDoctor: React.FC = () => {
   return (
 
 <div className="max-h-screen bg-cover bg-center items-center flex-col justify-center px-10 pt-28.5 py-10.5"
-  style={{ backgroundImage: `url(${login_bg})` }}>
+  style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}>
 
 
-    <div className="relative max-h-screen backdrop-blur-md p-8 rounded-3xl max-w-lg mx-auto"
-    style={{
-      backgroundImage: `url(${isDark ? dark_background : background})`,
-    }}
+    <div className="relative backdrop-blur-md p-8 rounded-3xl max-w-lg mx-auto"
+
 
     >
 
-      <h2 className="text-2xl font-bold text-blue-400 dark:text-gray-100 mb-6 text-center">
+      <h2 className="text-2xl font-bold text-cyan-800 dark:text-gray-600 mb-6 text-center">
         Apply as Doctor
       </h2>
 
@@ -174,7 +171,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Enter your full name"
         value={form.name}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12 dark:text-gray-200 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12 dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Specialization */}
@@ -184,7 +181,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Specialization"
         value={form.specialization}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12 dark:text-gray-300 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12 dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Email */}
@@ -194,7 +191,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Enter your email"
         value={form.email}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12  dark:text-gray-300 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12  dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Phone */}
@@ -204,7 +201,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Enter your phone number"
         value={form.phone}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12  dark:text-gray-300 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12  dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
       />
 
       {/* Hidden File Input */}
@@ -218,11 +215,11 @@ const ApplyDoctor: React.FC = () => {
       />
 
       {/* File Display */}
-      <div className="w-full px-4 py-2 pr-12  dark:text-gray-300 rounded-full border focus:ring-2 mb-3 flex items-center">
+      <div className="w-full px-4 py-2 pr-12  dark:text-gray-800 rounded-full border focus:ring-2 mb-3 flex items-center">
 
         <label
           htmlFor="cvUpload"
-          className="cursor-pointer flex-1 text-gray-500 dark:text-gray-400"
+          className="cursor-pointer flex-1 text-gray-500 dark:text-gray-600"
         >
           {fileName ? ` ${fileName}` : " Choose a File"}
         </label>
@@ -252,7 +249,7 @@ const ApplyDoctor: React.FC = () => {
         className={`w-full text-white p-2 px-4 py-2 pr-12 rounded-full transition ${
           loading
             ? "bg-gray-400 cursor-not-allowed"
-            : "bg-gradient-to-r from-blue-300  to-blue-700 hover:from-blue-700 hover:to-blue-300 dark:from-cyan-900 dark:to-gray-400 dark:hover:from-gray-400 dark:hover:to-cyan-900"
+            : "bg-gradient-to-r from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600"
         }`}
       >
         {loading ? "Sending..." : "Apply"}
