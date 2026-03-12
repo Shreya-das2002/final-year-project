@@ -23,7 +23,7 @@ const FAQ: React.FC = () => {
         {faqData.map((item, index) => (
           <div
             key={index}
-            className=" border dark:border-cyan-950 rounded-lg bg-linear-to-r from-cyan-200 via-cyan-50 to-cyan-200 dark:from-cyan-900 dark:via-sky-900 dark:to-cyan-900 cursor-pointer"
+            className=" border-1 border-cyan-300 dark:border-cyan-950 rounded-lg bg-linear-to-r from-cyan-200 via-cyan-50 to-cyan-200 dark:from-cyan-900 dark:via-sky-900 dark:to-cyan-900 cursor-pointer"
             onClick={() => toggleFAQ(index)}
           >
             {/* Question */}
