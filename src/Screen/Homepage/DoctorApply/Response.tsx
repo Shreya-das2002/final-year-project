@@ -31,15 +31,15 @@ const ApplicationSubmitted: React.FC = () => {
 
 
    
-      <div className="bg-linear-to-r  from-sky-50 to-sky-300 dark:from-sky-800 dark:to-blue-950 shadow-xl rounded-2xl p-10 max-w-fit w-fit text-center">
+      <div className="bg-linear-to-r  from-cyan-50 to-cyan-300 dark:from-sky-900 dark:to-cyan-950 shadow-xl rounded-2xl p-10 max-w-fit w-fit text-center">
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+        <h1 className="text-2xl font-bold text-cyan-800 dark:text-slate-300 mb-3">
           Your Application has been submitted
         </h1>
 
         {/* Subtitle */}
-        <p className="text-gray-600 dark:text-gray-300 mb-8">
+        <p className="text-cyan-700 dark:text-gray-300 mb-8">
           Thank you for applying. We’ve received your application and will
           review it shortly. You’ll be notified once there’s an update.
         </p>
@@ -48,7 +48,7 @@ const ApplicationSubmitted: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => navigate("/")}
-            className="bg-blue-500 dark:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition hover:dark:bg-blue-700 "
+            className="bg-gradient-to-r from-cyan-400 to-cyan-600 dark:from-cyan-800 dark:to-cyan-700 text-white px-6 py-3 rounded-lg font-medium hover:from-cyan-500 hover:to-cyan-700 dark:hover:from-cyan-700 dark:hover:to-cyan-600 transition hover:dark:bg-blue-700 "
           >
             Go to Home
           </button>

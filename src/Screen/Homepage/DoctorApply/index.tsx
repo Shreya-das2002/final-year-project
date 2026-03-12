@@ -6,6 +6,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import background from "../../../assets/Background.jpg";
 import dark_background from "../../../assets/dark_background.jpg";
+import login_bg from "../../../assets/login_bg.png"
 
 
 const ApplyDoctor: React.FC = () => {
@@ -151,15 +152,14 @@ const ApplyDoctor: React.FC = () => {
 
   return (
 
-        <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${isDark ? dark_background : background})`,
-      }}
-    >
+<div className="max-h-screen bg-cover bg-center items-center flex-col justify-center px-10 pt-28.5 py-10.5"
+  style={{ backgroundImage: `url(${login_bg})` }}>
 
 
-    <div className="relative h-full w-full bg-gradient-to-r from-sky-50 to-sky-300 dark:from-sky-800 dark:to-blue-950 backdrop-blur-md p-8 rounded-3xl max-w-lg mx-auto"
+    <div className="relative max-h-screen backdrop-blur-md p-8 rounded-3xl max-w-lg mx-auto"
+    style={{
+      backgroundImage: `url(${isDark ? dark_background : background})`,
+    }}
 
     >
 
