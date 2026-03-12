@@ -217,7 +217,7 @@ else {
               {passwordError}
             </p>
           )}
-
+          { selected !== "admin" && (
           <div className="text-right mt-1">
             <Link
               to={`/registrationlogin/forgot-password?role=${selected}`}
@@ -226,6 +226,7 @@ else {
               Forgot Password?
             </Link>
           </div>
+          )}
         </div>
 
         {/* SUBMIT */}
