@@ -109,8 +109,8 @@ const Cards = () => {
             <div className="grid grid-cols-2 gap-6">
 
               <div className="flex gap-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <FaLightbulb className="text-blue-600 text-xl" />
+                <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
+                  <FaLightbulb className="text-cyan-500 dark:text-slate-400 text-xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -123,8 +123,8 @@ const Cards = () => {
               </div>
 
               <div className="flex gap-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <FaHandsHelping className="text-blue-600 text-xl" />
+                <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
+                  <FaHandsHelping className="text-cyan-500 dark:text-slate-400  text-xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -137,8 +137,8 @@ const Cards = () => {
               </div>
 
               <div className="flex gap-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <FaCommentMedical className="text-blue-600 text-xl" />
+                <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
+                  <FaCommentMedical className="text-cyan-500 dark:text-slate-400  text-xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -151,8 +151,8 @@ const Cards = () => {
               </div>
 
               <div className="flex gap-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <FaSearchPlus className="text-blue-600 text-xl" />
+                <div className="bg-blue-100 dark:bg-cyan-900 p-3 rounded-lg h-12">
+                  <FaSearchPlus className="text-cyan-500 dark:text-slate-400  text-xl" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">
