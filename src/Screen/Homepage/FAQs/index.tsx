@@ -15,9 +15,9 @@ const FAQ: React.FC = () => {
     };
 
   return (
-    
-    <div className=" bg-gray-100 dark:bg-cyan-900 max-w-3xl mx-auto p-6">
-      <h2 className="inline-block text-4xl font-bold bg-linear-to-r from-cyan-700 via-cyan-600 to-cyan-700 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-500 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
+    <div className="max-w-screen bg-gray-100 dark:bg-cyan-900 ">
+    <div className="  max-w-3xl bg-gray-100 dark:bg-cyan-900 mx-auto p-6">
+      <h2 className="inline-block bg-linear-to-r from-cyan-700 via-cyan-600 to-cyan-700 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-500 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
 
       <div className="space-y-4">
         {faqData.map((item, index) => (
@@ -43,8 +43,8 @@ const FAQ: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="w-full bg-gray-100 dark:bg-gray-900 py-20 flex justify-center">
-      <div className="text-center max-w-2xl px-4">
+      <div className="w-full bg-gray-100 mt-10 dark:bg-cyan-900 py-20 flex justify-center rounded-lg ">
+      <div className="text-center max-w-2xl rounded-lg px-4">
         {/* Heading */}
         <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Need more help?
@@ -62,6 +62,7 @@ const FAQ: React.FC = () => {
           SUBMIT A REQUEST
         </button>
       </div>
+    </div>
     </div>
     </div>
   );
