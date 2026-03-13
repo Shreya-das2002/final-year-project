@@ -131,11 +131,11 @@ else {
           <button
             key={role}
             onClick={() => switchRole(role)}
-            className={`px-4 py-2 rounded-md font-semibold capitalize transition-all
+            className={`px-4 py-2 rounded-md font-semibold capitalize transition-all 
               ${
                 selected === role
                   ? "bg-sky-800 dark:bg-gray-500 text-gray-100 dark:text-white shadow-md"
-                  : "bg-cyan-600 dark:bg-gray-800 text-gray-100 dark:text-gray-300"
+                  : "bg-cyan-600 dark:bg-gray-800 text-gray-100 dark:text-gray-300 hover:bg-cyan-700 dark:hover:bg-gray-700"
               }`}
           >
             {role}
@@ -221,7 +221,7 @@ else {
           <div className="text-right mt-1">
             <Link
               to={`/registrationlogin/forgot-password?role=${selected}`}
-              className="text-sm text-cyan-700 dark:text-gray-400 hover:underline"
+              className="text-sm text-cyan-700 dark:text-gray-400 hover:underline hover:text-cyan-900 dark:hover:text-gray-300"
             >
               Forgot Password?
             </Link>
@@ -233,7 +233,7 @@ else {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white font-semibold"
+          className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-600 hover:to-cyan-950 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-cyan-900 dark:hover:to-cyan-600 text-white font-semibold"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -243,7 +243,7 @@ else {
       {selected === "patient" && (
         <p className="text-center mt-4 text-black dark:text-gray-200">
           New here?{" "}
-          <Link to="/registrationlogin/signup" className="text-cyan-700 dark:text-cyan-500">
+          <Link to="/registrationlogin/signup" className="text-cyan-700 dark:text-cyan-500 hover:text-cyan-900 dark:hover:text-cyan-300">
             Register Now
           </Link>
         </p>

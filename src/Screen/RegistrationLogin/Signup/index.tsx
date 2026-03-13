@@ -316,7 +316,7 @@ if (!isValidPhone(formData.phone.trim())) {
 
           <button
             disabled={loading}
-            className="md:col-span-6 py-2 rounded-md bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-900 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white  disabled:opacity-60"
+            className="md:col-span-6 py-2 rounded-md bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-600 hover:to-cyan-950 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white  disabled:opacity-60"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
@@ -324,7 +324,7 @@ if (!isValidPhone(formData.phone.trim())) {
 
         <p className="text-center mt-4 text-black dark:text-gray-200">
           Already have an account?{" "}
-          <Link to="/registrationlogin/login?role=patient" className="text-cyan-700 dark:text-cyan-500 hover:underline">
+          <Link to="/registrationlogin/login?role=patient" className="text-cyan-700 dark:text-cyan-500 hover:underline hover:text-cyan-900 dark:hover:text-cyan-300">
             Login
           </Link>
         </p>

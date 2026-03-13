@@ -38,7 +38,7 @@ const RegistrationLogin = () => {
         `}
       >    
 {/* top-left */}
-<span className="absolute top-0 left-0 w-10 h-10 border-t-3 border-l-3 border-zinc-300 dark:border-slate-200 rounded-tl-3xl z-10"></span>
+<span className="absolute top-0 left-0 w-10 h-10 border-t-3 border-l-3 border-zinc-200 dark:border-slate-200 rounded-tl-3xl z-10"></span>
 
 {/* top-right */}
 <span className="absolute top-0 right-0 w-10 h-10 border-t-3 border-r-3 border-gray-400 dark:border-slate-400 rounded-tr-3xl z-10"></span>

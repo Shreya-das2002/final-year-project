@@ -27,7 +27,7 @@ const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
 
-  const [timer, setTimer] = useState(300);
+  const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
   const [password, setPassword] = useState("");
@@ -101,7 +101,7 @@ const ForgotPassword: React.FC = () => {
 
         setStep(2);
 
-        setTimer(300);
+        setTimer(30);
         setCanResend(false);
 
       } else {
@@ -289,7 +289,7 @@ const ForgotPassword: React.FC = () => {
             <button
               onClick={handleSendOtp}
               disabled={loading}
-              className="w-full py-2  rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white font-semibold"
+              className="w-full py-2  rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-800 hover:from-cyan-600 hover:to-cyan-950 dark:from-cyan-700 dark:to-cyan-950 dark:hover:from-cyan-500 dark:hover:to-cyan-900 text-white font-semibold"
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>
@@ -316,7 +316,7 @@ const ForgotPassword: React.FC = () => {
             <button
               onClick={handleVerifyOtp}
               disabled={loading}
-              className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white font-semibold"
+              className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-800 hover:from-cyan-600 hover:to-cyan-950 dark:from-cyan-700 dark:to-cyan-950 dark:hover:from-cyan-500 dark:hover:to-cyan-900 text-white font-semibold"
             >
               Verify OTP
             </button>
@@ -329,7 +329,9 @@ const ForgotPassword: React.FC = () => {
 
                 <button
                   onClick={handleResendOtp}
-                  className="text-cyan-700 bg-cyan-100 w-25 rounded-2xl  hover:text-cyan-800 hover:bg-cyan-200 text-sm font-semibold"
+                  className="text-gray-100 hover:text-gray-200 bg-gradient-to-r  from-cyan-500  to-cyan-800 hover:from-cyan-600 hover:to-cyan-950
+                   dark:from-cyan-700 dark:to-cyan-950 dark:hover:from-cyan-500 dark:hover:to-cyan-900
+                    font-semibold w-25 rounded-2xl  hover:text-cyan-800 hover:bg-cyan-200 text-sm"
                 >
                   {loading ? "Resending..." : "Resend OTP"}
                 </button>
@@ -429,13 +431,16 @@ const ForgotPassword: React.FC = () => {
               </p>
             )}
 
-            <button
+              <button
               onClick={handleResetPassword}
               disabled={loading}
-              className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-gray-200 font-semibold mt-4"
+              className="w-full py-2 rounded-full bg-gradient-to-r 
+               from-cyan-500  to-cyan-700 hover:from-cyan-600 hover:to-cyan-900
+                   dark:from-cyan-600 dark:to-cyan-950 dark:hover:from-cyan-500 dark:hover:to-cyan-900  text-gray-200 font-semibold mt-4"
             >
               Reset Password
             </button>
+
 
           </div>
         )}
@@ -445,7 +450,7 @@ const ForgotPassword: React.FC = () => {
         <div className="text-right mt-1">
           <Link
             to={`/registrationlogin/login?role=${selected}`}
-            className="text-sm text-cyan-700 dark:text-cyan-500 hover:underline"
+            className="text-sm text-cyan-700 dark:text-cyan-500 hover:underline hover:text-cyan-900 dark:hover:text-cyan-400"
           >
             Back to Login
           </Link>

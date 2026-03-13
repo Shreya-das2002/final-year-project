@@ -260,7 +260,7 @@ const ApplyDoctor: React.FC = () => {
         className={`w-full text-white p-2 px-4 py-2 pr-12 rounded-full transition ${
           loading
             ? "bg-gray-400 cursor-not-allowed"
-            : "bg-gradient-to-r from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600"
+            : "bg-gradient-to-r from-cyan-500  to-cyan-700 hover:from-cyan-600 hover:to-cyan-900 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-cyan-400 dark:hover:to-cyan-600"
         }`}
       >
         {loading ? "Sending..." : "Apply"}
