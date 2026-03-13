@@ -179,7 +179,7 @@ if (!isValidPhone(formData.phone.trim())) {
     <div className="flex items-center justify-center">
       <div className="w-full max-w-3xl p-6 rounded-xl">
 
-        <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
+        <h2 className="text-2xl font-bold text-center text-cyan-600 dark:text-gray-200 mb-6">
           Create Patient Account
         </h2>
 
@@ -193,7 +193,7 @@ if (!isValidPhone(formData.phone.trim())) {
               onChange={handleChange}
               placeholder="First Name"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-950 dark:text-gray-200"
             />
           </div>
 
@@ -203,7 +203,7 @@ if (!isValidPhone(formData.phone.trim())) {
               value={formData.middleName}
               onChange={handleChange}
               placeholder="Middle Name"
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-950 dark:text-gray-200"
             />
           </div>
 
@@ -215,7 +215,7 @@ if (!isValidPhone(formData.phone.trim())) {
               onChange={handleChange}
               placeholder="Last Name"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-950 dark:text-gray-200"
             />
           </div>
 
@@ -228,7 +228,7 @@ if (!isValidPhone(formData.phone.trim())) {
               onChange={handleChange}
               placeholder="Email"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-950 dark:text-gray-200"
             />
             {emailError && (
               <p className="text-sm text-red-500 mt-1">{emailError}</p>
@@ -243,7 +243,7 @@ if (!isValidPhone(formData.phone.trim())) {
               onChange={handleChange}
               placeholder="Phone"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-950 dark:text-gray-200"
             />
           </div>
 
@@ -254,9 +254,9 @@ if (!isValidPhone(formData.phone.trim())) {
               value={formData.gender}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-500 dark:text-gray-400"
             >
-              <option value="">Select Gender</option>
+              <option value="  ">Select Gender</option>
               {genderOptions.map(g => (
                 <option key={g.value} value={g.value}>{g.label}</option>
               ))}
@@ -272,13 +272,13 @@ if (!isValidPhone(formData.phone.trim())) {
               onChange={handleChange}
               placeholder="Password"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-950 dark:text-gray-200"
             />
              {/* Eye Icon */}
                <button
                  type="button"
                  onClick={() => setShowPassword(!showPassword)}
-                 className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500"
+                 className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500 dark:text-gray-400"
                >
                  {showPassword ? (
                    <EyeIcon className="w-5 h-5" />
@@ -286,7 +286,7 @@ if (!isValidPhone(formData.phone.trim())) {
                    <EyeSlashIcon className="w-5 h-5" />
                  )}
                </button>
-            <small>{passwordStrength}</small>
+            <small className="text-gray-700 dark:text-gray-200">{passwordStrength}</small>
           </div>
 
           <div className="md:col-span-3 relative">
@@ -298,13 +298,13 @@ if (!isValidPhone(formData.phone.trim())) {
               onChange={handleChange}
               placeholder="Confirm Password"
               required
-              className="w-full px-4 py-2 border rounded-md"
+              className="w-full px-4 py-2 border rounded-md border-gray-900 dark:border-gray-300 text-gray-950 dark:text-gray-200"
             />
           {/* Eye Icon */}
              <button
                type="button"
                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-               className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500"
+               className="absolute inset-y-0 right-3 flex items-center pb-7 text-gray-500 dark:text-gray-400"
              >
                {showConfirmPassword ? (
                  <EyeIcon className="w-5 h-5" />
@@ -316,15 +316,15 @@ if (!isValidPhone(formData.phone.trim())) {
 
           <button
             disabled={loading}
-            className="md:col-span-6 py-2 rounded-md bg-blue-500 text-white disabled:opacity-60"
+            className="md:col-span-6 py-2 rounded-md bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-900 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white  disabled:opacity-60"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
-        <p className="text-center mt-4">
+        <p className="text-center mt-4 text-black dark:text-gray-200">
           Already have an account?{" "}
-          <Link to="/registrationlogin/login?role=patient" className="text-blue-600 hover:underline">
+          <Link to="/registrationlogin/login?role=patient" className="text-cyan-700 dark:text-cyan-500 hover:underline">
             Login
           </Link>
         </p>

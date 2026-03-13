@@ -260,7 +260,7 @@ const ForgotPassword: React.FC = () => {
   return (
     <div>
 
-      <h2 className="text-2xl text-center mb-6 text-blue-600 dark:text-gray-100 font-bold">
+      <h2 className="text-2xl text-center mb-6 text-cyan-700 dark:text-gray-200 font-bold">
         Reset {selected.charAt(0).toUpperCase() + selected.slice(1)} Password
       </h2>
 
@@ -270,7 +270,7 @@ const ForgotPassword: React.FC = () => {
 
         {step === 1 && (
           <div>
-            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-200">
               Email
             </label>
 
@@ -279,14 +279,14 @@ const ForgotPassword: React.FC = () => {
               value={email}
               disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 mb-6 rounded-full border"
+              className="w-full px-4 py-2 mb-6 rounded-full border border-black dark:border-gray-100 text-gray-950 dark:text-gray-200 "
               placeholder="Enter your registered email"
             />
 
             <button
               onClick={handleSendOtp}
               disabled={loading}
-              className="w-full py-2  rounded-full bg-blue-500 text-white font-semibold"
+              className="w-full py-2  rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white font-semibold"
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>
@@ -306,14 +306,14 @@ const ForgotPassword: React.FC = () => {
               value={otp}
               disabled={loading}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-2 mb-6 rounded-full border"
+              className="w-full px-4 py-2 mb-6 rounded-full border border-black dark:border-gray-100 text-gray-950 dark:text-gray-200"
               placeholder="Enter verification code"
             />
 
             <button
               onClick={handleVerifyOtp}
               disabled={loading}
-              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
+              className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white font-semibold"
             >
               Verify OTP
             </button>
@@ -326,14 +326,14 @@ const ForgotPassword: React.FC = () => {
 
                 <button
                   onClick={handleResendOtp}
-                  className="text-blue-600 bg-blue-100 w-25 rounded-2xl  hover:text-blue-800 hover:bg-blue-200 text-sm font-semibold"
+                  className="text-cyan-700 bg-cyan-100 w-25 rounded-2xl  hover:text-cyan-800 hover:bg-cyan-200 text-sm font-semibold"
                 >
                   {loading ? "Resending..." : "Resend OTP"}
                 </button>
 
               ) : (
 
-                <p className="text-gray-500 text-sm">
+                <p className="text-gray-500 dark:text-gray-200 text-sm">
                   Resend OTP in {formatTime(timer)}
                 </p>
 
@@ -348,7 +348,7 @@ const ForgotPassword: React.FC = () => {
 
         {step === 3 && (
           <div>
-            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-200">
               New Password
             </label>
 
@@ -362,13 +362,13 @@ const ForgotPassword: React.FC = () => {
                   disabled={loading}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter new password"
-                  className="w-full px-4 py-2 rounded-full border"
+                  className="w-full px-4 py-2 rounded-full border text-gray-800 dark:text-gray-200"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-200"
                 >
                   {showPassword ? (
                     <EyeIcon className="w-5 h-5" />
@@ -381,7 +381,7 @@ const ForgotPassword: React.FC = () => {
 
               {password && (
                 <div className="flex justify-end mt-1 pr-3">
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-gray-800 dark:text-gray-200">
                     {passwordStrength}
                   </span>
                 </div>
@@ -389,7 +389,7 @@ const ForgotPassword: React.FC = () => {
 
             </div>
 
-            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300 mt-3">
+            <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-200 mt-3">
               Confirm Password
             </label>
 
@@ -401,7 +401,7 @@ const ForgotPassword: React.FC = () => {
                 disabled={loading}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full px-4 py-2 rounded-full border"
+                className="w-full px-4 py-2 rounded-full border  text-gray-800 dark:text-gray-200"
               />
 
               <button
@@ -409,19 +409,19 @@ const ForgotPassword: React.FC = () => {
                 onClick={() =>
                   setShowConfirmPassword(!showConfirmPassword)
                 }
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-200"
               >
                 {showConfirmPassword ? (
                   <EyeIcon className="w-5 h-5" />
                 ) : (
-                  <EyeSlashIcon className="w-5 h-5" />
+                  <EyeSlashIcon className="w-5 h-5 " />
                 )}
               </button>
 
             </div>
 
             {confirmPassword && !passwordsMatch && (
-              <p className="text-sm text-red-500 pl-3 mt-1">
+              <p className="text-sm text-red-500 dark:text-red-700 pl-3 mt-1">
                 Passwords do not match
               </p>
             )}
@@ -429,7 +429,7 @@ const ForgotPassword: React.FC = () => {
             <button
               onClick={handleResetPassword}
               disabled={loading}
-              className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold mt-4"
+              className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-gray-200 font-semibold mt-4"
             >
               Reset Password
             </button>
@@ -442,7 +442,7 @@ const ForgotPassword: React.FC = () => {
         <div className="text-right mt-1">
           <Link
             to={`/registrationlogin/login?role=${selected}`}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-cyan-700 dark:text-cyan-500 hover:underline"
           >
             Back to Login
           </Link>
