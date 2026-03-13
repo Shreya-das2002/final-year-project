@@ -162,15 +162,15 @@ const Appointments: React.FC<AppointmentsProps> = ({ showHeader = true }) => {
 
               {/* Label */}
                 <div className=" flex flex-col">
-              <span className="font-medium text-gray-800 text-lg">
+              <span className="font-medium text-gray-900 text-lg">
                 {item.label}
               </span>
               
                 {showHeader && location.pathname === "/" && (
                   <div className=" flex flex-col">
-                  <span className="text-xs"> {desc} </span>
-                  <span className="text-xs">
-                      {doctorCounts[item.value] || 0} Doctors
+                  <span className="text-xs text-gray-800"> {desc} </span>
+                  <span className="text-xs text-gray-700">
+                      {doctorCounts[item.value] || 0}+ Doctors
                     </span>
                   </div>
                 )}
