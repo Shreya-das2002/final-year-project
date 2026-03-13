@@ -1,6 +1,7 @@
 import { FaSearchPlus, FaUserMd, FaHeartbeat, FaCommentMedical, FaLightbulb, FaHandsHelping } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import doctorPhone from "../../assets/doc_phone.png";
+import Appointments from "../Patient/Appointments";
 
 const Cards = () => {
   const navigate = useNavigate();
@@ -230,13 +231,17 @@ const Cards = () => {
 
       <div className="py-16 px-8 bg-gradient-to-r from-gray-200 via-slate-50 to-gray-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
         
-        <h2 className="text-6xl font-bold text-center text-gray-900 dark:text-gray-100 mb-3">
+        <h2 className="text-6xl font-bold text-center text-gray-900 dark:text-gray-100 mb-5">
           Browse by Specialty
         </h2>
 
-        <p className="text-xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-3">
+        <p className="text-xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-7">
           Find the right specialist for your health needs from our diverse network of medical professionals
         </p>
+
+        <div>
+          <Appointments/>
+        </div>
 
       </div>
 

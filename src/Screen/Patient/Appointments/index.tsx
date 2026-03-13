@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 import general from "../../../assets/general.png";
@@ -31,7 +31,7 @@ const IMAGES: Record<number, string> = {
 };
 
 const CARD_COLORS: Record<number, string> = {
-    1: "bg-gradient-to-br from-gray-100 to-cyan-700",
+  1: "bg-gradient-to-br from-gray-100 to-cyan-700",
   2: "bg-gradient-to-br from-sky-100 to-blue-400",
   3: "bg-gradient-to-br from-cyan-100 to-blue-500",
   4: "bg-gradient-to-br from-blue-100 to-blue-600",
@@ -45,17 +45,32 @@ const CARD_COLORS: Record<number, string> = {
   12: "bg-gradient-to-br from-blue-100 to-sky-500"
 };
 
+const DESC: Record<number, string> = {
+  1: "Heart & cardiovascular care"
+};
 
-const Appointments: React.FC = () => {
-  const navigate = useNavigate(); // 
+interface AppointmentsProps {
+  showHeader?: boolean;
+}
+
+
+const Appointments: React.FC<AppointmentsProps> = ({ showHeader = true }) => {
+  const navigate = useNavigate(); 
+  const location = useLocation();
 
   return (
-    <div className="p-6 bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300">
+   <div
+  className={`p-6 ${
+    location.pathname === "/"
+      ? "bg-gradient-to-r from-gray-200 via-slate-50 to-gray-200"
+      : "bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300"
+  }`}>
       {/* Title */}
-      <h2 className="text-3xl pt-5 font-bold text-cyan-900 mb-5">
-        Browse by Specialties
-      </h2>
-
+      {showHeader && location.pathname !== "/" && (
+  <h2 className="text-3xl pt-5 font-bold text-cyan-900 mb-5">
+    Browse by Specialties
+  </h2>
+)}
       {/* Grid */}
       <div className="
         grid
@@ -69,6 +84,7 @@ const Appointments: React.FC = () => {
         {DOCTOR_SPECIALIZATIONS.map((item) => {
           const image = IMAGES[item.value];
           const color = CARD_COLORS[item.value];
+          const desc = DESC[item.value];
 
           return (
             <div
@@ -100,9 +116,18 @@ const Appointments: React.FC = () => {
               </div>
 
               {/* Label */}
+                <div className=" flex flex-col">
               <span className="font-medium text-gray-800 text-lg">
                 {item.label}
               </span>
+              
+                {showHeader && location.pathname === "/" && (
+                  <div className=" flex flex-col">
+                  <span className="text-xs"> {desc} </span>
+                  <span className="text-xs"> + Doctors </span>
+                  </div>
+                )}
+            </div>
             </div>
           );
         })}
