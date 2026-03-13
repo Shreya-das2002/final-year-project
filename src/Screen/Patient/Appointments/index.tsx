@@ -46,7 +46,18 @@ const CARD_COLORS: Record<number, string> = {
 };
 
 const DESC: Record<number, string> = {
-  1: "Heart & cardiovascular care"
+  1: "General Health care",
+  2: "Heart & Cardiovascular care",
+  3: "Skin, Hair & Nail care",
+  4: "Child & Adolescent healthcare",
+  5: "Surgical Treatment & Procedures",
+  6: "Teeth & Oral healthcare",
+  7: "Vision & Eye care",
+  8: "Ear, Nose & Throat care",
+  9: "Mental Health & Behavior",
+  10: "Brain & Nervous system",
+  11: "Bones, Joints & Muscles",
+  12: "Women’s Reproductive Health"
 };
 
 interface AppointmentsProps {
@@ -90,15 +101,15 @@ const Appointments: React.FC<AppointmentsProps> = ({ showHeader = true }) => {
             <div
               key={item.value}
               onClick={() => navigate(`/patient/doctors/${item.value}`)} 
-              className={`
-    flex items-center gap-3
-    rounded-xl
-    p-4
-    ${color}
-    hover:shadow-md
-    transform transition-transform duration-300 ease-in-out hover:scale-103 dark:hover:scale-103
-    cursor-pointer
-  `}
+                className={`
+                flex items-center gap-3
+                rounded-xl
+                p-4
+                ${color}
+                hover:shadow-md
+                transform transition-transform duration-300 ease-in-out hover:scale-103 dark:hover:scale-103
+                cursor-pointer
+              `}
             >
               {/* Image */}
               <div className="
