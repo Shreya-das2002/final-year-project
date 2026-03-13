@@ -37,7 +37,17 @@ const RegistrationLogin = () => {
           ${isSignupPage ? "w-[900px] h-[480px]" : "w-full max-w-md"}
         `}
       >    
-      
+{/* top-left */}
+<span className="absolute top-0 left-0 w-10 h-10 border-t-3 border-l-3 border-zinc-300 dark:border-slate-200 rounded-tl-3xl z-10"></span>
+
+{/* top-right */}
+<span className="absolute top-0 right-0 w-10 h-10 border-t-3 border-r-3 border-gray-400 dark:border-slate-400 rounded-tr-3xl z-10"></span>
+
+{/* bottom-left */}
+<span className="absolute bottom-0 left-0 w-10 h-10 border-b-3 border-l-3 border-gray-300 dark:border-slate-300 rounded-bl-3xl z-10"></span>
+
+{/* bottom-right */}
+<span className="absolute bottom-0 right-0 w-10 h-10 border-b-3 border-r-3 border-gray-400 dark:border-slate-400 rounded-br-3xl z-10"></span>
           
 
         {/* 🖼 Card background image */}
@@ -45,17 +55,6 @@ const RegistrationLogin = () => {
           className="relative backdrop-blur-md"
         />
 
-          {/* top-left */}
-  <span className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-zinc-300 dark:border-slate-200 rounded-tl-3xl"></span>
-
-  {/* top-right */}
-  <span className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-gray-400 dark:border-slate-400 rounded-tr-3xl"></span>
-
-  {/* bottom-left */}
-  <span className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-gray-300 dark:border-slate-300 rounded-bl-3xl"></span>
-
-  {/* bottom-right */}
-  <span className="absolute bottom-0 right-0 w-10 h-10 border-b-5 border-r-2 border-gray-400 dark:border-slate-400 rounded-br-3xl"></span>
 
         
         
