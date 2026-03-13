@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
+import { getSpecializationCountApi } from "../../../services/homepageCountApi";
 
 import general from "../../../assets/general.png";
 import cardiology from "../../../assets/cardiology.png";
@@ -46,7 +47,18 @@ const CARD_COLORS: Record<number, string> = {
 };
 
 const DESC: Record<number, string> = {
-  1: "Heart & cardiovascular care"
+  1: "General Health care",
+  2: "Heart & Cardiovascular care",
+  3: "Skin, Hair & Nail care",
+  4: "Child & Adolescent healthcare",
+  5: "Surgical Treatment & Procedures",
+  6: "Teeth & Oral healthcare",
+  7: "Vision & Eye care",
+  8: "Ear, Nose & Throat care",
+  9: "Mental Health & Behavior",
+  10: "Brain & Nervous system",
+  11: "Bones, Joints & Muscles",
+  12: "Women’s Reproductive Health"
 };
 
 interface AppointmentsProps {
@@ -55,15 +67,48 @@ interface AppointmentsProps {
 
 
 const Appointments: React.FC<AppointmentsProps> = ({ showHeader = true }) => {
-  const navigate = useNavigate(); 
+  const [doctorCounts, setDoctorCounts] = useState<Record<number, number>>({});
+
+  const navigate = useNavigate();
   const location = useLocation();
 
+  const called = useRef(false);
+
+  useEffect(() => {
+
+    if (called.current) return;
+
+    called.current = true;
+
+    const fetchCounts = async () => {
+
+      try {
+
+        const data = await getSpecializationCountApi();
+
+        const countMap: Record<number, number> = {};
+
+        data.forEach((item) => {
+          countMap[item.specialization_id] = item.doctor_count;
+        });
+
+        setDoctorCounts(countMap);
+
+      } catch (error) {
+        console.error("Error fetching specialization counts:", error);
+      }
+
+    };
+
+    fetchCounts();
+
+  }, []);
   return (
    <div
   className={`p-6 ${
     location.pathname === "/"
-      ? "bg-gradient-to-r from-gray-200 via-slate-50 to-gray-200"
-      : "bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300"
+      ? "bg-gradient-to-r from-gray-200 via-slate-50 to-gray-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950"
+      : "bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950"
   }`}>
       {/* Title */}
       {showHeader && location.pathname !== "/" && (
@@ -124,7 +169,9 @@ const Appointments: React.FC<AppointmentsProps> = ({ showHeader = true }) => {
                 {showHeader && location.pathname === "/" && (
                   <div className=" flex flex-col">
                   <span className="text-xs"> {desc} </span>
-                  <span className="text-xs"> + Doctors </span>
+                  <span className="text-xs">
+                      {doctorCounts[item.value] || 0} Doctors
+                    </span>
                   </div>
                 )}
             </div>
