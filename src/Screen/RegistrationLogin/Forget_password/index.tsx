@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getRoleFromUrl } from "../../../Environment";
 import type { Role } from "../../../Environment";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 const ForgotPassword: React.FC = () => {
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   const selected: Role = getRoleFromUrl(location.search);
 
@@ -229,6 +230,8 @@ const ForgotPassword: React.FC = () => {
       if (res.data.success) {
 
         toast.success("Password updated successfully");
+       
+      navigate(`/registrationlogin/login?role=${selected}`);
 
         setStep(1);
 
