@@ -4,7 +4,7 @@ import type { ApplyDoctorForm } from "../../../services/applyDoctorApi";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import dark_background from "../../../assets/doctor_light.webp";
+import dark_background from "../../../assets/dark_login_bg.png";
 import background from "../../../assets/login_bg.png"
 
 
@@ -158,20 +158,20 @@ const ApplyDoctor: React.FC = () => {
     <div className="relative backdrop-blur-md p-8 mb-6 rounded-3xl max-w-lg mx-auto">
 
   {/* top-left */}
-  <span className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-gray-300 rounded-tl-3xl"></span>
+  <span className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-zinc-300 dark:border-slate-200 rounded-tl-3xl"></span>
 
   {/* top-right */}
-  <span className="absolute top-0 right-0 w-25 h-25 border-t-2 border-r-2 border-gray-400 rounded-tr-3xl"></span>
+  <span className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-gray-400 dark:border-slate-400 rounded-tr-3xl"></span>
 
   {/* bottom-left */}
-  <span className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-gray-400 rounded-bl-3xl"></span>
+  <span className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-gray-300 dark:border-slate-300 rounded-bl-3xl"></span>
 
   {/* bottom-right */}
-  <span className="absolute bottom-0 right-0 w-10 h-10 border-b-2 border-r-2 border-gray-400 rounded-br-3xl"></span>
+  <span className="absolute bottom-0 right-0 w-10 h-10 border-b-2 border-r-2 border-gray-400 dark:border-slate-400 rounded-br-3xl"></span>
 
     
 
-      <h2 className="text-2xl font-bold text-cyan-800 dark:text-gray-600 mb-6 text-center">
+      <h2 className="text-2xl font-bold text-cyan-800 dark:text-gray-100 mb-6 text-center">
         Apply as Doctor
       </h2>
 
@@ -182,7 +182,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Enter your full name"
         value={form.name}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12 dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12 dark:text-white dark:border-gray-800 rounded-full border focus:ring-0 mb-3"
       />
 
       {/* Specialization */}
@@ -192,7 +192,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Specialization"
         value={form.specialization}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12 dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12 dark:text-white dark:border-gray-800 rounded-full border focus:ring-0 mb-3"
       />
 
       {/* Email */}
@@ -202,7 +202,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Enter your email"
         value={form.email}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12  dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12  dark:text-white dark:border-gray-800 rounded-full border focus:ring-0 mb-3"
       />
 
       {/* Phone */}
@@ -212,7 +212,7 @@ const ApplyDoctor: React.FC = () => {
         placeholder="Enter your phone number"
         value={form.phone}
         onChange={handleChange}
-        className="w-full px-4 py-2 pr-12  dark:text-gray-800 rounded-full border focus:ring-2 mb-3"
+        className="w-full px-4 py-2 pr-12  dark:text-white dark:border-gray-800 rounded-full border focus:ring-0 mb-3"
       />
 
       {/* Hidden File Input */}
@@ -230,7 +230,7 @@ const ApplyDoctor: React.FC = () => {
 
         <label
           htmlFor="cvUpload"
-          className="cursor-pointer flex-1 text-gray-500 dark:text-gray-600"
+          className="cursor-pointer flex-1 text-gray-500 dark:text-gray-300"
         >
           {fileName ? ` ${fileName}` : " Choose a File"}
         </label>
