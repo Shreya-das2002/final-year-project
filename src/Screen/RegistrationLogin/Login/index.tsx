@@ -233,7 +233,7 @@ else {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-600 hover:to-cyan-950 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-cyan-900 dark:hover:to-cyan-600 text-white font-semibold"
+          className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-800 hover:from-cyan-600 hover:to-cyan-950 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-cyan-900 dark:hover:to-cyan-600 text-white font-semibold"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
