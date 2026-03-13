@@ -1,10 +1,9 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import background from "../../assets/Background.jpg";
-import dark_background from "../../assets/dark_background.jpg";
-import signup_logo from "../../assets/signup_logo.jpg";
-import dark_signup from "../../assets/dark_signup.jpg";
+import background from "../../assets/login_bg.png";
+import dark_background from "../../assets/dark_login_bg.png";
+
 
 const RegistrationLogin = () => {
   const [isDark, setIsDark] = useState(
@@ -38,14 +37,11 @@ const RegistrationLogin = () => {
       >
         {/* 🖼 Card background image */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${isDark ? dark_signup : signup_logo})`,
-          }}
+          className="relative backdrop-blur-md"
         />
 
         {/* 🧊 Glass content */}
-        <div className="relative h-full w-full bg-white/55 dark:bg-gray-900/60 backdrop-blur-md p-8 rounded-3xl">
+        <div className="relative h-full w-full bg-white/15 dark:bg-gray-900/30 backdrop-blur-md p-8 rounded-3xl">
           <Outlet />
         </div>
       </div>

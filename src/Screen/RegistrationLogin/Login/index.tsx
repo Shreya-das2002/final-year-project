@@ -134,8 +134,8 @@ else {
             className={`px-4 py-2 rounded-md font-semibold capitalize transition-all
               ${
                 selected === role
-                  ? "bg-blue-500 dark:bg-gray-500 text-white shadow-md"
-                  : "bg-blue-300/30 dark:bg-gray-700/30 text-gray-700 dark:text-gray-300"
+                  ? "bg-sky-800 dark:bg-gray-500 text-gray-100 dark:text-white shadow-md"
+                  : "bg-cyan-600 dark:bg-gray-800 text-gray-100 dark:text-gray-300"
               }`}
           >
             {role}
@@ -144,7 +144,7 @@ else {
       </div>
 
       {/* HEADING */}
-      <h2 className="text-2xl text-center mb-6 text-blue-600 dark:text-gray-100 font-bold">
+      <h2 className="text-2xl text-center mb-6 text-cyan-700 dark:text-gray-100 font-bold">
         {selected.charAt(0).toUpperCase() + selected.slice(1)} Login
       </h2>
 
@@ -152,7 +152,7 @@ else {
       <form className="space-y-4" onSubmit={handleLogin}>
         {/* USER ID */}
         <div>
-          <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
+          <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-200">
             {selected === "doctor"
               ? "Doctor ID"
               : selected === "admin"
@@ -165,7 +165,7 @@ else {
             value={id}
             disabled={loading}
             onChange={(e) => setId(e.target.value)}
-            className="w-full px-4 py-2 rounded-full border focus:ring-2"
+            className="w-full px-4 py-2 rounded-full border border-black dark:border-gray-100 text-gray-950 dark:text-gray-200 "
             placeholder={
               selected === "doctor"
                 ? "Enter Doctor ID"
@@ -184,7 +184,7 @@ else {
 
         {/* PASSWORD */}
         <div>
-          <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-300">
+          <label className="block mb-1 pl-3 text-gray-800 dark:text-gray-200">
             Password
           </label>
 
@@ -194,7 +194,7 @@ else {
             value={password}
             disabled={loading}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 pr-12 rounded-full border focus:ring-2"
+            className="w-full px-4 py-2 pr-12 rounded-full border  border-black dark:border-gray-100 text-gray-950 dark:text-gray-200 "
             placeholder="Enter Your Password"
           />
 
@@ -221,7 +221,7 @@ else {
           <div className="text-right mt-1">
             <Link
               to={`/registrationlogin/forgot-password?role=${selected}`}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-cyan-700 dark:text-gray-400 hover:underline"
             >
               Forgot Password?
             </Link>
@@ -233,7 +233,7 @@ else {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 rounded-full bg-blue-500 text-white font-semibold"
+          className="w-full py-2 rounded-full bg-gradient-to-r  from-cyan-500  to-cyan-700 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-950 dark:to-cyan-700 dark:hover:from-sky-400 dark:hover:to-cyan-600 text-white font-semibold"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -241,9 +241,9 @@ else {
 
       {/* REGISTER */}
       {selected === "patient" && (
-        <p className="text-center mt-4">
+        <p className="text-center mt-4 text-black dark:text-gray-200">
           New here?{" "}
-          <Link to="/registrationlogin/signup" className="text-blue-600">
+          <Link to="/registrationlogin/signup" className="text-cyan-700 dark:text-cyan-500">
             Register Now
           </Link>
         </p>
