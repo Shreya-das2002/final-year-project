@@ -1,7 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import {useState, useEffect} from "react";
 import type { RootState } from "../../../../store/store";
 import {getGenderLabel, DOCTOR_SPECIALIZATIONS} from "../../../Environment";
+import background from "../../../assets/apply_light.jpeg"
+import dark_background from "../../../assets/doctor_light.webp"
 
 import {
   FaEdit,
@@ -24,6 +27,19 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
   // Get admin user from Redux store
   const user = useSelector((state: RootState) => state.auth.user);
+
+   const [isDark, setIsDark] = useState(
+        document.documentElement.classList.contains("dark")
+      ); 
+  
+        useEffect(() => {
+          const observer = new MutationObserver(() => {
+            setIsDark(document.documentElement.classList.contains("dark"));
+          });
+          observer.observe(document.documentElement, { attributes: true });
+          return () => observer.disconnect();
+        }, []);
+  
   
  const buttons = useSelector(
     (state: RootState) => state.auth.buttons
@@ -64,32 +80,18 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
       {/* Drawer */}
       <div
-        className={`fixed top-16 bottom-0 right-0 w-[420px]
-        bg-gradient-to-br from-cyan-100 to-cyan-400
-        shadow-2xl z-50
+        className={`fixed top-16 bottom-0 right-0 w-[400px]
+        shadow-2xl z-50 min-h-[calc(100vh-110px)] bg-cover bg-auto flex flex-col justify-start 
         transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}
-        overflow-y-auto`}
+        overflow-y-auto`} style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
       >
-        {/* Content */}
-        <div className="p-6 text-center">
-
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 left-3 text-cyan-700 dark:text-cyan"
-        >
-          <FaTimes size={18} />
-        </button>       
-          
-
-
           {/* Avatar */}
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-10">
             <div className="
               w-24 h-24
               rounded-full
-              bg-blue-600
+              bg-cyan-700 dark:bg-gray-500
               flex items-center justify-center
               text-white text-2xl font-semibold
               shadow-lg
@@ -99,14 +101,14 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
           </div>
 
 
-          {/* Name */}
-          <h2 className="mt-4 text-xl font-semibold text-gray-800">
+                    {/* Name */}
+          <h2 className="mt-4 text-xl font-bold text-center text-gray-800 dark:text-gray-100 ">
             {fullName}
           </h2>
 
 
           {/* Email */}
-          <p className="text-gray-600 flex justify-center items-center gap-2 mt-1">
+          <p className="text-gray-700 dark:text-gray-950 flex justify-center items-center gap-2 mt-1">
             <FaEnvelope />
             {user.email}
           </p>
@@ -117,38 +119,44 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
             <span className="
               px-4 py-2
-              bg-white/70
+              bg-cyan-700 dark:bg-gray-500
               rounded-full
               shadow
               flex items-center gap-2
-              text-gray-700
+              text-gray-300 dark:text-gray-200
             ">
               <FaUserShield />
               {user.role || "Admin"}
             </span>
+            </div>
 
 
-          </div>
-            {canEditProfile && (
-                    <button
-            
-            className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-          >
-            <FaEdit />
-            Edit Profile
-          </button>
-          )}
+        {/* Content */}
+        <div className="p-6 text-center ml-10 mr-10 mt-5 rounded-4xl bg-gradient-to-r  from-cyan-100 to-gray-300 dark:from-gray-800 dark:to-gray-600">
+
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 left-3 text-cyan-700 dark:text-gray-200"
+        >
+          <FaTimes size={18} />
+        </button>       
+          
+
+
+          
+
 
 
           {/* Admin Details Card */}
 
 
 
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-sm text-gray-700 dark:text-gray-200 ">
 
 
               <p className="flex items-center gap-2">
-                <FaUserCircle className="text-blue-500" />
+                <FaUserCircle className="text-cyan-500" />
                 <span className="font-medium">Name:</span>
                 {fullName}
               </p>
@@ -192,22 +200,34 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   }
   </p>
 )}
-
+        </div>
 
             </div>
 
             {/* DELETE BUTTON */}
-        <div className="w-full flex justify-end mt-6 pr-2 pt-10 items-end">
+        <div className="w-full flex justify-end mt-0 pr-10 pt-5 items-end">
           {canDeleteMyProfile && (
-          <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
-            Delete My Account
+          <button className="py-2 ml-11 px-0 w-full  rounded-full bg-red-600  text-white text-xs font-small hover:bg-red-800 transition">
+            Delete Account
           </button>
           )}
         </div>
 
+        {/* Edit Profile */}
+
+                    {canEditProfile && (
+                    <button
+            
+            className="mt-4 inline-flex ml-52 items-center gap-2 px-6 py-2 rounded-lg bg-cyan-600 text-white font-medium hover:bg-cyan-800 transition"
+          >
+            <FaEdit />
+            Edit Profile
+          </button>
+          )}
+
           
           
-        </div>
+        
 
 
       </div>
