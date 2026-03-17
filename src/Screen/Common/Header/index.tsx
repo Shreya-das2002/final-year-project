@@ -6,7 +6,7 @@ import Theme from "../Theme/Theme";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { logout } from "../../../../store/slices/authSlice";
-import logo from "../../../assets/logo_2.0.png";
+import logo from "../../../assets/logo_outline.png";
 
 
 const Header: React.FC = () => {
@@ -68,26 +68,26 @@ const Header: React.FC = () => {
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-linear-to-r from-cyan-700 via-cyan-600 to-sky-400 dark:from-slate-500 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
+      <header className="h-16 bg-linear-to-r from-cyan-700 via-cyan-600 to-sky-200 dark:from-slate-500 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
         
-       
-       <div
+
+        <div
   onClick={goToHome}
   className="cursor-pointer select-none"
 >
   <div className="flex items-center gap-1">
-    
+    {/* <div className="bg-white/20 p-2 rounded-full "> */}
     <img src={logo} alt="SymptoNexus Logo" className="w-10 h-10" />
-      
+      {/* </div> */}
     <div>
-      <span className="text-2xl text-blue-200 dark:text-gray-900 font-bold">
+      <span className="text-2xl text-slate-200 dark:text-gray-900 font-bold">
         Sympto
       </span>
-      <span className="text-2xl text-sky-400 dark:text-gray-300 font-bold">
+      <span className="text-2xl text-sky-950 dark:text-gray-300 font-bold">
         Nexus
       </span>
 
-      <p className="text-xs text-bold text-black pt-1 dark:text-white leading-none">
+      <p className="text-xs text-bold text-gray-300 pt-1 dark:text-white leading-none">
         Guiding Your Path, From Concern to Calm
       </p>
     </div>
@@ -102,21 +102,21 @@ const Header: React.FC = () => {
   </div>
 
   {/* DATE */}
-  <div className="w-40 flex items-center gap-0">
-    <span className="backdrop-blur-md p-2 rounded-full">
-      <FaRegCalendarAlt className="text-lg text-gray-800 dark:text-gray-100" />
+  <div className="w-40 flex items-center gap-1">
+    <span className="bg-gray-50 dark:bg-cyan-700 p-2 rounded-full">
+      <FaRegCalendarAlt className="text-lg text-cyan-800 dark:text-gray-100" />
     </span>
 
-    <span className="whitespace-nowrap text-gray-800 dark:text-gray-100">{date}</span>
+    <span className="whitespace-nowrap text-cyan-900 dark:text-gray-100">{date}</span>
   </div>
 
   {/* TIME */}
-  <div className="w-36 flex pl-3 items-center gap-0">
-    <span className="backdrop-blur-md p-2 rounded-full ">
-      <FaRegClock className="text-lg text-gray-800 dark:text-gray-100" />
+  <div className="w-36 flex pl-3 items-center gap-1">
+    <span className="bg-gray-50 dark:bg-cyan-700 p-2 rounded-full ">
+      <FaRegClock className="text-lg text-cyan-800 dark:text-gray-100" />
     </span>
 
-    <span className="whitespace-nowrap text-gray-800 dark:text-gray-100">{time}</span>
+    <span className="whitespace-nowrap text-cyan-900 dark:text-gray-100">{time}</span>
   </div>
 
   {/* SIGN IN / BACK */}

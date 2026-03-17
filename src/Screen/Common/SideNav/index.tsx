@@ -113,7 +113,7 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
 <div className="w-16 h-16 rounded-full dark:bg-cyan-700 bg-cyan-600 flex items-center justify-center
 text-xl font-bold mb-2 cursor-pointer
 transform transition-transform duration-300 ease-in-out text-gray-200 dark:text-gray-100
-hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
+hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-600">
 
           {firstLetter}{lastLetter}
 
@@ -125,7 +125,7 @@ hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
 
         </p>
 
-        <p className="text-sm dark:text-gray-300 text-cyan-200 text-center break-all px-2">
+        <p className="text-sm dark:text-gray-300 text-gray-200 text-center break-all px-2">
 
           {user?.email}
 
@@ -153,7 +153,7 @@ hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
       }}
       className={` flex items-center gap-3 px-4 py-2 rounded cursor-pointer
 transform transition-transform duration-300 ease-in-out 
-hover:scale-103 text-cyan-200 dark:text-gray-100 
+hover:scale-103 text-gray-200 dark:text-gray-100 
 ${menu.control_key === "logout" ? " hover:bg-red-700" : "hover:bg-sky-600 dark:hover:bg-cyan-800  "}
 ${SelectRow === menu.control_key ? "bg-sky-700 dark:bg-gray-500" : " " } `}
     >
