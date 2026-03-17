@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
     <footer className="fixed bottom-0 left-0 w-full h-12 py-3 px-6 bg-linear-to-r from-cyan-700 via-cyan-600 to-sky-200 dark:from-slate-600 dark:via-sky-800 dark:to-sky-950 z-50">
 
       <div className="mx-w-7xl mx-auto px-6 flex items-center justify-between">
-        <p className="text-black dark:text-gray-50 text-sm">
+        <p className="text-gray-200 dark:text-gray-50 text-sm">
           © {new Date().getFullYear()} SymptoNexus. All rights reserved.
         </p>
 
