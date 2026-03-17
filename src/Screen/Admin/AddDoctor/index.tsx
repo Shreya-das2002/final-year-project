@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-hot-toast";
+import background from "../../../assets/login_bg.png";
+import dark_background from "../../../assets/dark_login_bg.png"
 
 import type { AppDispatch } from "../../../../store/store";
 import { createDoctorThunk } from "../../../../store/slices/doctorSlice";
@@ -19,7 +21,18 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const AddDoctor: React.FC = () => {
 
+      const [isDark, setIsDark] = useState(
+        document.documentElement.classList.contains("dark")
+      ); 
   const dispatch = useDispatch<AppDispatch>();
+
+        useEffect(() => {
+          const observer = new MutationObserver(() => {
+            setIsDark(document.documentElement.classList.contains("dark"));
+          });
+          observer.observe(document.documentElement, { attributes: true });
+          return () => observer.disconnect();
+        }, []);
 
 
   /* ================= STATE ================= */
@@ -192,17 +205,32 @@ const AddDoctor: React.FC = () => {
   /* ================= INPUT STYLE ================= */
 
   const inputClass =
-    "w-full rounded-md border border-gray-300 px-3 py-2 text-sm " +
-    "focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none";
+    "w-full rounded-xl border border-gray-700 dark:border-gray-200 px-3 py-2 text-sm " +
+    "focus:border-gray-700 dark:focus:border-gray-200 focus:ring-1 focus:ring-gray-700 dark:focus:ring-gray-200 outline-none placeholder:text-gray-800 dark:placeholder:text-gray-200";
 
 
   /* ================= UI ================= */
 
   return (
 
-    <div className="w-full px-6 py-4">
+        <div className="min-h-[calc(100vh-110px)] bg-cover bg-center flex flex-col justify-start px-10 pt-10 py-10"
+    style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
+    >
+      <div className="w-full max-w-5xl p-10 pt-10 rounded-3xl relative backdrop-blur-xl mx-auto ">
 
-      <h2 className="text-xl font-semibold mb-6">
+  {/* top-left */}
+  <span className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-gray-400 dark:border-slate-200 rounded-tl-3xl"></span>
+
+  {/* top-right */}
+  <span className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-gray-500 dark:border-slate-400 rounded-tr-3xl"></span>
+
+  {/* bottom-left */}
+  <span className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-gray-400 dark:border-slate-300 rounded-bl-3xl"></span>
+
+  {/* bottom-right */}
+  <span className="absolute bottom-0 right-0 w-10 h-10 border-b-2 border-r-2 border-gray-500 dark:border-slate-400 rounded-br-3xl"></span>
+
+      <h2 className="text-3xl font-bold mb-6 text-cyan-700 dark:text-gray-200 text-center">
         Add Doctor
       </h2>
 
@@ -212,13 +240,11 @@ const AddDoctor: React.FC = () => {
 
         {/* PERSONAL */}
 
-        <div className="bg-white border rounded-lg p-6 space-y-4">
+        
 
-          <h3 className="font-semibold">
-            Personal Information
-          </h3>
+          
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-6 text-gray-700 dark:text-gray-100">
 
             <input
               name="firstName"
@@ -250,18 +276,16 @@ const AddDoctor: React.FC = () => {
 
           </div>
 
-        </div>
+        
 
 
         {/* CONTACT */}
 
-        <div className="bg-white border rounded-lg p-6 space-y-4">
+        
 
-          <h3 className="font-semibold">
-            Contact Information
-          </h3>
+         
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 text-gray-700 dark:text-gray-100">
 
             <input
               type="email"
@@ -285,18 +309,16 @@ const AddDoctor: React.FC = () => {
 
           </div>
 
-        </div>
+        
 
 
         {/* PROFESSIONAL */}
 
-        <div className="bg-white border rounded-lg p-6 space-y-4">
+       
 
-          <h3 className="font-semibold">
-            Professional Information
-          </h3>
+         
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 text-gray-700 dark:text-gray-100">
 
 
             {/* GENDER */}
@@ -313,12 +335,12 @@ const AddDoctor: React.FC = () => {
   className={inputClass}
   required
 >
-  <option value="">
+  <option className=" bg-white dark:bg-black text-black dark:text-white" value="">
     Select Gender
   </option>
 
   {genderOption.map((g) => (
-    <option key={g.value} value={g.value}>
+    <option className=" bg-white dark:bg-black text-black dark:text-white" key={g.value} value={g.value}>
       {g.label}
     </option>
   ))}
@@ -336,13 +358,13 @@ const AddDoctor: React.FC = () => {
               required
             >
 
-              <option value="">
+              <option className=" bg-white dark:bg-black text-black dark:text-white" value="">
                 Select Specialization
               </option>
 
               {DOCTOR_SPECIALIZATIONS.map((spec) => (
 
-                <option key={spec.value} value={spec.value}>
+                <option className=" bg-white dark:bg-black text-black dark:text-white" key={spec.value} value={spec.value}>
 
                   {spec.label}
 
@@ -355,18 +377,16 @@ const AddDoctor: React.FC = () => {
 
           </div>
 
-        </div>
+        
 
 
         {/* SECURITY */}
 
-        <div className="bg-white border rounded-lg p-6 space-y-4">
+        
 
-          <h3 className="font-semibold">
-            Account Security
-          </h3>
+          
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 text-gray-700 dark:text-gray-100">
 
 
             {/* PASSWORD */}
@@ -387,7 +407,7 @@ const AddDoctor: React.FC = () => {
                <button
                  type="button"
                  onClick={() => setShowPassword(!showPassword)}
-                 className="absolute inset-y-0 right-3 flex items-center pb-0 text-gray-500"
+                 className="absolute inset-y-0 right-3 flex items-center pb-0 text-gray-700 dark:text-gray-100"
                >
                  {showPassword ? (
                    <EyeIcon className="w-5 h-5" />
@@ -427,7 +447,7 @@ const AddDoctor: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-3 flex items-center pb-0 text-gray-500"
+                className="absolute inset-y-0 right-3 flex items-center pb-0 text-gray-700 dark:text-gray-100"
               >
                 {showConfirmPassword ? (
                   <EyeIcon className="w-5 h-5" />
@@ -463,7 +483,7 @@ const AddDoctor: React.FC = () => {
 
           </div>
 
-        </div>
+        
 
 
         {/* SUBMIT */}
@@ -473,7 +493,7 @@ const AddDoctor: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md"
+            className="px-6 py-2 bg-gradient-to-r from-cyan-700 to-cyan-500 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-900 dark:to-cyan-700 dark:hover:from-cyan-700 dark:hover:to-cyan-500 text-white rounded-md"
           >
 
             {loading ? "Creating..." : "Add Doctor"}
@@ -484,6 +504,8 @@ const AddDoctor: React.FC = () => {
 
 
       </form>
+
+      </div>
 
     </div>
 
