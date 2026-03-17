@@ -178,8 +178,6 @@ const DoctorList = () => {
 
             <tr>
 
-              <th className="p-4 text-blue-600">Sl. No.</th>
-
               <th className="p-4 text-blue-600">Name</th>
 
               <th className="p-4 text-blue-600">Email</th>
@@ -237,7 +235,7 @@ const DoctorList = () => {
             {/* Rows */}
 
             {!loading &&
-              filteredDoctors.map((doc, index) => {
+              filteredDoctors.map((doc) => {
 
                 const statusUI =
                   getStatusLabel(doc.status);
@@ -248,10 +246,6 @@ const DoctorList = () => {
                     key={doc.doctor_id}
                     className="border-t hover:bg-gray-50"
                   >
-
-                    <td className="p-4 font-medium">
-                      {index + 1}
-                    </td>
 
 
                     <td className="p-4 font-medium">

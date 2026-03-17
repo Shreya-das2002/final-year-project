@@ -4,6 +4,9 @@ import { toast } from "react-hot-toast";
 
 import { createAdminApi } from "../../../services/createAdminApi";
 import { addAdmin } from "../../../../store/slices/adminSlice";
+import background from "../../../assets/login_bg.png";
+import dark_background from "../../../assets/dark_login_bg.png";
+
 
 import {
   isStrongPassword,
@@ -18,6 +21,18 @@ import {
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const CreateAdmin = () => {
+    
+    const [isDark, setIsDark] = useState(
+      document.documentElement.classList.contains("dark")
+    ); 
+
+      useEffect(() => {
+        const observer = new MutationObserver(() => {
+          setIsDark(document.documentElement.classList.contains("dark"));
+        });
+        observer.observe(document.documentElement, { attributes: true });
+        return () => observer.disconnect();
+      }, []);
 
   const dispatch = useDispatch();
 
@@ -252,13 +267,30 @@ const CreateAdmin = () => {
   /* UI */
 
   const inputClass =
-  "w-full h-11 rounded-md border border-gray-400 px-3 pr-10 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none bg-white";
+  "w-full h-11 rounded-xl border border-gray-600 dark:border-gray-200 px-3 pr-10 text-sm text-gray-700 dark:text-gray-50 placeholder:text-gray-700 dark:placeholder:text-gray-50 focus:border-gray-600 dark:focus:border-gray-200 focus:ring-1 focus:ring-gray-600 dark:focus:ring-gray-200 outline-none bg-backdrop-blur-md";
 
   return (
 
-    <div className="w-full px-6 py-4">
+    <div className="min-h-[calc(100vh-110px)] bg-cover bg-center flex flex-col justify-start px-10 pt-18 py-10"
+    style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
+    >
 
-      <h2 className="text-xl font-semibold mb-6">Create Admin</h2>
+      <div className=" w-full max-w-5xl p-8 pt-9 rounded-3xl relative backdrop-blur-md mx-auto">
+
+          {/* top-left */}
+  <span className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-gray-400 dark:border-slate-200 rounded-tl-3xl"></span>
+
+  {/* top-right */}
+  <span className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-gray-400 dark:border-slate-400 rounded-tr-3xl"></span>
+
+  {/* bottom-left */}
+  <span className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-gray-400 dark:border-slate-300 rounded-bl-3xl"></span>
+
+  {/* bottom-right */}
+  <span className="absolute bottom-0 right-0 w-10 h-10 border-b-2 border-r-2 border-gray-400 dark:border-slate-400 rounded-br-3xl"></span>
+
+
+      <h2 className="text-xl text-cyan-700 dark:text-gray-50 text-center  font-bold mb-6">Create Admin</h2>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
 
@@ -343,9 +375,17 @@ const CreateAdmin = () => {
   className={inputClass}
 >
 
-            <option value="">Select Admin Type</option>
-            <option>Standard Admin</option>
-            <option>Guest Admin</option>
+  <option className="bg-white dark:bg-black text-black dark:text-white" value="">
+    Select Admin Type
+  </option>
+
+  <option className="bg-white dark:bg-black text-black dark:text-white">
+    Standard Admin
+  </option>
+
+  <option className="bg-white dark:bg-black text-black dark:text-white">
+    Guest Admin
+  </option>
           </select>
 
 
@@ -389,7 +429,7 @@ const CreateAdmin = () => {
 
                   <label
                     key={dept.value}
-                    className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    className="flex items-center px-3 py-2 hover:bg-blue-500 bg-white dark:bg-gray-900 text-black dark:text-white cursor-pointer"
                   >
 
                     <input
@@ -406,7 +446,7 @@ const CreateAdmin = () => {
 
   disabled={form.adminType === "Guest Admin"}
 
-  className="mr-2"
+  className="mr-2 "
 />
 
 
@@ -431,11 +471,11 @@ const CreateAdmin = () => {
             onChange={handleChange}
             className={inputClass}
           >
-            <option value="">Select Gender</option>
+            <option className=" bg-white dark:bg-black text-black dark:text-white" value="">Select Gender</option>
 
             {genderOption.map((g) => (
 
-              <option key={g.value} value={g.value}>
+              <option key={g.value} value={g.value} className=" bg-white dark:bg-black text-black dark:text-white">
                 {g.label}
               </option>
 
@@ -465,7 +505,7 @@ const CreateAdmin = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[50%] translate-y-[-50%] pointer-events-auto"
+              className="absolute right-3 top-[50%] translate-y-[-50%] text-gray-700 dark:text-gray-100 pointer-events-auto"
             >
               {showPassword ? (
                 <EyeIcon className="w-5 h-5" />
@@ -498,7 +538,7 @@ const CreateAdmin = () => {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-700 dark:text-gray-100"
             >
               {showConfirmPassword ? (
                 <EyeIcon className="w-5 h-5" />
@@ -525,7 +565,7 @@ const CreateAdmin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-6 py-2 bg-gradient-to-r from-cyan-700 to-cyan-500 hover:from-cyan-900 hover:to-cyan-700 dark:from-cyan-900 dark:to-cyan-700 dark:hover:from-cyan-700 dark:hover:to-cyan-500 text-white rounded-md "
           >
             {loading ? "Creating..." : "Create Admin"}
           </button>
@@ -533,6 +573,7 @@ const CreateAdmin = () => {
         </div>
 
       </form>
+      </div>
 
     </div>
 

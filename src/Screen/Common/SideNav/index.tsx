@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
@@ -22,6 +22,7 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [SelectRow, SetSelectedRow] = useState<string | null> (null);
 
   /* ================= REDUX ================= */
 
@@ -100,7 +101,7 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
   /* ================= UI ================= */
 
   return (
-    <aside className="fixed top-16 bottom-12 left-0 w-64 bg-gradient-to-r from-sky-100 to-cyan-600 dark:from-slate-500 dark:to-cyan-900 text-white flex flex-col z-40">
+    <aside className="fixed top-16 bottom-12 left-0 w-64 bg-cyan-800 dark:bg-slate-700 text-white flex flex-col z-40">
 
       {/* PROFILE */}
 
@@ -109,22 +110,22 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
         onClick={handleProfileClick}
       >
 
-<div className="w-16 h-16 rounded-full dark:bg-cyan-700 bg-cyan-500 flex items-center justify-center
+<div className="w-16 h-16 rounded-full dark:bg-cyan-700 bg-cyan-600 flex items-center justify-center
 text-xl font-bold mb-2 cursor-pointer
-transform transition-transform duration-300 ease-in-out text-gray-700 dark:text-gray-100
-hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
+transform transition-transform duration-300 ease-in-out text-gray-200 dark:text-gray-100
+hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-600">
 
           {firstLetter}{lastLetter}
 
         </div>
 
-        <p className="font-semibold text-center text-gray-700 dark:text-gray-50">
+        <p className="font-semibold text-center text-gray-100 dark:text-gray-50">
 
           {user?.first_name} {user?.last_name}
 
         </p>
 
-        <p className="text-sm dark:text-gray-100 text-gray-600 text-center break-all px-2">
+        <p className="text-sm dark:text-gray-300 text-gray-200 text-center break-all px-2">
 
           {user?.email}
 
@@ -147,10 +148,14 @@ hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
   return (
     <li
       key={menu.control_master_id}
-      onClick={() => handleMenuClick(menu.control_key)}
-      className="flex items-center gap-3 px-4 py-2 rounded cursor-pointer
-transform transition-transform duration-300 ease-in-out
-hover:scale-103 text-gray-700 dark:text-gray-100 dark:hover:bg-cyan-800 hover:bg-sky-500 "
+      onClick={() => {handleMenuClick(menu.control_key);
+        SetSelectedRow(menu.control_key);
+      }}
+      className={` flex items-center gap-3 px-4 py-2 rounded cursor-pointer
+transform transition-transform duration-300 ease-in-out 
+hover:scale-103 text-gray-200 dark:text-gray-100 
+${menu.control_key === "logout" ? " hover:bg-red-700" : "hover:bg-sky-600 dark:hover:bg-cyan-800  "}
+${SelectRow === menu.control_key ? "bg-sky-700 dark:bg-gray-500" : " " } `}
     >
       {Icon && <Icon size={20} />}
       {menu.control_name}
