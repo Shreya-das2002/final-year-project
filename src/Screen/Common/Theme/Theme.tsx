@@ -31,7 +31,7 @@ const Theme: React.FC = () => {
         bg-blue-50 text-cyan-700 border-blue-50
         hover:bg-blue-100
         
-        dark:bg-cyan-900 dark:text-yellow-300 dark:border-cyan-900
+        dark:bg-sky-900 dark:text-yellow-300 dark:border-cyan-900
         dark:hover:bg-cyan-950
       "
     >

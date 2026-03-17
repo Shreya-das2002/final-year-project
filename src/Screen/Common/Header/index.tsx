@@ -68,7 +68,7 @@ const Header: React.FC = () => {
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* ================= TOP HEADER (ALWAYS VISIBLE) ================= */}
-      <header className="h-16 bg-linear-to-r from-cyan-800 via-cyan-600 to-sky-300 dark:from-slate-500 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
+      <header className="h-16 bg-linear-to-r from-cyan-700 via-cyan-600 to-sky-400 dark:from-slate-500 dark:via-sky-800 dark:to-sky-950 flex items-center justify-between px-3 shadow-md">
         
        
        <div
@@ -80,14 +80,14 @@ const Header: React.FC = () => {
     <img src={logo} alt="SymptoNexus Logo" className="w-10 h-10" />
       
     <div>
-      <span className="text-2xl text-blue-950 dark:text-gray-900 font-bold">
+      <span className="text-2xl text-blue-200 dark:text-gray-900 font-bold">
         Sympto
       </span>
-      <span className="text-2xl text-sky-600 dark:text-gray-300 font-bold">
+      <span className="text-2xl text-sky-400 dark:text-gray-300 font-bold">
         Nexus
       </span>
 
-      <p className="text-xs text-sky-900 pt-1 dark:text-white leading-none">
+      <p className="text-xs text-bold text-black pt-1 dark:text-white leading-none">
         Guiding Your Path, From Concern to Calm
       </p>
     </div>
@@ -102,21 +102,21 @@ const Header: React.FC = () => {
   </div>
 
   {/* DATE */}
-  <div className="w-40 flex items-center gap-3">
-    <span className="bg-white/30 p-2 rounded-full">
-      <FaRegCalendarAlt className="text-lg" />
+  <div className="w-40 flex items-center gap-0">
+    <span className="backdrop-blur-md p-2 rounded-full">
+      <FaRegCalendarAlt className="text-lg text-gray-800 dark:text-gray-100" />
     </span>
 
-    <span className="whitespace-nowrap">{date}</span>
+    <span className="whitespace-nowrap text-gray-800 dark:text-gray-100">{date}</span>
   </div>
 
   {/* TIME */}
-  <div className="w-36 flex pl-3 items-center gap-3">
-    <span className="bg-white/30 p-2 rounded-full ">
-      <FaRegClock className="text-lg" />
+  <div className="w-36 flex pl-3 items-center gap-0">
+    <span className="backdrop-blur-md p-2 rounded-full ">
+      <FaRegClock className="text-lg text-gray-800 dark:text-gray-100" />
     </span>
 
-    <span className="whitespace-nowrap">{time}</span>
+    <span className="whitespace-nowrap text-gray-800 dark:text-gray-100">{time}</span>
   </div>
 
   {/* SIGN IN / BACK */}
