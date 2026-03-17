@@ -65,25 +65,23 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
       {/* Drawer */}
       <div
         className={`fixed top-16 bottom-0 right-0 w-[420px]
-        bg-gradient-to-br from-sky-100 to-blue-200
+        bg-gradient-to-br from-cyan-100 to-cyan-400
         shadow-2xl z-50
         transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}
         overflow-y-auto`}
       >
-
+        {/* Content */}
+        <div className="p-6 text-center">
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 left-4 text-gray-500 hover:text-red-500"
+          className="absolute top-3 left-3 text-cyan-700 dark:text-cyan"
         >
           <FaTimes size={18} />
-        </button>
-
-
-        {/* Content */}
-        <div className="p-6 text-center">
+        </button>       
+          
 
 
           {/* Avatar */}
@@ -143,15 +141,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
 
           {/* Admin Details Card */}
-          <div className="
-            mt-6
-            bg-white/60
-            backdrop-blur-md
-            rounded-xl
-            shadow-md
-            p-4
-            text-left
-          ">
+
 
 
             <div className="space-y-3 text-sm text-gray-700">
@@ -203,11 +193,10 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   </p>
 )}
 
+
             </div>
 
-          </div>
-        </div>
-{/* DELETE BUTTON */}
+            {/* DELETE BUTTON */}
         <div className="w-full flex justify-end mt-6 pr-2 pt-10 items-end">
           {canDeleteMyProfile && (
           <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
@@ -215,6 +204,11 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
           </button>
           )}
         </div>
+
+          
+          
+        </div>
+
 
       </div>
 
