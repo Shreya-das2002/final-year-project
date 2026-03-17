@@ -100,7 +100,7 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
   /* ================= UI ================= */
 
   return (
-    <aside className="fixed top-16 bottom-12 left-0 w-64 bg-gradient-to-r from-sky-100 to-cyan-600 dark:from-slate-500 dark:to-cyan-900 text-white flex flex-col z-40">
+    <aside className="fixed top-16 bottom-12 left-0 w-64 bg-cyan-800 dark:bg-slate-700 text-white flex flex-col z-40">
 
       {/* PROFILE */}
 
@@ -109,7 +109,7 @@ const SideNav: React.FC<SideNavProps> = ({ onProfileClick }) => {
         onClick={handleProfileClick}
       >
 
-<div className="w-16 h-16 rounded-full dark:bg-cyan-700 bg-cyan-500 flex items-center justify-center
+<div className="w-16 h-16 rounded-full dark:bg-cyan-700 bg-slate-400 flex items-center justify-center
 text-xl font-bold mb-2 cursor-pointer
 transform transition-transform duration-300 ease-in-out text-gray-700 dark:text-gray-100
 hover:scale-103 dark:hover:scale-103 dark:hover:bg-cyan-700 hover:bg-cyan-500">
