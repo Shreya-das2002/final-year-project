@@ -8,7 +8,6 @@ import dark_background from "../../../assets/doctor_light.webp"
 
 import {
   FaEdit,
-  FaTimes,
   FaUserShield,
   FaEnvelope,
   FaUserCircle,
@@ -16,6 +15,7 @@ import {
   FaVenusMars,
   FaHospital
 } from "react-icons/fa";
+import { FiChevronRight } from "react-icons/fi";
 
 
 interface Props {
@@ -86,10 +86,24 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
         ${open ? "translate-x-0" : "translate-x-full"}
         overflow-y-auto`} style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
       >
+
+        <div className="relative w-[90%] max-w-md ">
+
+                            {/* Close Button */}
+        <button
+          onClick={onClose}
+          className=" text-cyan-700 dark:text-gray-200 pl-3 pt-4 hover:text-red-500 dark:hover:text-red-500 absolute left-2 top-1/2 -translate-y-1/2"
+        >
+          <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
+        </button> 
+
+
+
+        <div className=" bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mt-10 border border-white/20">
           {/* Avatar */}
-          <div className="flex justify-center mt-10">
+          <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
             <div className="
-              w-24 h-24
+              w-24 h-24 border-2 border-cyan-100 dark:border-cyan-800
               rounded-full
               bg-cyan-700 dark:bg-gray-500
               flex items-center justify-center
@@ -101,8 +115,10 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
           </div>
 
 
+              
+
                     {/* Name */}
-          <h2 className="mt-4 text-xl font-bold text-center text-gray-800 dark:text-gray-100 ">
+          <h2 className="mt-4 text-xl font-bold text-center pt-10 text-gray-800 dark:text-gray-700 ">
             {fullName}
           </h2>
 
@@ -130,23 +146,16 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             </span>
             </div>
 
+ 
+
 
         {/* Content */}
-        <div className="p-6 text-center ml-10 mr-10 mt-5 rounded-4xl bg-gradient-to-r  from-cyan-100 to-gray-300 dark:from-gray-800 dark:to-gray-600">
+        <div className="ml-5 mr-5 mt-5 rounded-4xl">
 
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 left-3 text-cyan-700 dark:text-gray-200"
-        >
-          <FaTimes size={18} />
-        </button>       
-          
+  <div className="p-6 text-center rounded-4xl 
+    bg-white/40 dark:bg-gray-500/40 ">
 
-
-          
-
-
+      
 
           {/* Admin Details Card */}
 
@@ -200,18 +209,29 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   }
   </p>
 )}
+
+              <div className="absolute border w-65 border-gray-400/30 mt-2 ml-1 items-center ">
+                </div>
+
+              
+
+               {/* DELETE BUTTON */}
+        <div className="w-full flex justify-end mt-0 pt-5 items-end ">
+          {canDeleteMyProfile && (
+          <button className="text-xs p-2 w-100 mr-0 border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition">
+            Delete Account
+          </button>
+          )}
+          
+        </div>
+        
+
+        </div>
         </div>
 
             </div>
 
-            {/* DELETE BUTTON */}
-        <div className="w-full flex justify-end mt-0 pr-10 pt-5 items-end">
-          {canDeleteMyProfile && (
-          <button className="py-2 ml-11 px-0 w-full  rounded-full bg-red-600  text-white text-xs font-small hover:bg-red-800 transition">
-            Delete Account
-          </button>
-          )}
-        </div>
+   
 
         {/* Edit Profile */}
 
@@ -229,7 +249,8 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
           
         
 
-
+          </div> 
+          </div> 
       </div>
 
       
