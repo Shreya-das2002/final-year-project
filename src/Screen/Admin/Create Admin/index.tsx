@@ -396,7 +396,7 @@ const CreateAdmin = () => {
             <div
   className={
     inputClass +
-    " cursor-pointer " +
+    " cursor-pointer flex items-center justify-between " +
     (form.adminType === "Guest Admin"
       ? "bg-gray-200 cursor-not-allowed"
       : "")
