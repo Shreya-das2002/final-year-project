@@ -7,7 +7,7 @@ import background from "../../../assets/apply_light.jpeg"
 import dark_background from "../../../assets/doctor_light.webp"
 
 import {
-  FaEdit,
+  
   FaUserShield,
   FaEnvelope,
   FaUserCircle,
@@ -16,6 +16,7 @@ import {
   FaHospital
 } from "react-icons/fa";
 import { FiChevronRight } from "react-icons/fi";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 
 
 interface Props {
@@ -68,46 +69,52 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
 
   return (
-    <>
-      {/* Overlay */}
-      <div
-        className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
-          open ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-        onClick={onClose}
-      />
+    <div>
+  {/* Overlay */}
+  <div
+    className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
+      open ? "opacity-100 visible" : "opacity-0 invisible"
+    }`}
+    onClick={onClose}
+  />
+
+  {/* ✅ FLOATING ARROW OUTSIDE */}
+ <div
+  className={`fixed top-1/2 right-[400px] -translate-y-1/2 translate-x-1/2 z-[9999]
+              transition-transform duration-100
+              ${open ? "translate-x-1/2 opacity-100 visible " : "translate-x-full opacity-0 invisible"}`}
+>
+    <button
+      onClick={onClose}
+      className="w-7 h-7 flex items-center justify-center
+                 rounded-full bg-gray-200 shadow-lg 
+                 text-cyan-700 hover:text-red-500 transition"
+    >
+      <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
+    </button>
+  </div>
+
 
 
       {/* Drawer */}
       <div
         className={`fixed top-16 bottom-0 right-0 w-[400px]
-        shadow-2xl z-50 min-h-[calc(100vh-110px)] bg-cover bg-auto flex flex-col justify-start 
+        shadow-2xl z-50 min-h-[calc(100vh-110px)] bg-cover flex flex-col justify-start 
         transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}
-        overflow-y-auto`} style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
+        overflow-y-auto overflow-x-visible`} style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
       >
 
-        <div className="relative w-full h-full max-w-md">
-          <div>
-
-                            {/* Close Button */}
-        <div className="bg-gray-200 rounded-full w-10 h-10 flex justify-center items-center">
-        <button
-          onClick={onClose}
-          className=" text-cyan-700 dark:text-gray-200 hover:text-red-500 dark:hover:text-red-500"
-        >
-          <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
-        </button> 
-        </div>
+          
+        
 
 
-
-        <div className=" bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mt-10 border border-white/20">
+        <div className=" bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mt-20  border border-white/20">
           {/* Avatar */}
           <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
             <div className="
               w-24 h-24 border-2 border-cyan-100 dark:border-cyan-800
-              rounded-full
+              rounded-full mb-0 
               bg-cyan-700 dark:bg-gray-500
               flex items-center justify-center
               text-white text-2xl font-semibold
@@ -115,13 +122,26 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             ">
               {initials || "A"}
             </div>
+            
           </div>
+
+                  {/* Edit Profile */}
+
+{canEditProfile && (
+  <button
+  
+    className="relative mt-5 ml-46 p-1  backdrop-blur-md bg-white/70 text-gray-500 dark:text-gray-700 
+               hover:text-cyan-700 transition rounded-full "
+  >
+    <PencilSquareIcon className="w-5 h-5 flex items-center pl-1" />
+  </button>
+)}
 
 
               
 
                     {/* Name */}
-          <h2 className="mt-4 text-xl font-bold text-center pt-10 text-gray-800 dark:text-gray-700 ">
+          <h2 className={`${user.role !== "super admin" ? "pt-10" : " "} mt-4 mb-2 text-xl font-bold text-center text-gray-800 dark:text-gray-700`}>
             {fullName}
           </h2>
 
@@ -149,7 +169,6 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             </span>
             </div>
 
- 
 
 
         {/* Content */}
@@ -164,7 +183,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
 
 
-            <div className="space-y-3 text-sm text-gray-700 dark:text-gray-200 ">
+            <div className={`${user.role !== "super admin" ? " " : "pt-5"} space-y-3 text-sm text-gray-700 dark:text-gray-200`}>
 
 
               <p className="flex items-center gap-2">
@@ -212,9 +231,10 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   }
   </p>
 )}
+              {user?.role !== "super admin" && (
 
               <div className="absolute border w-65 border-gray-400/30 mt-2 ml-1 items-center ">
-                </div>
+                </div>)}
 
               
 
@@ -234,34 +254,17 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
             </div>
 
-   
 
-        {/* Edit Profile */}
 
-                    {canEditProfile && (
-                    <button
-            
-            className="mt-4 inline-flex ml-52 items-center gap-2 px-6 py-2 rounded-lg bg-cyan-600 text-white font-medium hover:bg-cyan-800 transition"
-          >
-            <FaEdit />
-            Edit Profile
-          </button>
-          )}
         
         
         
         </div>
-          
-          
-        
 
           </div> 
-          
-          </div> 
-      </div>
 
       
-    </>
+    </div>
   );
 };
 
