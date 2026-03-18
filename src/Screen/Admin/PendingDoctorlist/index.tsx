@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { FaEnvelope, FaCommentMedical, FaPhone } from "react-icons/fa";
+import { FaEnvelope, FaUser, FaPhone, FaCheck, FaTimes } from "react-icons/fa";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchDoctorListThunk } from "../../../../store/slices/doctorSlice";
@@ -16,7 +16,7 @@ const cardThemes = [
   "from-cyan-100 to-cyan-500",
   "from-cyan-200 to-cyan-600",
   "from-cyan-300 to-cyan-700",
-  "from-sky-100 to-sky-500",
+  "from-sky-200 to-sky-500",
   "from-cyan-200 to-teal-500",
   "from-teal-100 to-cyan-500",
 ];
@@ -166,6 +166,35 @@ const PendingDoctorList: React.FC = () => {
                 className={`bg-gradient-to-r ${theme} rounded-2xl shadow-md border border-gray-200 overflow-hidden`}
               >
 
+                  {(canAccept || canDecline) && (
+
+                  <div className="flex top-3 right-3 gap-2 px-6 py-3 absolute">
+
+                    {canAccept && (
+                      <button
+                        onClick={() => handleAccept(doctor.doctor_id)}
+                        className="w-12 h-10 flex items-center justify-center rounded-full 
+                                bg-green-100 hover:bg-green-200 text-green-600 
+                                  shadow-md transition"
+                      >
+                        <FaCheck />
+                      </button>
+                    )}
+
+                    {canDecline && (
+                      <button
+                        onClick={() => handleDecline(doctor.doctor_id)}
+                        className="w-12 h-10 flex items-center justify-center rounded-full 
+                                bg-red-100 hover:bg-red-200 text-red-600 
+                                  shadow-md transition"
+                      >
+                        <FaTimes />
+                      </button>
+                    )}
+
+                  </div>
+
+                )}
                 {/* HEADER */}
                 <div className="flex items-center gap-4 p-4">
 
@@ -194,8 +223,8 @@ const PendingDoctorList: React.FC = () => {
                 <div className="p-4 space-y-2 text-gray-700 dark:text-gray-50">
 
                   <div className="flex items-center gap-3">
-                    <FaEnvelope className={iconColor} />
-                    <span>{doctor.email}</span>
+                    <FaUser className={iconColor} />
+                    <span>{doctor.gender}</span>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -204,40 +233,14 @@ const PendingDoctorList: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <FaCommentMedical className={iconColor} />
-                    <span>
-                      Submitted {new Date().toLocaleDateString()}
-                    </span>
+                    <FaEnvelope className={iconColor} />
+                    <span>{doctor.email}</span>
                   </div>
 
                 </div>
 
                 {/* FOOTER */}
-                {(canAccept || canDecline) && (
 
-                  <div className="flex items-center gap-6 px-6 py-3">
-
-                    {canAccept && (
-                      <button
-                        onClick={() => handleAccept(doctor.doctor_id)}
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white py-1 rounded-lg font-medium"
-                      >
-                        ✓ Approve
-                      </button>
-                    )}
-
-                    {canDecline && (
-                      <button
-                        onClick={() => handleDecline(doctor.doctor_id)}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white py-1 rounded-lg font-medium"
-                      >
-                        ✕ Reject
-                      </button>
-                    )}
-
-                  </div>
-
-                )}
 
               </div>
             );
