@@ -9,7 +9,7 @@ import type { RootState, AppDispatch } from "../../../../store/store";
 
 /* ================= COLUMN KEY TYPE ================= */
 
-type ColumnKey =  "name" | "email" | "role" | "action";
+type ColumnKey =  "name" | "email" | "role" | "action" | "created_on";
 
 /* ================= ROLE UI TYPE ================= */
 
@@ -61,7 +61,8 @@ const AdminList = () => {
     name: 250,
     email: 300,
     role: 180,
-    action: 150
+    action: 150,
+    created_on: 250,
   });
 
   const resizingCol = useRef<ColumnKey | null>(null);
@@ -106,7 +107,8 @@ const AdminList = () => {
           .toLowerCase()
           .includes(q) ||
         (admin.email ?? "").toLowerCase().includes(q) ||
-        roleText.includes(q)
+        roleText.includes(q) ||
+        (admin.created_on) 
       );
     });
   }, [admins, search]);
@@ -166,11 +168,21 @@ const AdminList = () => {
                 />
               </th>
 
+
+
               <th style={{ width: columnWidths.role }} className="p-4 relative">
                 Role
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
                   onMouseDown={(e) => startResize(e, "role")}
+                />
+              </th>
+
+               <th style={{ width: columnWidths.created_on }} className="p-4 relative">
+                Joining Date
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "email")}
                 />
               </th>
 
@@ -247,6 +259,11 @@ bg-cyan-600 text-white font-semibold shadow-sm cursor-pointer
                       </span>
                       </div>
                     </td>
+
+                    <td className="p-4 "><div className="flex gap-2 justify items-center"><FaEnvelope className="pt-1 text-2xl text-cyan-600"/>{admin.created_on ?? "-"}</div></td>
+                      
+                      
+
 
                     <td className="p-4">
                       <div className="flex justify-center gap-4">
