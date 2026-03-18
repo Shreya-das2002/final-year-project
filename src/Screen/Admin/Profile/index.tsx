@@ -87,15 +87,18 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
         overflow-y-auto`} style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
       >
 
-        <div className="relative w-[90%] max-w-md ">
+        <div className="relative w-full h-full max-w-md">
+          <div>
 
                             {/* Close Button */}
+        <div className="bg-gray-200 rounded-full w-10 h-10 flex justify-center items-center">
         <button
           onClick={onClose}
-          className=" text-cyan-700 dark:text-gray-200 pl-3 pt-4 hover:text-red-500 dark:hover:text-red-500 absolute left-2 top-1/2 -translate-y-1/2"
+          className=" text-cyan-700 dark:text-gray-200 hover:text-red-500 dark:hover:text-red-500"
         >
           <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
         </button> 
+        </div>
 
 
 
@@ -150,7 +153,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
 
         {/* Content */}
-        <div className="ml-5 mr-5 mt-5 rounded-4xl">
+        <div className="ml-5 mr-5 mt-6 rounded-4xl">
 
   <div className="p-6 text-center rounded-4xl 
     bg-white/40 dark:bg-gray-500/40 ">
@@ -244,12 +247,16 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             Edit Profile
           </button>
           )}
-
+        
+        
+        
+        </div>
           
           
         
 
           </div> 
+          
           </div> 
       </div>
 
