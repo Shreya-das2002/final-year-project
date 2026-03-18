@@ -123,22 +123,27 @@ const AdminList = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-cyan-700">Admin List</h2>
-      <div className="flex items-center w-72 border border-cyan-600 rounded-full px-3 py-2 shadow-sm focus-within:ring-1 focus-within:ring-cyan-600">
-
-  <input
-    type="text"
-    placeholder="Search by name, email, or role..."
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    className="flex-1 outline-none text-sm"
-  />
-
-  <FaSearch className="text-cyan-700 text-lg" />
-
-</div>
       </div>
 
-      <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden border border-gray-200">
+{/* SEARCH BAR */}
+<div className="p-4 flex justify-end ml-10">
+  <div className="flex items-center w-[400px] border border-cyan-600 rounded-full px-4 py-2 shadow-sm bg-white focus-within:ring-2 focus-within:ring-cyan-500">
+
+    <FaSearch className="text-cyan-700 text-lg mr-2" />
+
+    <input
+      type="text"
+      placeholder="Search by name, email, or role..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="flex-1 outline-none text-sm bg-transparent"
+    />
+
+  </div>
+</div>
+
+{/* TABLE */}
+
         <table className="w-full text-left ">
 
           {/* TABLE HEADER */}
@@ -294,7 +299,7 @@ bg-cyan-600 text-white font-semibold shadow-sm cursor-pointer
           </tbody>
 
         </table>
-      </div>
+        
     </div>
   );
 };
