@@ -32,7 +32,10 @@ interface Slot {
   date: string;
   slot_count: number;
   fees: number;
+  start_time: string;
+  end_time: string;
 }
+
 interface Doctor {
 
   doctor_id: number;
@@ -76,7 +79,18 @@ interface Doctor {
 interface DoctorState {
   doctors: Doctor[];
   experiences: Experience[];
-  slot: Record< number, Record<string, { slots: number; fee: string }>>;
+ slot: Record<
+  number,
+  Record<
+    string,
+    {
+      slots: number;
+      fee: string;
+      start_time: string;
+      end_time: string;
+    }
+  >
+>;
   loading: boolean;
   selectedDoctor: Doctor | null;
 }
@@ -298,6 +312,9 @@ action.payload.forEach((doc) => {
     state.slot[doc.doctor_id][slot.date] = {
       slots: slot.slot_count,
       fee: String(slot.fees),
+      start_time: slot.start_time,
+      end_time: slot.end_time
+
     };
   });
 });

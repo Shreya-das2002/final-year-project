@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SymptoBot = () => {
+const MyAppointments = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const SymptoBot = () => {
   )
 }
 
-export default SymptoBot
+export default MyAppointments 

@@ -70,6 +70,8 @@ export interface UpdateDoctorStatusPayload {
 export interface UpsertSlotPayload {
   doctor_id: number;
   date: string;
+  start_time: string;
+  end_time: string;
   slot_count: number;
   fees: number;
 }

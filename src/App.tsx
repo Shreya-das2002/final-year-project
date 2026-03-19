@@ -29,7 +29,6 @@ import Patientpage from "./Screen/Patient/Dashboard";
 import Profile from "./Screen/Patient/Profile";
 import Feedback from "./Screen/Patient/Feedback";
 import SymptoChecker from "./Screen/Patient/SymptoChecker";
-import SymptoBot from "./Screen/Patient/SymptoBot";
 import Appointments from "./Screen/Patient/Appointments";
 
 import Admin from "./Screen/Admin";
@@ -53,6 +52,7 @@ import AdminProfileView from "./Screen/Admin/AdminProfile/AdminViewProfile";
 import AdminEditProfile from "./Screen/Admin/AdminProfile/AdminEditProfile";
 import SlotAvailability from "./Screen/Admin/SlotAvailability";
 import Forgotpassword from "./Screen/RegistrationLogin/Forget_password";
+import MyAppointments from "./Screen/Patient/SymptoBot";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -163,7 +163,7 @@ const AppLayout: React.FC = () => {
               <Route path="profile" element={<Profile />} />
               <Route path="feedback" element={<Feedback />} />
               <Route path="symptom_checker" element={<SymptoChecker/>} />
-              <Route path="symptobot" element={<SymptoBot/>} />
+              <Route path="my_appointments" element={<MyAppointments/>} />
               <Route path="appointments" element={<Appointments/>} />
               <Route path="doctors/:specializationId" element={<SpDoctorList />} />
             </Route>
