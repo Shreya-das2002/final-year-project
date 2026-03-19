@@ -147,21 +147,21 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
       !roleFilter ||
       admin.role?.toLowerCase() === roleFilter.toLowerCase();
 
-    return matchesStatus && matchesRole;
+    const matchesSearch =
+      !search ||
+      admin.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+      admin.last_name?.toLowerCase().includes(search.toLowerCase()) ||
+      admin.email?.toLowerCase().includes(search.toLowerCase()) ||
+      admin.role?.toLowerCase().includes(search.toLowerCase());
+
+    return matchesStatus && matchesRole && matchesSearch;
   })
   .sort((a, b) => {
-  const dateA = a.created_on
-    ? new Date(a.created_on).getTime()
-    : 0;
+    const dateA = a.created_on ? new Date(a.created_on).getTime() : 0;
+    const dateB = b.created_on ? new Date(b.created_on).getTime() : 0;
 
-  const dateB = b.created_on
-    ? new Date(b.created_on).getTime()
-    : 0;
-
-  return sortOrder === "desc"
-    ? dateB - dateA
-    : dateA - dateB;
-});
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+  });
 
 
 
@@ -209,7 +209,11 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
 
           {/* Add Account */}
           <button
-            className="flex items-center gap-1 px-3 py-2 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
+          onClick={() =>
+             navigate("/admin/create_admin")
+              }
+            className="flex items-center gap-1 px-3 py-2 border border-cyan-600 dark:border-gray-200 rounded-4xl
+             backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
           >
             <PlusIcon className="text-cyan-700 dark:text-gray-100 w-4 h-4" />
             <span className="text-sm flex items-center justify-center pr-2  text-cyan-700 dark:text-gray-100">
@@ -224,7 +228,7 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
               placeholder="Search by name, email, or role..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 outline-none text-sm bg-transparent text-gray-800 dark:text-gray-200 placeholder-cyan-700 dark:placeholder-gray-200"
+              className="flex-1 outline-none text-sm bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-700 dark:placeholder-gray-200"
             />
             <FaSearch className="text-cyan-700 dark:text-gray-200 text-lg mr-2" />
           </div>

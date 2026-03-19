@@ -1,11 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-import { FaSearch } from "react-icons/fa";
+import { EyeIcon, PencilSquareIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import { FaSearch, FaEnvelope } from "react-icons/fa";
+import { FiPhone } from "react-icons/fi";
 import type { RootState, AppDispatch } from "../../../../store/store";
 
 import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
+
+/* ================= COLUMN KEY TYPE ================= */
+
+type ColumnKey =  "name" | "email" | "phone_no" | "specialization" | "status" | "action";
+
 
 /* ================= STATUS UI HELPER ================= */
 
@@ -54,6 +60,11 @@ const getStatusLabel = (status?: string): StatusUI => {
 
 };
 
+const ROW_COLORS = [
+  "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
+  "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100"
+];
+
 
 
 const DoctorList = () => {
@@ -67,7 +78,7 @@ const DoctorList = () => {
   );
 
 
-  const [search, setSearch] = useState("");
+ 
 
  const buttons = useSelector(
     (state: RootState) => state.auth.buttons
@@ -80,6 +91,65 @@ const DoctorList = () => {
   const canView = buttons?.some(
     (btn) => btn.control_key === "doctor view"
   );
+
+    const [search, setSearch] = useState("");
+    const [showFilter, setShowFilter] = useState(false);
+    const [roleFilter, setRoleFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [openSection, setOpenSection] = useState<"status" | "role" | "">("");
+  const filterRef = useRef<HTMLDivElement | null>(null);
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+
+
+    /* ================= COLUMN WIDTH STATE ================= */
+  
+    const [columnWidths, setColumnWidths] = useState<Record<ColumnKey, number>>({
+      name: 250,
+      email: 300,
+      phone_no: 250,
+      action: 150,
+      specialization: 250,
+      status: 150
+    });
+  
+    const resizingCol = useRef<ColumnKey | null>(null);
+  
+    const startResize = (
+      _e: React.MouseEvent<HTMLDivElement>,
+      column: ColumnKey
+    ) => {
+      resizingCol.current = column;
+    };
+  
+    const stopResize = () => {
+      resizingCol.current = null;
+    };
+  
+    const resize = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!resizingCol.current) return;
+  
+      setColumnWidths((prev) => ({
+        ...prev,
+        [resizingCol.current!]: prev[resizingCol.current!] + e.movementX
+      }));
+    };
+  
+    useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
+        setShowFilter(false);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   
 
@@ -141,25 +211,33 @@ const DoctorList = () => {
 
   return (
 
-    <div className="p-3 bg-gray-50 min-h-screen shadow-sm">
+       <div
+      className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
+      onMouseMove={resize}
+      onMouseUp={stopResize}
+    >
 
 
       {/* Header */}
-
       <div className="flex items-center justify-between mb-6">
-
-        <h2 className="text-2xl font-semibold text-blue-600">
-          Doctor List
-        </h2>
-        </div>
+        <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">Doctor List</h2>
+      </div>
 
         {/* internal div */}
 
-        <div className="p-6 bg-white/40 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg">
+        <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg">
 
         {/* SEARCH + FILTER */}
 
         <div className="flex items-center justify-between gap-3 mb-4">
+
+                    <button
+                      onClick={() => setShowFilter(!showFilter)}
+                      className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
+                    >
+                      <AdjustmentsHorizontalIcon className="text-cyan-700 dark:text-gray-100  w-5 h-5" />
+                      <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">Filter</span>
+                    </button>
 
           {/* SEARCH */}
 
@@ -174,6 +252,8 @@ const DoctorList = () => {
             <FaSearch className="text-cyan-700 text-lg mr-2" />
           </div>
           </div>
+
+          
 
       
 
@@ -201,7 +281,7 @@ const DoctorList = () => {
 
               <th className="p-4 text-blue-100">Status</th>
 
-              <th className="p-4 text-blue-600 text-center">Action</th>
+              <th className="p-4 text-blue-100 text-center">Action</th>
 
             </tr>
 
@@ -209,10 +289,12 @@ const DoctorList = () => {
 
 
 
-          <tbody>
+        
 
 
             {/* Loading */}
+
+            <tbody className="text-sm text-gray-700">
 
             {loading && (
 
@@ -257,30 +339,31 @@ const DoctorList = () => {
 
                   <tr
                     key={doc.doctor_id}
-                    className="border-t hover:bg-gray-50"
+                    className="border-t border-gray-300 hover:bg-gray-50"
                   >
 
 
-                    <td className="p-4 font-medium">
+  <td className="p-4">
+  <div className="flex items-center gap-3">
 
-                      {doc.first_name}
-                      {" "}
-                      {doc.middle_name ?? ""}
-                      {" "}
-                      {doc.last_name}
+    <div className="flex items-center justify-center w-11 h-11 rounded-full 
+bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
+                            transform transition-transform duration-300 ease-in-out hover:scale-103 dark:hover:scale-103">
+  {doc.first_name?.[0]}{doc.last_name?.[0]}
+</div>
 
-                    </td>
+    <div>
+      {doc.first_name} {doc.middle_name ?? ""} {doc.last_name}
+    </div>
+
+  </div>
+</td>
 
 
-                    <td className="p-4">
-                      {doc.email ?? "-"}
-                    </td>
+                 <td className="p-4 "><div className="flex gap-2 justify items-center"><FaEnvelope className="pt-1 text-2xl text-cyan-600 dark:text-cyan-700"/>{doc.email ?? "-"}</div></td>
 
 
-                    <td className="p-4">
-                      {doc.phone_no ?? "-"}
-                    </td>
-
+                   <td className="p-4 "><div className="flex gap-2 justify items-center"><FiPhone className="pt-1 text-xl text-cyan-600 dark:text-cyan-700"/>{doc.phone_no ?? "-"}</div></td>  
 
                     <td className="p-4">
                       {doc.specialization ?? "-"}
