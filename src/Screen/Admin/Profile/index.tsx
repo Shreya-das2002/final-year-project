@@ -105,9 +105,6 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
         overflow-y-auto overflow-x-visible`} style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
       >
 
-          
-        
-
 
         <div className=" bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mt-20  border border-white/20">
           {/* Avatar */}
@@ -115,7 +112,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
             <div className="
               w-24 h-24 border-2 border-cyan-100 dark:border-cyan-800
               rounded-full mb-0 
-              bg-cyan-700 dark:bg-gray-500
+              bg-cyan-600 dark:bg-gray-500
               flex items-center justify-center
               text-white text-2xl font-semibold
               shadow-lg
@@ -141,7 +138,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
               
 
                     {/* Name */}
-          <h2 className={`${user.role !== "super admin" ? "pt-10" : " "} mt-4 mb-2 text-xl font-bold text-center text-gray-800 dark:text-gray-700`}>
+          <h2 className={`${user.role !== "super admin" ? "pt-10" : " "} mt-4 mb-2 text-xl font-bold text-center bg- text-gray-800 dark:text-gray-700`}>
             {fullName}
           </h2>
 
@@ -158,11 +155,11 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
 
             <span className="
               px-4 py-2
-              bg-cyan-700 dark:bg-gray-500
+              bg-cyan-600 dark:bg-gray-500
               rounded-full
               shadow
               flex items-center gap-2
-              text-gray-300 dark:text-gray-200
+              text-gray-200 dark:text-gray-200
             ">
               <FaUserShield />
               {user.role || "Admin"}
