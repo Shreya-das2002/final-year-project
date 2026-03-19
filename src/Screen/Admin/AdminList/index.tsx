@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {  EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { FiFilter } from "react-icons/fi";
 import { FaSearch, FaEnvelope, FaUser } from "react-icons/fa";
+import { HiArrowsUpDown } from "react-icons/hi2";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
@@ -74,6 +75,7 @@ const AdminList = () => {
 const [statusFilter, setStatusFilter] = useState<string>("");
 const [openSection, setOpenSection] = useState<"status" | "role" | "">("");
 const filterRef = useRef<HTMLDivElement | null>(null);
+const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
 
 
@@ -136,16 +138,30 @@ const filterRef = useRef<HTMLDivElement | null>(null);
 
   /* ================= FILTER ADMINS ================= */
 
-const filteredAdmins = (Array.isArray(admins) ? admins : []).filter((admin) => {
-  const matchesStatus =
-    !statusFilter ||
-    admin.status?.toLowerCase() === statusFilter.toLowerCase();
+const filteredAdmins = (Array.isArray(admins) ? admins : [])
+  .filter((admin) => {
+    const matchesStatus =
+      !statusFilter ||
+      admin.status?.toLowerCase() === statusFilter.toLowerCase();
 
-  const matchesRole =
-    !roleFilter ||
-    admin.role?.toLowerCase() === roleFilter.toLowerCase();
+    const matchesRole =
+      !roleFilter ||
+      admin.role?.toLowerCase() === roleFilter.toLowerCase();
 
-  return matchesStatus && matchesRole;
+    return matchesStatus && matchesRole;
+  })
+  .sort((a, b) => {
+  const dateA = a.created_on
+    ? new Date(a.created_on).getTime()
+    : 0;
+
+  const dateB = b.created_on
+    ? new Date(b.created_on).getTime()
+    : 0;
+
+  return sortOrder === "desc"
+    ? dateB - dateA
+    : dateA - dateB;
 });
 
 
@@ -168,6 +184,7 @@ const filteredAdmins = (Array.isArray(admins) ? admins : []).filter((admin) => {
         <div className="flex items-center justify-between gap-3 mb-4">
 
           {/* FILTER BUTTON */}
+          <div className="flex items-center justify-between gap-2">
           <button
             onClick={() => setShowFilter(!showFilter)}
             className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
@@ -175,6 +192,16 @@ const filteredAdmins = (Array.isArray(admins) ? admins : []).filter((admin) => {
             <FiFilter className="text-gray-600" />
             <span className="text-sm text-gray-700">Filter</span>
           </button>
+
+<button
+  onClick={() =>
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
+  }
+  className="p-2 w-13 h-9 rounded-lgborder border-gray-300 rounded-lg bg-white shadow-sm hover:bg-gray-50 transition flex items-center justify-center"
+>
+  <HiArrowsUpDown className="text-xl text-gray-600" />
+</button>
+</div>
 
           {/* SEARCH */}
           <div className="flex items-center w-[400px] border border-cyan-600 rounded-full px-4 py-2 shadow-sm bg-white">
