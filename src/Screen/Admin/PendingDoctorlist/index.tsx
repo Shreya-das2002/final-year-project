@@ -4,6 +4,8 @@ import { FaEnvelope, FaUser, FaPhone, FaCheck, FaTimes } from "react-icons/fa";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchDoctorListThunk } from "../../../../store/slices/doctorSlice";
+// import list_bg from "../../../assets/list_bg.png"
+// import list_bg_dark from "../../../assets/list_bg_dark.png"
 
 import {
   getPendingDoctorsApi,
@@ -13,30 +15,30 @@ import {
 import type { Doctor } from "../../../services/doctorApi";
 
 const cardThemes = [
-  "from-cyan-100 to-cyan-500",
-  "from-cyan-200 to-cyan-600",
-  "from-cyan-300 to-cyan-700",
-  "from-sky-200 to-sky-500",
-  "from-cyan-200 to-teal-500",
-  "from-teal-100 to-cyan-500",
+  "from-teal-50 to-cyan-200 dark:from-sky-900 dark:to-cyan-800",
+  "from-cyan-50 to-cyan-200 dark:from-cyan-800 dark:to-cyan-700",
+  "from-teal-50 to-cyan-200 dark:from-cyan-800 dark:to-sky-700",
+  "from-sky-50 to-sky-200 dark:from-cyan-800 dark:to-sky-700",
+  "from-cyan-50 to-teal-200 dark:from-cyan-800 dark:to-sky-700",
+  "from-teal-50 to-cyan-200 dark:from-cyan-900 dark:to-sky-800",
 ];
 
 const textColorThemes = [
-  "text-cyan-950",
-  "text-cyan-950",
-  "text-cyan-950",
-  "text-teal-900",
-  "text-sky-950",
-  "text-teal-950",
+  "text-cyan-950 dark:text-cyan-100",
+  "text-cyan-950 dark:text-cyan-100",
+  "text-cyan-950 dark:text-cyan-100",
+  "text-teal-900 dark:text-teal-100",
+  "text-sky-950 dark:text-sky-100",
+  "text-teal-950 dark:text-teal-100",
 ];
 
 const iconThemes = [
-  "text-cyan-600",
-  "text-cyan-700",
-  "text-cyan-800",
-  "text-sky-600",
-  "text-teal-700",
-  "text-cyan-600",
+  "text-cyan-600 dark:text-cyan-100",
+  "text-cyan-700 dark:text-cyan-100",
+  "text-cyan-800 dark:text-cyan-100",
+  "text-sky-600 dark:text-sky-100",
+  "text-teal-700 dark:text-teal-100",
+  "text-cyan-600 dark:text-cyan-100",
 ];
 
 const PendingDoctorList: React.FC = () => {
@@ -140,9 +142,9 @@ const PendingDoctorList: React.FC = () => {
   }
   return (
 
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="bg-gradient-to-r from-sky-100 via-sky-50 to-sky-100 dark:from-sky-950 dark:via-sky-900 dark:to-sky-950 p-8 min-h-screen w-full">
 
-      <h1 className="text-2xl font-semibold mb-6">
+      <h1 className="text-4xl font-bold mb-6 text-cyan-800 dark:text-cyan-50">
         Pending Doctor Approvals
       </h1>
 
@@ -152,7 +154,7 @@ const PendingDoctorList: React.FC = () => {
 
       ) : (
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 pt-2">
 
           {doctors.map((doctor, index) => {
 
@@ -163,19 +165,20 @@ const PendingDoctorList: React.FC = () => {
             return (
               <div
                 key={doctor.doctor_id}
-                className={`bg-gradient-to-r ${theme} rounded-2xl shadow-md border border-gray-200 overflow-hidden`}
+                className={`bg-gradient-to-r ${theme} rounded-2xl shadow-md overflow-hidden relative
+                           transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer transform `}
               >
 
                   {(canAccept || canDecline) && (
 
-                  <div className="flex top-3 right-3 gap-2 px-6 py-3 absolute">
+                  <div className="flex top-3 right-3 gap-2.5 z-10 absolute">
 
                     {canAccept && (
                       <button
                         onClick={() => handleAccept(doctor.doctor_id)}
-                        className="w-12 h-10 flex items-center justify-center rounded-full 
-                                bg-green-100 hover:bg-green-200 text-green-600 
-                                  shadow-md transition"
+                        className="w-8 h-8 flex items-center justify-center rounded-full 
+                                bg-white/40 backdrop-blur-md hover:text-green-700 dark:hover:text-green-800 text-green-600 dark:text-green-700
+                                  shadow transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer transform"
                       >
                         <FaCheck />
                       </button>
@@ -184,9 +187,9 @@ const PendingDoctorList: React.FC = () => {
                     {canDecline && (
                       <button
                         onClick={() => handleDecline(doctor.doctor_id)}
-                        className="w-12 h-10 flex items-center justify-center rounded-full 
-                                bg-red-100 hover:bg-red-200 text-red-600 
-                                  shadow-md transition"
+                        className="w-8 h-8 flex items-center justify-center rounded-full 
+                                bg-white/40 backdrop-blur-md hover:text-red-700 dark:hover:text-red-800 text-red-600 dark:text-red-700
+                                  shadow transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer transform"
                       >
                         <FaTimes />
                       </button>
@@ -196,10 +199,12 @@ const PendingDoctorList: React.FC = () => {
 
                 )}
                 {/* HEADER */}
-                <div className="flex items-center gap-4 p-4">
+                <div className="flex flex-col items-center text-center gap-2 pt-10 p-4">
 
                   {/* Avatar */}
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-cyan-50 text-teal-600 font-bold">
+                  <div className="w-18 h-18 flex items-center justify-center rounded-full text-xl bg-cyan-50 text-teal-600 font-bold 
+                                  shadow transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer transform"
+                  >
                     {doctor.first_name?.[0]}
                     {doctor.last_name?.[0]}
                   </div>
@@ -212,7 +217,7 @@ const PendingDoctorList: React.FC = () => {
                       {doctor.last_name}
                     </h2>
 
-                    <span className={`inline-block mt-1 text-[11px] px-3 py-0.5 rounded-full bg-white/70 ${textColor}`}>
+                    <span className={`inline-block mt-1 text-[11px] px-3 py-0.5 rounded-full bg-white/70 dark:bg-black/30 ${textColor}`}>
                       {doctor.specialization}
                     </span>
                   </div>
@@ -220,27 +225,24 @@ const PendingDoctorList: React.FC = () => {
                 </div>
 
                 {/* BODY */}
-                <div className="p-4 space-y-2 text-gray-700 dark:text-gray-50">
+                <div className="bg-white/30 backdrop-blur-md rounded-xl mx-5 mb-4 pl-7 p-4 space-y-2 text-gray-700 dark:text-gray-50">
 
                   <div className="flex items-center gap-3">
                     <FaUser className={iconColor} />
-                    <span>{doctor.gender}</span>
+                    <span className="text-gray-600 dark:text-gray-50">{doctor.gender}</span>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <FaPhone className={iconColor} />
-                    <span>{doctor.phone_no}</span>
+                    <span className="text-gray-600 dark:text-gray-50">{doctor.phone_no}</span>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <FaEnvelope className={iconColor} />
-                    <span>{doctor.email}</span>
+                    <span className="text-gray-600 dark:text-gray-50">{doctor.email}</span>
                   </div>
 
                 </div>
-
-                {/* FOOTER */}
-
 
               </div>
             );
