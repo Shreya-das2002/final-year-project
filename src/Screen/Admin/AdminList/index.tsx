@@ -69,7 +69,11 @@ const AdminList = () => {
   );
 
   const [search, setSearch] = useState("");
-    const [showFilter, setShowFilter] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [roleFilter, setRoleFilter] = useState<string>("");
+const [statusFilter, setStatusFilter] = useState<string>("");
+const [openSection, setOpenSection] = useState<"status" | "role" | "">("");
+const filterRef = useRef<HTMLDivElement | null>(null);
 
 
 
@@ -107,6 +111,23 @@ const AdminList = () => {
     }));
   };
 
+  useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      filterRef.current &&
+      !filterRef.current.contains(event.target as Node)
+    ) {
+      setShowFilter(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
   /* ================= FETCH ADMINS ================= */
 
   useEffect(() => {
@@ -115,7 +136,17 @@ const AdminList = () => {
 
   /* ================= FILTER ADMINS ================= */
 
-  const filteredAdmins = Array.isArray(admins) ? admins : [];
+const filteredAdmins = (Array.isArray(admins) ? admins : []).filter((admin) => {
+  const matchesStatus =
+    !statusFilter ||
+    admin.status?.toLowerCase() === statusFilter.toLowerCase();
+
+  const matchesRole =
+    !roleFilter ||
+    admin.role?.toLowerCase() === roleFilter.toLowerCase();
+
+  return matchesStatus && matchesRole;
+});
 
 
 
@@ -158,8 +189,99 @@ const AdminList = () => {
           </div>
         </div>
 
-      
+{/* DROPDOWN FILTER BOX */}
+{showFilter && (
+  <div
+    ref={filterRef}
+    className="absolute mt-2 w-64 bg-white rounded-xl shadow-xl border p-4 z-50">
 
+    {/* STATUS HEADER */}
+    <button
+      onClick={() =>
+        setOpenSection(openSection === "status" ? "" : "status")
+      }
+      className="w-full text-left px-3 py-2 font-semibold bg-gray-100 rounded-lg mb-2"
+    >
+      Status
+    </button>
+
+    {/* STATUS OPTIONS */}
+    {openSection === "status" && (
+      <div className="flex flex-col gap-2 mb-3">
+        <button
+          onClick={() => setStatusFilter("active")}
+          className={`px-3 py-2 rounded-lg text-sm ${
+            statusFilter === "active"
+              ? "bg-cyan-600 text-white"
+              : "bg-gray-200"
+          }`}
+        >
+          Active
+        </button>
+
+        <button
+          onClick={() => setStatusFilter("inactive")}
+          className={`px-3 py-2 rounded-lg text-sm ${
+            statusFilter === "inactive"
+              ? "bg-cyan-600 text-white"
+              : "bg-gray-200"
+          }`}
+        >
+          Inactive
+        </button>
+      </div>
+    )}
+
+    {/* ROLE HEADER */}
+    <button
+      onClick={() =>
+        setOpenSection(openSection === "role" ? "" : "role")
+      }
+      className="w-full text-left px-3 py-2 font-semibold bg-gray-100 rounded-lg mb-2"
+    >
+      Role
+    </button>
+
+    {/* ROLE OPTIONS */}
+    {openSection === "role" && (
+      <div className="flex flex-col gap-2 mb-3">
+        {["super admin", "standard admin", "guest admin"].map((role) => (
+          <button
+            key={role}
+            onClick={() => setRoleFilter(role)}
+            className={`px-3 py-2 rounded-lg text-sm capitalize ${
+              roleFilter === role
+                ? "bg-cyan-600 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            {role}
+          </button>
+        ))}
+      </div>
+    )}
+
+    {/* APPLY BUTTON (TOP) */}
+    <button
+      onClick={() => setShowFilter(false)}
+      className="w-full py-2 bg-cyan-600 text-white rounded-lg mb-2 hover:bg-cyan-700"
+    >
+      Apply Filters
+    </button>
+
+    {/* CLEAR BUTTON */}
+    <button
+      onClick={() => {
+        setRoleFilter("");
+        setStatusFilter("");
+      }}
+      className="w-full py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+    >
+      Clear Filters
+    </button>
+
+  </div>
+)}
 {/* TABLE */}
 
         <div className="bg-white rounded-2xl overflow-hidden shadow-md">
@@ -302,13 +424,7 @@ bg-cyan-600 text-white font-semibold shadow-sm cursor-pointer
 
                       <td className="p-4 "><div className="flex gap-2 justify items-center">{admin.status?? "-"}</div></td> 
 
-                      <td className="p-4 flex items-center gap-2">
-                        <FaUser className={roleColor} />
-                        <span className={`px-3 py-1 rounded-full text-xs ${role.className}`}>
-                          {role.label}
-                        </span>
-                      </td>
-
+                    
                       <td className="p-4 flex justify-center gap-3">
 
                       <EyeIcon
