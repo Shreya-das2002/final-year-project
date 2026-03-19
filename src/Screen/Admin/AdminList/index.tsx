@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {  EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -70,9 +70,7 @@ const AdminList = () => {
 
   const [search, setSearch] = useState("");
     const [showFilter, setShowFilter] = useState(false);
-      const [roleFilter, setRoleFilter] = useState<string>("");
-  const [departmentFilter, setDepartmentFilter] = useState<number | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>("");
+
 
 
   /* ================= COLUMN WIDTH STATE ================= */
@@ -117,49 +115,7 @@ const AdminList = () => {
 
   /* ================= FILTER ADMINS ================= */
 
-  const filteredAdmins = useMemo(() => {
-    const q = search.toLowerCase();
-    const safeAdmins = Array.isArray(admins) ? admins : [];
-
-    return safeAdmins.filter((admin) => {
-      const roleText = getAdminTypeLabel(admin.role).label.toLowerCase();
-
-      return (
-        `${admin.first_name} ${admin.last_name}`
-          .toLowerCase()
-          .includes(q) ||
-        (admin.email ?? "").toLowerCase().includes(q) ||
-        roleText.includes(q) ||
-        (admin.created_on) ||
-        (admin.department_id) ||
-        (admin.status)
-      );
-
-      const matchesSearch =
-        ${admin.first_name} ${admin.last_name}.toLowerCase().includes(q) ||
-        (admin.email ?? "").toLowerCase().includes(q) ||
-        roleText.includes(q);
-
-      const matchesRole =
-        !roleFilter ||
-        admin.role?.toLowerCase() === roleFilter.toLowerCase();
-
-      const matchesDepartment =
-        !departmentFilter ||
-        admin.department_id?.includes(departmentFilter);
-
-      const matchesStatus =
-        !statusFilter ||
-        admin.status?.toLowerCase() === statusFilter.toLowerCase();
-
-      return (
-        matchesSearch &&
-        matchesRole &&
-        matchesDepartment &&
-        matchesStatus
-      );
-    });
-  }, [admins, search, roleFilter, departmentFilter, statusFilter]);
+  const filteredAdmins = Array.isArray(admins) ? admins : [];
 
 
 
@@ -202,96 +158,7 @@ const AdminList = () => {
           </div>
         </div>
 
-        {/* FILTER PANEL */}
-
-      {showFilter && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-
-    {/* Modal Box */}
-    <div className="bg-white rounded-2xl shadow-xl w-[400px] p-6 relative">
-
-      {/* Close Button */}
-      <button
-        onClick={() => setShowFilter(false)}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-      >
-        ✕
-      </button>
-
-      <h3 className="text-lg font-semibold mb-4 text-gray-700">
-        Filter Options
-      </h3>
-
-      <div className="flex flex-col gap-4">
-
-        {/* Role */}
-        <select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-          className="border px-3 py-2 rounded-lg text-sm"
-        >
-          <option value="">All Roles</option>
-          <option value="super admin">Super Admin</option>
-          <option value="standard admin">Standard Admin</option>
-          <option value="guest admin">Guest Admin</option>
-        </select>
-
-        {/* Department */}
-        <select
-          value={departmentFilter ?? ""}
-          onChange={(e) =>
-            setDepartmentFilter(e.target.value ? Number(e.target.value) : null)
-          }
-          className="border px-3 py-2 rounded-lg text-sm"
-        >
-          <option value="">All Departments</option>
-          {DOCTOR_SPECIALIZATIONS.map((dept) => (
-            <option key={dept.value} value={dept.value}>
-              {dept.department}
-            </option>
-          ))}
-        </select>
-
-        {/* Status */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="border px-3 py-2 rounded-lg text-sm"
-        >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-between mt-6">
-
-        <button
-          onClick={() => {
-            setRoleFilter("");
-            setDepartmentFilter(null);
-            setStatusFilter("");
-          }}
-          className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm"
-        >
-          Clear
-        </button>
-
-        <button
-          onClick={() => setShowFilter(false)}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 text-sm"
-        >
-          Apply
-        </button>
-
-      </div>
-
-    </div>
-  </div>
-)}
-
+      
 
 {/* TABLE */}
 
@@ -437,23 +304,24 @@ bg-cyan-600 text-white font-semibold shadow-sm cursor-pointer
 
                       <td className="p-4 flex items-center gap-2">
                         <FaUser className={roleColor} />
-                        <span className={px-3 py-1 rounded-full text-xs ${role.className}}>
+                        <span className={`px-3 py-1 rounded-full text-xs ${role.className}`}>
                           {role.label}
                         </span>
                       </td>
 
                       <td className="p-4 flex justify-center gap-3">
 
-                        <EyeIcon
+                      <EyeIcon
                           onClick={() =>
-                            navigate(/admin/admin_view_profile/${admin.admin_user_id}, { state: admin })
-                          }
-                          className="w-5 h-5 text-blue-500 cursor-pointer"
-                        />
+                          navigate(`/admin/admin_view_profile/${admin.admin_user_id}`, {
+                          state: admin
+                          })
+                        }
+                  className="w-5 h-5 text-blue-500 cursor-pointer"/>
 
                         <PencilSquareIcon
                           onClick={() =>
-                            navigate(/admin/admin_edit_profile/${admin.admin_user_id}, { state: admin })
+                            navigate(`/admin/admin_edit_profile/${admin.admin_user_id}`, { state: admin })
                           }
                           className="w-5 h-5 text-gray-500 cursor-pointer"
                         />

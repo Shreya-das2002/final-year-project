@@ -18,7 +18,7 @@ interface Admin {
   email?: string;
   created_on?: string;
   user?: AdminUserInfo;
-  department_id?: number[];
+  department_id?: number[] | null;
   status?: string;
 }
 
