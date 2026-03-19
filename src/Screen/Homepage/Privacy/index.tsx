@@ -6,7 +6,7 @@ const PrivacyPolicy: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-r from-cyan-100 via-cyan-50 to-cyan-100 dark:from-cyan-950 dark:via-cyan-800 dark:to-cyan-950 px-4 py-10">
       {/* ================= PAGE HEADER ================= */}
       <div className="max-w-4xl mx-auto text-center mb-10">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-800 to-cyan-400 bg-clip-text text-transparent  dark:from-gray-400 dark:to-gray-300 mb-3">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-800 to-cyan-400 bg-clip-text text-transparent  dark:from-gray-400 dark:to-gray-300 mb-3 p-1.5">
           Privacy Policy
         </h1>
         <p className="text-cyan-700 dark:text-gray-300">
