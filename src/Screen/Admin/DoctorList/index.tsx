@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-
+import { FaSearch } from "react-icons/fa";
 import type { RootState, AppDispatch } from "../../../../store/store";
 
 import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
@@ -141,7 +141,7 @@ const DoctorList = () => {
 
   return (
 
-    <div className="p-6 bg-gray-50 min-h-screen rounded-xl shadow-sm">
+    <div className="p-3 bg-gray-50 min-h-screen shadow-sm">
 
 
       {/* Header */}
@@ -151,42 +151,55 @@ const DoctorList = () => {
         <h2 className="text-2xl font-semibold text-blue-600">
           Doctor List
         </h2>
+        </div>
 
+        {/* internal div */}
 
-        <input
-          type="text"
-          placeholder="Search by name, email, phone, specialization..."
-          value={search}
-          onChange={(e) =>
-            setSearch(e.target.value)
-          }
-          className="w-72 px-4 py-2 border rounded-full shadow-sm
-                    focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+        <div className="p-6 bg-white/40 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg">
 
-      </div>
+        {/* SEARCH + FILTER */}
+
+        <div className="flex items-center justify-between gap-3 mb-4">
+
+          {/* SEARCH */}
+
+          <div className=" ml-200 flex items-center w-[400px] border border-cyan-600 rounded-full px-4 py-2 shadow-sm bg-white">
+            <input
+              type="text"
+              placeholder="Search by name, email, or role..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 outline-none text-sm bg-transparent"
+            />
+            <FaSearch className="text-cyan-700 text-lg mr-2" />
+          </div>
+          </div>
+
+      
 
 
 
       {/* Table */}
 
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-md">
 
         <table className="w-full text-left">
 
-          <thead className="bg-blue-50">
+          {/* TABLE HEADER */}
 
-            <tr>
+          <thead className="bg-cyan-600  text-gray-100 text-sm">
 
-              <th className="p-4 text-blue-600">Name</th>
+            <tr className="divide-x divide-gray-100">
 
-              <th className="p-4 text-blue-600">Email</th>
+              <th className="p-4 text-gray-100">Name</th>
 
-              <th className="p-4 text-blue-600">Phone No</th>
+              <th className="p-4 text-gray-100">Email</th>
 
-              <th className="p-4 text-blue-600">Specialization</th>
+              <th className="p-4 text-gray-100">Phone No</th>
 
-              <th className="p-4 text-blue-600">Status</th>
+              <th className="p-4 text-gray-100">Specialization</th>
+
+              <th className="p-4 text-blue-100">Status</th>
 
               <th className="p-4 text-blue-600 text-center">Action</th>
 
@@ -334,6 +347,8 @@ const DoctorList = () => {
           </tbody>
 
         </table>
+
+      </div>
 
       </div>
 
