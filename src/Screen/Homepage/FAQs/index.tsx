@@ -17,7 +17,7 @@ const FAQ: React.FC = () => {
   return (
     <div className="max-w-screen bg-cyan-100 dark:bg-cyan-950 ">
     <div className="  max-w-3xl bg-cyan-100 dark:bg-cyan-950 mx-auto p-6">
-      <h2 className="inline-block bg-linear-to-r from-cyan-800 via-cyan-700 to-cyan-800 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-400 dark:to-gray-300 text-4xl font-bold mb-6">Frequently Asked Questions</h2>
+      <h2 className="inline-block bg-linear-to-r from-cyan-800 via-cyan-700 to-cyan-800 bg-clip-text text-transparent dark:from-gray-300 dark:via-gray-400 dark:to-gray-300 text-4xl font-bold mb-6 pb-2">Frequently Asked Questions</h2>
 
       <div className="space-y-4">
         {faqData.map((item, index) => (
