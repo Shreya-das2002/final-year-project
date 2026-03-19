@@ -18,6 +18,8 @@ interface Admin {
   email?: string;
   created_on?: string;
   user?: AdminUserInfo;
+  department_id?: number[];
+  status?: string;
 }
 
 /* ================= ADMIN STATE ================= */
