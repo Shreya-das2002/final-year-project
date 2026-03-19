@@ -19,7 +19,7 @@ const SpDoctorList = () => {
 
   useEffect(() => {
     if (specializationId) {
-      console.log("🚀 Dispatching Thunk...");
+      console.log(" Dispatching Thunk...");
       dispatch(fetchDoctorListThunk(Number(specializationId)));
     }
   }, [dispatch, specializationId]);
@@ -39,7 +39,7 @@ const SpDoctorList = () => {
         {doctors.map((doc) => (
           <div
             key={doc.doctor_id}
-            className="bg-gradient-to-r from-cyan-100/40 to-teal-200/30 rounded-xl flex justify-between items-center p-5  shadow transition-transform duration-300 ease-in-out hover:scale-103 active:scale-75 cursor-pointer transform"
+            className="bg-gradient-to-r from-cyan-100/40 to-teal-200/30 rounded-xl flex justify-between items-center p-5  shadow transition-transform duration-300 ease-in-out hover:scale-103 cursor-pointer transform"
           >
             {/* LEFT SECTION */}
             <div className="flex items-center gap-4">
