@@ -2,7 +2,6 @@ import type { IconType } from "react-icons";
 import {
   FiHome,
   FiCheckSquare,
-  FiCpu,
   FiCalendar,
   FiMessageSquare,
   FiLogOut,
@@ -10,6 +9,8 @@ import {
   FiUserPlus,
   FiClock
 } from "react-icons/fi";
+
+import { FaCalendarCheck } from "react-icons/fa";
 
 import shreyaImg from "./assets/Shreya.png";
 import subhaImg from "./assets/Subhankar.png";
@@ -517,7 +518,7 @@ export const urls ={
 export const SIDE_NAV_CONTROLS: string[] = [
   "patient dashboard",
   "symptom checker",
-  "symptobot",
+  "my appointment",
   "patient appointments",
   "patient feedback",
 
@@ -544,7 +545,7 @@ export const SIDE_NAV_CONTROLS: string[] = [
 export const MENU_ROUTE_MAP: Record<string, string> = {
   "patient dashboard": "/patient",
   "symptom checker": "/patient/symptom_checker",
-  "symptobot": "/patient/symptobot",
+  "my appointment": "/patient/my_appointments",
   "patient appointments": "/patient/appointments",
   "patient feedback": "/patient/feedback",
 
@@ -569,7 +570,7 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
 export const MENU_ICONS: Record<string, IconType> = {
   "patient dashboard": FiHome,
   "symptom checker": FiCheckSquare,
-  "symptobot": FiCpu,
+  "my appointment": FaCalendarCheck,
   "patient appointments": FiCalendar,
   "patient feedback": FiMessageSquare,
 

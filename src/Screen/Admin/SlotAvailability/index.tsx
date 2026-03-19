@@ -27,13 +27,28 @@ const SlotAvailability = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
+      const [startHour, setStartHour] = useState("01");
+      const [startMinute, setStartMinute] = useState("00");
+      const [startPeriod, setStartPeriod] = useState("AM");
+
+      const [endHour, setEndHour] = useState("01");
+      const [endMinute, setEndMinute] = useState("00");
+      const [endPeriod, setEndPeriod] = useState("AM");
   const [fee, setFee] = useState("");
   const [slotCount, setSlotCount] = useState(1);
 
   // store slots (local for instant UI)
-  const [slotData, setSlotData] = useState<
-    Record<string, { slots: number; fee: string }>
-  >({});
+const [slotData, setSlotData] = useState<
+  Record<
+    string,
+    {
+      slots: number;
+      fee: string;
+      start_time: string;
+      end_time: string;
+    }
+  >
+>({});
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -49,22 +64,52 @@ const SlotAvailability = () => {
     dispatch(fetchDoctorListThunk());
   }, [dispatch]);
 
-  const openCalendar = (doc: Doctor) => {
-    dispatch(setSelectedDoctor(doc));
-    setShowCalendar(true);
+const convertToAMPM = (time: string) => {
+  if (!time) return "";
 
-    const docSlots = slot[doc.doctor_id];
-    if (docSlots) {
-      const firstDate = Object.keys(docSlots)[0];
-      if (firstDate) {
-        setCurrentDate(new Date(firstDate));
-      }
+  const [h, m] = time.split(":");
+  let hour = parseInt(h);
+
+  const period = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12 || 12;
+
+  return `${hour}:${m} ${period}`;
+};
+
+const convertTo24Hour = (hour: string, minute: string, period: string) => {
+  let h = parseInt(hour);
+
+  if (period === "PM" && h !== 12) h += 12;
+  if (period === "AM" && h === 12) h = 0;
+
+  return `${String(h).padStart(2, "0")}:${minute}`;
+};
+
+ const openCalendar = (doc: Doctor) => {
+  dispatch(setSelectedDoctor(doc));
+  setShowCalendar(true);
+
+  const docSlots = slot[doc.doctor_id];
+  if (docSlots) {
+    const firstDate = Object.keys(docSlots)[0];
+    if (firstDate) {
+      setCurrentDate(new Date(firstDate));
     }
+  }
 
-    setSelectedDate(null);
-    setFee("");
-    setSlotCount(1);
-  };
+  setSelectedDate(null);
+  setFee("");
+  setSlotCount(1);
+
+  //FIX DEFAULT RESET
+  setStartHour("01");
+  setStartMinute("00");
+  setStartPeriod("AM");
+
+  setEndHour("01");
+  setEndMinute("00");
+  setEndPeriod("AM");
+};
 
   const handleAddSlot = async () => {
     if (!selectedDoctor) {
@@ -77,6 +122,19 @@ const SlotAvailability = () => {
       return;
     }
 
+  const start_time = convertTo24Hour(startHour, startMinute, startPeriod);
+const end_time = convertTo24Hour(endHour, endMinute, endPeriod);
+
+if (!start_time || !end_time) {
+  toast("Please select start and end time");
+  return;
+}
+
+if (start_time >= end_time) {
+  toast("End time must be greater than start time");
+  return;
+}
+
     try {
       const formattedDate = `${year}-${String(month + 1).padStart(
         2,
@@ -86,6 +144,8 @@ const SlotAvailability = () => {
       const payload: UpsertSlotPayload = {
         doctor_id: selectedDoctor.doctor_id,
         date: formattedDate,
+          start_time: start_time,
+          end_time: end_time,
         slot_count: slotCount,
         fees: Number(fee),
       };
@@ -101,6 +161,8 @@ const SlotAvailability = () => {
           [key]: {
             slots: slotCount,
             fee,
+            start_time: start_time,
+            end_time: end_time
           },
         }));
 
@@ -108,6 +170,12 @@ const SlotAvailability = () => {
 
         setShowSlotModal(false);
         setSelectedDate(null);
+        setStartHour("01");
+        setStartMinute("00");
+        setStartPeriod("AM");
+        setEndHour("01");
+        setEndMinute("00");
+        setEndPeriod("AM");
         setFee("");
         setSlotCount(1);
       } else {
@@ -208,49 +276,91 @@ const SlotAvailability = () => {
                     "0"
                   )}-${String(day).padStart(2, "0")}`;
 
-                  const slotInfo =
-                    (selectedDoctor &&
-                      slot[selectedDoctor.doctor_id]?.[key]) ||
-                    slotData[key];
+                const slotInfo =
+  slotData[key] ||
+  (selectedDoctor &&
+    slot[selectedDoctor.doctor_id]?.[key]);
 
                   return (
                     <div
-                      key={day}
-        onClick={() => {
-  setSelectedDate(day);
+  key={day}
+  className={`h-16 flex flex-col items-center justify-center border rounded-lg cursor-pointer
+  ${
+    slotInfo
+      ? "bg-green-50 border-green-400"
+      : "hover:bg-blue-50"
+  }`}
+     // ✅ MAIN FIX HERE (LOAD DB DATA BEFORE OPEN MODAL)
+      onClick={() => {
+        const existingSlot =
+          slotData[key] ||
+          (selectedDoctor &&
+            slot[selectedDoctor.doctor_id]?.[key]);
 
-  const existingSlot =
-    (selectedDoctor &&
-      slot[selectedDoctor.doctor_id]?.[key]) ||
-    slotData[key];
+        if (existingSlot) {
+          setSlotCount(existingSlot.slots);
+          setFee(existingSlot.fee);
 
-  if (existingSlot) {
-    setSlotCount(existingSlot.slots);
-    setFee(existingSlot.fee);
-  } else {
-    setSlotCount(1);
-    setFee("");
-  }
+          // START TIME
+          if (existingSlot.start_time) {
+            const [h, m] = existingSlot.start_time.split(":").slice(0, 2);
 
-  setShowSlotModal(true);
-}}
-                      className={`h-16 flex flex-col items-center justify-center border rounded-lg cursor-pointer
-                      ${
-                        slotInfo
-                          ? "bg-green-50 border-green-400"
-                          : "hover:bg-blue-50"
-                      }`}
-                    >
-                      <span>{day}</span>
+            let hour = parseInt(h);
+            const period = hour >= 12 ? "PM" : "AM";
+            hour = hour % 12 || 12;
 
-                      {slotInfo && (
-                        <span className="text-xs text-green-600">
-                          {slotInfo.slots} slots
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
+            setStartHour(String(hour).padStart(2, "0"));
+            setStartMinute(m);
+            setStartPeriod(period);
+          }
+
+          // END TIME
+          if (existingSlot.end_time) {
+            const [h, m] = existingSlot.end_time.split(":").slice(0, 2);
+
+            let hour = parseInt(h);
+            const period = hour >= 12 ? "PM" : "AM";
+            hour = hour % 12 || 12;
+
+            setEndHour(String(hour).padStart(2, "0"));
+            setEndMinute(m);
+            setEndPeriod(period);
+          }
+
+        } else {
+          // DEFAULT VALUE
+          setSlotCount(1);
+          setFee("");
+
+          setStartHour("01");
+          setStartMinute("00");
+          setStartPeriod("AM");
+
+          setEndHour("01");
+          setEndMinute("00");
+          setEndPeriod("AM");
+        }
+
+        setSelectedDate(day);
+        setShowSlotModal(true);
+      }}
+    >
+      <span>{day}</span>
+
+      {slotInfo && (
+        <div className="text-center pointer-events-none">
+          <span className="text-xs text-green-600 block">
+            {slotInfo.slots} slots
+          </span>
+
+          <span className="text-xs text-gray-400 block">
+            {convertToAMPM(slotInfo.start_time)} - {convertToAMPM(slotInfo.end_time)}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+})}
               </div>
             </div>
           </div>
@@ -304,7 +414,97 @@ const SlotAvailability = () => {
                 </button>
               </div>
             </div>
+<div className="flex gap-3 mb-4">
 
+  {/* START TIME */}
+  <div className="flex-1">
+    <label className="block text-sm text-gray-600 mb-1">
+      Start Time
+    </label>
+
+    <div className="flex gap-2 border rounded-lg px-3 py-2">
+      <select
+        value={startHour}
+        onChange={(e) => setStartHour(e.target.value)}
+        className="outline-none bg-transparent"
+      >
+        {[...Array(12)].map((_, i) => (
+          <option key={i} value={String(i + 1).padStart(2, "0")}>
+            {i + 1}
+          </option>
+        ))}
+      </select>
+
+      <span>:</span>
+
+      <select
+        value={startMinute}
+        onChange={(e) => setStartMinute(e.target.value)}
+        className="outline-none bg-transparent"
+      >
+        {[...Array(60)].map((_, i) => (
+          <option key={i} value={String(i).padStart(2, "0")}>
+            {String(i).padStart(2, "0")}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={startPeriod}
+        onChange={(e) => setStartPeriod(e.target.value)}
+        className="outline-none bg-transparent"
+      >
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  </div>
+
+  {/* END TIME */}
+  <div className="flex-1">
+    <label className="block text-sm text-gray-600 mb-1">
+      End Time
+    </label>
+
+    <div className="flex gap-2 border rounded-lg px-3 py-2">
+      <select
+        value={endHour}
+        onChange={(e) => setEndHour(e.target.value)}
+        className="outline-none bg-transparent"
+      >
+        {[...Array(12)].map((_, i) => (
+          <option key={i} value={String(i + 1).padStart(2, "0")}>
+            {i + 1}
+          </option>
+        ))}
+      </select>
+
+      <span>:</span>
+
+      <select
+        value={endMinute}
+        onChange={(e) => setEndMinute(e.target.value)}
+        className="outline-none bg-transparent"
+      >
+        {[...Array(60)].map((_, i) => (
+          <option key={i} value={String(i).padStart(2, "0")}>
+            {String(i).padStart(2, "0")}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={endPeriod}
+        onChange={(e) => setEndPeriod(e.target.value)}
+        className="outline-none bg-transparent"
+      >
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  </div>
+
+</div>
             <div className="mb-4">
               <label className="block mb-1 text-sm text-gray-600">Fee</label>
               <input
