@@ -7,8 +7,8 @@ import { FaSearch, FaEnvelope } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { FiPhone } from "react-icons/fi";
 import type { RootState, AppDispatch } from "../../../../store/store";
-
 import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
+import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -174,7 +174,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
   .filter((doctors) => {
     const matchesStatus =
       !statusFilter ||
-      doctors.specialization?.toLowerCase() === statusFilter.toLowerCase();
+      doctors.status?.toLowerCase() === statusFilter.toLowerCase();
 
     const matchesRole =
       !specializationFilter ||
@@ -187,9 +187,6 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
       doctors.email?.toLowerCase().includes(search.toLowerCase()) ||
       doctors.specialization?.toLowerCase().includes(search.toLowerCase());
       doctors.status?.toLowerCase().includes(search.toLowerCase());
-      
-
-      
 
     return matchesStatus && matchesRole && matchesSearch;
   })
@@ -293,7 +290,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
       }
       className="w-full text-left px-3 py-2 font-semibold bg-gray-100 dark:bg-gray-600 text-balck dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg mb-2"
     >
-      Specialization
+      Status
     </button>
 
     {/* Specialization OPTIONS */}
@@ -335,22 +332,22 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
     {/* ROLE OPTIONS */}
     {openSection === "specialization" && (
-      <div className="flex flex-col gap-2 mb-3">
-        {[].map((specialization) => (
-          <button
-            key={specialization}
-            onClick={() => setspecializationFilter(specialization)}
-            className={`px-3 py-2 rounded-lg text-sm capitalize ${
-              specializationFilter === specialization
-                ? "bg-cyan-600 dark:bg-cyan-800 text-white"
-                : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
-            }`}
-          >
-            {specialization}
-          </button>
-        ))}
-      </div>
-    )}
+  <div className="flex flex-col gap-2 mb-3">
+    {DOCTOR_SPECIALIZATIONS.map((item) => (
+      <button
+        key={item.value}
+        onClick={() => setspecializationFilter(item.label)}
+        className={`px-3 py-2 rounded-lg text-sm capitalize ${
+          specializationFilter === item.label
+            ? "bg-cyan-600 dark:bg-cyan-800 text-white"
+            : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
+        }`}
+      >
+        {item.label}
+      </button>
+    ))}
+  </div>
+)}
 
     {/* APPLY BUTTON (TOP) */}
     <button
