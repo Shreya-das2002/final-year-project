@@ -2,8 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {  EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { FiFilter } from "react-icons/fi";
+import {  EyeIcon, PencilSquareIcon, TrashIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { FaSearch, FaEnvelope, FaUser } from "react-icons/fa";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
@@ -28,19 +27,19 @@ const getAdminTypeLabel = (role?: string): AdminRoleUI => {
 
   switch (normalized) {
     case "super admin":
-      return { label: "Super Admin", className: "bg-purple-100 text-purple-700" };
+      return { label: "Super Admin", className: "bg-purple-100 dark:bg-purple-100/50 text-purple-700 dark:text-purple-700/70" };
     case "standard admin":
-      return { label: "Standard Admin", className: "bg-blue-100 text-blue-700" };
+      return { label: "Standard Admin", className: "bg-blue-100 dark:bg-blue-100/50 text-blue-700 dark:text-blue-700/70" };
     case "guest admin":
-      return { label: "Guest Admin", className: "bg-lime-100 text-lime-700" };
+      return { label: "Guest Admin", className: "bg-lime-100 dark:bg-lime-100/50 text-lime-700 dark:text-lime-700/70" };
     default:
-      return { label: role || "Unknown", className: "bg-red-100 text-red-700" };
+      return { label: role || "Unknown", className: "bg-red-100 dark:bg-red-100/50 text-red-700 dark:text-red-700/70" };
   }
 };
 
 const ROW_COLORS = [
-  "bg-gray-100 hover:bg-gray-200",
-  "bg-gray-50 hover:bg-gray-200"
+  "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
+  "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100"
 ];
 
 const getDepartments = (value?: number) => {
@@ -88,7 +87,7 @@ const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
     action: 150,
     created_on: 250,
     department_id: 300,
-    status: 180
+    status: 150
   });
 
   const resizingCol = useRef<ColumnKey | null>(null);
@@ -148,86 +147,110 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
       !roleFilter ||
       admin.role?.toLowerCase() === roleFilter.toLowerCase();
 
-    return matchesStatus && matchesRole;
+    const matchesSearch =
+      !search ||
+      admin.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+      admin.last_name?.toLowerCase().includes(search.toLowerCase()) ||
+      admin.email?.toLowerCase().includes(search.toLowerCase()) ||
+      admin.role?.toLowerCase().includes(search.toLowerCase());
+
+    return matchesStatus && matchesRole && matchesSearch;
   })
   .sort((a, b) => {
-  const dateA = a.created_on
-    ? new Date(a.created_on).getTime()
-    : 0;
+    const dateA = a.created_on ? new Date(a.created_on).getTime() : 0;
+    const dateB = b.created_on ? new Date(b.created_on).getTime() : 0;
 
-  const dateB = b.created_on
-    ? new Date(b.created_on).getTime()
-    : 0;
-
-  return sortOrder === "desc"
-    ? dateB - dateA
-    : dateA - dateB;
-});
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+  });
 
 
 
   return (
     <div
-      className="p-6 bg-gradient-to-r from-slate-200 via-gray-50 to-slate-200 min-h-screen"
+      className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
       onMouseMove={resize}
       onMouseUp={stopResize}
     >
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-cyan-700">Admin List</h2>
+        <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">Admin List</h2>
       </div>
 
       {/* SEARCH + FILTER */}
       <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg">
 
+                
         <div className="flex items-center justify-between gap-3 mb-4">
 
           {/* FILTER BUTTON */}
           <div className="flex items-center justify-between gap-2">
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white shadow-sm hover:bg-gray-50 transition"
+            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
           >
-            <FiFilter className="text-gray-600" />
-            <span className="text-sm text-gray-700">Filter</span>
+            <AdjustmentsHorizontalIcon className="text-cyan-700 dark:text-gray-100  w-5 h-5" />
+            <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">Filter</span>
           </button>
 
 <button
   onClick={() =>
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
   }
-  className="p-2 w-13 h-9 rounded-lgborder border-gray-300 rounded-lg bg-white shadow-sm hover:bg-gray-50 transition flex items-center justify-center"
+  className="p-2 w-13 h-9 rounded-lg pl-0 transition flex items-center justify-center"
 >
-  <HiArrowsUpDown className="text-xl text-gray-600" />
+  <HiArrowsUpDown className="text-2xl text-cyan-600 dark:text-gray-100 hover:text-gray-800 dark:hover:text-cyan-400 " />
 </button>
 </div>
 
-          {/* SEARCH */}
-          <div className="flex items-center w-[400px] border border-cyan-600 rounded-full px-4 py-2 shadow-sm bg-white">
+        {/*Add Account + Search Bar */}
+  
+        <div className="flex items-center ml-auto gap-2">
+
+          {/* Add Account */}
+          <button
+          onClick={() =>
+             navigate("/admin/create_admin")
+              }
+            className="flex items-center gap-1 px-3 py-2 border border-cyan-600 dark:border-gray-200 rounded-4xl
+             backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
+          >
+            <PlusIcon className="text-cyan-700 dark:text-gray-100 w-4 h-4" />
+            <span className="text-sm flex items-center justify-center pr-2  text-cyan-700 dark:text-gray-100">
+              Add
+            </span>
+          </button>
+
+          {/* Search Bar */}
+          <div className="flex items-center w-[400px] border border-cyan-600 dark:border-gray-200 rounded-full px-4 py-2 shadow-sm backdrop-blur-md">
             <input
               type="text"
               placeholder="Search by name, email, or role..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 outline-none text-sm bg-transparent"
+              className="flex-1 outline-none text-sm bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-700 dark:placeholder-gray-200"
             />
-            <FaSearch className="text-cyan-700 text-lg mr-2" />
+            <FaSearch className="text-cyan-700 dark:text-gray-200 text-lg mr-2" />
           </div>
+
         </div>
+
+
+
+      </div>
 
 {/* DROPDOWN FILTER BOX */}
 {showFilter && (
   <div
     ref={filterRef}
-    className="absolute mt-2 w-64 bg-white rounded-xl shadow-xl border p-4 z-50">
+    className="absolute mt-2 w-64 bg-white dark:bg-cyan-950 rounded-xl shadow-xl border border-gray-200 dark:border-cyan-700 p-4 z-50">
 
     {/* STATUS HEADER */}
     <button
       onClick={() =>
         setOpenSection(openSection === "status" ? "" : "status")
       }
-      className="w-full text-left px-3 py-2 font-semibold bg-gray-100 rounded-lg mb-2"
+      className="w-full text-left px-3 py-2 font-semibold bg-gray-100 dark:bg-gray-600 text-balck dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg mb-2"
     >
       Status
     </button>
@@ -239,8 +262,8 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
           onClick={() => setStatusFilter("active")}
           className={`px-3 py-2 rounded-lg text-sm ${
             statusFilter === "active"
-              ? "bg-cyan-600 text-white"
-              : "bg-gray-200"
+              ? "bg-cyan-600 dark:bg-cyan-800 text-white"
+              : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700" 
           }`}
         >
           Active
@@ -250,8 +273,8 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
           onClick={() => setStatusFilter("inactive")}
           className={`px-3 py-2 rounded-lg text-sm ${
             statusFilter === "inactive"
-              ? "bg-cyan-600 text-white"
-              : "bg-gray-200"
+              ? "bg-cyan-600 dark:bg-cyan-800 text-white "
+              : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
           }`}
         >
           Inactive
@@ -264,7 +287,7 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
       onClick={() =>
         setOpenSection(openSection === "role" ? "" : "role")
       }
-      className="w-full text-left px-3 py-2 font-semibold bg-gray-100 rounded-lg mb-2"
+      className="w-full text-left px-3 py-2 font-semibold bg-gray-100 dark:bg-gray-600 text-balck dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500  rounded-lg mb-2"
     >
       Role
     </button>
@@ -278,8 +301,8 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
             onClick={() => setRoleFilter(role)}
             className={`px-3 py-2 rounded-lg text-sm capitalize ${
               roleFilter === role
-                ? "bg-cyan-600 text-white"
-                : "bg-gray-200"
+                ? "bg-cyan-600 dark:bg-cyan-800 text-white"
+                : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
             }`}
           >
             {role}
@@ -291,7 +314,7 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
     {/* APPLY BUTTON (TOP) */}
     <button
       onClick={() => setShowFilter(false)}
-      className="w-full py-2 bg-cyan-600 text-white rounded-lg mb-2 hover:bg-cyan-700"
+      className="w-full py-2 bg-cyan-600 dark:bg-cyan-700 text-white rounded-lg mb-2 hover:bg-cyan-800 dark:hover:bg-cyan-500"
     >
       Apply Filters
     </button>
@@ -302,7 +325,7 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
         setRoleFilter("");
         setStatusFilter("");
       }}
-      className="w-full py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+      className="w-full py-2 bg-gray-200 dark:bg-slate-400 text-black dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-300"
     >
       Clear Filters
     </button>
@@ -314,8 +337,8 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
         <div className="bg-white rounded-2xl overflow-hidden shadow-md">
   <table className="w-full text-left">
           {/* TABLE HEADER */}
-          <thead className="bg-cyan-600  text-gray-100 text-sm">
-            <tr className="divide-x divide-gray-100">
+          <thead className="bg-cyan-600 dark:bg-cyan-700  text-gray-100 text-sm">
+            <tr className="divide-x divide-gray-100 dark:divide-gray-400">
 
               <th style={{ width: columnWidths.name }} className="p-4 relative">
                 Name
@@ -414,7 +437,7 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
   <div className="flex items-center gap-3">
 
     <div className="flex items-center justify-center w-11 h-11 rounded-full 
-bg-cyan-600 text-white font-semibold shadow-sm cursor-pointer
+bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
                             transform transition-transform duration-300 ease-in-out hover:scale-103 dark:hover:scale-103">
   {admin.first_name?.[0]}{admin.last_name?.[0]}
 </div>
@@ -425,7 +448,7 @@ bg-cyan-600 text-white font-semibold shadow-sm cursor-pointer
 
   </div>
 </td>
-                    <td className="p-4 "><div className="flex gap-2 justify items-center"><FaEnvelope className="pt-1 text-2xl text-cyan-600"/>{admin.email ?? "-"}</div></td>
+                    <td className="p-4 "><div className="flex gap-2 justify items-center"><FaEnvelope className="pt-1 text-2xl text-cyan-600 dark:text-cyan-700"/>{admin.email ?? "-"}</div></td>
 
                     <td className="p-4">
                       <div className="flex gap-2 justify items-center" >
@@ -439,7 +462,7 @@ bg-cyan-600 text-white font-semibold shadow-sm cursor-pointer
                       </div>
                     </td>
 
-                    <td className="p-4 "><div className="flex gap-2 justify items-center"><FaEnvelope className="pt-1 text-2xl text-cyan-600"/>{admin.created_on ?? "-"}</div></td>
+                    <td className="p-4 "><div className="flex gap-2 justify items-center">{admin.created_on ?? "-"}</div></td>
                       
 <td className="flex items-center justify-center pt-5">
   {admin.department_id?.length
