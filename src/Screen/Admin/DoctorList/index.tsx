@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { EyeIcon, PencilSquareIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
@@ -207,7 +207,6 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
   return (
 
-       
     <div
       className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
       onMouseMove={resize}
@@ -375,23 +374,18 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
   </div>
 )}
 
-
-
-          
-
-      
-
-
-
       {/* Table */}
 
-      <div className="bg-white rounded-2xl overflow-hidden shadow-md">
+    <div className="bg-white rounded-2xl shadow-md">
 
-        <table className="w-full text-left">
+  {/* SCROLL CONTAINER */}
+  <div className="max-h-[450px] overflow-y-auto rounded-2xl">
+
+    <table className="w-full text-left">
 
           {/* TABLE HEADER */}
 
-          <thead className="bg-cyan-600  text-gray-100 text-sm">
+          <thead className="bg-cyan-600 text-gray-100 text-sm sticky top-0 z-10">
 
             <tr className="divide-x divide-gray-100">
 
@@ -404,7 +398,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
               </th>
 
               <th style={{ width: columnWidths.name }} className="p-4 relative">
-               Doctor Name
+                Doctor Name
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
                   onMouseDown={(e) => startResize(e, "name")}
@@ -429,7 +423,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
                 />
               </th>
 
-               <th style={{ width: columnWidths.specialization }} className="p-4 relative">
+              <th style={{ width: columnWidths.specialization }} className="p-4 relative">
                 Specialization
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
@@ -624,7 +618,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
       </div>
 
-    
+    </div>
 
   );
 

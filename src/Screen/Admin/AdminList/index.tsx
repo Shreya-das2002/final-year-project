@@ -334,10 +334,14 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
 )}
 {/* TABLE */}
 
-        <div className="bg-white rounded-2xl overflow-hidden shadow-md">
+        <div className="bg-white rounded-2xl shadow-md">
+
+          {/* SCROLL CONTAINER */}
+  <div className="max-h-[450px] overflow-y-auto rounded-2xl">
+
   <table className="w-full text-left">
           {/* TABLE HEADER */}
-          <thead className="bg-cyan-600 dark:bg-cyan-700  text-gray-100 text-sm">
+          <thead className="bg-cyan-600 dark:bg-cyan-700  text-gray-100 text-sm sticky top-0 z-10">
             <tr className="divide-x divide-gray-100 dark:divide-gray-400">
 
               <th style={{ width: columnWidths.name }} className="p-4 relative">
@@ -504,6 +508,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
             </tbody>
           </table>
+           </div>
         </div>
       </div>
     </div>
