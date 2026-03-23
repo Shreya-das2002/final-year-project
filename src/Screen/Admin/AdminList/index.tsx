@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {  EyeIcon, PencilSquareIcon, TrashIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { FaSearch, FaEnvelope, FaUser } from "react-icons/fa";
+import { FaSearch, FaEnvelope, FaUser, FaUserCheck, FaUsersSlash } from "react-icons/fa";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
 import type { RootState, AppDispatch } from "../../../../store/store";
@@ -187,7 +187,8 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
           <div className="flex items-center justify-between gap-2">
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
+            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
+            rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
           >
             <AdjustmentsHorizontalIcon className="text-cyan-700 dark:text-gray-100  w-5 h-5" />
             <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">Filter</span>
@@ -197,9 +198,11 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
   onClick={() =>
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
   }
-  className="p-2 w-13 h-9 rounded-lg pl-0 transition flex items-center justify-center"
+  className="  flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
+            rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
 >
-  <HiArrowsUpDown className="text-2xl text-cyan-600 dark:text-gray-100 hover:text-gray-800 dark:hover:text-cyan-400 " />
+  <HiArrowsUpDown className=" text-cyan-700 dark:text-gray-100  w-5 h-5 " />
+  <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">Sort</span>
 </button>
 </div>
 
@@ -222,16 +225,21 @@ const filteredAdmins = (Array.isArray(admins) ? admins : [])
           </button>
 
           {/* Search Bar */}
-          <div className="flex items-center w-[400px] border border-cyan-600 dark:border-gray-200 rounded-full px-4 py-2 shadow-sm backdrop-blur-md">
-            <input
-              type="text"
-              placeholder="Search by name, email, or role..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 outline-none text-sm bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-700 dark:placeholder-gray-200"
-            />
-            <FaSearch className="text-cyan-700 dark:text-gray-200 text-lg mr-2" />
-          </div>
+<div className="flex items-center w-[400px] border border-cyan-500 dark:border-gray-600 rounded-full px-4 py-2 bg-white/10 dark:bg-gray-800/70 backdrop-blur-md shadow-sm focus-within:ring-2 focus-within:ring-cyan-500 transition-all">
+  
+  <input
+    type="text"
+    placeholder="Search by name, email, or role..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="flex-1 outline-none text-sm bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+  />
+
+  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-600 text-white">
+    <FaSearch className="text-sm" />
+  </div>
+
+</div>
 
         </div>
 
@@ -476,11 +484,20 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
     : "__"}
 </td>
 
-                      <td className="p-4 "><div className="flex gap-2 justify items-center">{admin.status?? "-"}</div></td> 
+                      <td className="p-4 ">
+                        <div className="flex gap-2 justify items-center">
+                       {admin.status !== "Active" ? (
+                          <FaUsersSlash className="text-red-500" />
+                          ) : (
+                          <FaUserCheck className="text-green-500" />
+                        )}
+                        {admin.status?? "-"}
+                        </div>
+                        </td> 
 
                     
-                      <td className="p-4 flex justify-center gap-3">
-
+                      <td className="p-4 flex justify-center gap-3 items-center">
+                        <div className=" flex justify-center items-center gap-3 pt-3">
                       <EyeIcon
                           onClick={() =>
                           navigate(`/admin/admin_view_profile/${admin.admin_user_id}`, {
@@ -499,7 +516,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
                         {admin.role !== "super admin" && (
                           <TrashIcon className="w-5 h-5 text-red-500 cursor-pointer" />
                         )}
-
+                        </div>
                       </td>
 
                     </tr>
@@ -508,7 +525,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
             </tbody>
           </table>
-           </div>
+            </div>
         </div>
       </div>
     </div>
