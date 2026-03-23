@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { EyeIcon, PencilSquareIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
@@ -7,8 +7,8 @@ import { FaSearch, FaEnvelope } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { FiPhone } from "react-icons/fi";
 import type { RootState, AppDispatch } from "../../../../store/store";
-
 import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
+import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -174,7 +174,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
   .filter((doctors) => {
     const matchesStatus =
       !statusFilter ||
-      doctors.specialization?.toLowerCase() === statusFilter.toLowerCase();
+      doctors.status?.toLowerCase() === statusFilter.toLowerCase();
 
     const matchesRole =
       !specializationFilter ||
@@ -187,9 +187,6 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
       doctors.email?.toLowerCase().includes(search.toLowerCase()) ||
       doctors.specialization?.toLowerCase().includes(search.toLowerCase());
       doctors.status?.toLowerCase().includes(search.toLowerCase());
-      
-
-      
 
     return matchesStatus && matchesRole && matchesSearch;
   })
@@ -207,7 +204,6 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
   return (
 
-       
     <div
       className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
       onMouseMove={resize}
@@ -294,7 +290,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
       }
       className="w-full text-left px-3 py-2 font-semibold bg-gray-100 dark:bg-gray-600 text-balck dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg mb-2"
     >
-      Specialization
+      Status
     </button>
 
     {/* Specialization OPTIONS */}
@@ -336,22 +332,22 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
     {/* ROLE OPTIONS */}
     {openSection === "specialization" && (
-      <div className="flex flex-col gap-2 mb-3">
-        {[].map((specialization) => (
-          <button
-            key={specialization}
-            onClick={() => setspecializationFilter(specialization)}
-            className={`px-3 py-2 rounded-lg text-sm capitalize ${
-              specializationFilter === specialization
-                ? "bg-cyan-600 dark:bg-cyan-800 text-white"
-                : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
-            }`}
-          >
-            {specialization}
-          </button>
-        ))}
-      </div>
-    )}
+  <div className="flex flex-col gap-2 mb-3">
+    {DOCTOR_SPECIALIZATIONS.map((item) => (
+      <button
+        key={item.value}
+        onClick={() => setspecializationFilter(item.label)}
+        className={`px-3 py-2 rounded-lg text-sm capitalize ${
+          specializationFilter === item.label
+            ? "bg-cyan-600 dark:bg-cyan-800 text-white"
+            : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
+        }`}
+      >
+        {item.label}
+      </button>
+    ))}
+  </div>
+)}
 
     {/* APPLY BUTTON (TOP) */}
     <button
@@ -375,23 +371,18 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
   </div>
 )}
 
-
-
-          
-
-      
-
-
-
       {/* Table */}
 
-      <div className="bg-white rounded-2xl overflow-hidden shadow-md">
+    <div className="bg-white rounded-2xl shadow-md">
 
-        <table className="w-full text-left">
+  {/* SCROLL CONTAINER */}
+  <div className="max-h-[450px] overflow-y-auto rounded-2xl">
+
+    <table className="w-full text-left">
 
           {/* TABLE HEADER */}
 
-          <thead className="bg-cyan-600  text-gray-100 text-sm">
+          <thead className="bg-cyan-600 text-gray-100 text-sm sticky top-0 z-10">
 
             <tr className="divide-x divide-gray-100">
 
@@ -404,7 +395,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
               </th>
 
               <th style={{ width: columnWidths.name }} className="p-4 relative">
-               Doctor Name
+                Doctor Name
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
                   onMouseDown={(e) => startResize(e, "name")}
@@ -429,7 +420,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
                 />
               </th>
 
-               <th style={{ width: columnWidths.specialization }} className="p-4 relative">
+              <th style={{ width: columnWidths.specialization }} className="p-4 relative">
                 Specialization
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
@@ -624,7 +615,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
       </div>
 
-    
+    </div>
 
   );
 
