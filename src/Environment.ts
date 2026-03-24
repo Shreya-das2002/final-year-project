@@ -608,6 +608,12 @@ export const genderOption = [
   { label: "Others", value: 3 },
 ];
 
+export const statusOption = [
+  { label: "Active", value: 1},
+  { label: "Inactive", value: 2},
+];
+
+
 
 /* ================= SPECIALIZATION OPTIONS ================= */
 
