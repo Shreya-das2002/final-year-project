@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {  EyeIcon, PencilSquareIcon, TrashIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { FaSearch, FaEnvelope, FaUser, FaUserCheck, FaUsersSlash } from "react-icons/fa";
+import { FaSearch, FaEnvelope, FaUser, FaUserCheck, FaUsersSlash, FaRegCalendar } from "react-icons/fa";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
 import type { RootState, AppDispatch } from "../../../../store/store";
@@ -510,9 +510,10 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
                       </div>
                     </td>
 
-                    <td className="p-4 "><div className="flex gap-2 justify items-center">{admin.created_on ?? "-"}</div></td>
+                    <td className="p-4 "><div className="flex gap-2 justify items-center"><FaRegCalendar className="text-cyan-500"/>{admin.created_on ?? "-"}</div></td>
                       
 <td className="flex items-center justify-center pt-5">
+  
   {admin.department_id?.length
     ? admin.department_id
         .map((id: number) => getDepartments(id).department)
