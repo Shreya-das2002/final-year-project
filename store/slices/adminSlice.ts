@@ -9,6 +9,17 @@ interface AdminUserInfo {
   user_type: string;
 }
 
+interface Address {
+  address_line_1: string | null;
+  address_line_2: string | null;
+  city: string | null;
+  district: string | null;
+  state: string | null;
+  country: string | null;
+  pin: string | null;
+
+}
+
 interface Admin {
   admin_user_id: number;
   first_name: string;
@@ -16,10 +27,13 @@ interface Admin {
   last_name: string;
   role: string;
   email?: string;
+  phone_no: string;
   created_on?: string;
   user?: AdminUserInfo;
   department_id?: number[] | null;
   status?: string;
+  current_address?: Address | null;
+  permanent_address?: Address | null;
 }
 
 /* ================= ADMIN STATE ================= */
