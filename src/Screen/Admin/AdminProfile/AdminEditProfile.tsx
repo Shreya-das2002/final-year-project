@@ -13,6 +13,7 @@ import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { FaUserShield } from "react-icons/fa";
 import type { AddressPayload } from "../../../services/adminProfileApi";
 import { genderOption, statusOption } from "../../../Environment";
+import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 const AdminEditProfile: React.FC = () => {
   const { id } = useParams();
@@ -80,21 +81,22 @@ const AdminEditProfile: React.FC = () => {
     const permanent = admin?.permanent_address || admin?.permanet_address || {};
     const current = admin?.current_address || {};
 
-    setProfile({
-      first_name: admin?.first_name ?? "",
-      middle_name: admin?.middle_name ?? "",
-      last_name: admin?.last_name ?? "",
-      dob: admin?.dob ?? "",
-      gender: admin?.gender ?? "",
-      email: admin?.email ?? "",
-      department_id: Array.isArray(admin?.department_id)
-        ? admin.department_id.join(", ")
-        : admin?.department_id ?? "",
-      created_on: admin?.created_on ?? "",
-      phone: admin?.phone_no ?? admin?.phone ?? "",
-      status: admin?.status ?? "",
-      role: admin?.role ?? "",
-    });
+setProfile({
+  first_name: admin?.first_name ?? "",
+  middle_name: admin?.middle_name ?? "",
+  last_name: admin?.last_name ?? "",
+  dob: admin?.dob ?? "",
+  gender: admin?.gender ?? "",
+  email: admin?.email ?? "",
+  department_id: Array.isArray(admin?.department_id)
+    ? admin.department_id.join(", ")
+    : admin?.department_id ?? "",
+  created_on: admin?.created_on ?? "",
+  phone: admin?.phone_no ?? admin?.phone ?? "",
+  status: admin?.status ?? "",
+
+  role: admin?.role ?? "",
+});
 
     setPermanentAddress({
       address_line_1: permanent?.address_line_1 ?? "",
@@ -221,7 +223,7 @@ const AdminEditProfile: React.FC = () => {
               <Field label="Last Name" value={profile.last_name} onChange={(v) => handleChange("last_name", v)} disabled={!isSuperAdmin} />
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4 pt-5">
+            <div className="grid md:grid-cols-2 gap-4 pt-2 items-end">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Date of Birth"
@@ -238,20 +240,32 @@ const AdminEditProfile: React.FC = () => {
                 />
               </LocalizationProvider>
 
-              <select
-                name="gender"
-                value={profile.gender}
-                onChange={(e) => handleChange("gender", e.target.value)}
-                className="border p-2 rounded-sm"
-                disabled={!isSuperAdmin}
-              >
-                <option value="">Select Gender</option>
-                {genderOption.map((g) => (
-                  <option key={g.value} value={g.value}>
-                    {g.label}
-                  </option>
-                ))}
-              </select>
+                    {admin?.role?.toLowerCase() === "super admin" ? (
+                      <select
+                        name="gender"
+                        value={profile.gender}
+                        onChange={(e) => handleChange("gender", e.target.value)}
+                        className="border p-2 rounded-sm"
+                      >
+                        <option value="">Select Gender</option>
+                        {genderOption.map((g) => (
+                          <option key={g.value} value={g.value}>
+                            {g.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <Field
+                        label="Gender"
+                        value={
+                          genderOption.find(
+                            (g) => g.value === Number(profile.gender)
+                          )?.label || ""
+                        }
+                        onChange={() => {}}
+                        disabled={true}
+                      />
+                    )}
             </div>
           </fieldset>
 
@@ -265,27 +279,37 @@ const AdminEditProfile: React.FC = () => {
 
             <div className="grid md:grid-cols-2 gap-4">
               {admin?.role?.toLowerCase() === "standard admin" && (
-                <Field
-                  label="Department"
-                  value={profile.department_id}
-                  onChange={(v) => handleChange("department_id", v)}
-                  disabled={!isSuperAdmin}
-                />
+              <Field
+                label="Department"
+                value={getDepartmentName(profile.department_id)}
+                onChange={(v) => handleChange("department_id", v)}
+                disabled={!isSuperAdmin}
+              />
               )}
 
-              <select
-                name="status"
-                value={profile.status}
-                onChange={(e) => handleChange("status", e.target.value)}
-                className="border p-2 mt-6 my-3 rounded-sm"
-              >
-                <option value="">Status</option>
-                {statusOption.map((g) => (
-                  <option key={g.value} value={g.value}>
-                    {g.label}
-                  </option>
-                ))}
-              </select>
+                  {admin?.role?.toLowerCase() !== "super admin" ? (
+                    <select
+                      name="status"
+                      value={profile.status}
+                      onChange={(e) => handleChange("status", e.target.value)}
+                      className="border p-2 mt-6 my-3 rounded-sm"
+                    >
+                      <option value="">Status</option>
+                      {statusOption.map((g) => (
+                        <option key={g.value} value={g.value}>
+                          {g.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <Field
+                      label="Status"
+                      value={profile.status}
+                      onChange={(v) => handleChange("status", v)}
+                      disabled={!isSuperAdmin}
+                    />
+                  )}
+              
             </div>
           </fieldset>
 
@@ -321,7 +345,7 @@ const AdminEditProfile: React.FC = () => {
             <button
               onClick={handleSave}
               disabled={loading}
-              className="px-6 py-2 w-37 ml-242 rounded-3xl bg-cyan-600 text-white hover:bg-cyan-800 disabled:bg-gray-400"
+              className="px-6 py-2 w-37 ml-242 rounded-sm bg-cyan-600 text-white hover:bg-cyan-800 disabled:bg-gray-400"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>
@@ -380,6 +404,13 @@ const AddressFields = ({
     <input placeholder="Pincode" value={state.pin ?? ""} onChange={(e) => handler("pin", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
   </div>
 );
+
+const getDepartmentName = (id: string | number): string => {
+  const dept = DOCTOR_SPECIALIZATIONS.find(
+    (d) => d.value === Number(id)
+  );
+  return dept ? dept.department : String(id); 
+};
 
 const ProfileAvatar = ({
   firstName,
