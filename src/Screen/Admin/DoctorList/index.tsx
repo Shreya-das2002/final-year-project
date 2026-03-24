@@ -555,7 +555,8 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
 
                       <td className="p-4 ">
-                        <div className="flex gap-2 justify items-center">
+                        <div className={`flex gap-2 justify items-center ${statusUI.className}`}>
+                          
                         {doc.status === "Active" && (
                           <FaUserCheck className="text-green-500"/>
                         )} 
