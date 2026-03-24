@@ -510,6 +510,7 @@ export const urls ={
   slotBookingUrl: 'doctor/slot-booking',
   dashboardCountUrl: '/dashboard-count',
   specializationCountUrl: '/specialization-count',
+  deactiveAdminUrl: 'admin/deactivate-admin'
 }
 
 

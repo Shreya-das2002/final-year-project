@@ -11,8 +11,7 @@ export interface Admin {
   email: string;
   phone_no: string;
   department_id?: number[];  
-  role: string;   //  IMPORTANT (fixes your error)
-
+  role: string;  
   created_on: string;
 }
 
@@ -24,11 +23,16 @@ export interface CreateAdminPayload {
   last_name: string;
   email: string;
   phone_no: string;
-  admin_type: number;   // 1,2,3
+  admin_type: number;   
   gender?: number;
   department_id?: number[];
   password: string;
   confirm_password: string; 
+}
+
+export interface deactivateAdminPayload {
+  admin_user_id: number;
+  status: "Active" | "Inactive";
 }
 
 /* ================= CREATE ADMIN API ================= */
@@ -46,3 +50,10 @@ export const getAllAdminsApi = async (): Promise<Admin[]> => {
 
   return response.data.data;
 };
+
+
+export const deactiveAdminApi = async (data: deactivateAdminPayload ) => {
+  return API.put(urls.deactiveAdminUrl, data, { 
+    validateStatus: () => true, 
+  });
+}
