@@ -7,7 +7,10 @@ import { FaSearch, FaEnvelope, FaUser, FaUserCheck, FaUsersSlash } from "react-i
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
 import type { RootState, AppDispatch } from "../../../../store/store";
+import { deactiveAdminApi } from "../../../services/createAdminApi";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -76,7 +79,40 @@ const [openSection, setOpenSection] = useState<"status" | "role" | "">("");
 const filterRef = useRef<HTMLDivElement | null>(null);
 const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
+const handleDeactivateAdmin = async (adminUserId: number) => {
 
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You want to deactivate this admin",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#6b7280",
+    confirmButtonText: "Yes, deactivate",
+    cancelButtonText: "Cancel"
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const response = await deactiveAdminApi({
+      admin_user_id: adminUserId,
+      status: "Inactive",
+    });
+
+    if (response?.data?.success) {
+      toast.success("Admin deactivated successfully ");
+
+      dispatch(fetchAllAdmins());
+    } else {
+      toast.error(response?.data?.message || "Failed to deactivate");
+    }
+
+  } catch (error) {
+    console.error("Deactivate admin error:", error);
+    toast.error("Something went wrong ");
+  }
+};
 
   /* ================= COLUMN WIDTH STATE ================= */
 
@@ -513,9 +549,12 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
                           className="w-5 h-5 text-gray-500 cursor-pointer"
                         />
 
-                        {admin.role !== "super admin" && (
-                          <TrashIcon className="w-5 h-5 text-red-500 cursor-pointer" />
-                        )}
+                        {admin.role?.toLowerCase() !== "super admin" && admin.status === "Active" && (
+                        <TrashIcon
+                            onClick={() => handleDeactivateAdmin(admin.admin_user_id)}
+                            className="w-5 h-5 text-red-500 cursor-pointer"
+                        />
+                      )}
                         </div>
                       </td>
 

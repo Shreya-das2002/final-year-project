@@ -510,6 +510,7 @@ export const urls ={
   slotBookingUrl: 'doctor/slot-booking',
   dashboardCountUrl: '/dashboard-count',
   specializationCountUrl: '/specialization-count',
+  deactiveAdminUrl: 'admin/deactivate-admin'
 }
 
 
@@ -607,6 +608,12 @@ export const genderOption = [
   { label: "Female", value: 2 },
   { label: "Others", value: 3 },
 ];
+
+export const statusOption = [
+  { label: "Active", value: 1},
+  { label: "Inactive", value: 2},
+];
+
 
 
 /* ================= SPECIALIZATION OPTIONS ================= */
