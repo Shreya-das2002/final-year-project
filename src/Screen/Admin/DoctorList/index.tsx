@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { EyeIcon, PencilSquareIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PencilSquareIcon, AdjustmentsHorizontalIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { HiArrowsUpDown } from "react-icons/hi2";
-import { FaSearch, FaEnvelope } from "react-icons/fa";
+import { FaSearch, FaEnvelope, FaUsersSlash, FaUserCheck, FaTrash, FaClock, FaIdCard } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { FiPhone } from "react-icons/fi";
 import type { RootState, AppDispatch } from "../../../../store/store";
@@ -37,7 +37,7 @@ const getStatusLabel = (status?: string): StatusUI => {
     case "pending":
       return {
         label: "Pending",
-        className: "bg-yellow-100 dark:bg-yellow-100/50 text-yellow-700 dark:text-yellow-700/70"
+        className: "bg-amber-100 dark:bg-amber-100/50 text-amber-700 dark:text-amber-700/70"
       };
 
     case "rejected":
@@ -49,7 +49,7 @@ const getStatusLabel = (status?: string): StatusUI => {
       case "inactive":
       return {
         label: "Inactive",
-        className: "bg-red-100 dark:bg-red-100/50 text-gray-700 dark:text-gray-700/70"
+        className: "bg-gray-100 dark:bg-gray-100/50 text-gray-700 dark:text-gray-700/70"
       };
 
     default:
@@ -92,6 +92,10 @@ const DoctorList = () => {
 
   const canView = buttons?.some(
     (btn) => btn.control_key === "doctor view"
+  );
+
+  const canDeleteProfile = buttons?.some(
+    (btn) => btn.control_key === "delete doc account"
   );
 
     const [search, setSearch] = useState("");
@@ -223,9 +227,10 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
           {/* FILTER BUTTON */}
           <div className="flex items-center justify-between gap-2">
-          <button
+                   <button
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
+            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
+            rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
           >
             <AdjustmentsHorizontalIcon className="text-cyan-700 dark:text-gray-100  w-5 h-5" />
             <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">Filter</span>
@@ -235,9 +240,11 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
   onClick={() =>
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
   }
-  className="p-2 w-13 h-9 rounded-lg pl-0 transition flex items-center justify-center"
+  className="  flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
+            rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
 >
-  <HiArrowsUpDown className="text-2xl text-cyan-600 dark:text-gray-100 hover:text-gray-800 dark:hover:text-cyan-400 " />
+  <HiArrowsUpDown className=" text-cyan-700 dark:text-gray-100  w-5 h-5 " />
+  <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">Sort</span>
 </button>
 </div>
 
@@ -515,8 +522,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
                     className={`border-b border-gray-300 items-center ${color} transition duration-200`}>
                   
 
-  <td className="p-4 "><div className="flex gap-2 justify items-center">
-    {doc.doctor_no ?? "-"}</div></td>
+<td className="p-4 "><div className="flex gap-2 justify items-center"><FaIdCard className="pt-1 text-2xl text-cyan-600 dark:text-cyan-700"/>{doc.doctor_no ?? "-"}</div></td>
 
 
   <td className="p-4">
@@ -548,15 +554,24 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
                       {doc.created_on ?? "-"}</div></td>
 
 
-                    <td className="p-4">
+                      <td className="p-4 ">
+                        <div className="flex gap-2 justify items-center">
+                        {doc.status === "Active" && (
+                          <FaUserCheck className="text-green-500"/>
+                        )} 
+                        {doc.status === "Pending" && (
+                          <FaClock className="text-amber-500"/>
+                        )}
+                       {doc.status === "Rejected" && (
+                          <FaTrash className="text-red-500"/>
+                        )}
+                        {doc.status === "Inactive" && (
+                          <FaUsersSlash className="text-gray-500"/>
+                        )}
 
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusUI.className}`}
-                      >
-                        {statusUI.label}
-                      </span>
-
-                    </td>
+                        {doc.status?? "-"}
+                        </div>
+                        </td> 
 
 
 
@@ -573,7 +588,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
   navigate(`/admin/doctor_view_profile/${doc.doctor_id}`);
 }}
         type="button"
-        className="text-gray-600 hover:text-blue-600"
+        className="text-blue-600 hover:text-blue-800"
         title="View Doctor"
       >
         <EyeIcon className="w-5 h-5" />
@@ -588,12 +603,23 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
   navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`);
 }}
         type="button"
-        className="text-gray-600 hover:text-green-600"
+        className="text-gray-600 hover:text-gray-800"
         title="Edit Doctor"
       >
         <PencilSquareIcon className="w-5 h-5" />
       </button>
     )}
+
+    {/* DELETE */}
+
+    {canDeleteProfile && (
+          <button
+          type="button"
+          className="  text-red-500 hover:text-red-800"
+          title="Delete Doctor">  
+            <TrashIcon className="w-5 h-5"/>
+          </button>
+            )}
 
   </div>
 
