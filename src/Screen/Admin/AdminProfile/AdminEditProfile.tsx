@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { FaUserShield } from "react-icons/fa";
 import type { AddressPayload } from "../../../services/adminProfileApi";
-import { genderOption, statusOption } from "../../../Environment";
+import { genderOption } from "../../../Environment";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 const AdminEditProfile: React.FC = () => {
@@ -257,13 +257,9 @@ setProfile({
                     ) : (
                       <Field
                         label="Gender"
-                        value={
-                          genderOption.find(
-                            (g) => g.value === Number(profile.gender)
-                          )?.label || ""
-                        }
-                        onChange={() => {}}
-                        disabled={true}
+                        value={ profile.gender}
+                        onChange={(v) => handleChange("gender", v)}
+                        disabled
                       />
                     )}
             </div>
@@ -273,7 +269,7 @@ setProfile({
             <legend className="text-sm font-semibold px-2">Professional Details</legend>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} disabled={!isSuperAdmin} />
+              <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} disabled />
               <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} disabled={!isSuperAdmin} />
             </div>
 
@@ -295,18 +291,16 @@ setProfile({
                       className="border p-2 mt-6 my-3 rounded-sm"
                     >
                       <option value="">Status</option>
-                      {statusOption.map((g) => (
-                        <option key={g.value} value={g.value}>
-                          {g.label}
-                        </option>
-                      ))}
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    
                     </select>
                   ) : (
                     <Field
                       label="Status"
                       value={profile.status}
                       onChange={(v) => handleChange("status", v)}
-                      disabled={!isSuperAdmin}
+                      disabled
                     />
                   )}
               

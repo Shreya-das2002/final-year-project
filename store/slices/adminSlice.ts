@@ -26,6 +26,7 @@ interface Admin {
   middle_name?: string | null;
   last_name: string;
   role: string;
+  gender?: string;
   email?: string;
   phone_no: string;
   created_on?: string;
