@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import {useState, useEffect} from "react";
 import type { RootState } from "../../../../store/store";
-import {getGenderLabel, DOCTOR_SPECIALIZATIONS} from "../../../Environment";
+import { DOCTOR_SPECIALIZATIONS} from "../../../Environment";
 import background from "../../../assets/apply_light.jpeg"
 import dark_background from "../../../assets/doctor_light.webp"
 
@@ -206,7 +206,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
               <p className="flex items-center gap-2">
                 <FaVenusMars className="text-orange-500" />
                 <span className="font-medium">Gender:</span>
-                {getGenderLabel(user.gender) || "—"}
+                {user.gender || "—"}
               </p>
               
           {user.role === "standard admin" && (
