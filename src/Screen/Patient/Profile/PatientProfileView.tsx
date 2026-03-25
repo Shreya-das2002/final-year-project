@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
+import { FiChevronRight } from "react-icons/fi";
 
 import { FaEdit, FaUserCircle, FaTimes, FaRing, FaTint, FaWalking, FaHome,
   FaSmoking,
@@ -65,6 +66,33 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 
   return (
     <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl ">
+
+        {/* Overlay */}
+  <div
+    className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
+      open ? "opacity-100 visible" : "opacity-0 invisible"
+    }`}
+    onClick={onClose}
+  />
+
+          {/* ✅ FLOATING ARROW OUTSIDE */}
+         <div
+          className={`fixed top-1/2 right-[418px] -translate-y-1/2 translate-x-1/2 z-[9999]
+                      transition-transform duration-100
+                      ${open ? "translate-x-1/2 opacity-100 visible " : "translate-x-full opacity-0 invisible"}`}
+        >
+            <button
+              onClick={onClose}
+              className="w-7 h-7 flex items-center justify-center
+                         rounded-full bg-gray-200 shadow-lg 
+                         text-cyan-700 hover:text-red-500 transition"
+            >
+              <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
+            </button>
+          </div>
+
+
+      
         {/* Drawer */}
       <div
         className={`fixed top-16 right-0 h-[calc(100vh-80px-30px)] w-[420px] shadow-2xl z-50 bg-gradient-to-br from-sky-100 to-blue-200  transform transition-transform duration-300 ${
@@ -72,11 +100,9 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
         } overflow-y-auto`}
         onClick={onClose}
       >
-        {/* Close button */}
+
       
-          <button onClick={onClose}>
-            <FaTimes className="text-gray-500 hover:text-red-500" />
-          </button>
+
           <div className=" text-center">
 
             {/* Profile Header */}
