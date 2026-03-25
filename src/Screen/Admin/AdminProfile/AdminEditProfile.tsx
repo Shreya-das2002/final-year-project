@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { FaUserShield } from "react-icons/fa";
 import type { AddressPayload } from "../../../services/adminProfileApi";
-import { genderOption, statusOption } from "../../../Environment";
+import { genderOption } from "../../../Environment";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 const AdminEditProfile: React.FC = () => {
@@ -291,11 +291,9 @@ setProfile({
                       className="border p-2 mt-6 my-3 rounded-sm"
                     >
                       <option value="">Status</option>
-                      {statusOption.map((g) => (
-                        <option key={g.value} value={g.value}>
-                          {g.label}
-                        </option>
-                      ))}
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    
                     </select>
                   ) : (
                     <Field
