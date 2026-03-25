@@ -257,13 +257,9 @@ setProfile({
                     ) : (
                       <Field
                         label="Gender"
-                        value={
-                          genderOption.find(
-                            (g) => g.value === Number(profile.gender)
-                          )?.label || ""
-                        }
-                        onChange={() => {}}
-                        disabled={true}
+                        value={ profile.gender}
+                        onChange={(v) => handleChange("gender", v)}
+                        disabled
                       />
                     )}
             </div>
@@ -273,7 +269,7 @@ setProfile({
             <legend className="text-sm font-semibold px-2">Professional Details</legend>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} disabled={!isSuperAdmin} />
+              <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} disabled />
               <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} disabled={!isSuperAdmin} />
             </div>
 
@@ -306,7 +302,7 @@ setProfile({
                       label="Status"
                       value={profile.status}
                       onChange={(v) => handleChange("status", v)}
-                      disabled={!isSuperAdmin}
+                      disabled
                     />
                   )}
               
