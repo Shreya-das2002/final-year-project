@@ -17,6 +17,7 @@ import subhaImg from "./assets/Subhankar.png";
 import ranaImg from "./assets/Ranabir.png";
 import rinkiImg from "./assets/Rinki.png";
 
+
 export interface TeamMember {
   id: number;
   name: string;
@@ -510,7 +511,8 @@ export const urls ={
   slotBookingUrl: 'doctor/slot-booking',
   dashboardCountUrl: '/dashboard-count',
   specializationCountUrl: '/specialization-count',
-  deactiveAdminUrl: 'admin/deactivate-admin'
+  deactiveAdminUrl: 'admin/deactivate-admin',
+  deactiveDoctorUrl: '/doctor/deactivate-doctor'
 }
 
 
