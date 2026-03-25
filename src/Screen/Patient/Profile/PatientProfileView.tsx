@@ -67,6 +67,13 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   return (
     <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl ">
 
+        <div
+    className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
+      open ? "opacity-100 visible" : "opacity-0 invisible"
+    }`}
+    onClick={onClose}
+  />
+
         {/* Overlay */}
   <div
     className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
