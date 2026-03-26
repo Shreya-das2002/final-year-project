@@ -8,10 +8,12 @@ import dark_background from "../../../assets/doctor_light.webp";
 import {
   FaUserShield,
   FaEnvelope,
-  FaUserCircle,
   FaPhone,
   FaVenusMars,
   FaHospital,
+  FaMapMarkerAlt,
+  FaBirthdayCake,
+  FaCalendarCheck
 } from "react-icons/fa";
 import { FiChevronRight } from "react-icons/fi";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
@@ -30,6 +32,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.auth.user);
+  const profile = useSelector((state: RootState) => state.auth.profile)
   const buttons = useSelector((state: RootState) => state.auth.buttons);
 
   const [isDark, setIsDark] = useState(
@@ -147,7 +150,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
       </div>
 
       <div
-        className={`fixed top-16 bottom-0 right-0 w-[400px]
+        className={`fixed top-16 bottom-16 right-0 w-[400px]
         shadow-2xl z-50 min-h-[calc(100vh-110px)] bg-cover flex flex-col justify-start
         transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}
@@ -156,9 +159,9 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
           backgroundImage: `url(${isDark ? dark_background : background})`,
         }}
       >
-        <div className="bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mt-20 border border-white/20">
+        <div className="bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mb-8 mt-20 border border-white/20">
           <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
-            <div className="w-24 h-24 border-2 border-cyan-100 dark:border-cyan-800 rounded-full bg-cyan-600 dark:bg-gray-500 flex items-center justify-center text-white text-2xl font-semibold shadow-lg">
+            <div className="w-24 h-24 border-2 border-cyan-100 dark:border-gray-600 rounded-full bg-cyan-600 dark:bg-gray-500 flex items-center justify-center text-white text-2xl font-semibold shadow-lg">
               {initials}
             </div>
           </div>
@@ -172,15 +175,35 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
           <h2
             className={`${
               user.role !== "super admin" ? "pt-10" : ""
-            } mt-4 mb-2 text-xl font-bold text-center text-gray-800 dark:text-gray-700`}
+            } mt-4 mb-2 text-xl font-bold text-center text-gray-800 dark:text-gray-900`}
           >
             {fullName}
           </h2>
 
-          <p className="text-gray-700 dark:text-gray-950 flex justify-center items-center gap-2 mt-1">
+          <p className="text-gray-700 dark:text-gray-800 flex justify-center items-center gap-2 mt-1">
             <FaEnvelope />
             {user.email}
           </p>
+
+            {user.role === "standard admin" && (
+                  <p className="flex items-center justify-center gap-2 pt-2 text-gray-700 dark:text-gray-800">
+                    <FaHospital className="text-gray-700 dark:text-gray-800 " />
+                    
+                    {user?.department
+  ? String(user.department)
+      .split(",")
+      .map((id) => Number(id.trim())) 
+      .map(
+        (id) =>
+          DOCTOR_SPECIALIZATIONS.find((spec) => spec.value === id)
+            ?.department
+      )
+      .filter((dept): dept is string => Boolean(dept)) 
+      .join(", ")
+  : "-"}
+                  </p>
+                )}
+
 
           <div className="mt-4 flex justify-center">
             <span className="px-4 py-2 bg-cyan-600 dark:bg-gray-500 rounded-full shadow flex items-center gap-2 text-gray-200 dark:text-gray-200">
@@ -196,48 +219,56 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
                   user.role !== "super admin" ? "" : "pt-5"
                 } space-y-3 text-sm text-gray-700 dark:text-gray-200`}
               >
-                <p className="flex items-center gap-2">
-                  <FaUserCircle className="text-cyan-500" />
-                  <span className="font-medium">Name:</span>
-                  {fullName}
+
+                <p className="flex items-center  gap-2">
+                  <FaVenusMars className="text-rose-500" />
+                  <span className="font-medium dark:text-gray-100">Gender:</span>
+                  {user.gender || "—"}
                 </p>
 
                 <p className="flex items-center gap-2">
-                  <FaEnvelope className="text-green-500" />
-                  <span className="font-medium">Email:</span>
-                  {user.email}
+                  <FaBirthdayCake className="text-yellow-500" />
+                  <span className="font-medium dark:text-gray-100">Date Of Birth:</span>
+                  {user.dob || "—"}
                 </p>
 
                 <p className="flex items-center gap-2">
-                  <FaPhone className="text-purple-500" />
-                  <span className="font-medium">Phone no:</span>
+                  <FaPhone className="text-green-500" />
+                  <span className="font-medium dark:text-gray-100">Phone no:</span>
                   {user.phone_no}
                 </p>
 
                 <p className="flex items-center gap-2">
-                  <FaVenusMars className="text-orange-500" />
-                  <span className="font-medium">Gender:</span>
-                  {user.gender || "—"}
+                  <FaCalendarCheck className="text-purple-500" />
+                  <span className="font-medium dark:text-gray-100">Joined on:</span>
+                  {user.created_on || "—"}
                 </p>
+<div className="space-y-3 text-left">
+  <div className="flex items-start gap-2">
+    <FaMapMarkerAlt className="text-blue-500 text-3xl pb-2" />
 
-                {user.role === "standard admin" && (
-                  <p className="flex items-center gap-2">
-                    <FaHospital className="text-blue-500" />
-                    <span className="font-medium">Department:</span>
-                    {user.department_id
-                      ? String(user.department_id)
-                          .split(",")
-                          .map((id) =>
-                            DOCTOR_SPECIALIZATIONS.find(
-                              (spec) => spec.value === Number(id)
-                            )?.department
-                          )
-                          .filter(Boolean)
-                          .join(", ")
-                      : "-"}
-                  </p>
-                )}
+    <p className="text-sm text-gray-700 dark:text-gray-100/80">
+      <span className="font-medium text-gray-800 dark:text-gray-100">
+        Address:{" "}
+      </span>
 
+      {[
+        profile?.current_address?.address_line_1,
+        profile?.current_address?.address_line_2,
+        profile?.current_address?.city,
+        profile?.current_address?.district,
+        profile?.current_address?.state,
+        profile?.current_address?.country,
+      ]
+        .filter(Boolean)
+        .join(", ")}
+
+      {profile?.current_address?.pin
+        ? `, Pin - ${profile.current_address.pin}`
+        : ""}
+    </p>
+  </div>
+</div>
                 {user?.role !== "super admin" && (
                   <div className="absolute border w-65 border-gray-400/30 mt-2 ml-1 items-center"></div>
                 )}
