@@ -77,10 +77,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   if (!result.isConfirmed) return;
 
   try {
-    const response = await deleteAccountApi({
-      admin_user_id: user.admin_id,  
-      status: "Inactive",            
-    });
+    const response = await deleteAccountApi()
 
     if (response?.data?.success) {
       toast.success(
