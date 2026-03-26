@@ -1,17 +1,19 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
-
-import { FaEdit, FaUserCircle, FaTimes, FaRing, FaTint, FaWalking, FaHome,
+import { FiChevronRight } from "react-icons/fi";
+import background from "../../../assets/apply_light.jpeg"
+import dark_background from "../../../assets/doctor_light.webp"
+import { FaUserCircle, FaRing, FaTint, FaWalking, FaHome,
   FaSmoking,
   FaWineGlassAlt,
   FaMapMarkerAlt,  } from "react-icons/fa";
 import { MdEmail, MdPhone, MdCake, MdWork, MdHeight, MdMonitorWeight } from "react-icons/md";
 import { GiMedicalPack } from "react-icons/gi";
 import { RiVirusLine } from "react-icons/ri";
-
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { getGenderLabel } from "../../../Environment";
 import { setProfile } from "../../../../store/slices/authSlice";
 
@@ -39,6 +41,7 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   const hydrated = useRef(false);
+  
 
   useEffect(() => {
     if (!profile && !hydrated.current) {
@@ -54,6 +57,24 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 
   const dob = profile?.dob || user?.dob || null;
   const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
+   const buttons = useSelector(
+      (state: RootState) => state.auth.buttons
+    );
+    const canEditProfile = buttons?.some(
+    (btn) => btn.control_key === "edit profile"
+  );
+  
+     const [isDark, setIsDark] = useState(
+          document.documentElement.classList.contains("dark")
+        ); 
+    
+          useEffect(() => {
+            const observer = new MutationObserver(() => {
+              setIsDark(document.documentElement.classList.contains("dark"));
+            });
+            observer.observe(document.documentElement, { attributes: true });
+            return () => observer.disconnect();
+          }, []);
 
   const initials =
     user.first_name?.charAt(0).toUpperCase() +
@@ -64,36 +85,81 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   const image = localStorage.getItem("profileImage");
 
   return (
-    <div className="w-full bg-gradient-to-br from-sky-100 to-blue-200 rounded-2xl ">
+    <div>
+
+        {/* Overlay */}
+  <div
+    className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
+      open ? "opacity-100 visible" : "opacity-0 invisible"
+    }`}
+    onClick={onClose}
+  />
+
+          {/* ✅ FLOATING ARROW OUTSIDE */}
+         <div
+          className={`fixed top-1/2 right-[418px] -translate-y-1/2 translate-x-1/2 z-[9999]
+                      transition-transform duration-100
+                      ${open ? "translate-x-1/2 opacity-100 visible " : "translate-x-full opacity-0 invisible"}`}
+        >
+            <button
+              onClick={onClose}
+              className="w-7 h-7 flex items-center justify-center
+                         rounded-full bg-gray-200 shadow-lg 
+                         text-cyan-700 hover:text-red-500 transition"
+            >
+              <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
+            </button>
+          </div>
+
+
+      
         {/* Drawer */}
       <div
-        className={`fixed top-16 right-0 h-[calc(100vh-80px-30px)] w-[420px] shadow-2xl z-50 bg-gradient-to-br from-sky-100 to-blue-200  transform transition-transform duration-300 ${
+        className={`fixed top-16 right-0 h-[calc(100vh-80px-30px)] w-[420px] shadow-2xl z-50 min-h-[calc(100vh-110px)] 
+          bg-cover flex flex-col justify-start 
+           transform transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
-        } overflow-y-auto`}
+        } overflow-y-auto  overflow-x-visible`} style={{ backgroundImage: `url(${isDark ? dark_background : background})`, }}
         onClick={onClose}
       >
-        {/* Close button */}
+
       
-          <button onClick={onClose}>
-            <FaTimes className="text-gray-500 hover:text-red-500" />
-          </button>
-          <div className=" text-center">
+
+          <div className=" bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mt-20 mb-5  border border-white/20">
 
             {/* Profile Header */}
-            <div className="flex flex-col items-center">
-              <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center text-white text-2xl font-semibold shadow-md">
-                {image ? (
-                  <img src={image} alt="profile" className="w-full h-full object-cover" />
-                ) : (
-                  initials || "P"
-                )}
-              </div>
+          {/* Avatar */}
+          <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
+            <div className="
+              w-24 h-24 border-2 border-cyan-100 dark:border-cyan-800
+              rounded-full mb-0 
+              bg-cyan-600 dark:bg-gray-500
+              flex items-center justify-center
+              text-white text-2xl font-semibold
+              shadow-lg
+            ">
+              {initials || "A"}
+            </div>
+            
+          </div>
 
-              <h2 className="mt-4 text-xl font-semibold text-gray-800">
+              {/* Edit Profile */}
+
+                {canEditProfile && (
+                  <button
+                  
+                    className="relative mt-5 ml-46 p-1  backdrop-blur-md bg-white/70 text-gray-500 dark:text-gray-700 
+                              hover:text-cyan-700 transition rounded-full "
+                  >
+                    <PencilSquareIcon className="w-5 h-5 flex items-center pl-1" />
+                  </button>
+                )}
+
+              <h2 className="mt-15 ml-30 text-xl font-semibold text-gray-800">
                 {fullName}
               </h2>
 
-              <p className="text-gray-500 flex items-center gap-2">
+              <p className="text-gray-500 ml-20 flex items-center gap-2">
                 <MdEmail /> {user.email}
               </p>
 
@@ -119,19 +185,11 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
         </span>
 
               </div>
+                    {/* Content */}
+        <div className="ml-5 mr-5 mt-6 rounded-4xl">
 
-              <button
-                onClick={() => {
-                navigate("/patient/profile");
-                onClose();
-                  }}
-
-                className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium  hover:bg-blue-700 transition"
-              >
-                <FaEdit />
-                Edit Profile
-              </button>
-            </div>
+  <div className="p-6 text-center rounded-4xl 
+    bg-white/40 dark:bg-gray-500/40 ">
 
             {/* Medical + Allergies */}
             <div className="mt-6 p-4 grid grid-cols-1 gap-4 text-left">
@@ -263,6 +321,8 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
           </button>
         </div>
 
+            </div>
+            </div>
             </div>
 
           </div>

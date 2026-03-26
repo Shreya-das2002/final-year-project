@@ -9,6 +9,9 @@ import { FiPhone } from "react-icons/fi";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import { deactiveDoctorApi } from "../../../services/doctorApi";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -31,31 +34,31 @@ const getStatusLabel = (status?: string): StatusUI => {
     case "active":
       return {
         label: "Active",
-        className: "bg-green-100 dark:bg-green-100/50 text-green-700 dark:text-green-700/70"
+        className: " text-green-700 dark:text-green-700/70"
       };
 
     case "pending":
       return {
         label: "Pending",
-        className: "bg-amber-100 dark:bg-amber-100/50 text-amber-700 dark:text-amber-700/70"
+        className: "text-amber-700 dark:text-amber-700/70"
       };
 
     case "rejected":
       return {
         label: "Rejected",
-        className: "bg-red-100 dark:bg-red-100/50 text-red-700 dark:text-red-700/70"
+        className: "text-red-700 dark:text-red-700/70"
       };
 
       case "inactive":
       return {
         label: "Inactive",
-        className: "bg-gray-100 dark:bg-gray-100/50 text-gray-700 dark:text-gray-700/70"
+        className: "text-gray-700 dark:text-gray-700/70"
       };
 
     default:
       return {
         label: status || "Unknown",
-        className: "bg-gray-100 dark:bg-gray-100/50 text-gray-700 dark:text-gray-700/70"
+        className: "text-gray-700 dark:text-gray-700/70"
       };
 
   }
@@ -106,6 +109,42 @@ const DoctorList = () => {
   const filterRef = useRef<HTMLDivElement | null>(null);
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
+
+  const handleDeactivateDoctor = async (doctorId: number) => {
+  
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to deactivate this doctor",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, deactivate",
+      cancelButtonText: "Cancel"
+    });
+  
+    if (!result.isConfirmed) return;
+  
+    try {
+      const response = await deactiveDoctorApi({
+        doctor_id: doctorId,
+        status: "Inactive",
+      });
+  
+      if (response?.data?.success) {
+        toast.success("Doctor deactivated successfully ");
+  
+        dispatch(fetchDoctorListThunk());
+      } else {
+        toast.error(response?.data?.message || "Failed to deactivate");
+      }
+  
+    } catch (error) {
+      console.error("Deactivate doctor error:", error);
+      toast.error("Something went wrong ");
+    }
+  };
+  
 
 
     /* ================= COLUMN WIDTH STATE ================= */
@@ -582,6 +621,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
                       
     {/* VIEW */}
+    
     {canView && (
       <button
       onClick={() => {
@@ -592,10 +632,14 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
         className="text-blue-600 hover:text-blue-800"
         title="View Doctor"
       >
+        {doc.status === "Active" && (
+      
         <EyeIcon className="w-5 h-5" />
+)}
+
       </button>
     )}
-
+    
     {/* EDIT */}
     {canEdit && (
       <button
@@ -615,10 +659,14 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
     {canDeleteProfile && (
           <button
+          onClick={() => handleDeactivateDoctor(doc.doctor_id)}
           type="button"
           className="  text-red-500 hover:text-red-800"
           title="Delete Doctor">  
-            <TrashIcon className="w-5 h-5"/>
+            <TrashIcon 
+            onClick={() => handleDeactivateDoctor(doc.doctor_id)}
+            className="w-5 h-5"
+            />
           </button>
             )}
 

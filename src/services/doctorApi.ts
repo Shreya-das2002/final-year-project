@@ -97,6 +97,10 @@ export interface CreateDoctorPayload {
 
 }
 
+export interface deactivateDoctorStatusPayload {
+  doctor_id: number;
+  status: "Active" | "Inactive";
+}
 
 /* ================= CREATE DOCTOR API ================= */
 
@@ -170,3 +174,9 @@ export const upsertSlotApi = (
     }
   );
 };
+
+export const deactiveDoctorApi = async (data: deactivateDoctorStatusPayload ) => {
+  return API.put(urls.deactiveDoctorUrl, data, { 
+    validateStatus: () => true, 
+  });
+}
