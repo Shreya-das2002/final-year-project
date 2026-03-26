@@ -14,8 +14,10 @@ interface User {
   phone_no: string;
   gender: string;
   dob?: string;
-  department_id: string;
+  department: string;
+  created_on: string;
 }
+
 
 interface Menu {
   control_master_id: number;
@@ -47,7 +49,7 @@ interface Address {
   pin: string | null;
 }
 
-interface PatientProfile {
+interface Profile {
   dob: string | null;
   marital_status: string | null;
   occupation: string | null;
@@ -71,8 +73,7 @@ interface AuthState {
   menus: Menu[];
   buttons: Button[]; 
   authChecked: boolean;
-
-  profile: PatientProfile | null;
+  profile: Profile | null;
 }
 
 /* ================= PAYLOAD ================= */
@@ -80,7 +81,7 @@ interface AuthState {
 interface LoginSuccessPayload {
   token: string;
   user: User;
-  profile: PatientProfile;
+  profile: Profile;
   role: string;
   menus: Menu[];
   buttons: Button[];
@@ -121,7 +122,7 @@ const authSlice = createSlice({
 
     setProfile(
       state,
-      action: PayloadAction<PatientProfile>
+      action: PayloadAction<Profile>
     ) {
       state.profile = action.payload;
     },
