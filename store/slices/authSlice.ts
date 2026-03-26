@@ -7,6 +7,7 @@ interface User {
   email: string;
   role: string;
   patient_id: number;
+  admin_id: number;
   first_name: string;
   middle_name: string;
   last_name: string;

@@ -512,7 +512,8 @@ export const urls ={
   dashboardCountUrl: '/dashboard-count',
   specializationCountUrl: '/specialization-count',
   deactiveAdminUrl: 'admin/deactivate-admin',
-  deactiveDoctorUrl: '/doctor/deactivate-doctor'
+  deactiveDoctorUrl: '/doctor/deactivate-doctor',
+  deleteAcoountUrl: '/account/deactivate',
 }
 
 
