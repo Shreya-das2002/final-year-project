@@ -270,7 +270,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   </div>
 </div>
                 {user?.role !== "super admin" && (
-                  <div className="absolute border w-65 border-gray-400/30 mt-2 ml-1 items-center"></div>
+                  <div className="absolute border w-58 border-gray-400/30 mt-2 ml-1 items-center"></div>
                 )}
 
                 <div className="w-full flex justify-end pt-5">
