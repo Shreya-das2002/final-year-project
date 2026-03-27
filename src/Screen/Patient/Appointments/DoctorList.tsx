@@ -121,14 +121,17 @@ const convertToAMPM = (time: string) => {
                     <div className="text-lg font-semibold text-green-950 dark:text-cyan-50">
                       {todayFee ? `₹${todayFee} per visit` : ""}
                     </div>
-                    <div className="text-xs pr-5 text-gray-600 dark:text-cyan-100">
+                    <div className={`text-xs ${
+                                  todayFee ? "pr-5" : "pl-3"
+                                } text-gray-600 dark:text-cyan-10`}
+                              >
                       {todayFee ? "(Today's Fee)" : "Doctor Unavailable today"}
                     </div>
                   </div>
 
                   <button
                     onClick={() => openCalendar(doc)}
-                    className="mt-2 bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700"
+                    className="mt-2 bg-cyan-600 text-white px-4 py-2 mr-3 rounded hover:bg-cyan-700"
                   >
                     Book Now
                   </button>

@@ -36,7 +36,7 @@ interface Slot {
   end_time: string;
 }
 
-interface Doctor {
+export interface Doctor {
 
   doctor_id: number;
 

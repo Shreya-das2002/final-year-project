@@ -8,7 +8,7 @@ export interface AddressPayload {
   district?: string;
   state?: string;
   country?: string;
-  pin_code?: string;
+  pin?: string;
 }
 
 export interface ExperiencePayload {

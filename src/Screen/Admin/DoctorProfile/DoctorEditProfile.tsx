@@ -1,138 +1,200 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import type { AppDispatch } from "../../../../store/store";
+import { useLocation, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import type { Address } from "../../../services/doctorApi";
-import type { Experience } from "../../../services/doctorApi";
+
+import { fetchDoctorListThunk } from "../../../../store/slices/doctorSlice";
 import { saveDoctorProfileApi } from "../../../services/doctorProfileApi";
 import type {
   DoctorProfilePayload,
-
+  AddressPayload,
+  ExperiencePayload,
 } from "../../../services/doctorProfileApi";
-import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import  { fetchDoctorListThunk } from "../../../../store/slices/doctorSlice";
-import type { AppDispatch } from "../../../../store/store";
-
-/* ================= TYPES ================= */
-
-
-
-/* ================= COMPONENT ================= */
 
 const DoctorEditProfile: React.FC = () => {
   const { doctorId } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
 
-const doctorFromState = location.state;
+  const doctorFromState = location.state;
+  const doctorFromStore = useSelector((state: RootState) => state.doctor?.doctors || []);
 
-const doctorFromStore = useSelector(
-  (state: RootState) => state.doctor.selectedDoctor
-);
+  const [step, setStep] = useState(1);
+  const [sameAddress, setSameAddress] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-const doctorFromStorage = localStorage.getItem("selectedDoctor");
+  useEffect(() => {
+    dispatch(fetchDoctorListThunk());
+  }, [dispatch]);
 
-const doctor =
-  doctorFromState ||
-  doctorFromStore ||
-  (doctorFromStorage ? JSON.parse(doctorFromStorage) : null);
-  const finalDoctorId = doctorId || doctor?.doctor_id;
-
-  const [step, setStep] = useState<number>(1);
-  const [sameAddress, setSameAddress] = useState<boolean>(false);
-
-useEffect(() => {
-  dispatch(fetchDoctorListThunk());
-}, [dispatch]);
+  const doctor = useMemo(() => {
+    return (
+      doctorFromStore.find((d) => d.doctor_id === Number(doctorId)) ||
+      doctorFromState ||
+      null
+    );
+  }, [doctorFromStore, doctorFromState, doctorId]);
 
   const [profile, setProfile] = useState({
-    firstName: doctor?.first_name || "",
-    middleName: doctor?.middle_name || "",
-    lastName: doctor?.last_name || "",
-    gender: doctor?.gender || "",
-    dob: doctor?.dob ||"",
-    docNumber: doctor?.doctor_no || "",
-    license: doctor?.licence_number ||"",
-    registration: doctor?.registration_number ||"",
-    experience: doctor?.experience ||"",
-    specialization: doctor?.specialization || "",
-    bio: doctor?.bio || "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    dob: "",
+    gender: "",
+    email: "",
+    phone: "",
+    doctor_no: "",
+    licence_number: "",
+    registration_number: "",
+    experience: "",
+    specialization: "",
+    bio: "",
+    status: "",
   });
 
-  const [currentAddress, setCurrentAddress] = useState<Address>({
-    address_line_1: doctor?.doctor_address?.current_address?.address_line_1 || "",
-    address_line_2: doctor?.doctor_address?.current_address?.address_line_2 || "",
-    city:  doctor?.doctor_address?.current_address?.city || "",
-    district:  doctor?.doctor_address?.current_address?.district || "",
-    state:  doctor?.doctor_address?.current_address?.state || "",
-    country:  doctor?.doctor_address?.current_address?.country || "",
-    pin:  doctor?.doctor_address?.current_address?.pin || "",
+  const [permanentAddress, setPermanentAddress] = useState<AddressPayload>({
+    address_line_1: "",
+    address_line_2: "",
+    city: "",
+    district: "",
+    state: "",
+    country: "",
+    pin: "",
   });
 
-  const [permanentAddress, setPermanentAddress] = useState<Address>({
-    address_line_1:  doctor?.doctor_address?.permanent_address?.address_line_1 || "",
-    address_line_2:  doctor?.doctor_address?.permanent_address?.address_line_2 || "",
-    city:  doctor?.doctor_address?.permanent_address?.city || "",
-    district:  doctor?.doctor_address?.permanent_address?.district || "",
-    state:  doctor?.doctor_address?.permanent_address?.state || "",
-    country:  doctor?.doctor_address?.permanent_address?.country || "",
-    pin:  doctor?.doctor_address?.permanent_address?.pin || "",
+  const [currentAddress, setCurrentAddress] = useState<AddressPayload>({
+    address_line_1: "",
+    address_line_2: "",
+    city: "",
+    district: "",
+    state: "",
+    country: "",
+    pin: "",
   });
 
-  const [experiences, setExperiences] = useState<Experience[]>([
+  const [experiences, setExperiences] = useState<ExperiencePayload[]>([
     {
-      organization_name:  doctor?.doctor_experiences?.[0]?.organization_name || "",
-      start_date:  doctor?.doctor_experiences?.[0]?.start_date || "",
-      end_date:  doctor?.doctor_experiences?.[0]?.end_date || "",
-      designation:  doctor?.doctor_experiences?.[0]?.designation || "",
-      responsibilities:  doctor?.doctor_experiences?.[0]?.responsibilities || "",
+      organization: "",
+      start_date: "",
+      end_date: "",
+      designation: "",
+      responsibilities: "",
     },
   ]);
 
-  
+  useEffect(() => {
+    if (!doctor) return;
 
-  /* ================= HANDLERS ================= */
+    const permanent =
+      doctor?.permanent_address ||
+      doctor?.doctor_address?.permanent_address ||
+      {};
 
-  const handleProfileChange = (key: string, value: string) => {
+    const current =
+      doctor?.current_address ||
+      doctor?.doctor_address?.current_address ||
+      {};
+
+    setProfile({
+      first_name: doctor?.first_name ?? "",
+      middle_name: doctor?.middle_name ?? "",
+      last_name: doctor?.last_name ?? "",
+      dob: doctor?.dob ?? "",
+      gender: doctor?.gender ?? "",
+      email: doctor?.email ?? "",
+      phone: doctor?.phone_no ?? doctor?.phone ?? "",
+      doctor_no: doctor?.doctor_no ?? "",
+      licence_number: doctor?.licence_number ?? "",
+      registration_number: doctor?.registration_number ?? "",
+      experience: doctor?.experience ?? "",
+      specialization: doctor?.specialization ?? "",
+      bio: doctor?.bio ?? "",
+      status: doctor?.status ?? "",
+    });
+
+    setPermanentAddress({
+      address_line_1: permanent?.address_line_1 ?? "",
+      address_line_2: permanent?.address_line_2 ?? "",
+      city: permanent?.city ?? "",
+      district: permanent?.district ?? "",
+      state: permanent?.state ?? "",
+      country: permanent?.country ?? "",
+      pin: permanent?.pin ?? "",
+    });
+
+    setCurrentAddress({
+      address_line_1: current?.address_line_1 ?? "",
+      address_line_2: current?.address_line_2 ?? "",
+      city: current?.city ?? "",
+      district: current?.district ?? "",
+      state: current?.state ?? "",
+      country: current?.country ?? "",
+      pin: current?.pin ?? "",
+    });
+
+    if (doctor?.doctor_experiences?.length) {
+      setExperiences(
+        doctor.doctor_experiences.map((exp: ExperiencePayload) => ({
+          organization: exp?.organization ?? exp?.organization ?? "",
+          start_date: exp?.start_date ?? "",
+          end_date: exp?.end_date ?? "",
+          designation: exp?.designation ?? "",
+          responsibilities: exp?.responsibilities ?? "",
+        }))
+      );
+    }
+  }, [doctor]);
+
+  const handleChange = (key: string, value: string) => {
     setProfile((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handlePermanentChange = (key: string, value: string) => {
+  const handlePermanentChange = (key: keyof AddressPayload, value: string) => {
     const updated = { ...permanentAddress, [key]: value };
     setPermanentAddress(updated);
-    if (sameAddress) setCurrentAddress(updated);
+
+    if (sameAddress) {
+      setCurrentAddress(updated);
+    }
   };
 
-  const handleCurrentChange = (key: string, value: string) => {
+  const handleCurrentChange = (key: keyof AddressPayload, value: string) => {
     setCurrentAddress((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSameAddress = () => {
-    const checked = !sameAddress;
-    setSameAddress(checked);
-    if (checked) setCurrentAddress(permanentAddress);
+    setSameAddress((prev) => {
+      const next = !prev;
+      if (next) {
+        setCurrentAddress({ ...permanentAddress });
+      }
+      return next;
+    });
   };
 
   const handleExpChange = (
     index: number,
-    field: keyof Experience,
+    key: keyof ExperiencePayload,
     value: string
   ) => {
     const updated = [...experiences];
-    updated[index][field] = value;
+    updated[index] = {
+      ...updated[index],
+      [key]: value,
+    };
     setExperiences(updated);
   };
 
   const addExperience = () => {
-    setExperiences([
-      ...experiences,
+    setExperiences((prev) => [
+      ...prev,
       {
-        organization_name: "",
+        organization: "",
         start_date: "",
         end_date: "",
         designation: "",
@@ -141,306 +203,455 @@ useEffect(() => {
     ]);
   };
 
-  /* ================= SAVE ================= */
+  const removeExperience = (index: number) => {
+    if (experiences.length === 1) return;
+    setExperiences((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleSave = async () => {
-  try {
-if (!doctor) {
-  return <div className="p-10">Loading doctor...</div>;
-    }
+    try {
+      if (!doctor?.doctor_id) {
+        toast.error("Doctor ID missing");
+        return;
+      }
 
-    let payload: DoctorProfilePayload = {};
+      setLoading(true);
 
-    /* ================= STEP 1 SAVE ================= */
-    if (step === 1) {
-      payload = {
+      let payload: DoctorProfilePayload = {
         dob: profile.dob,
-        licence_number: profile.license,
-        registration_number: profile.registration,
+        licence_number: profile.licence_number,
+        registration_number: profile.registration_number,
         experience: profile.experience,
         bio: profile.bio,
-
         current_address: {
-          address_line_1: doctor?.doctor_address?.current_address.address_line_1 || "",
-          address_line_2: doctor?.doctor_address?.current_address.address_line_2 || "",
-          city: doctor?.doctor_address?.current_address.city || "",
-          district: doctor?.doctor_address?.current_address.district || "",
-          state: doctor?.doctor_address?.current_address.state || "",
-          country: doctor?.doctor_address?.current_address.country || "",
-          pin_code: doctor?.doctor_address?.current_address.pin || "",
+          address_line_1: currentAddress.address_line_1 || "",
+          address_line_2: currentAddress.address_line_2 || "",
+          city: currentAddress.city || "",
+          district: currentAddress.district || "",
+          state: currentAddress.state || "",
+          country: currentAddress.country || "",
+          pin: currentAddress.pin || "",
         },
-
         permanent_address: {
-          address_line_1: doctor?.doctor_address?.permanent_address.address_line_1 || "",
-          address_line_2: doctor?.doctor_address?.permanent_address.address_line_2 || "",
-          city: doctor?.doctor_address?.permanent_address.city || "",
-          district: doctor?.doctor_address?.permanent_address.district || "",
-          state: doctor?.doctor_address?.permanent_address.state || "",
-          country: doctor?.doctor_address?.permanent_address.country || "",
-          pin_code: doctor?.doctor_address?.permanent_address.pin || "",
+          address_line_1: permanentAddress.address_line_1 || "",
+          address_line_2: permanentAddress.address_line_2 || "",
+          city: permanentAddress.city || "",
+          district: permanentAddress.district || "",
+          state: permanentAddress.state || "",
+          country: permanentAddress.country || "",
+          pin: permanentAddress.pin || "",
         },
       };
-    }
 
-    /* ================= STEP 2 SAVE ================= */
-if (step === 2) {
-  payload = {
-    ...payload,
-
-    experiences: doctor.doctor_experiences?.map((exp: Experience
-    ) => ({
-      organization_name: exp.organization_name || "",
-      start_date: exp.start_date || "",
-      end_date: exp.end_date || "",
-      designation: exp.designation || "",
-      responsibilities: exp.responsibilities || "",
-    })) || [],
-  };
-}
-
-    const res = await saveDoctorProfileApi(finalDoctorId, payload);
-
-    if (res.data.success) {
-      if(step === 2){
-        toast( "Doctor profile update successfully ");
-        navigate("/admin/doctor_list");
+      if (step === 2) {
+        payload = {
+          ...payload,
+          experiences: experiences.map((exp) => ({
+            organization: exp.organization || "",
+            start_date: exp.start_date || "",
+            end_date: exp.end_date || "",
+            designation: exp.designation || "",
+            responsibilities: exp.responsibilities || "",
+          })),
+        };
       }
-      
-    } else {
-      toast(res.data.message || "Failed");
+
+      const res = await saveDoctorProfileApi(doctor.doctor_id, payload);
+
+      if (res?.data?.success) {
+        toast.success(res.data.message || "Profile saved");
+      } else {
+        toast.error(res?.data?.message || "Failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error");
+    } finally {
+      setLoading(false);
     }
+  };
 
-  } catch (error) {
-    console.error(error);
-    toast("Something went wrong");
+  if (!doctor) {
+    return <div className="p-10">No doctor data found</div>;
   }
-};
 
-  /* ================= SAFETY ================= */
-
- if (!doctor) {
-  toast("Doctor data not found");
-  return;
-}
-
-  /* ================= UI ================= */
-return (
+  return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded shadow">
+      <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded-3xl pl-1 pr-1">
+        <ProfileAvatar
+          firstName={doctor.first_name || ""}
+          lastName={doctor.last_name || ""}
+        />
 
-        {/* AVATAR */}
-        <ProfileAvatar firstName={profile.firstName} lastName={profile.lastName} />
+        <div className="bg-gray-50 p-6 rounded-3xl space-y-6">
+          <StepIndicator step={step} onStepClick={setStep} />
 
-        {/* STEPPER */}
-        <StepIndicator step={step} onStepClick={setStep} />
-
-        {/* ================= STEP 1 ================= */}
-        {step === 1 && (
-          <div className="bg-gray-50 p-6 rounded space-y-6">
-
-            {/* PERSONAL */}
-          <fieldset className="border p-5 bg-blue-50 rounded">
-                <legend className="px-2 text-sm font-semibold">
-                        Personal Details
+          {step === 1 && (
+            <>
+              <fieldset className="border p-5 bg-blue-50 rounded-sm">
+                <legend className="text-sm font-semibold px-2">
+                  Personal Details
                 </legend>
-              <div className="grid md:grid-cols-3 gap-4">
-                <Field label="First Name" value={profile.firstName} onChange={(v)=>handleProfileChange("firstName",v)} disabled />
-                <Field label="Middle Name" value={profile.middleName} onChange={(v)=>handleProfileChange("middleName",v)} disabled />
-                <Field label="Last Name" value={profile.lastName} onChange={(v)=>handleProfileChange("lastName",v)} disabled />
-              </div>
 
-              <div className="grid md:grid-cols-2 gap-4 mt-4 items-end">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    label="Date of Birth"
-                    value={profile.dob ? dayjs(profile.dob) : null}
-                    onChange={(v: Dayjs | null) =>
-                      handleProfileChange("dob", v ? v.format("YYYY-MM-DD") : "")
-                    }
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        size: "small",
-                      },
-                    }}
+                <div className="grid md:grid-cols-3 gap-4">
+                  <Field
+                    label="First Name"
+                    value={profile.first_name}
+                    onChange={(v) => handleChange("first_name", v)}
+                    disabled
                   />
-                </LocalizationProvider>
-
-                <Field label="Gender" value={profile.gender} onChange={(v)=>handleProfileChange("gender",v)} disabled />
-              </div>
-            </fieldset>
-
-            {/* PROFESSIONAL */}
-            <fieldset className="border p-5 bg-blue-50 rounded">
-              <legend className="px-2 text-sm font-semibold">Professional Information</legend>
-
-              <div className="grid md:grid-cols-3 gap-4">
-                <Field label="Doctor ID" value={profile.docNumber} onChange={(v)=>handleProfileChange("docNumber",v)} disabled />
-                <Field label="Licence Number" value={profile.license} onChange={(v)=>handleProfileChange("license",v)}  />
-                <Field label="Registration Number" value={profile.registration} onChange={(v)=>handleProfileChange("registration",v)} />
-                </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <Field label="Experience" value={profile.experience} onChange={(v)=>handleProfileChange("experience",v)} />
-                <Field label="Specialization" value={profile.specialization} onChange={(v)=>handleProfileChange("specialization",v)} disabled />
-              </div>
-
-              <textarea
-                className="w-full mt-4 border p-2"
-                placeholder="Bio"
-                value={profile.bio}
-                onChange={(e)=>handleProfileChange("bio",e.target.value)}
-              />
-            </fieldset>
-
-            {/* ADDRESS */}
-            <fieldset className="border p-4 bg-blue-50 rounded">
-              <legend className="px-2 text-sm font-semibold">Address Details</legend>
-
-              <div className="grid md:grid-cols-2 gap-6">
-
-                {/* PERMANENT */}
-                <div className="border p-4 bg-lime-50 rounded">
-                  <p className="text-sm font-semibold mb-2">Permanent Address</p>
-
-                  <AddressFields state={permanentAddress} handler={handlePermanentChange} />
+                  <Field
+                    label="Middle Name"
+                    value={profile.middle_name}
+                    onChange={(v) => handleChange("middle_name", v)}
+                    disabled
+                  />
+                  <Field
+                    label="Last Name"
+                    value={profile.last_name}
+                    onChange={(v) => handleChange("last_name", v)}
+                    disabled
+                  />
                 </div>
 
-                {/* CURRENT */}
-                <div className="border p-4 bg-lime-50 rounded">
-                  <div className="flex justify-between mb-2">
-                    <p className="text-sm font-semibold">Current Address</p>
-                    <label className="text-xs">
-                      <input type="checkbox" checked={sameAddress} onChange={handleSameAddress}/> Same as
+                <div className="grid md:grid-cols-3 gap-4 pt-3 items-end">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Date of Birth"
+                      value={profile.dob ? dayjs(profile.dob) : null}
+                      onChange={(value: Dayjs | null) =>
+                        handleChange(
+                          "dob",
+                          value ? value.format("YYYY-MM-DD") : ""
+                        )
+                      }
+                      slotProps={{
+                        textField: {
+                          size: "small",
+                          fullWidth: true,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+
+                  <Field
+                    label="Gender"
+                    value={profile.gender}
+                    onChange={(v) => handleChange("gender", v)}
+                    disabled
+                  />
+
+                  <Field
+                    label="Doctor Number"
+                    value={profile.doctor_no}
+                    onChange={(v) => handleChange("doctor_no", v)}
+                    disabled
+                  />
+
+                  <Field
+                    label="Licence Number"
+                    value={profile.licence_number}
+                    onChange={(v) => handleChange("licence_number", v)}
+                  />
+
+                  <Field
+                    label="Registration Number"
+                    value={profile.registration_number}
+                    onChange={(v) => handleChange("registration_number", v)}
+                  />
+
+                  <Field
+                    label="Experience"
+                    value={profile.experience}
+                    onChange={(v) => handleChange("experience", v)}
+                  />
+
+                  <Field
+                    label="Specialization"
+                    value={profile.specialization}
+                    onChange={(v) => handleChange("specialization", v)}
+                    disabled
+                  />
+                </div>
+
+                <div className="pt-3">
+                  <label className="text-sm pl-1">Bio</label>
+                  <textarea
+                    value={profile.bio}
+                    onChange={(e) => handleChange("bio", e.target.value)}
+                    rows={4}
+                    className="w-full border p-2 rounded-sm"
+                  />
+                </div>
+              </fieldset>
+
+              <fieldset className="border p-5 bg-blue-50 rounded-sm">
+                <legend className="text-sm font-semibold px-2">
+                  Address Details
+                </legend>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <fieldset className="border p-4 bg-blue-50 rounded-sm">
+                    <legend className="text-sm p-2 font-semibold">
+                      Permanent Address
+                    </legend>
+                    <AddressFields
+                      state={permanentAddress}
+                      handler={handlePermanentChange}
+                    />
+                  </fieldset>
+
+                  <fieldset className="border p-4 bg-blue-50 rounded-sm">
+                    <legend className="text-sm p-2 font-semibold">
+                      Current Address
+                    </legend>
+
+                    <label className="text-xs flex items-center justify-end mb-2 gap-2">
+                      <input
+                        type="checkbox"
+                        checked={sameAddress}
+                        onChange={handleSameAddress}
+                      />
+                      Same as Permanent
                     </label>
-                  </div>
 
-                  <AddressFields state={currentAddress} handler={handleCurrentChange} disabled={sameAddress}/>
+                    <AddressFields
+                      state={currentAddress}
+                      handler={handleCurrentChange}
+                      disabled={sameAddress}
+                    />
+                  </fieldset>
                 </div>
+              </fieldset>
+            </>
+          )}
 
+          {step === 2 && (
+            <fieldset className="border p-5 bg-blue-50 rounded-sm">
+              <legend className="text-sm font-semibold px-2">
+                Experience Details
+              </legend>
+
+              <div className="space-y-4">
+                {experiences.map((exp, index) => (
+                  <div key={index} className="border rounded-sm p-4 bg-white">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Field
+                        label="Organization Name"
+                        value={exp.organization ?? ""}
+                        onChange={(v) =>
+                          handleExpChange(index, "organization", v)
+                        }
+                      />
+
+                      <Field
+                        label="Designation"
+                        value={exp.designation ?? ""}
+                        onChange={(v) =>
+                          handleExpChange(index, "designation", v)
+                        }
+                      />
+
+                      <Field
+                        label="Start Date"
+                        value={exp.start_date ?? ""}
+                        onChange={(v) =>
+                          handleExpChange(index, "start_date", v)
+                        }
+                        type="date"
+                      />
+
+                      <Field
+                        label="End Date"
+                        value={exp.end_date ?? ""}
+                        onChange={(v) =>
+                          handleExpChange(index, "end_date", v)
+                        }
+                        type="date"
+                      />
+                    </div>
+
+                    <div className="pt-3">
+                      <label className="text-sm pl-1">Responsibilities</label>
+                      <textarea
+                        value={exp.responsibilities ?? ""}
+                        onChange={(e) =>
+                          handleExpChange(
+                            index,
+                            "responsibilities",
+                            e.target.value
+                          )
+                        }
+                        rows={4}
+                        className="w-full border p-2 rounded-sm"
+                      />
+                    </div>
+
+                    {experiences.length > 1 && (
+                      <div className="pt-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => removeExperience(index)}
+                          className="px-4 py-2 rounded-sm bg-red-500 text-white hover:bg-red-600"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div>
+                  <button
+                    type="button"
+                    onClick={addExperience}
+                    className="px-4 py-2 rounded-sm bg-green-600 text-white hover:bg-green-700"
+                  >
+                    Add More Experience
+                  </button>
+                </div>
               </div>
             </fieldset>
+          )}
 
+          <div className="flex justify-between mt-10">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setStep((s) => Math.max(1, s - 1))}
+                disabled={step === 1 || loading}
+                className="px-6 py-2 rounded-sm bg-gray-500 text-white disabled:bg-gray-300"
+              >
+                ← Back
+              </button>
+            </div>
+
+            <div className="flex gap-4">
+              {step === 1 && (
+                <button
+                  onClick={() => setStep(2)}
+                  disabled={loading}
+                  className="px-6 py-2 rounded-sm bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  Next →
+                </button>
+              )}
+
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className="px-6 py-2 rounded-sm bg-cyan-600 text-white hover:bg-cyan-800 disabled:bg-gray-400"
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
           </div>
-        )}
-
-        {/* ================= STEP 2 ================= */}
-        {step === 2 && (
-          <div className="bg-gray-50 p-6 rounded space-y-6">
-            {experiences.map((exp,index)=>(
-              <div key={index} className="border p-4 bg-blue-50 rounded">
-                <Field label="Organization" value={exp.organization_name} onChange={(v)=>handleExpChange(index,"organization_name",v)} />
-                <Field label="Start Date" type="date" value={exp.start_date} onChange={(v)=>handleExpChange(index,"start_date",v)} />
-                <Field label="End Date" type="date" value={exp.end_date} onChange={(v)=>handleExpChange(index,"end_date",v)} />
-                <Field label="Designation" value={exp.designation} onChange={(v)=>handleExpChange(index,"designation",v)} />
-
-                <textarea
-                  className="w-full mt-2 border p-2"
-                  placeholder= "Responsibilities"
-                  value={exp.responsibilities || ""}
-                  onChange={(e)=>handleExpChange(index,"responsibilities",e.target.value)}
-                />
-              </div>
-            ))}
-
-            <button onClick={addExperience} className="border px-4 py-2 bg-lime-100 rounded">
-              + Add Another
-            </button>
-          </div>
-        )}
-{/* ================= NAVIGATION ================= */}
-<div className="flex justify-between mt-10">
-
-  {/* BACK BUTTON */}
-  <button
-    onClick={() => setStep((s) => Math.max(1, s - 1))}
-    disabled={step === 1}
-    className="px-6 py-2 rounded-md bg-blue-600 text-white disabled:bg-gray-300"
-  >
-    ← Back
-  </button>
-
-  {/* RIGHT SIDE BUTTONS */}
-  <div className="flex gap-4">
-
-    {/* SAVE BUTTON (SHOW IN ALL STEPS) */}
-    <button
-      onClick={handleSave}
-      className="px-6 py-2 rounded-md bg-green-600 text-white"
-    >
-      Save
-    </button>
-
-    {/* NEXT BUTTON (ONLY STEP 1) */}
-    {step === 1 && (
-      <button
-        onClick={() => setStep(2)}
-        className="px-6 py-2 bg-blue-600 text-white rounded-md"
-      >
-        Next →
-      </button>
-    )}
-
-  </div>
-</div>
-</div>
-
-</div>
-
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default DoctorEditProfile;
-
-/* ================= COMPONENTS ================= */
 
 const Field = ({
   label,
   value,
   onChange,
   type = "text",
-  disabled = false, 
+  disabled = false,
 }: {
   label: string;
-  value:  string | null;
+  value: string | null | undefined;
   onChange: (v: string) => void;
   type?: string;
-  disabled?: boolean; 
+  disabled?: boolean;
 }) => (
   <div>
-    <label className="text-sm">{label}</label>
+    <label className="text-sm pl-1">{label}</label>
     <input
       type={type}
       value={value || ""}
-      disabled={disabled}  
+      disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
       className={`w-full border p-2 ${
-        disabled ? "bg-gray-100 cursor-not-allowed" : ""
+        disabled ? "bg-gray-100 cursor-not-allowed rounded-sm" : "rounded-sm"
       }`}
     />
   </div>
 );
+
 const AddressFields = ({
   state,
   handler,
+  disabled = false,
 }: {
-  state: Address;
-  handler: (key: keyof Address, value: string) => void;
+  state: AddressPayload;
+  handler: (key: keyof AddressPayload, value: string) => void;
   disabled?: boolean;
 }) => (
-  <div className="grid grid-cols-2 gap-2">
-    <Field label="Address Line 1" value={state.address_line_1} onChange={(v)=>handler("address_line_1",v)} />
-    <Field label="Address Line 2" value={state.address_line_2} onChange={(v)=>handler("address_line_2",v)} />
-    <Field label="City" value={state.city} onChange={(v)=>handler("city",v)} />
-    <Field label="District" value={state.district} onChange={(v)=>handler("district",v)} />
-    <Field label="State" value={state.state} onChange={(v)=>handler("state",v)} />
-    <Field label="Country" value={state.country} onChange={(v)=>handler("country",v)} />
-    <Field label="PIN Code" value={state.pin} onChange={(v)=>handler("pin",v)} />
+  <div className="space-y-3">
+    <input
+      placeholder="Address Line 1"
+      value={state.address_line_1 ?? ""}
+      onChange={(e) => handler("address_line_1", e.target.value)}
+      disabled={disabled}
+      className="w-full border p-2 rounded"
+    />
+    <input
+      placeholder="Address Line 2"
+      value={state.address_line_2 ?? ""}
+      onChange={(e) => handler("address_line_2", e.target.value)}
+      disabled={disabled}
+      className="w-full border p-2 rounded"
+    />
+    <input
+      placeholder="City"
+      value={state.city ?? ""}
+      onChange={(e) => handler("city", e.target.value)}
+      disabled={disabled}
+      className="w-full border p-2 rounded"
+    />
+    <input
+      placeholder="District"
+      value={state.district ?? ""}
+      onChange={(e) => handler("district", e.target.value)}
+      disabled={disabled}
+      className="w-full border p-2 rounded"
+    />
+    <input
+      placeholder="State"
+      value={state.state ?? ""}
+      onChange={(e) => handler("state", e.target.value)}
+      disabled={disabled}
+      className="w-full border p-2 rounded"
+    />
+    <input
+      placeholder="Country"
+      value={state.country ?? ""}
+      onChange={(e) => handler("country", e.target.value)}
+      disabled={disabled}
+      className="w-full border p-2 rounded"
+    />
+    <input
+      placeholder="Pincode"
+      value={state.pin ?? ""}
+      onChange={(e) => handler("pin", e.target.value)}
+      disabled={disabled}
+      className="w-full border p-2 rounded"
+    />
   </div>
 );
 
-const ProfileAvatar = ({firstName,lastName}:{firstName:string;lastName:string})=>{
-  const initials = (firstName[0]||"")+(lastName[0]||"");
-  return(
+const ProfileAvatar = ({
+  firstName,
+  lastName,
+}: {
+  firstName: string;
+  lastName: string;
+}) => {
+  const initials = `${firstName?.[0] || ""}${lastName?.[0] || ""}`;
+
+  return (
     <div className="text-center mb-6">
       <div className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-2xl">
         {initials}
@@ -449,8 +660,6 @@ const ProfileAvatar = ({firstName,lastName}:{firstName:string;lastName:string})=
     </div>
   );
 };
-
-/* ================= HELPER COMPONENTS ================= */
 
 const StepIndicator = ({
   step,
@@ -462,55 +671,46 @@ const StepIndicator = ({
   const steps = [
     { id: 1, label: "Basic Information" },
     { id: 2, label: "Experience Details" },
-
   ];
 
   return (
-  <div className="mb-10 w-full px-10">
-    <div className="flex items-center w-full">
+    <div className="mb-10 w-full px-10">
+      <div className="flex items-center w-full">
+        {steps.map((s, index) => (
+          <React.Fragment key={s.id}>
+            <div className="flex flex-col items-center">
+              <div
+                onClick={() => onStepClick(s.id)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
+                  step >= s.id
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-300 text-gray-700"
+                }`}
+              >
+                {s.id}
+              </div>
 
-      {steps.map((s, index) => (
-        <React.Fragment key={s.id}>
-
-          {/* STEP */}
-          <div className="flex flex-col items-center">
-            <div
-              onClick={() => onStepClick(s.id)}
-              className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer
-              ${
-                step >= s.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-300 text-gray-700"
-              }`}
-            >
-              {s.id}
+              <span
+                className={`mt-2 text-xs text-center ${
+                  step >= s.id
+                    ? "text-blue-600 font-medium"
+                    : "text-gray-500"
+                }`}
+              >
+                {s.label}
+              </span>
             </div>
 
-            <span
-              className={`mt-2 text-xs text-center
-              ${
-                step >= s.id
-                  ? "text-blue-600 font-medium"
-                  : "text-gray-500"
-              }`}
-            >
-              {s.label}
-            </span>
-          </div>
-
-          {/* CONNECTOR LINE */}
-          {index !== steps.length - 1 && (
-            <div
-              className={`flex-1 h-[3px] mx-6
-              ${
-                step > s.id ? "bg-blue-600" : "bg-gray-300"
-              }`}
-            />
-          )}
-
-        </React.Fragment>
-      ))}
+            {index !== steps.length - 1 && (
+              <div
+                className={`flex-1 h-[3px] mx-6 ${
+                  step > s.id ? "bg-blue-600" : "bg-gray-300"
+                }`}
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
     </div>
-  </div>
-);
-}
+  );
+};
