@@ -6,7 +6,7 @@ import type { RootState } from "../../../../store/store";
 import { FiChevronRight } from "react-icons/fi";
 import background from "../../../assets/apply_light.jpeg"
 import dark_background from "../../../assets/doctor_light.webp"
-import { FaUserCircle, FaRing, FaTint, FaWalking, FaHome,
+import { FaUserCircle, FaRing, FaTint, FaWalking,
   FaSmoking,
   FaWineGlassAlt,
   FaMapMarkerAlt, FaVenusMars } from "react-icons/fa";
@@ -35,6 +35,18 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   const hydrated = useRef(false);
+
+    const [isDark, setIsDark] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   const handleDeleteAccount = async () => {
   const result = await Swal.fire({
@@ -95,8 +107,6 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
  };
  
 
-  
-
   useEffect(() => {
     if (!profile && !hydrated.current) {
       const storedProfile = localStorage.getItem("patientProfile");
@@ -111,21 +121,6 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 
   const dob = profile?.dob || user?.dob || null;
   const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
-
-      
-
-  
-     const [isDark, setIsDark] = useState(
-          document.documentElement.classList.contains("dark")
-        ); 
-    
-          useEffect(() => {
-            const observer = new MutationObserver(() => {
-              setIsDark(document.documentElement.classList.contains("dark"));
-            });
-            observer.observe(document.documentElement, { attributes: true });
-            return () => observer.disconnect();
-          }, []);
 
   const initials =
     user.first_name?.charAt(0).toUpperCase() +
@@ -198,7 +193,10 @@ const PatientProfileView: React.FC<Props> = ({ open, onClose }) => {
 
           
             <button className="relative mt-5 ml-46 p-1 backdrop-blur-md bg-white/70 text-gray-500 dark:text-gray-700 hover:text-cyan-700 transition rounded-full">
-              <PencilSquareIcon className="w-5 h-5 flex items-center pl-1" />
+              <PencilSquareIcon
+                  onClick={() => navigate("/patient/profile")}
+                  className="w-5 h-5 flex items-center pl-1"
+                />
             </button>
         
               <h2 className="mt-2 ml-30 text-xl font-semibold text-gray-800">
