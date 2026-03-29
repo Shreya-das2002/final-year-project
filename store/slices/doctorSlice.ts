@@ -36,7 +36,7 @@ interface Slot {
   end_time: string;
 }
 
-interface Doctor {
+export interface Doctor {
 
   doctor_id: number;
 
@@ -62,7 +62,7 @@ interface Doctor {
 
   doctor_experiences?: Experience[];
   
-  doctor_availability?: Slot[];
+  doctor_availability?: Record<string, Slot>;
 
   created_on?: string;
 
@@ -300,22 +300,19 @@ const doctorSlice = createSlice({
           state.slot = {};
 
 action.payload.forEach((doc) => {
-  const availability = Array.isArray(doc.doctor_availability)
-    ? doc.doctor_availability
-    : [];
+ const availability = doc.doctor_availability || {};
 
-  if (!state.slot[doc.doctor_id]) {
-    state.slot[doc.doctor_id] = {};
-  }
+if (!state.slot[doc.doctor_id]) {
+  state.slot[doc.doctor_id] = {};
+}
 
-  availability.forEach((slot) => {
-    state.slot[doc.doctor_id][slot.date] = {
-      slots: slot.slot_count,
-      fee: String(slot.fees),
-      start_time: slot.start_time,
-      end_time: slot.end_time
-
-    };
+Object.entries(availability).forEach(([date, slot]) => {
+  state.slot[doc.doctor_id][date] = {
+    slots: slot.slot_count,
+    fee: String(slot.fees),
+    start_time: slot.start_time,
+    end_time: slot.end_time
+  };
   });
 });
 

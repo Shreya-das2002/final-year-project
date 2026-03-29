@@ -270,7 +270,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
   </div>
 </div>
                 {user?.role !== "super admin" && (
-                  <div className="absolute border w-65 border-gray-400/30 mt-2 ml-1 items-center"></div>
+                  <div className="absolute border w-58 border-gray-400/30 mt-2 ml-1 items-center"></div>
                 )}
 
                 <div className="w-full flex justify-end pt-5">
@@ -280,7 +280,7 @@ const AdminProfile: React.FC<Props> = ({ open, onClose }) => {
                       type="button"
                       className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
                     >
-                      Delete Account
+                      Deactivate Account
                     </button>
                   )}
                 </div>
