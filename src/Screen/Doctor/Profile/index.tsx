@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-// import toast from "react-hot-toast";
-// import Swal from "sweetalert2";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
@@ -11,27 +11,27 @@ import background from "../../../assets/apply_light.jpeg";
 import dark_background from "../../../assets/doctor_light.webp";
 
 import {
-  FaEdit,
   FaUserCircle,
-  FaRing,
-  FaHome,
   FaMapMarkerAlt,
+  FaStethoscope,
+  FaCalendarCheck,
+  FaIdCard,
+  FaChevronRight,
+  FaBriefcaseMedical,
+  FaCheckCircle,
 } from "react-icons/fa";
 
 import {
   MdEmail,
   MdPhone,
-  MdCake,
-  MdWork,
 } from "react-icons/md";
 
 import { GiMedicalPack } from "react-icons/gi";
 
 import { FiChevronRight } from "react-icons/fi";
 
-import { getGenderLabel } from "../../../Environment";
-import { setProfile } from "../../../../store/slices/authSlice";
-// import { deleteAccountApi } from "../../../services/accountDeleteApi";
+import { setProfile, logout } from "../../../../store/slices/authSlice";
+import { deleteAccountApi } from "../../../services/accountDeleteApi";
 
 interface Props {
   open: boolean;
@@ -45,6 +45,7 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
 
   const user = useSelector((state: RootState) => state.auth.user);
   const profile = useSelector((state: RootState) => state.auth.profile);
+  const buttons = useSelector((state: RootState) => state.auth.buttons);
 
   const hydrated = useRef(false);
 
@@ -70,12 +71,11 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
     }
   }, [profile, dispatch]);
 
-
+  const canEditProfile = buttons?.some(
+    (btn) => btn.control_key === "edit profile"
+  );
 
   if (!user) return null;
-
-  const dob = profile?.dob || user?.dob || null;
-  const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
 
   const initials =
     user.first_name?.charAt(0).toUpperCase() +
@@ -85,161 +85,223 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
 
   const image = localStorage.getItem("profileImage");
 
-  return (
-    <div>
-            <div
-              className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
-                open ? "opacity-100 visible" : "opacity-0 invisible"
-              }`}
-              onClick={onClose}
-            />
-      
-            <div
-              className={`fixed top-1/2 right-[400px] -translate-y-1/2 translate-x-1/2 z-[9999]
-              transition-transform duration-100
-              ${
-                open
-                  ? "translate-x-1/2 opacity-100 visible"
-                  : "translate-x-full opacity-0 invisible"
-              }`}
-            >
-              <button
-                onClick={onClose}
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-200 shadow-lg text-cyan-700 hover:text-red-500 transition"
-              >
-                <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
-              </button>
-            </div>
-      <div  className={`fixed top-16 bottom-0 right-0 w-[400px]
-        shadow-2xl z-50 min-h-[calc(100vh-110px)] bg-cover flex flex-col justify-start
+ const handleDeleteAccount = async () => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You want to deactivate your account",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#6b7280",
+    confirmButtonText: "Yes, deactivate",
+    cancelButtonText: "Cancel",
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const response = await deleteAccountApi()
+
+    if (response?.data?.success) {
+      toast.success(
+        response?.data?.message || "Account deactivated successfully"
+      );
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.clear();
+
+      dispatch(logout());
+      onClose();
+
+      navigate("/login", { replace: true });
+    } else {
+      toast.error(response?.data?.message || "Failed to deactivate account");
+    }
+  } catch (error: unknown) {
+  let message = "Something went wrong";
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "response" in error
+  ) {
+    const err = error as {
+      response?: {
+        data?: {
+          message?: string;
+        };
+      };
+    };
+
+    if (typeof err.response?.data?.message === "string") {
+      message = err.response.data.message;
+    }
+  }
+
+  toast.error(message);
+}
+ };
+
+return (
+  <div>
+    <div
+      className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
+        open ? "opacity-100 visible" : "opacity-0 invisible"
+      }`}
+      onClick={onClose}
+    />
+
+    <div
+      className={`fixed top-1/2 right-[400px] -translate-y-1/2 translate-x-1/2 z-[9999]
+        transition-transform duration-100
+        ${
+          open
+            ? "translate-x-1/2 opacity-100 visible"
+            : "translate-x-full opacity-0 invisible"
+        }`}
+    >
+      <button
+        onClick={onClose}
+        className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-200 shadow-lg text-cyan-700 hover:text-red-500 transition"
+      >
+        <FiChevronRight size={20} style={{ strokeWidth: 3 }} />
+      </button>
+    </div>
+
+    {/* Drawer */}
+    <div
+      className={`fixed top-16 bottom-20 right-0 pb-10 w-[400px]
+        shadow-2xl z-50 min-h-[calc(100vh-110px)]
+        bg-cover flex flex-col justify-start
         transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}
         overflow-y-auto overflow-x-visible`}
-        style={{
-          backgroundImage: `url(${isDark ? dark_background : background})`,
-        }}
-        >
-        {/* Drawer */}
-          <div className="bg-white/20 pb-5 rounded-4xl relative ml-7 mr-7 mt-20 border border-white/20">
-            <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
-              <div className="w-24 h-24 border-2 border-cyan-100 dark:border-cyan-800 rounded-full bg-cyan-600 dark:bg-gray-500 flex items-center justify-center text-white text-2xl font-semibold shadow-lg">
-                {image ? (
-                  <img src={image} alt="profile" className="w-full h-full object-cover" />
-                ) : (
-                  initials || "D"
-                )}
-              </div>
+      style={{
+        backgroundImage: `url(${isDark ? dark_background : background})`,
+      }}
+    >
+      <div className="bg-white/20 dark:bg-white/10 pb-5 rounded-4xl relative ml-7 mr-7 mt-20 border border-white/20">
 
-              <h2 className="mt-4 text-xl font-semibold text-gray-800">
-                Dr. {fullName}
-              </h2>
-
-              <p className="text-gray-500 flex items-center gap-2">
-                <MdEmail /> {user.email}
-              </p>
-
-              <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm">
-                <span className="px-4 py-2 bg-blue-50 rounded-full flex items-center gap-2 shadow text-gray-700">
-                  <MdPhone /> {user.phone_no || "—"}
-                </span>
-
-                <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-                  <FaUserCircle /> {getGenderLabel(user.gender) || "—"}
-                </span>
-
-                <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-                  <MdCake /> Age: {age ?? "—"}
-                </span>
-
-                <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-                  <MdWork /> yrs Experience
-                </span>
-
-                <span className="px-4 py-2 bg-blue-50 rounded-full shadow flex items-center gap-2 text-gray-700">
-                  <FaRing /> {profile?.marital_status}
-                </span>
-              </div>
-              
-              <button
-                onClick={() => {
-                  navigate("/doctor/profile");
-                  onClose();
-                }}
-                className="mt-6 inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-              >
-                <FaEdit />
-                Edit Profile
-              </button>
-            </div>
-
-            {/* Professional Details */}
-            <div className="mt-6 p-4 grid grid-cols-1 gap-4 text-left">
-              <div>
-                <h3 className="text-blue-600 font-semibold flex items-center gap-2">
-                  <GiMedicalPack /> Professional Details
-                </h3>
-
-                <p className="flex items-center gap-2">
-                  Specialization:
-                  </p>
-
-                <p className="flex items-center gap-2">
-                  Qualification: { "—"}
-                </p>
-
-                <p className="flex items-center gap-2">
-                  Hospital/Clinic: 
-                </p>
-              </div>
-
-              {/* Current Address */}
-              <div className="mt-4">
-                <h3 className="text-blue-600 font-semibold flex items-center gap-2">
-                  <FaMapMarkerAlt /> Current Address
-                </h3>
-
-                <p>
-                  City: {profile?.current_address?.city},{" "}
-                  State: {profile?.current_address?.state}
-                </p>
-
-                <p>
-                  District: {profile?.current_address?.district},{" "}
-                  Country: {profile?.current_address?.country}
-                </p>
-
-                <p>PIN: {profile?.current_address?.pin}</p>
-              </div>
-
-              {/* Permanent Address */}
-              <div className="mt-4">
-                <h3 className="text-blue-600 font-semibold flex items-center gap-2">
-                  <FaHome /> Permanent Address
-                </h3>
-
-                <p>
-                  {profile?.permanent_address?.address_line_1},{" "}
-                  {profile?.permanent_address?.address_line_2}
-                </p>
-
-                <p>
-                  City: {profile?.permanent_address?.city},{" "}
-                  State: {profile?.permanent_address?.state}
-                </p>
-
-                <p>PIN: {profile?.permanent_address?.pin}</p>
-              </div>
-            </div>
-            {/* DELETE BUTTON */}
-            <div className="w-full pb-5 pr-5 flex justify-end mt-6 items-end">
-              <button className="px-6 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
-                Delete Account
-              </button>
-            </div>
+        <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
+          <div className="w-24 h-24 border-2 border-cyan-100 dark:border-gray-600 rounded-full bg-cyan-600 dark:bg-gray-500 flex items-center justify-center text-white text-2xl font-semibold shadow-lg">
+            {image ? (
+              <img
+                src={image}
+                alt="profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              initials || "D"
+            )}
           </div>
+        </div>
+
+        {canEditProfile && (
+          <button className="relative mt-5 ml-46 p-1 backdrop-blur-md bg-white/70 text-gray-500 dark:text-gray-700 hover:text-cyan-700 transition rounded-full">
+            <PencilSquareIcon className="w-5 h-5 flex items-center pl-1" />
+          </button>
+        )}
+
+        <div className="mt-2 flex flex-warp justify-end gap-2 text-[10px] text-black/70 pr-4">
+          <span className="bg-cyan-200/50 dark:bg-gray-300/50 rounded-full flex items-center gap-1 py-1 px-1.5">
+            <FaCalendarCheck /> {user.created_on}
+          </span>
+        </div>
+
+        <h2 className="mt-4 pt-5 text-xl text-center font-bold text-gray-800 dark:text-gray-900">
+          Dr. {fullName} 
+        </h2>
+
+        <p className="text-gray-500 dark:text-gray-800 flex items-center justify-center gap-2">
+          <MdEmail /> {user.email}
+        </p>
+
+        <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm p-1">
+          <span className="px-4 py-2 bg-blue-50 dark:bg-gray-500/80 rounded-full flex items-center gap-2 shadow text-gray-700 dark:text-zinc-300">
+            <FaStethoscope /> {user.specialization || "—"}
+          </span>
+        </div>
+
+        <div className="ml-5 mr-5 mt-6 rounded-4xl">
+          <div className="bg-cyan-50/40 dark:bg-gray-400/20 rounded-3xl p-5 grid grid-cols-1 gap-4 text-left border border-white/20">
+
+            <div>
+              <h3 className="text-blue-600 dark:text-gray-950 text-[17px] font-semibold flex items-center gap-2 pb-1">
+                <GiMedicalPack className="text-[20px]" /> Basic Details
+              </h3>
+              <div className="bg-white/30 dark:bg-gray-50/30 text-[14px] rounded-2xl p-2 px-3 gap-1.5 shadow">
+                <span className="text-gray-800 flex items-center gap-2">
+                  <FaIdCard className="text-olive-600 dark:text-olive-700" /> {user.doctor_no} 
+                </span>
+
+                <span className="text-gray-800 flex items-center gap-2">
+                  <MdPhone className="text-green-600 dark:text-green-700" /> {user.phone_no || "—"}
+                </span>
+
+                <span className="text-gray-800 flex items-center gap-2">
+                  <FaUserCircle className="text-indigo-600 dark:text-indigo-700" /> {user.gender || "—"}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-blue-600 dark:text-gray-950 text-[17px] font-semibold flex items-center gap-2 pb-1">
+                <FaBriefcaseMedical className="text-[20px] pb-0.5 shrink-0" /> Experience Details
+              </h3>
+              <div className="bg-white/30 text-[14px] rounded-2xl p-2 px-3 gap-1.5 shadow">
+                <p className="flex items-center gap-2">
+                  <FaCheckCircle className="text-blue-500 dark:text-blue-700"/> {profile?.experience_years}+ years in total
+                </p>
+
+                <p className="flex items-baseline shrink-0 gap-1 pl-3">
+                  <FaChevronRight className="pt-1 text-sky-500 dark:text-sky-700" />Has experience as a {user.specialization} at Organization, with {profile?.experience_years}+ years in practice.
+                </p>
+              </div>
+            </div>
+
+            {/* Current Address */}
+            <div className="text-blue-600 dark:text-gray-950 text-[17px] font-semibold flex items-center gap-1 pb-1">
+              <FaMapMarkerAlt className="text-[20px]" /> Address:
+              <div >
+                <p className="text-sm text-gray-700 dark:text-gray-100/80">
+                  <span className="font-medium text-gray-800 dark:text-gray-100">
+                    {" "}
+                  </span>
+
+                  {[
+                    profile?.current_address?.address_line_1,
+                    profile?.current_address?.address_line_2,
+                    profile?.current_address?.city,
+                    profile?.current_address?.district,
+                    profile?.current_address?.state,
+                    profile?.current_address?.country,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+
+                  {profile?.current_address?.pin
+                    ? `, Pin - ${profile.current_address.pin}`
+                    : ""}
+                </p>
+              </div>
+            </div>
+              <div className="border w-60 border-gray-500/30 dark:border-gray-400/30 mt-2 items-center"></div>
+                <div className="w-full flex justify-end pt-2">          
+                  <button
+                    onClick={handleDeleteAccount}
+                    type="button"
+                    className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-100 dark:bg-red-800 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-700 transition"
+                  >
+                    Deactivate Account
+                  </button>                
+                </div>
+          </div>
+        </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default DoctorProfile;
