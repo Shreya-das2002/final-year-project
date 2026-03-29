@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-
+import { Select, MenuItem } from "@mui/material";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAllAdmins } from "../../../../store/slices/adminSlice";
 import { saveAdminProfileApi } from "../../../services/adminProfileApi";
@@ -19,6 +19,18 @@ const AdminEditProfile: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
+      const [isDark, setIsDark] = useState(
+        document.documentElement.classList.contains("dark")
+      );
+
+            useEffect(() => {
+              const observer = new MutationObserver(() => {
+                setIsDark(document.documentElement.classList.contains("dark"));
+              });
+              observer.observe(document.documentElement, { attributes: true });
+              return () => observer.disconnect();
+            }, []);
+  
 
   const adminFromState = location.state;
   const adminFromStore = useSelector((state: RootState) => state.admin.admins);
@@ -202,8 +214,9 @@ setProfile({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded-3xl pl-1 pr-1">
+    <div  className="p-7 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen "
+>
+      <div className="">
         <ProfileAvatar firstName={profile.first_name} lastName={profile.last_name} />
 
         <div className="mt-4 flex justify-center">
@@ -213,32 +226,75 @@ setProfile({
           </span>
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-3xl space-y-6">
-          <fieldset className="border p-5 bg-blue-50 rounded-sm">
-            <legend className="text-sm font-semibold px-2">Personal Details</legend>
+        
+          <fieldset className="border border-gray-500 dark:border-gray-200 p-5  rounded-2xl mb-4">
+            <legend className="text-sm text-gray-700 dark:text-gray-200 font-semibold px-2">Personal Details</legend>
 
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-4 text-gray-700 dark:text-gray-200 ">
               <Field label="First Name" value={profile.first_name} onChange={(v) => handleChange("first_name", v)} disabled={!isSuperAdmin} />
               <Field label="Middle Name" value={profile.middle_name} onChange={(v) => handleChange("middle_name", v)} disabled={!isSuperAdmin} />
               <Field label="Last Name" value={profile.last_name} onChange={(v) => handleChange("last_name", v)} disabled={!isSuperAdmin} />
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4 pt-2 items-end">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Date of Birth"
-                  value={profile.dob ? dayjs(profile.dob) : null}
-                  onChange={(v: Dayjs | null) =>
-                    handleChange("dob", v ? v.format("YYYY-MM-DD") : "")
-                  }
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      size: "small",
-                    },
-                  }}
-                />
-              </LocalizationProvider>
+            <div className="grid md:grid-cols-2 gap-4 pt-2 items-end text-gray-700 dark:text-gray-200 ">
+             <div>
+  <h1 className="text-sm pl-1">Date of Birth</h1>
+<div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus-within:border-gray-900 dark:focus-within:border-gray-200 focus-within:border-2">
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <DatePicker
+      value={profile.dob ? dayjs(profile.dob) : null}
+      onChange={(v: Dayjs | null) =>
+        handleChange("dob", v ? v.format("YYYY-MM-DD") : "")
+      }
+       format="YYYY-MM-DD"
+       enableAccessibleFieldDOMStructure={false}
+       slotProps={{
+        textField: {
+          fullWidth: true,
+          size: "small",
+          placeholder: "Date of Birth",
+          variant: "standard", 
+          InputProps: {
+            disableUnderline: true, 
+          },
+          sx: {
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "1px",
+              backgroundColor: "#ffffff !important",
+              boxShadow: "none !important",
+
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none !important",
+              },
+
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                border: "none !important",
+              },
+
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                border: "none !important",
+              },
+            },
+
+            "& .MuiSvgIcon-root": {
+              color: isDark ? "#E5E7EB" : "#374151",
+            },
+
+            "& .MuiInputBase-input": {
+              color: isDark ? "#E5E7EB" : "#374151",
+            },
+
+            "& .MuiInputBase-input::placeholder": {
+              color: isDark ? "#E5E7EB" : "#374151",
+              opacity: 1,
+            },
+          },
+        },
+      }}
+    />
+  </LocalizationProvider>
+  </div>
+</div>
 
                     {admin?.role?.toLowerCase() === "super admin" ? (
                       <select
@@ -247,9 +303,9 @@ setProfile({
                         onChange={(e) => handleChange("gender", e.target.value)}
                         className="border p-2 rounded-sm"
                       >
-                        <option value="">Select Gender</option>
+                        <option className="bg-white dark:bg-cyan-800" value="">Select Gender</option>
                         {genderOption.map((g) => (
-                          <option key={g.value} value={g.value}>
+                          <option className="bg-white dark:bg-cyan-800" key={g.value} value={g.value}>
                             {g.label}
                           </option>
                         ))}
@@ -265,15 +321,15 @@ setProfile({
             </div>
           </fieldset>
 
-          <fieldset className="border p-5 bg-blue-50 rounded-sm">
-            <legend className="text-sm font-semibold px-2">Professional Details</legend>
+          <fieldset className="border p-5  border-gray-500 dark:border-gray-200 mb-4  rounded-2xl">
+            <legend className="text-sm text-gray-700 dark:text-gray-200  font-semibold px-2">Professional Details</legend>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 text-gray-700 dark:text-gray-200 gap-4">
               <Field label="E-mail" value={profile.email} onChange={(v) => handleChange("email", v)} disabled />
               <Field label="Phone" value={profile.phone} onChange={(v) => handleChange("phone", v)} disabled={!isSuperAdmin} />
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 text-gray-700 dark:text-gray-200 gap-4">
               {admin?.role?.toLowerCase() === "standard admin" && (
               <Field
                 label="Department"
@@ -282,44 +338,156 @@ setProfile({
                 disabled={!isSuperAdmin}
               />
               )}
-
-                  {admin?.role?.toLowerCase() !== "super admin" ? (
-                    <select
-                      name="status"
+                      <div>
+                         <h1 className="text-sm pt-0.5 pl-1">Status</h1>
+                     {admin?.role?.toLowerCase() !== "super admin" ? (
+                                      
+                    <Select
                       value={profile.status}
                       onChange={(e) => handleChange("status", e.target.value)}
-                      className="border p-2 mt-6 my-3 rounded-sm"
+                      size="small"
+                      fullWidth
+                      MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          backgroundColor: isDark ? "#1f2937" : "#ffffff", 
+                          color: isDark ? "#ffffff" : "#000000",
+                        },
+                      },
+                    }}
+                      
+                      className="h-10.5 mt-0.5  "
+                        sx={{
+
+                          color: isDark ? "#E5E7EB" : "#374151",
+                             
+                          
+                        // 🔥 Selected text color (this is what you want)
+                        "& .MuiSelect-select": {
+                          color: isDark ? "#E5E7EB" : "#374151",
+                        },
+
+                        // 🔥 Dropdown arrow icon
+                        "& .MuiSvgIcon-root": {
+                          color: isDark ? "#E5E7EB" : "#374151",
+                        },
+
+                        // 🔥 Border (optional, for consistency)
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: isDark ? "#E5E7EB" : "#374151",
+                        },
+
+                         "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: isDark ? "#E5E7EB" : "#374151",
+                        },
+
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: isDark ? "#E5E7EB" : "#374151",
+                        },
+                      }}
+                                          
                     >
-                      <option value="">Status</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    
-                    </select>
+                    <MenuItem
+                      value="Status"
+                      sx={{
+                        backgroundColor: isDark ? "#1f2937" : "#ffffff", // 🔥 default background
+                        color: isDark ? "#ffffff" : "#000000",
+
+                        "&:hover": {
+                          backgroundColor: isDark ? "#6B7280" : "#D1D5DB", 
+                          color: "#ffffff",
+                        },
+
+                        "&.Mui-selected": {
+                          backgroundColor: "#0891b2 !important",
+                          color: "#ffffff",
+                        },
+
+                        "&.Mui-selected:hover": {
+                          backgroundColor: "#0891b2 !important",
+                        },
+                      }}
+                    >
+                      Status
+                    </MenuItem>
+
+                   <MenuItem
+                    value="Active"
+                    sx={{
+                      backgroundColor: isDark ? "#1f2937" : "#ffffff", // 🔥 default background
+                      color: isDark ? "#ffffff" : "#000000",
+
+                      "&:hover": {
+                        backgroundColor: isDark ? "#6B7280" : "#D1D5DB", 
+                        color: "#ffffff",
+                      },
+
+                      "&.Mui-selected": {
+                        backgroundColor: "#0891b2 !important",
+                        color: "#ffffff",
+                      },
+
+                      "&.Mui-selected:hover": {
+                        backgroundColor: "#0891b2 !important",
+                      },
+                    }}
+                  >
+                    Active
+                  </MenuItem>
+
+                  <MenuItem
+                    value="Inactive"
+                    sx={{
+                      backgroundColor: isDark ? "#1f2937" : "#ffffff", // 🔥 default background
+                      color: isDark ? "#ffffff" : "#000000",
+
+                      "&:hover": {
+                        backgroundColor: isDark ? "#6B7280" : "#D1D5DB",
+                        color: "#ffffff",
+                      },
+
+                      "&.Mui-selected": {
+                        backgroundColor: "#0891b2 !important",
+                        color: "#ffffff",
+                      },
+
+                      "&.Mui-selected:hover": {
+                        backgroundColor: "#0891b2 !important",
+                      },
+                    }}
+                  >
+                    Inactive
+                  </MenuItem>
+                    </Select>
                   ) : (
-                    <Field
-                      label="Status"
+                    <Field 
+                      label=""
                       value={profile.status}
                       onChange={(v) => handleChange("status", v)}
                       disabled
+                      
                     />
                   )}
+
+                  </div>
+              
               
             </div>
           </fieldset>
 
-          <fieldset className="border p-4 bg-blue-50 rounded-sm">
-            <legend className="text-sm px-2 font-semibold">Address Details</legend>
+          <fieldset className="border p-4 border-gray-500 dark:border-gray-200 mb-4  rounded-2xl">
+            <legend className="text-sm px-2 text-gray-700 dark:text-gray-200 font-semibold">Address Details</legend>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <fieldset className="border p-4 bg-blue-50 rounded-sm">
+            <div className="grid md:grid-cols-2 text-gray-700 dark:text-gray-200 gap-6">
+              <fieldset className="border p-4  rounded-2xl">
                 <legend className="text-sm p-2 font-semibold mb-6">Permanent Address</legend>
                 <AddressFields state={permanentAddress} handler={handlePermanentChange} />
               </fieldset>
 
-              <fieldset className="border p-4 bg-blue-50 rounded-sm">
+              <fieldset className="border p-4 rounded-2xl">
                 <legend className="text-sm p-2 font-semibold">Current Address</legend>
 
-                <label className="text-xs flex items-center ml-90 mb-2 gap-2">
+                <label className="text-xs flex items-center ml-100 mb-2 gap-2">
                   <input type="checkbox" checked={sameAddress} onChange={handleSameAddress} />
                   Same as Permanent
                 </label>
@@ -332,14 +500,21 @@ setProfile({
               </fieldset>
             </div>
           </fieldset>
-        </div>
+        
 
-        <div className="flex justify-between mt-10">
-          <div className="flex gap-4">
+        <div className="grid md:grid-cols-2">
+
+          <div>
+            <h2 className=" ml-2 text-gray-800 dark:text-gray-200 hover:underline">
+              Change Password
+            </h2>
+          </div>
+
+          <div >
             <button
               onClick={handleSave}
               disabled={loading}
-              className="px-6 py-2 w-37 ml-242 rounded-sm bg-cyan-600 text-white hover:bg-cyan-800 disabled:bg-gray-400"
+              className="px-6 py-2 w-37 ml-109 rounded-lg bg-cyan-600 dark:bg-sky-700 text-white hover:bg-cyan-800 dark:hover:bg-cyan-600 disabled:bg-gray-400"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>
@@ -372,8 +547,8 @@ const Field = ({
       value={value || ""}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full border p-2 ${
-        disabled ? "bg-gray-100 cursor-not-allowed rounded-sm" : "rounded-sm"
+      className={`w-full border p-2  ${
+        disabled ? "  cursor-not-allowed rounded-sm" : "rounded-sm"
       }`}
     />
   </div>
@@ -388,14 +563,14 @@ const AddressFields = ({
   handler: (key: keyof AddressPayload, value: string) => void;
   disabled?: boolean;
 }) => (
-  <div className="space-y-3">
-    <input placeholder="Address Line 1" value={state.address_line_1 ?? ""} onChange={(e) => handler("address_line_1", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
-    <input placeholder="Address Line 2" value={state.address_line_2 ?? ""} onChange={(e) => handler("address_line_2", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
-    <input placeholder="City" value={state.city ?? ""} onChange={(e) => handler("city", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
-    <input placeholder="District" value={state.district ?? ""} onChange={(e) => handler("district", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
-    <input placeholder="State" value={state.state ?? ""} onChange={(e) => handler("state", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
-    <input placeholder="Country" value={state.country ?? ""} onChange={(e) => handler("country", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
-    <input placeholder="Pincode" value={state.pin ?? ""} onChange={(e) => handler("pin", e.target.value)} disabled={disabled} className="w-full border p-2 rounded" />
+  <div className="space-y-3 ">
+    <input placeholder="Address Line 1" value={state.address_line_1 ?? ""} onChange={(e) => handler("address_line_1", e.target.value)} disabled={disabled} className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200" />
+    <input placeholder="Address Line 2" value={state.address_line_2 ?? ""} onChange={(e) => handler("address_line_2", e.target.value)} disabled={disabled} className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200" />
+    <input placeholder="City" value={state.city ?? ""} onChange={(e) => handler("city", e.target.value)} disabled={disabled} className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200" />
+    <input placeholder="District" value={state.district ?? ""} onChange={(e) => handler("district", e.target.value)} disabled={disabled} className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200" />
+    <input placeholder="State" value={state.state ?? ""} onChange={(e) => handler("state", e.target.value)} disabled={disabled} className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200" />
+    <input placeholder="Country" value={state.country ?? ""} onChange={(e) => handler("country", e.target.value)} disabled={disabled} className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200" />
+    <input placeholder="Pincode" value={state.pin ?? ""} onChange={(e) => handler("pin", e.target.value)} disabled={disabled} className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200" />
   </div>
 );
 
@@ -418,7 +593,7 @@ const ProfileAvatar = ({
   return (
     <div className="flex flex-col items-center">
       <div className="relative">
-        <div className="w-24 h-24 rounded-full bg-cyan-600 dark:bg-gray-500 flex items-center justify-center text-white text-2xl font-semibold border-2 border-cyan-100 dark:border-cyan-800 shadow-lg">
+        <div className="w-24 h-24 rounded-full bg-cyan-600 dark:bg-gray-500 flex items-center justify-center text-white text-2xl font-semibold border-2 border-cyan-100 dark:border-gray-600 shadow-lg">
           {initials}
         </div>
 
