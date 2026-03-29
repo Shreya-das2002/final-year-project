@@ -261,16 +261,16 @@ return (
             </div>
 
             {/* Current Address */}
-            <div className="text-blue-600 dark:text-gray-950 text-[17px] font-semibold flex items-center gap-1 pb-1">
-              <FaMapMarkerAlt className="text-[20px]" /> Address:
-              <div >
-                <p className="text-sm text-gray-700 dark:text-gray-100/80">
-                  <span className="font-medium text-gray-800 dark:text-gray-100">
+            <div className="text-blue-600 dark:text-gray-950 text-[17px] font-semibold grid grid-cols-1 items-center gap-1 pb-1">
+              <FaMapMarkerAlt className="text-[20px] shrink-0" /> Address:
+              <div className="bg-white/30 text-[14px] rounded-2xl p-2 px-3 gap-1.5 shadow">
+                <p className="text-[14px] text-gray-700 dark:text-gray-100/80 whitespace-pre-line">
+                  <span className="text-gray-800 dark:text-gray-100">
                     {" "}
                   </span>
 
                   {[
-                    profile?.current_address?.address_line_1,
+                    profile?.current_address?.address_line_1, 
                     profile?.current_address?.address_line_2,
                     profile?.current_address?.city,
                     profile?.current_address?.district,
@@ -278,10 +278,10 @@ return (
                     profile?.current_address?.country,
                   ]
                     .filter(Boolean)
-                    .join(", ")}
+                    .join("\n ")}
 
                   {profile?.current_address?.pin
-                    ? `, Pin - ${profile.current_address.pin}`
+                    ? `\n Pin - ${profile.current_address.pin}`
                     : ""}
                 </p>
               </div>
