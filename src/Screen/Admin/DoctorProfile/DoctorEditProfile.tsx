@@ -6,9 +6,10 @@ import toast from "react-hot-toast";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { fetchDoctorListThunk } from "../../../../store/slices/doctorSlice";
 import { saveDoctorProfileApi } from "../../../services/doctorProfileApi";
+
 import type {
   DoctorProfilePayload,
   AddressPayload,
@@ -20,6 +21,17 @@ const DoctorEditProfile: React.FC = () => {
   const { doctorId } = useParams();
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
+        const [isDark, setIsDark] = useState(
+          document.documentElement.classList.contains("dark")
+        );
+  
+              useEffect(() => {
+                const observer = new MutationObserver(() => {
+                  setIsDark(document.documentElement.classList.contains("dark"));
+                });
+                observer.observe(document.documentElement, { attributes: true });
+                return () => observer.disconnect();
+              }, []);
 
   const doctorFromState = location.state;
   const doctorFromStore = useSelector((state: RootState) => state.doctor?.doctors || []);
@@ -276,24 +288,22 @@ const DoctorEditProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto bg-blue-100 p-8 rounded-3xl pl-1 pr-1">
+    <div className="p-7 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen">
+      
         <ProfileAvatar
           firstName={doctor.first_name || ""}
           lastName={doctor.last_name || ""}
         />
 
-        <div className="bg-gray-50 p-6 rounded-3xl space-y-6">
+       
           <StepIndicator step={step} onStepClick={setStep} />
 
           {step === 1 && (
             <>
-              <fieldset className="border p-5 bg-blue-50 rounded-sm">
-                <legend className="text-sm font-semibold px-2">
-                  Personal Details
-                </legend>
+            <fieldset className="border border-gray-500 dark:border-gray-200 p-5  rounded-2xl mb-4">
+            <legend className="text-sm text-gray-700 dark:text-gray-200 font-semibold px-2">Personal Details</legend>
 
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid md:grid-cols-3 gap-4 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200">
                   <Field
                     label="First Name"
                     value={profile.first_name}
@@ -314,32 +324,78 @@ const DoctorEditProfile: React.FC = () => {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-4 pt-3 items-end">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Date of Birth"
-                      value={profile.dob ? dayjs(profile.dob) : null}
-                      onChange={(value: Dayjs | null) =>
-                        handleChange(
-                          "dob",
-                          value ? value.format("YYYY-MM-DD") : ""
-                        )
-                      }
-                      slotProps={{
-                        textField: {
-                          size: "small",
-                          fullWidth: true,
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
+                <div className="grid md:grid-cols-3 text-gray-700 dark:text-gray-200 gap-4 pt-3  focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200 items-end">
 
-                  <Field
+                               <div>
+                    <h1 className="text-sm pl-1">Date of Birth</h1>
+                  <div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200">
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        value={profile.dob ? dayjs(profile.dob) : null}
+                        onChange={(v: Dayjs | null) =>
+                          handleChange("dob", v ? v.format("YYYY-MM-DD") : "")
+                        }
+                         format="YYYY-MM-DD"
+                         enableAccessibleFieldDOMStructure={false}
+                         slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: "small",
+                            placeholder: "Date of Birth",
+                            variant: "standard", 
+                            InputProps: {
+                              disableUnderline: true, 
+                            },
+                            sx: {
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "1px",
+                                backgroundColor: "#ffffff !important",
+                                boxShadow: "none !important",
+                  
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                  
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                  
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                              },
+                  
+                              "& .MuiSvgIcon-root": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                              },
+                  
+                              "& .MuiInputBase-input": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                              },
+                  
+                              "& .MuiInputBase-input::placeholder": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                                opacity: 1,
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </LocalizationProvider>
+                    </div>
+                  </div>
+                  
+
+
+
+                   <Field
                     label="Gender"
                     value={profile.gender}
-                    onChange={(v) => handleChange("gender", v)}
+                    onChange={(v) => handleChange("doctor_no", v)}
                     disabled
                   />
+
+
 
                   <Field
                     label="Doctor Number"
@@ -352,6 +408,7 @@ const DoctorEditProfile: React.FC = () => {
                     label="Licence Number"
                     value={profile.licence_number}
                     onChange={(v) => handleChange("licence_number", v)}
+                  
                   />
 
                   <Field
@@ -366,6 +423,8 @@ const DoctorEditProfile: React.FC = () => {
                     onChange={(v) => handleChange("experience", v)}
                   />
 
+                  
+
                   <Field
                     label="Specialization"
                     value={profile.specialization}
@@ -375,45 +434,32 @@ const DoctorEditProfile: React.FC = () => {
                 </div>
 
                 <div className="pt-3">
-                  <label className="text-sm pl-1">Bio</label>
+                  <label className="text-sm pl-1 text-gray-700 dark:text-gray-200">Bio</label>
                   <textarea
                     value={profile.bio}
                     onChange={(e) => handleChange("bio", e.target.value)}
                     rows={4}
-                    className="w-full border p-2 rounded-sm"
+                    className="w-full border border-gray-700 dark:border-gray-200 p-2 rounded-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200"
                   />
                 </div>
               </fieldset>
 
-              <fieldset className="border p-5 bg-blue-50 rounded-sm">
-                <legend className="text-sm font-semibold px-2">
-                  Address Details
-                </legend>
+             <fieldset className="border p-4 border-gray-500 dark:border-gray-200 mb-4  rounded-2xl">
+            <legend className="text-sm px-2 text-gray-700 dark:text-gray-200 font-semibold">Address Details</legend>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <fieldset className="border p-4 bg-blue-50 rounded-sm">
-                    <legend className="text-sm p-2 font-semibold">
-                      Permanent Address
-                    </legend>
-                    <AddressFields
-                      state={permanentAddress}
-                      handler={handlePermanentChange}
-                    />
-                  </fieldset>
+                <div className="grid md:grid-cols-2 text-gray-700 dark:text-gray-200 gap-6">
+              <fieldset className="border p-4  rounded-2xl">
+                <legend className="text-sm p-2 font-semibold mb-6">Permanent Address</legend>
+                <AddressFields state={permanentAddress} handler={handlePermanentChange} />
+              </fieldset>
 
-                  <fieldset className="border p-4 bg-blue-50 rounded-sm">
-                    <legend className="text-sm p-2 font-semibold">
-                      Current Address
-                    </legend>
+              <fieldset className="border p-4 rounded-2xl">
+                <legend className="text-sm p-2 font-semibold">Current Address</legend>
 
-                    <label className="text-xs flex items-center justify-end mb-2 gap-2">
-                      <input
-                        type="checkbox"
-                        checked={sameAddress}
-                        onChange={handleSameAddress}
-                      />
-                      Same as Permanent
-                    </label>
+                <label className="text-xs flex items-center ml-100 mb-2 gap-2">
+                  <input type="checkbox" checked={sameAddress} onChange={handleSameAddress} />
+                  Same as Permanent
+                </label>
 
                     <AddressFields
                       state={currentAddress}
@@ -427,14 +473,12 @@ const DoctorEditProfile: React.FC = () => {
           )}
 
           {step === 2 && (
-            <fieldset className="border p-5 bg-blue-50 rounded-sm">
-              <legend className="text-sm font-semibold px-2">
-                Experience Details
-              </legend>
+             <fieldset className="border p-4 border-gray-500 dark:border-gray-200 mb-4  rounded-2xl">
+            <legend className="text-sm px-2 text-gray-700 dark:text-gray-200 font-semibold">Experience Details</legend>
 
               <div className="space-y-4">
                 {experiences.map((exp, index) => (
-                  <div key={index} className="border rounded-sm p-4 bg-white">
+                  <div key={index}>
                     <div className="grid md:grid-cols-2 gap-4">
                       <Field
                         label="Organization Name"
@@ -519,7 +563,7 @@ const DoctorEditProfile: React.FC = () => {
               <button
                 onClick={() => setStep((s) => Math.max(1, s - 1))}
                 disabled={step === 1 || loading}
-                className="px-6 py-2 rounded-sm bg-gray-500 text-white disabled:bg-gray-300"
+                className="px-6 py-2 pl-4 rounded-lg bg-sky-700 hover:bg-sky-900 dark:bg-sky-600 dark:hover:bg-sky-400 text-white disabled:bg-gray-400 dark:disabled:bg-gray-500"
               >
                 ← Back
               </button>
@@ -530,7 +574,7 @@ const DoctorEditProfile: React.FC = () => {
                 <button
                   onClick={() => setStep(2)}
                   disabled={loading}
-                  className="px-6 py-2 rounded-sm bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
+                  className="px-5 py-2 rounded-lg bg-sky-700 hover:bg-sky-900 dark:bg-sky-600 text-white dark:hover:bg-sky-400 disabled:bg-gray-400"
                 >
                   Next →
                 </button>
@@ -539,14 +583,14 @@ const DoctorEditProfile: React.FC = () => {
               <button
                 onClick={handleSave}
                 disabled={loading}
-                className="px-6 py-2 rounded-sm bg-cyan-600 text-white hover:bg-cyan-800 disabled:bg-gray-400"
+                className="px-6 py-2 rounded-lg bg-cyan-600 dark:bg-sky-700 text-white hover:bg-cyan-800 dark:hover:bg-cyan-600 disabled:bg-gray-400"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
-        </div>
-      </div>
+        
+      
     </div>
   );
 };
@@ -573,9 +617,11 @@ const Field = ({
       value={value || ""}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full border p-2 ${
-        disabled ? "bg-gray-100 cursor-not-allowed rounded-sm" : "rounded-sm"
-      }`}
+className={`w-full border p-2 
+  outline-none focus:outline-none focus:ring-1 
+  focus:border-gray-600 dark:focus:border-gray-200
+  ${disabled ? "cursor-not-allowed rounded-sm" : "rounded-sm"}
+`}
     />
   </div>
 );
@@ -595,49 +641,49 @@ const AddressFields = ({
       value={state.address_line_1 ?? ""}
       onChange={(e) => handler("address_line_1", e.target.value)}
       disabled={disabled}
-      className="w-full border p-2 rounded"
+      className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200"
     />
     <input
       placeholder="Address Line 2"
       value={state.address_line_2 ?? ""}
       onChange={(e) => handler("address_line_2", e.target.value)}
       disabled={disabled}
-      className="w-full border p-2 rounded"
+      className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200"
     />
     <input
       placeholder="City"
       value={state.city ?? ""}
       onChange={(e) => handler("city", e.target.value)}
       disabled={disabled}
-      className="w-full border p-2 rounded"
+      className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200"
     />
     <input
       placeholder="District"
       value={state.district ?? ""}
       onChange={(e) => handler("district", e.target.value)}
       disabled={disabled}
-      className="w-full border p-2 rounded"
+      className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200"
     />
     <input
       placeholder="State"
       value={state.state ?? ""}
       onChange={(e) => handler("state", e.target.value)}
       disabled={disabled}
-      className="w-full border p-2 rounded"
+      className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200"
     />
     <input
       placeholder="Country"
       value={state.country ?? ""}
       onChange={(e) => handler("country", e.target.value)}
       disabled={disabled}
-      className="w-full border p-2 rounded"
+      className="w-full border p-2 rounded focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200"
     />
     <input
       placeholder="Pincode"
       value={state.pin ?? ""}
       onChange={(e) => handler("pin", e.target.value)}
       disabled={disabled}
-      className="w-full border p-2 rounded"
+      className="w-full border p-2 rounded focus:ring-1 focus:outline-none focus:border-gray-900 dark:focus:border-gray-200"
     />
   </div>
 );
@@ -652,11 +698,18 @@ const ProfileAvatar = ({
   const initials = `${firstName?.[0] || ""}${lastName?.[0] || ""}`;
 
   return (
-    <div className="text-center mb-6">
-      <div className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-2xl">
-        {initials}
+    <div className="flex flex-col items-center">
+      <div className="relative">
+        <div className="w-24 h-24 rounded-full bg-cyan-600 dark:bg-gray-500 flex items-center justify-center text-white text-2xl font-semibold border-2 border-cyan-100 dark:border-gray-600 shadow-lg">
+          {initials}
+        </div>
+
+        <button
+          className="absolute bottom-0 right-0 p-2 rounded-full bg-white/80 backdrop-blur-md shadow-md hover:bg-cyan-100 transition"
+        >
+          <PencilSquareIcon className="w-4 h-4 text-gray-600" />
+        </button>
       </div>
-      <button className="mt-2 border px-4 py-1 rounded">Edit Profile</button>
     </div>
   );
 };
@@ -683,8 +736,8 @@ const StepIndicator = ({
                 onClick={() => onStepClick(s.id)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
                   step >= s.id
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-300 text-gray-700"
+                    ? "bg-cyan-600 dark:bg-white text-white dark:text-gray-600"
+                    : "bg-gray-400 dark:bg-gray-500 text-white"
                 }`}
               >
                 {s.id}
@@ -693,8 +746,8 @@ const StepIndicator = ({
               <span
                 className={`mt-2 text-xs text-center ${
                   step >= s.id
-                    ? "text-blue-600 font-medium"
-                    : "text-gray-500"
+                    ? "text-cyan-600 dark:text-white font-semibold"
+                    : "text-gray-500 dark:text-gray-400"
                 }`}
               >
                 {s.label}
@@ -703,8 +756,8 @@ const StepIndicator = ({
 
             {index !== steps.length - 1 && (
               <div
-                className={`flex-1 h-[3px] mx-6 ${
-                  step > s.id ? "bg-blue-600" : "bg-gray-300"
+                className={`flex-1 h-[2px] mx-4 ${
+                  step > s.id ? "bg-cyan-600 dark:bg-gray-200" : "bg-gray-300 dark:bg-gray-400"
                 }`}
               />
             )}

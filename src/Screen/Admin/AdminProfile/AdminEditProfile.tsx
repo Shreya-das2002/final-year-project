@@ -14,6 +14,7 @@ import { FaUserShield } from "react-icons/fa";
 import type { AddressPayload } from "../../../services/adminProfileApi";
 import { genderOption } from "../../../Environment";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
+import { FiEye, FiEyeOff } from "react-icons/fi"; 
 
 const AdminEditProfile: React.FC = () => {
   const { id } = useParams();
@@ -35,6 +36,11 @@ const AdminEditProfile: React.FC = () => {
   const adminFromState = location.state;
   const adminFromStore = useSelector((state: RootState) => state.admin.admins);
   const adminFromStorage = localStorage.getItem("selectedAdmin");
+  const [openPasswordModal, setOpenPasswordModal] = useState(false);
+const [newPassword, setNewPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+const [showNew, setShowNew] = useState(false);
+const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllAdmins());
@@ -505,9 +511,96 @@ setProfile({
         <div className="grid md:grid-cols-2">
 
           <div>
-            <h2 className=" ml-2 text-gray-800 dark:text-gray-200 hover:underline">
+            <h2
+              onClick={() => setOpenPasswordModal(true)}
+              className="ml-2 text-gray-800 dark:text-gray-200 hover:underline cursor-pointer"
+            >
               Change Password
             </h2>
+            {openPasswordModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl w-96 shadow-xl">
+
+      <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
+        Change Password
+      </h2>
+
+      {/* New Password */}
+      <div className="mb-4">
+        <label className="text-sm text-gray-700 dark:text-gray-200">
+          New Password
+        </label>
+        <div className="flex items-center border rounded px-2">
+          <input
+            type={showNew ? "text" : "password"}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="w-full p-2 outline-none bg-transparent"
+          />
+            <button
+              type="button"
+              onClick={() => setShowNew(!showNew)}
+              className="text-gray-600 dark:text-gray-300"
+            >
+              {showNew ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </button>
+        </div>
+      </div>
+
+      {/* Confirm Password */}
+      <div className="mb-4">
+        <label className="text-sm text-gray-700 dark:text-gray-200">
+          Confirm Password
+        </label>
+        <div className="flex items-center border rounded px-2">
+          <input
+            type={showConfirm ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full p-2 outline-none bg-transparent"
+          />
+            <button
+              type="button"
+              onClick={() => setShowConfirm(!showConfirm)}
+              className="text-gray-600 dark:text-gray-300"
+            >
+              {showConfirm ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </button>
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setOpenPasswordModal(false)}
+          className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-600"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={() => {
+            if (newPassword !== confirmPassword) {
+              toast.error("Passwords do not match");
+              return;
+            }
+
+            // 🔥 Call your API here
+            console.log("New Password:", newPassword);
+
+            toast.success("Password updated");
+            setOpenPasswordModal(false);
+            setNewPassword("");
+            setConfirmPassword("");
+          }}
+          className="px-4 py-2 rounded bg-cyan-600 text-white hover:bg-cyan-800"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           </div>
 
           <div >
