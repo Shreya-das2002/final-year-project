@@ -18,6 +18,7 @@ import ranaImg from "./assets/Ranabir.png";
 import rinkiImg from "./assets/Rinki.png";
 
 
+
 export interface TeamMember {
   id: number;
   name: string;
@@ -514,6 +515,7 @@ export const urls ={
   deactiveAdminUrl: 'admin/deactivate-admin',
   deactiveDoctorUrl: '/doctor/deactivate-doctor',
   deleteAcoountUrl: '/account/deactivate',
+  appointmentRequestUrl: '/appointment/create',
 }
 
 
