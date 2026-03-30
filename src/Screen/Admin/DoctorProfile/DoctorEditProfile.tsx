@@ -152,7 +152,7 @@ const DoctorEditProfile: React.FC = () => {
     if (doctor?.doctor_experiences?.length) {
       setExperiences(
         doctor.doctor_experiences.map((exp: ExperiencePayload) => ({
-          organization: exp?.organization_name ?? exp?.organization_name ?? "",
+          organization_name: exp?.organization_name ?? "",
           start_date: exp?.start_date ?? "",
           end_date: exp?.end_date ?? "",
           designation: exp?.designation ?? "",
@@ -496,81 +496,123 @@ const DoctorEditProfile: React.FC = () => {
                         }
                       />
 
-  <div>
-  <h1 className="text-sm pl-1">Start Date</h1>
-<div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus-within:border-gray-900 dark:focus-within:border-gray-200 focus-within:border-2">
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
-   <DatePicker
-  value={exp.start_date ? dayjs(exp.start_date) : null}
-  onChange={(v: Dayjs | null) =>
-    handleExpChange(index, "start_date", v ? v.format("YYYY-MM-DD") : "")
-  }
-  format="YYYY-MM-DD"
-  slotProps={{
-    textField: {
-      fullWidth: true,
-      size: "small",
-      placeholder: "Start Date",
-      variant: "standard",
-      InputProps: {
-        disableUnderline: true,
-      },
-      sx: {
-        "& .MuiSvgIcon-root": {
-          color: isDark ? "#E5E7EB" : "#374151",
-        },
-        "& .MuiInputBase-input": {
-          color: isDark ? "#E5E7EB" : "#374151",
-        },
-        "& .MuiInputBase-input::placeholder": {
-          color: isDark ? "#E5E7EB" : "#374151",
-          opacity: 1,
-        },
-      },
-    },
-  }}
-/>
-  </LocalizationProvider>
-  </div>
-</div>
+                               <div>
+                    <h1 className="text-sm pl-1">Start Date</h1>
+                  <div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200">
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        value={exp.start_date ? dayjs(exp.start_date) : null}
+                        onChange={(v: Dayjs | null) =>
+                          handleExpChange(index, "start_date", v ? v.format("YYYY-MM-DD") : "")
+                        }
+                         format="YYYY-MM-DD"
+                         enableAccessibleFieldDOMStructure={false}
+                         slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: "small",
+                            placeholder: "Start Date",
+                            variant: "standard", 
+                            InputProps: {
+                              disableUnderline: true, 
+                            },
+                            sx: {
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "1px",
+                                backgroundColor: "#ffffff !important",
+                                boxShadow: "none !important",
+                  
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                  
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                  
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                              },
+                  
+                              "& .MuiSvgIcon-root": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                              },
+                  
+                              "& .MuiInputBase-input": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                              },
+                  
+                              "& .MuiInputBase-input::placeholder": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                                opacity: 1,
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </LocalizationProvider>
+                    </div>
+                  </div>
 
-                             <div>
-  <h1 className="text-sm pl-1">End Date</h1>
-<div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus-within:border-gray-900 dark:focus-within:border-gray-200 focus-within:border-2">
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
-   <DatePicker
-  value={exp.end_date ? dayjs(exp.end_date) : null}
-  onChange={(v: Dayjs | null) =>
-    handleExpChange(index, "end_date", v ? v.format("YYYY-MM-DD") : "")
-  }
-  format="YYYY-MM-DD"
-  slotProps={{
-    textField: {
-      fullWidth: true,
-      size: "small",
-      placeholder: "End Date",
-      variant: "standard",
-      InputProps: {
-        disableUnderline: true,
-      },
-      sx: {
-        "& .MuiSvgIcon-root": {
-          color: isDark ? "#E5E7EB" : "#374151",
-        },
-        "& .MuiInputBase-input": {
-          color: isDark ? "#E5E7EB" : "#374151",
-        },
-        "& .MuiInputBase-input::placeholder": {
-          color: isDark ? "#E5E7EB" : "#374151",
-          opacity: 1,
-        },
-      },
-    },
-  }}
-/>
-  </LocalizationProvider>
-  </div>
-</div>
+                                                          <div>
+                    <h1 className="text-sm pl-1">End Date</h1>
+                  <div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus:outline-none focus:ring-1 focus:border-gray-900 dark:focus:border-gray-200">
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        value={exp.end_date ? dayjs(exp.end_date) : null}
+                          onChange={(v: Dayjs | null) =>
+                          handleExpChange(index, "end_date", v ? v.format("YYYY-MM-DD") : "")
+                        }
+                         format="YYYY-MM-DD"
+                         enableAccessibleFieldDOMStructure={false}
+                         slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: "small",
+                            placeholder: "End Date",
+                            variant: "standard", 
+                            InputProps: {
+                              disableUnderline: true, 
+                            },
+                            sx: {
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "1px",
+                                backgroundColor: "#ffffff !important",
+                                boxShadow: "none !important",
+                  
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                  
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                  
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                  border: "none !important",
+                                },
+                              },
+                  
+                              "& .MuiSvgIcon-root": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                              },
+                  
+                              "& .MuiInputBase-input": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                              },
+                  
+                              "& .MuiInputBase-input::placeholder": {
+                                color: isDark ? "#E5E7EB" : "#374151",
+                                opacity: 1,
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </LocalizationProvider>
+                    </div>
+                  </div>
 
 
                     </div>
