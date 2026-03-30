@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
@@ -42,7 +41,6 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
 
   const user = useSelector((state: RootState) => state.auth.user);
   const profile = useSelector((state: RootState) => state.auth.profile);
-  const buttons = useSelector((state: RootState) => state.auth.buttons);
 
   const hydrated = useRef(false);
 
@@ -67,10 +65,6 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
       hydrated.current = true;
     }
   }, [profile, dispatch]);
-
-  const canEditProfile = buttons?.some(
-    (btn) => btn.control_key === "edit profile",
-  );
 
   if (!user) return null;
 
@@ -189,12 +183,6 @@ const DoctorProfile: React.FC<Props> = ({ open, onClose }) => {
               )}
             </div>
           </div>
-
-          {canEditProfile && (
-            <button className="relative mt-5 ml-46 p-1 backdrop-blur-md bg-white/70 text-gray-500 dark:text-gray-700 hover:text-cyan-700 transition rounded-full">
-              <PencilSquareIcon className="w-5 h-5 flex items-center pl-1" />
-            </button>
-          )}
 
           <div className="mt-2 flex flex-warp justify-end gap-2 text-[10px] text-black/70 pr-4">
             <span className="bg-cyan-200/50 dark:bg-gray-300/50 rounded-full flex items-center gap-1 py-1 px-1.5">
