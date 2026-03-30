@@ -4,6 +4,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 /* ================= USER TYPES ================= */
 
 interface User {
+  specialization: string;
   email: string;
   role: string;
   patient_id: number;
@@ -16,6 +17,7 @@ interface User {
   dob?: string;
   department: string;
   created_on: string;
+  doctor_no: string;
 }
 
 
@@ -61,6 +63,7 @@ interface Profile {
   alcohol: boolean | null;
   current_address: Address | null;
   permanent_address: Address | null;
+  experience_years: string | null;
 }
 
 /* ================= AUTH STATE ================= */

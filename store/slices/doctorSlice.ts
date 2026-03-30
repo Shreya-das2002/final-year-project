@@ -29,6 +29,7 @@ interface Experience {
 }
 
 interface Slot {
+  doctor_availability_id?: number;
   date: string;
   slot_count: number;
   fees: number;
@@ -84,6 +85,7 @@ interface DoctorState {
   Record<
     string,
     {
+      doctor_availability_id?: number;
       slots: number;
       fee: string;
       start_time: string;

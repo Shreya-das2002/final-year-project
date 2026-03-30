@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
+import {
+  fetchDoctorListThunk,
+  setSelectedDoctor,
+} from "../../../../store/slices/doctorSlice";
 
 import { FaEnvelope, FaUser } from "react-icons/fa";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
 import type { Doctor } from "../../../services/doctorApi";
+import { appointmentRequestApi } from "../../../services/appointmentApi";
+import toast from "react-hot-toast";
 
 const SpDoctorList = () => {
   const { specializationId } = useParams();
@@ -17,9 +22,22 @@ const SpDoctorList = () => {
     (state: RootState) => state.doctor
   );
   const doctorSlots = useSelector((state: RootState) => state.doctor.slot);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedBookingDate, setSelectedBookingDate] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
+
+  const [selectedBookingSlot, setSelectedBookingSlot] = useState<{
+    doctor_availability_id?: number;
+    start_time?: string;
+    end_time?: string;
+    fee?: number;
+  } | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -36,19 +54,26 @@ const SpDoctorList = () => {
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
-    
-const convertToAMPM = (time: string) => {
-  if (!time) return "";
+  const convertToAMPM = (time: string) => {
+    if (!time) return "";
 
-  const [h, m] = time.split(":");
-  let hour = parseInt(h);
+    const [h, m] = time.split(":");
+    let hour = parseInt(h);
 
-  const period = hour >= 12 ? "PM" : "AM";
-  hour = hour % 12 || 12;
+    const period = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
 
-  return `${hour}:${m} ${period}`;
-};
+    return `${hour}:${m} ${period}`;
+  };
 
+  const formatDateForDisplay = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   useEffect(() => {
     if (specializationId) {
@@ -59,6 +84,81 @@ const convertToAMPM = (time: string) => {
   const openCalendar = (doc: Doctor) => {
     dispatch(setSelectedDoctor(doc));
     setShowCalendar(true);
+  };
+
+  const handleDateClick = (
+    fullDate: string,
+    slotInfo?:
+      | {
+          doctor_availability_id?: number;
+          start_time?: string;
+          end_time?: string;
+          fee?: string | number;
+        }
+      | null
+  ) => {
+    setSelectedBookingDate(fullDate);
+
+    setSelectedBookingSlot(
+      slotInfo
+        ? {
+            doctor_availability_id: slotInfo.doctor_availability_id,
+            start_time: slotInfo.start_time,
+            end_time: slotInfo.end_time,
+            fee: slotInfo.fee ? Number(slotInfo.fee) : 0,
+          }
+        : null
+    );
+
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmBooking = async () => {
+    try {
+      if (!selectedDoctor || !selectedBookingDate) return;
+
+      if (!user?.patient_id) {
+        toast("Patient not found. Please login again.");
+        return;
+      }
+
+      const dateSlot = doctorSlots[selectedDoctor.doctor_id]?.[selectedBookingDate];
+
+       const doctorAvailabilityId =
+      selectedBookingSlot?.doctor_availability_id ||
+      dateSlot?.doctor_availability_id ||
+      selectedDoctor.doctor_availability?.[selectedBookingDate]
+        ?.doctor_availability_id;
+
+      if (!doctorAvailabilityId) {
+        toast("Doctor availability id not found for selected date.");
+        return;
+      }
+
+      setBookingLoading(true);
+
+      const response = await appointmentRequestApi({
+        patient_id: Number(user.patient_id),
+        doctor_id: Number(selectedDoctor.doctor_id),
+        doctor_availability_id: Number(doctorAvailabilityId),
+        booking_date: selectedBookingDate,
+      });
+
+      const resData = response?.data;
+
+      if (resData?.success === true || resData?.isSuccess === true) {
+        setShowConfirmModal(false);
+        setShowSuccessModal(true);
+        return;
+      }
+
+      toast(resData?.message || "Failed to book appointment");
+    } catch (error) {
+      console.error("BOOK APPOINTMENT ERROR:", error);
+      toast("Something went wrong while booking appointment");
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   return (
@@ -111,7 +211,9 @@ const convertToAMPM = (time: string) => {
                     <div className="text-xs text-gray-500">
                       {Number(doc.experience) === 0
                         ? "Fresher"
-                      : `${Number(doc.experience)} year${Number(doc.experience) > 1 ? "s" : ""}`}
+                        : `${Number(doc.experience)} year${
+                            Number(doc.experience) > 1 ? "s" : ""
+                          }`}
                     </div>
                   </div>
                 </div>
@@ -121,10 +223,11 @@ const convertToAMPM = (time: string) => {
                     <div className="text-lg font-semibold text-green-950 dark:text-cyan-50">
                       {todayFee ? `₹${todayFee} per visit` : ""}
                     </div>
-                    <div className={`text-xs ${
-                                  todayFee ? "pr-5" : "pl-3"
-                                } text-gray-600 dark:text-cyan-10`}
-                              >
+                    <div
+                      className={`text-xs ${
+                        todayFee ? "pr-5" : "pl-3"
+                      } text-gray-600 dark:text-cyan-10`}
+                    >
                       {todayFee ? "(Today's Fee)" : "Doctor Unavailable today"}
                     </div>
                   </div>
@@ -187,33 +290,126 @@ const convertToAMPM = (time: string) => {
                 {[...Array(daysInMonth)].map((_, i) => {
                   const day = i + 1;
 
-                    const fullDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                  const fullDate = `${year}-${String(month + 1).padStart(
+                    2,
+                    "0"
+                  )}-${String(day).padStart(2, "0")}`;
 
-                    const slotInfo =
-                      selectedDoctor &&
-                      doctorSlots[selectedDoctor.doctor_id]?.[fullDate];
+                  const slotInfo =
+                    selectedDoctor &&
+                    doctorSlots[selectedDoctor.doctor_id]?.[fullDate];
 
                   return (
-    <div
-      key={day}
-      className="min-h-[60px] flex flex-col items-center justify-center border rounded-lg cursor-pointer hover:bg-cyan-100"
-      onClick={() => {
-        console.log("Selected date:", fullDate);
-        setShowCalendar(false);
-      }}
-    >
-      <span>{day}</span>
+                    <div
+                      key={day}
+                      className="min-h-[60px] flex flex-col items-center justify-center border rounded-lg cursor-pointer hover:bg-cyan-100"
+                      onClick={() => handleDateClick(fullDate, slotInfo)}
+                    >
+                      <span>{day}</span>
 
-      {slotInfo && (
-        <span className="text-[10px] text-cyan-700">
-          {convertToAMPM(slotInfo.start_time)} - {convertToAMPM(slotInfo.end_time)}
-        </span>
-      )}
-    </div>
-  );
-})}
+                      {slotInfo && (
+                        <span className="text-[10px] text-cyan-700 text-center px-1">
+                          {convertToAMPM(slotInfo.start_time || "")} -{" "}
+                          {convertToAMPM(slotInfo.end_time || "")}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirmModal && selectedDoctor && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-[420px] rounded-2xl p-6 shadow-xl border">
+            <h2 className="text-xl font-semibold text-cyan-700 mb-4">
+              Confirm Booking
+            </h2>
+
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                <span className="font-semibold">Doctor:</span> Dr.{" "}
+                {selectedDoctor.first_name} {selectedDoctor.last_name}
+              </p>
+
+              <p>
+                <span className="font-semibold">Date:</span>{" "}
+                {formatDateForDisplay(selectedBookingDate)}
+              </p>
+
+              {selectedBookingSlot?.start_time &&
+              selectedBookingSlot?.end_time ? (
+                <>
+                  <p>
+                    <span className="font-semibold">Time:</span>{" "}
+                    {convertToAMPM(selectedBookingSlot.start_time)} -{" "}
+                    {convertToAMPM(selectedBookingSlot.end_time)}
+                  </p>
+
+                  <p>
+                    <span className="font-semibold">Fee:</span> ₹
+                    {selectedBookingSlot.fee ?? 0}
+                  </p>
+                </>
+              ) : (
+                <p className="text-orange-600 font-medium">
+                  No slot information available for this date.
+                </p>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+                disabled={bookingLoading}
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleConfirmBooking}
+                className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-60"
+                disabled={bookingLoading}
+              >
+                {bookingLoading ? "Booking..." : "OK"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && selectedDoctor && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60]">
+          <div className="bg-white w-[400px] rounded-2xl p-6 shadow-xl border text-center">
+            <h2 className="text-xl font-semibold text-green-600 mb-3">
+              Booking Successful
+            </h2>
+
+            <p className="text-sm text-gray-700 mb-2">
+              Your appointment with{" "}
+              <span className="font-semibold">
+                Dr. {selectedDoctor.first_name} {selectedDoctor.last_name}
+              </span>{" "}
+              has been booked successfully.
+            </p>
+
+            <p className="text-sm text-gray-600 mb-6">
+              Date: {formatDateForDisplay(selectedBookingDate)}
+            </p>
+
+            <button
+              onClick={() => {
+                setShowSuccessModal(false);
+                setShowCalendar(false);
+              }}
+              className="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
