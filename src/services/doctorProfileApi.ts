@@ -12,7 +12,7 @@ export interface AddressPayload {
 }
 
 export interface ExperiencePayload {
-  organization: string;
+  organization_name?: string;
   start_date: string;
   end_date?: string;
   designation?: string;

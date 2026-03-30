@@ -91,7 +91,7 @@ const DoctorEditProfile: React.FC = () => {
 
   const [experiences, setExperiences] = useState<ExperiencePayload[]>([
     {
-      organization: "",
+      organization_name: "",
       start_date: "",
       end_date: "",
       designation: "",
@@ -152,7 +152,7 @@ const DoctorEditProfile: React.FC = () => {
     if (doctor?.doctor_experiences?.length) {
       setExperiences(
         doctor.doctor_experiences.map((exp: ExperiencePayload) => ({
-          organization: exp?.organization ?? exp?.organization ?? "",
+          organization: exp?.organization_name ?? exp?.organization_name ?? "",
           start_date: exp?.start_date ?? "",
           end_date: exp?.end_date ?? "",
           designation: exp?.designation ?? "",
@@ -206,7 +206,7 @@ const DoctorEditProfile: React.FC = () => {
     setExperiences((prev) => [
       ...prev,
       {
-        organization: "",
+        organization_name: "",
         start_date: "",
         end_date: "",
         designation: "",
@@ -259,7 +259,7 @@ const DoctorEditProfile: React.FC = () => {
         payload = {
           ...payload,
           experiences: experiences.map((exp) => ({
-            organization: exp.organization || "",
+            organization_name: exp.organization_name || "",
             start_date: exp.start_date || "",
             end_date: exp.end_date || "",
             designation: exp.designation || "",
@@ -473,18 +473,18 @@ const DoctorEditProfile: React.FC = () => {
           )}
 
           {step === 2 && (
-             <fieldset className="border p-4 border-gray-500 dark:border-gray-200 mb-4  rounded-2xl">
+             <fieldset className="border p-4 border-gray-500 dark:border-gray-200 mb-4   rounded-2xl">
             <legend className="text-sm px-2 text-gray-700 dark:text-gray-200 font-semibold">Experience Details</legend>
 
-              <div className="space-y-4">
+              <div className="space-y-4  ">
                 {experiences.map((exp, index) => (
                   <div key={index}>
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-2 text-gray-700 dark:text-gray-200 gap-4 ">
                       <Field
                         label="Organization Name"
-                        value={exp.organization ?? ""}
+                        value={exp.organization_name ?? ""}
                         onChange={(v) =>
-                          handleExpChange(index, "organization", v)
+                          handleExpChange(index, "organization_name", v)
                         }
                       />
 
@@ -496,38 +496,98 @@ const DoctorEditProfile: React.FC = () => {
                         }
                       />
 
-                      <Field
-                        label="Start Date"
-                        value={exp.start_date ?? ""}
-                        onChange={(v) =>
-                          handleExpChange(index, "start_date", v)
-                        }
-                        type="date"
-                      />
+  <div>
+  <h1 className="text-sm pl-1">Start Date</h1>
+<div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus-within:border-gray-900 dark:focus-within:border-gray-200 focus-within:border-2">
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+   <DatePicker
+  value={exp.start_date ? dayjs(exp.start_date) : null}
+  onChange={(v: Dayjs | null) =>
+    handleExpChange(index, "start_date", v ? v.format("YYYY-MM-DD") : "")
+  }
+  format="YYYY-MM-DD"
+  slotProps={{
+    textField: {
+      fullWidth: true,
+      size: "small",
+      placeholder: "Start Date",
+      variant: "standard",
+      InputProps: {
+        disableUnderline: true,
+      },
+      sx: {
+        "& .MuiSvgIcon-root": {
+          color: isDark ? "#E5E7EB" : "#374151",
+        },
+        "& .MuiInputBase-input": {
+          color: isDark ? "#E5E7EB" : "#374151",
+        },
+        "& .MuiInputBase-input::placeholder": {
+          color: isDark ? "#E5E7EB" : "#374151",
+          opacity: 1,
+        },
+      },
+    },
+  }}
+/>
+  </LocalizationProvider>
+  </div>
+</div>
 
-                      <Field
-                        label="End Date"
-                        value={exp.end_date ?? ""}
-                        onChange={(v) =>
-                          handleExpChange(index, "end_date", v)
-                        }
-                        type="date"
-                      />
+                             <div>
+  <h1 className="text-sm pl-1">End Date</h1>
+<div className="border-gray-600 dark:border-gray-200 border rounded-sm py-1 pl-2 pt-1 pb-1 mt-1 focus-within:border-gray-900 dark:focus-within:border-gray-200 focus-within:border-2">
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+   <DatePicker
+  value={exp.end_date ? dayjs(exp.end_date) : null}
+  onChange={(v: Dayjs | null) =>
+    handleExpChange(index, "end_date", v ? v.format("YYYY-MM-DD") : "")
+  }
+  format="YYYY-MM-DD"
+  slotProps={{
+    textField: {
+      fullWidth: true,
+      size: "small",
+      placeholder: "End Date",
+      variant: "standard",
+      InputProps: {
+        disableUnderline: true,
+      },
+      sx: {
+        "& .MuiSvgIcon-root": {
+          color: isDark ? "#E5E7EB" : "#374151",
+        },
+        "& .MuiInputBase-input": {
+          color: isDark ? "#E5E7EB" : "#374151",
+        },
+        "& .MuiInputBase-input::placeholder": {
+          color: isDark ? "#E5E7EB" : "#374151",
+          opacity: 1,
+        },
+      },
+    },
+  }}
+/>
+  </LocalizationProvider>
+  </div>
+</div>
+
+
                     </div>
 
-                    <div className="pt-3">
-                      <label className="text-sm pl-1">Responsibilities</label>
+                    <div className="pt-3 ">
+                      <label className="text-sm  text-gray-700 dark:text-gray-200 pl-1">Responsibilities</label>
                       <textarea
                         value={exp.responsibilities ?? ""}
                         onChange={(e) =>
-                          handleExpChange(
-                            index,
-                            "responsibilities",
-                            e.target.value
-                          )
+                          handleExpChange(index, "responsibilities", e.target.value)
                         }
                         rows={4}
-                        className="w-full border p-2 rounded-sm"
+                        className="w-full border p-2 rounded-sm 
+                        text-gray-700 dark:text-gray-200
+                        outline-none focus:outline-none 
+                        focus:ring-1 
+                        focus:border-gray-600 dark:focus:border-gray-200"
                       />
                     </div>
 
