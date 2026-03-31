@@ -515,6 +515,7 @@ export const urls ={
   deactiveDoctorUrl: '/doctor/deactivate-doctor',
   deleteAcoountUrl: '/account/deactivate',
   appointmentRequestUrl: '/appointment/create',
+  appointmentsListUrl: '/appointment/list'
 }
 
 
