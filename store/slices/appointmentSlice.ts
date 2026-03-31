@@ -1,11 +1,13 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   appointmentRequestApi,
   getAppointmentsApi,
-  Appointment,
-  AppointmentRequestPayload,
-  GetAppointmentsParams,
 } from "../../src/services/appointmentApi";
+
+import type {Appointment,
+  AppointmentRequestPayload,
+  GetAppointmentsParams} from "../../src/services/appointmentApi";
 
 interface AppointmentState {
   loading: boolean;

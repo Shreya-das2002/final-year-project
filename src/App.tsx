@@ -168,7 +168,7 @@ const AppLayout: React.FC = () => {
               <Route path="feedback" element={<Feedback />} />
               <Route path="symptom_checker" element={<SymptoChecker/>} />
               <Route path="my_appointments" element={<MyAppointments />} />
-              <Route path="my_appointments/booking_details" element={<AppointmentDetail />} />
+              <Route path="my_appointments/booking_details/:appointmentId" element={<AppointmentDetail />} />
               
               <Route path="appointments" element={<Appointments/>} />
               <Route path="doctors/:specializationId" element={<SpDoctorList />} />
