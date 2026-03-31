@@ -52,7 +52,7 @@ import AdminProfileView from "./Screen/Admin/AdminProfile/AdminViewProfile";
 import AdminEditProfile from "./Screen/Admin/AdminProfile/AdminEditProfile";
 import SlotAvailability from "./Screen/Admin/SlotAvailability";
 import Forgotpassword from "./Screen/RegistrationLogin/Forget_password";
-import MyAppointments from "./Screen/Patient/SymptoBot";
+import MyAppointments from "./Screen/Patient/MyAppoinments";
 import PendingAppoinments from "./Screen/Admin/PendingAppoinments";
 import AdminAppoinments from "./Screen/Admin/Appoinments";
 import Slotmanagement from "./Screen/Admin/SlotManagament";
