@@ -15,7 +15,7 @@ import { deactiveDoctorApi } from "../../../services/doctorApi";
 
 /* ================= COLUMN KEY TYPE ================= */
 
-type ColumnKey = "doctor_no" | "name" | "email" | "phone_no" | "specialization" | "created_on" | "status" | "action";
+type ColumnKey = "appoinment_id" | "doctor_name" | "specialization" | "date" | "time" | "status" | "action";
 
 
 /* ================= STATUS UI HELPER ================= */
@@ -49,12 +49,6 @@ const getStatusLabel = (status?: string): StatusUI => {
         className: "text-red-700 dark:text-red-700/70"
       };
 
-      case "inactive":
-      return {
-        label: "Inactive",
-        className: "text-gray-700 dark:text-gray-700/70"
-      };
-
     default:
       return {
         label: status || "Unknown",
@@ -80,9 +74,6 @@ const MyAppointments = () => {
   const { doctors, loading } = useSelector(
     (state: RootState) => state.doctor
   );
-
-
- 
 
  const buttons = useSelector(
     (state: RootState) => state.auth.buttons
@@ -149,14 +140,13 @@ const MyAppointments = () => {
     /* ================= COLUMN WIDTH STATE ================= */
   
     const [columnWidths, setColumnWidths] = useState<Record<ColumnKey, number>>({
-      name: 250,
-      email: 300,
-      phone_no: 250,
-      action: 150,
+      appoinment_id: 250,
+      doctor_name: 300,
       specialization: 250,
+      date: 250,
+      time: 250,
       status: 150,
-      doctor_no: 150,
-      created_on: 200
+      action: 200
     });
   
     const resizingCol = useRef<ColumnKey | null>(null);
@@ -254,7 +244,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">Doctor List</h2>
+        <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">My Appoinments</h2>
       </div>
 
       {/* SEARCH + FILTER */}
@@ -421,49 +411,33 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
     <div className="bg-white rounded-2xl shadow-md">
 
   {/* SCROLL CONTAINER */}
-  <div className="max-h-[450px] overflow-y-auto rounded-2xl">
+  <div className="max-h-[420px] overflow-y-auto rounded-2xl">
 
     <table className="w-full text-left">
 
           {/* TABLE HEADER */}
 
-          <thead className="bg-cyan-600 text-gray-100 text-sm sticky top-0 z-10">
+          <thead className="bg-cyan-600 text-gray-100 text-sm sticky top-0 z-10 ">
 
-            <tr className="divide-x divide-gray-100">
+            <tr className="divide-x divide-gray-100 ">
 
-              <th style={{ width: columnWidths.doctor_no }} className="p-4 relative">
-                Doctor ID
+              <th style={{ width: columnWidths.appoinment_id }} className="p-4 relative">
+                Appoinment ID
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
-                  onMouseDown={(e) => startResize(e, "doctor_no")}
+                  onMouseDown={(e) => startResize(e, "appoinment_id")}
                 />
               </th>
 
-              <th style={{ width: columnWidths.name }} className="p-4 relative">
+              <th style={{ width: columnWidths.doctor_name }} className="p-4 relative">
                 Doctor Name
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
-                  onMouseDown={(e) => startResize(e, "name")}
+                  onMouseDown={(e) => startResize(e, "doctor_name")}
                 />
               </th>
 
               
-
-              <th style={{ width: columnWidths.email }} className="p-4 relative">
-                Email
-                <div
-                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
-                  onMouseDown={(e) => startResize(e, "email")}
-                />
-              </th>
-
-              <th style={{ width: columnWidths.phone_no }} className="p-4 relative">
-                Phone Number
-                <div
-                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
-                  onMouseDown={(e) => startResize(e, "phone_no")}
-                />
-              </th>
 
               <th style={{ width: columnWidths.specialization }} className="p-4 relative">
                 Specialization
@@ -473,13 +447,23 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
                 />
               </th>
 
-              <th style={{ width: columnWidths.created_on }} className="p-4 relative">
-                Joining Date
+              <th style={{ width: columnWidths.date }} className="p-4 relative">
+                Appoinment Date
                 <div
                   className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
-                  onMouseDown={(e) => startResize(e, "created_on")}
+                  onMouseDown={(e) => startResize(e, "date")}
                 />
               </th>
+
+              <th style={{ width: columnWidths.time }} className="p-4 relative">
+                Appoinment Time
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "time")}
+                />
+              </th>
+
+              
 
               <th style={{ width: columnWidths.status }} className="p-4 relative">
                 Status
@@ -588,8 +572,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
                     <td className="p-4"><div className="flex gap-2 justify items-center"><FaUserDoctor className=" text-sm text-cyan-600 dark:text-cyan-700"/>{doc.specialization ?? "-"}
                     </div></td>
 
-                    <td className="p-4 "><div className="flex gap-2 justify items-center">
-                      {doc.created_on ?? "-"}</div></td>
+                    
 
 
                       <td className="p-4 ">
