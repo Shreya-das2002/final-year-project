@@ -592,47 +592,20 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 
       <button
       onClick={() => {
-  dispatch(setSelectedDoctor(doc));
-  navigate(`/admin/doctor_view_profile/${doc.doctor_id}`);
+  
+  navigate(`/patient/my_appointments/booking_details`);
 }}
-        type="button"
+        
         className="text-blue-600 hover:text-blue-800"
-        title="View Doctor"
+       
       >
-        {doc.status === "Active" && (
+       
       
         <EyeIcon className="w-5 h-5" />
-)}
+
 
       </button>
     
-      <button
-        onClick={() => {
-  dispatch(setSelectedDoctor(doc));
-  navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`);
-}}
-        type="button"
-        className="text-gray-600 hover:text-gray-800"
-        title="Edit Doctor"
-      >
-        <PencilSquareIcon className="w-5 h-5" />
-      </button>
-
-
-    {/* DELETE */}
-
-
-          <button
-          onClick={() => handleDeactivateDoctor(doc.doctor_id)}
-          type="button"
-          className="  text-red-500 hover:text-red-800"
-          title="Delete Doctor">  
-            <TrashIcon 
-            onClick={() => handleDeactivateDoctor(doc.doctor_id)}
-            className="w-5 h-5"
-            />
-          </button>
-  
 
   </div>
 
