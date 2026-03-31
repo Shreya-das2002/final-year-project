@@ -1,17 +1,14 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { EyeIcon, PencilSquareIcon, AdjustmentsHorizontalIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { FaSearch, FaEnvelope, FaUsersSlash, FaUserCheck, FaTrash, FaClock, FaIdCard } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { FiPhone } from "react-icons/fi";
 import type { RootState, AppDispatch } from "../../../../store/store";
-import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
+import { fetchDoctorListThunk,  } from "../../../../store/slices/doctorSlice";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
-import toast from "react-hot-toast";
-import Swal from "sweetalert2";
-import { deactiveDoctorApi } from "../../../services/doctorApi";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -85,40 +82,6 @@ const MyAppointments = () => {
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
 
-  const handleDeactivateDoctor = async (doctorId: number) => {
-  
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "You want to deactivate this doctor",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: "Yes, deactivate",
-      cancelButtonText: "Cancel"
-    });
-  
-    if (!result.isConfirmed) return;
-  
-    try {
-      const response = await deactiveDoctorApi({
-        doctor_id: doctorId,
-        status: "Inactive",
-      });
-  
-      if (response?.data?.success) {
-        toast.success("Doctor deactivated successfully ");
-  
-        dispatch(fetchDoctorListThunk());
-      } else {
-        toast.error(response?.data?.message || "Failed to deactivate");
-      }
-  
-    } catch (error) {
-      console.error("Deactivate doctor error:", error);
-      toast.error("Something went wrong ");
-    }
-  };
   
 
 
@@ -593,7 +556,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
       <button
       onClick={() => {
   
-  navigate(`/patient/my_appointments/booking_details`);
+  navigate("/patient/my_appointments/booking_details");
 }}
         
         className="text-blue-600 hover:text-blue-800"
@@ -622,11 +585,12 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
         </table>
 
       </div>
+         <Outlet />
 
       </div>
 
       </div>
-
+ 
     </div>
 
   );
