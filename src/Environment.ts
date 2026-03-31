@@ -7,17 +7,16 @@ import {
   FiLogOut,
   FiUsers,
   FiUserPlus,
-  FiClock
+  FiClock,
+  FiGrid
 } from "react-icons/fi";
 
-import { FaCalendarCheck } from "react-icons/fa";
+import { FaCalendarCheck, } from "react-icons/fa";
 
 import shreyaImg from "./assets/Shreya.png";
 import subhaImg from "./assets/Subhankar.png";
 import ranaImg from "./assets/Ranabir.png";
 import rinkiImg from "./assets/Rinki.png";
-
-
 
 export interface TeamMember {
   id: number;
@@ -536,6 +535,7 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "admin list",
   "doctor list",
   "slot availability",
+  "slot management",
   "admin aapointments",
   "messages",
   
@@ -571,6 +571,7 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
   "messages": "/admin/messages",
   "add doctor": "/admin/add_doctor",
   "slot availability": "/admin/slot_availability",
+  "slot management": "/admin/slot_management",
   "admin aapointments": "/admin/appointments",
 
   "logout": "/logout",
@@ -588,9 +589,12 @@ export const MENU_ICONS: Record<string, IconType> = {
   "create admin": FiUserPlus,
   "add doctor": FiUserPlus,
   "pending doctor list": FiUsers,
+  "pending appointment": FiClock,
   "admin list": FiUsers,
   "doctor list": FiUsers,
   "slot availability": FiClock,
+  "slot management": FiGrid,
+  "admin aapointments": FiCalendar,
   "messages": FiMessageSquare,
 
   "doctor dashboard": FiHome,
