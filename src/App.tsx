@@ -56,6 +56,7 @@ import MyAppointments from "./Screen/Patient/MyAppoinments";
 import PendingAppoinments from "./Screen/Admin/PendingAppoinments";
 import AdminAppoinments from "./Screen/Admin/Appoinments";
 import Slotmanagement from "./Screen/Admin/SlotManagament";
+import AppointmentDetail from "./Screen/Patient/MyAppoinments/AppoinmentDetail";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -166,7 +167,10 @@ const AppLayout: React.FC = () => {
               <Route path="profile" element={<Profile />} />
               <Route path="feedback" element={<Feedback />} />
               <Route path="symptom_checker" element={<SymptoChecker/>} />
-              <Route path="my_appointments" element={<MyAppointments/>} />
+              <Route path="my_appointments" element={<MyAppointments/>} >
+                <Route path="booking_details" element={<AppointmentDetail/>}/>
+              </Route>
+              
               <Route path="appointments" element={<Appointments/>} />
               <Route path="doctors/:specializationId" element={<SpDoctorList />} />
             </Route>
