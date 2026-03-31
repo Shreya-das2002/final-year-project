@@ -530,9 +530,11 @@ export const SIDE_NAV_CONTROLS: string[] = [
   "create admin",
   "add doctor",
   "pending doctor list",
+  "pending appointment",
   "admin list",
   "doctor list",
   "slot availability",
+  "admin appointments",
   "messages",
   
 
@@ -562,10 +564,12 @@ export const MENU_ROUTE_MAP: Record<string, string> = {
   "create admin": "/admin/create_admin",
   "admin list": "/admin/admin_list",
   "pending doctor list": "/admin/pending_doctor_list",
+  "pending appointment": "/admin/pending_appointment",
   "doctor list": "/admin/doctor_list",
   "messages": "/admin/messages",
   "add doctor": "/admin/add_doctor",
   "slot availability": "/admin/slot_availability",
+  "admin appointments": "/admin/appointments",
 
   "logout": "/logout",
 };
