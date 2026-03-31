@@ -46,6 +46,11 @@ export interface Appointment{
 };
 
 export interface PendingAppointment {
+  doctor_gender: string;
+  doctor_email: string;
+  doctor_phone: string;
+  patient_gender: string;
+  patient_email: string;
   appointment_id: number;
   patient_id: number;
   doctor_id: number;
@@ -62,6 +67,10 @@ export interface PendingAppointment {
   fees?: number | null;
   created_on?: string | null;
   created_by?: number | null;
+  patient_name: string;
+  name: string;
+  patient_phone: string;
+
 }
 
 export interface GetAppointmentsParams {
