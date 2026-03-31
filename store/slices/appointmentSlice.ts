@@ -3,15 +3,20 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   appointmentRequestApi,
   getAppointmentsApi,
+  getPendingAppointmentsApi,
 } from "../../src/services/appointmentApi";
 
-import type {Appointment,
+import type {
+  Appointment,
+  PendingAppointment,
   AppointmentRequestPayload,
-  GetAppointmentsParams} from "../../src/services/appointmentApi";
+  GetAppointmentsParams,
+} from "../../src/services/appointmentApi";
 
 interface AppointmentState {
   loading: boolean;
   appointments: Appointment[];
+  pendingAppointments: PendingAppointment[];
   bookedAppointment: Appointment | null;
   error: string | null;
 }
@@ -19,6 +24,7 @@ interface AppointmentState {
 const initialState: AppointmentState = {
   loading: false,
   appointments: [],
+  pendingAppointments: [],
   bookedAppointment: null,
   error: null,
 };
@@ -78,6 +84,30 @@ export const fetchAppointmentsThunk = createAsyncThunk<
   }
 );
 
+/* ================= GET PENDING APPOINTMENTS ================= */
+
+export const fetchPendingAppointmentsThunk = createAsyncThunk<
+  PendingAppointment[],
+  void,
+  { rejectValue: string }
+>(
+  "appointment/fetchPendingAppointments",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getPendingAppointmentsApi();
+      return data;
+    } catch (error: unknown) {
+      let errorMessage = "Failed to fetch pending appointments";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const appointmentSlice = createSlice({
   name: "appointment",
   initialState,
@@ -90,6 +120,9 @@ const appointmentSlice = createSlice({
     },
     clearAppointments: (state) => {
       state.appointments = [];
+    },
+    clearPendingAppointments: (state) => {
+      state.pendingAppointments = [];
     },
   },
   extraReducers: (builder) => {
@@ -134,6 +167,23 @@ const appointmentSlice = createSlice({
       .addCase(fetchAppointmentsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch appointments";
+      })
+
+      /* GET PENDING APPOINTMENTS */
+      .addCase(fetchPendingAppointmentsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchPendingAppointmentsThunk.fulfilled,
+        (state, action: PayloadAction<PendingAppointment[]>) => {
+          state.loading = false;
+          state.pendingAppointments = action.payload;
+        }
+      )
+      .addCase(fetchPendingAppointmentsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch pending appointments";
       });
   },
 });
@@ -142,6 +192,7 @@ export const {
   clearAppointmentError,
   clearBookedAppointment,
   clearAppointments,
+  clearPendingAppointments,
 } = appointmentSlice.actions;
 
 export default appointmentSlice.reducer;

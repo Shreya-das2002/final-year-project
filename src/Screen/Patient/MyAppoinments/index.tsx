@@ -11,6 +11,7 @@ import { FaUserDoctor } from "react-icons/fa6";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 
+
 /* ================= COLUMN KEY TYPE ================= */
 
 type ColumnKey =
@@ -85,34 +86,6 @@ const ROW_COLORS = [
   "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100",
 ];
 
-/* ================= OPTIONAL APPOINTMENT UI TYPE ================= */
-
-type AppointmentRow = {
-  appointment_id: number;
-  patient_id: number;
-  doctor_id: number;
-  doctor_availability_id: number;
-  booking_date: string;
-  booking_time?: string | null;
-  description?: string | null;
-  document_id?: number | null;
-  booking_status: number;
-  created_on?: string | null;
-  created_by?: number | null;
-  updated_on?: string | null;
-  updated_by?: number | null;
-  slot_details?: {
-    date?: string | null;
-    start_time?: string | null;
-    end_time?: string | null;
-    fee?: number | null;
-    slots?: number | null;
-  } | null;
-
-  /* optional - if backend sends later */
-  doctor_name?: string;
-  specialization?: string;
-};
 
 const MyAppointments = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -197,8 +170,8 @@ useEffect(() => {
   /* ================= FILTER APPOINTMENTS ================= */
 
   const filteredAppointments = (
-    Array.isArray(appointments) ? (appointments as AppointmentRow[]) : []
-  )
+  Array.isArray(appointments) ? appointments : []
+)
     .filter((appointment) => {
       const statusName = getAppointmentStatusName(appointment.booking_status);
 

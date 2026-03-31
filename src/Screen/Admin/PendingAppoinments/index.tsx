@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../../../../store/store";
+import { fetchPendingAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 
 const PendingAppointments: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { pendingAppointments, loading, error } = useSelector(
+    (state: RootState) => state.appointment
+  );
+
+ const hasFetched = useRef(false);
+ 
+ useEffect(() => {
+   if (hasFetched.current) return;
+   hasFetched.current = true;
+    dispatch(fetchPendingAppointmentsThunk());
+}, [dispatch]);
+
   return (
     <div className="bg-gradient-to-r from-sky-100 via-sky-50 to-sky-100 
                     dark:from-sky-950 dark:via-sky-900 dark:to-sky-950 
@@ -10,6 +27,24 @@ const PendingAppointments: React.FC = () => {
       <h1 className="text-4xl font-bold mb-6 text-cyan-800 dark:text-cyan-50">
         Pending Appointments
       </h1>
+       {loading && (
+        <div className="text-cyan-900 dark:text-cyan-50 text-lg">
+          Loading...
+        </div>
+      )}
+
+      {error && (
+        <div className="text-red-600 dark:text-red-400 text-lg mb-4">
+          {error}
+        </div>
+      )}
+
+      {!loading && pendingAppointments.length === 0 && (
+        <div className="text-cyan-900 dark:text-cyan-50 text-lg">
+          No pending appointments found
+        </div>
+      )}
+
 
       {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pl-1">
