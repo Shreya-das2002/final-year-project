@@ -53,6 +53,8 @@ import AdminEditProfile from "./Screen/Admin/AdminProfile/AdminEditProfile";
 import SlotAvailability from "./Screen/Admin/SlotAvailability";
 import Forgotpassword from "./Screen/RegistrationLogin/Forget_password";
 import MyAppointments from "./Screen/Patient/SymptoBot";
+import PendingAppoinments from "./Screen/Admin/PendingAppoinments";
+import AdminAppoinments from "./Screen/Admin/Appoinments";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -184,6 +186,8 @@ const AppLayout: React.FC = () => {
               <Route path="doctor_list" element={<DoctorList/>} />
               <Route path="messages" element={<Messages/>} />
               <Route path="add_doctor" element={<AddDoctor/>} />
+              <Route path="pending_appointment" element= {<PendingAppoinments/>} />
+              <Route path="appointments" element= {<AdminAppoinments/>} />
               <Route path="slot_availability"element= {<SlotAvailability/>} />
               <Route path="doctor_view_profile/:doctorId" element={<DoctorViewProfile />} />
               <Route path="doctor_edit_profile/:doctorId" element={<DoctorEditProfile/>} />
