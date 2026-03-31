@@ -75,21 +75,6 @@ const MyAppointments = () => {
     (state: RootState) => state.doctor
   );
 
- const buttons = useSelector(
-    (state: RootState) => state.auth.buttons
-  );
-
-  const canEdit = buttons?.some(
-    (btn) => btn.control_key === "doctor edit"
-  );
-
-  const canView = buttons?.some(
-    (btn) => btn.control_key === "doctor view"
-  );
-
-  const canDeleteProfile = buttons?.some(
-    (btn) => btn.control_key === "delete doc account"
-  );
 
     const [search, setSearch] = useState("");
     const [showFilter, setShowFilter] = useState(false);
@@ -255,7 +240,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
           {/* FILTER BUTTON */}
           <div className="flex items-center justify-between gap-2">
-                   <button
+                  <button
             onClick={() => setShowFilter(!showFilter)}
             className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
             rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
@@ -602,9 +587,9 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
                       <div className="flex justify-center gap-4">
 
                       
-    {/* VIEW */}
+
     
-    {canView && (
+
       <button
       onClick={() => {
   dispatch(setSelectedDoctor(doc));
@@ -620,10 +605,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
 )}
 
       </button>
-    )}
     
-    {/* EDIT */}
-    {canEdit && (
       <button
         onClick={() => {
   dispatch(setSelectedDoctor(doc));
@@ -635,11 +617,11 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
       >
         <PencilSquareIcon className="w-5 h-5" />
       </button>
-    )}
+
 
     {/* DELETE */}
 
-    {canDeleteProfile && (
+
           <button
           onClick={() => handleDeactivateDoctor(doc.doctor_id)}
           type="button"
@@ -650,7 +632,7 @@ bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
             className="w-5 h-5"
             />
           </button>
-            )}
+  
 
   </div>
 
