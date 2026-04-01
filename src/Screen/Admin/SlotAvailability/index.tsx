@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
-
+import { MdCalendarToday } from "react-icons/md";
+import { FaEnvelope, FaSearch, FaStethoscope } from "react-icons/fa";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import {
   fetchDoctorListThunk,
@@ -9,12 +9,22 @@ import {
 } from "../../../../store/slices/doctorSlice";
 import { upsertSlotApi } from "../../../services/doctorApi";
 import type { UpsertSlotPayload } from "../../../services/doctorApi";
-
 import type { Doctor } from "../../../services/doctorApi";
 import toast from "react-hot-toast";
+import { FiPhone } from "react-icons/fi";
+import { HiArrowsUpDown } from "react-icons/hi2";
+
+/* ================= COLUMN KEY TYPE ================= */
+
+type ColumnKey =  "doctor_no" | "name" | "email" | "phone_no" | "specialization" | "action";
 
 const SlotAvailability = () => {
   const dispatch = useDispatch<AppDispatch>();
+
+const ROW_COLORS = [
+"bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
+"bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100"
+];
 
 
   const { doctors, selectedDoctor, slot } = useSelector(
@@ -24,8 +34,11 @@ const SlotAvailability = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showSlotModal, setShowSlotModal] = useState(false);
 
+   const [search, setSearch] = useState("");
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
+   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
       const [startHour, setStartHour] = useState("01");
       const [startMinute, setStartMinute] = useState("00");
@@ -85,9 +98,41 @@ const convertTo24Hour = (hour: string, minute: string, period: string) => {
   return `${String(h).padStart(2, "0")}:${minute}`;
 };
 
+    const [columnWidths, setColumnWidths] = useState<Record<ColumnKey, number>>({
+      doctor_no: 130,
+      name: 250,
+      email: 300,
+      phone_no: 250,
+      specialization: 250,
+      action: 130
+    });
+  
+    const resizingCol = useRef<ColumnKey | null>(null);
+  
+    const startResize = (
+      _e: React.MouseEvent<HTMLDivElement>,
+      column: ColumnKey
+    ) => {
+      resizingCol.current = column;
+    };
+  
+    const stopResize = () => {
+      resizingCol.current = null;
+    };
+  
+    const resize = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!resizingCol.current) return;
+  
+      setColumnWidths((prev) => ({
+        ...prev,
+        [resizingCol.current!]: prev[resizingCol.current!] + e.movementX
+      }));
+    };
+
  const openCalendar = (doc: Doctor) => {
   dispatch(setSelectedDoctor(doc));
   setShowCalendar(true);
+  
 
   const docSlots = slot[doc.doctor_id];
   if (docSlots) {
@@ -125,6 +170,8 @@ const convertTo24Hour = (hour: string, minute: string, period: string) => {
   const start_time = convertTo24Hour(startHour, startMinute, startPeriod);
 const end_time = convertTo24Hour(endHour, endMinute, endPeriod);
 
+  
+
 if (!start_time || !end_time) {
   toast("Please select start and end time");
   return;
@@ -149,6 +196,9 @@ if (start_time >= end_time) {
         slot_count: slotCount,
         fees: Number(fee),
       };
+
+
+
 
       const res = await upsertSlotApi(payload);
 
@@ -187,43 +237,196 @@ if (start_time >= end_time) {
     }
   };
 
+  const filteredDoctors = (Array.isArray(doctors) ? doctors : []).filter((doc) => {
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-semibold text-blue-600 mb-6">
-        Doctor List
-      </h2>
+    doc.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+    doc.middle_name?.toLowerCase().includes(search.toLowerCase()) ||
+    doc.last_name?.toLowerCase().includes(search.toLowerCase()) ||
+    doc.email?.toLowerCase().includes(search.toLowerCase()) ||
+    doc.phone_no?.toLowerCase().includes(search.toLowerCase()) ||
+    doc.specialization?.toLowerCase().includes(search.toLowerCase()) 
+    
+    
+  );
+})
 
-      <table className="w-full bg-white border rounded-xl">
-        <thead className="bg-blue-50">
-          <tr>
-            <th className="p-4">Sl No.</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Specialization</th>
-            <th>Action</th>
+.sort((a, b) => {
+  return sortOrder === "desc"
+    ? b.doctor_id - a.doctor_id
+    : a.doctor_id - b.doctor_id;
+});
+
+  return (
+    <div className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
+      onMouseMove={resize}
+      onMouseUp={stopResize}
+    >
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">Slot Availability</h2>
+      </div>
+
+      <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg">
+
+              <div className="flex items-center justify-between gap-3 mb-4">
+      
+               
+      
+              {/* Search Bar */}
+        
+              <div className="flex items-center ml-auto gap-2">
+
+                {/* Sort Button */}
+                <button
+                  onClick={() =>
+                    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
+                  }
+                  className="  flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
+                            rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
+                >
+                  <HiArrowsUpDown className=" text-cyan-700 dark:text-gray-100  w-5 h-5 " />
+                  <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">Sort</span>
+                </button>
+      
+
+      
+                {/* Search Bar */}
+                <div className="flex items-center w-[400px] border border-cyan-600 dark:border-gray-200 rounded-full px-4 py-2 shadow-sm backdrop-blur-md">
+                  <input
+                    type="text"
+                    placeholder="Search by name, email, or specialization..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="flex-1 outline-none text-sm bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-700 dark:placeholder-gray-200"
+                  />
+                  <FaSearch className="text-cyan-700 dark:text-gray-200 text-lg mr-2" />
+                </div>
+      
+              </div>
+        </div>
+      
+
+      {/* Table */}
+
+    <div className="bg-white rounded-2xl shadow-md">
+
+  {/* SCROLL CONTAINER */}
+  <div className="max-h-[450px] overflow-y-auto rounded-2xl">
+
+    <table className="w-full text-left">
+        <thead className="bg-cyan-600 text-gray-100 text-sm sticky top-0 z-10">
+          <tr className="divide-x divide-gray-100">
+            
+              <th style={{ width: columnWidths.doctor_no }} className="p-4 relative">
+                Doctor ID
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "doctor_no")}
+                />
+              </th>
+
+
+
+              <th style={{ width: columnWidths.name }} className="p-4 relative">
+                Name
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "name")}
+                />
+              </th>
+
+
+
+              <th style={{ width: columnWidths.email }} className="p-4 relative">
+                Email
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "email")}
+                />
+              </th>
+
+              <th style={{ width: columnWidths.phone_no }} className="p-4 relative">
+                Phone
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "phone_no")}
+                />
+              </th>
+
+              <th style={{ width: columnWidths.specialization }} className="p-4 relative">
+                Specialization
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "specialization")}
+                />
+              </th>
+
+              <th style={{ width: columnWidths.action }} className="p-4 relative">
+                Action
+                <div
+                  className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                  onMouseDown={(e) => startResize(e, "action")}
+                />
+              </th>
+
           </tr>
         </thead>
 
         <tbody>
-          {doctors.map((doc, i) => (
-            <tr key={doc.doctor_id} className="border-t">
-              <td className="p-4">{i + 1}</td>
-              <td>{doc.first_name}</td>
-              <td>{doc.email}</td>
-              <td>{doc.phone_no}</td>
-              <td>{doc.specialization}</td>
 
-              <td className="flex gap-3 justify-center p-4">
-                <button
-                  onClick={() => openCalendar(doc)}
-                  className="p-2 bg-blue-100 rounded-full hover:bg-blue-200"
-                >
-                  <CalendarDaysIcon className="w-5 text-blue-600" />
-                </button>
-              </td>
-            </tr>
-          ))}
+          
+
+     {filteredDoctors.map((doc, index) => {
+
+  const color = ROW_COLORS[index % ROW_COLORS.length];
+
+  return (
+    <tr
+      key={doc.doctor_id}
+      className={`border-b border-gray-300 items-center ${color} transition duration-200`}
+    >
+      
+    <td className=" pl-8 "><div className="flex gap-2 justify items-center">{doc.doctor_no}</div></td>
+      
+
+        <td className="p-4">
+  <div className="flex items-center gap-3">
+
+        <div className="flex items-center justify-center w-8 h-8 text-sm rounded-full 
+bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm cursor-pointer
+                            transform transition-transform duration-300 ease-in-out hover:scale-103 dark:hover:scale-103">
+  {doc.first_name?.[0]}{doc.last_name?.[0]}
+</div>
+
+    <div>
+      {doc.first_name} {doc.middle_name ?? ""} {doc.last_name}
+    </div>
+
+  </div>
+</td>
+
+      
+      <td className="p-4 "><div className="flex gap-2 justify items-center"><FaEnvelope className="pt-1 text-xl text-cyan-600 dark:text-cyan-700"/>{doc.email}</div></td>
+      <td className="p-4 "><div className="flex gap-2 justify items-center"><FiPhone className="pt-1 text-lg text-cyan-600 dark:text-cyan-700"/>{doc.phone_no}</div></td>
+      <td className="p-4 "><div className="flex gap-2 justify items-center"><FaStethoscope className=" text-xs text-cyan-600 dark:text-cyan-700"/>{doc.specialization}</div></td>
+
+      <td className="flex gap-3 justify-center p-4">
+        <button
+          onClick={() => openCalendar(doc)}
+          className="p-2 bg-blue-100 rounded-full hover:bg-blue-200"
+        >
+          <MdCalendarToday className="w-5 text-cyan-600" />
+        </button>
+      </td>
+    </tr>
+  );
+})}
+
+          
+          
+
+
         </tbody>
       </table>
 
@@ -528,6 +731,9 @@ if (start_time >= end_time) {
           </div>
         </div>
       )}
+      </div>
+      </div>
+      </div>
     </div>
   );
 };
