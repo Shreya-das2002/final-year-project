@@ -7,10 +7,11 @@ import {
   PlusIcon
 } from "@heroicons/react/24/outline";
 import { HiArrowsUpDown } from "react-icons/hi2";
-import { FaSearch, FaClock, FaIdCard } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
+import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 
 /* ================= COLUMN KEY TYPE ================= */
@@ -26,61 +27,9 @@ type ColumnKey =
 
 /* ================= STATUS UI HELPER ================= */
 
-type StatusUI = {
-  label: string;
-  className: string;
-};
 
-const getAppointmentStatusName = (status?: number): string => {
-  switch (status) {
-    case 1:
-      return "Booking Initiated";
-    case 2:
-      return "Confirmed";
-    case 3:
-      return "Cancelled";
-    case 4:
-      return "Completed";
-    default:
-      return "Unknown";
-  }
-};
 
-const getStatusLabel = (status?: string): StatusUI => {
-  const normalized = status?.toLowerCase();
 
-  switch (normalized) {
-    case "booking initiated":
-      return {
-        label: "Booking Initiated",
-        className: "text-amber-700 dark:text-amber-300",
-      };
-
-    case "confirmed":
-      return {
-        label: "Confirmed",
-        className: "text-green-700 dark:text-green-300",
-      };
-
-    case "cancelled":
-      return {
-        label: "Cancelled",
-        className: "text-red-700 dark:text-red-300",
-      };
-
-    case "completed":
-      return {
-        label: "Completed",
-        className: "text-blue-700 dark:text-blue-300",
-      };
-
-    default:
-      return {
-        label: status || "Unknown",
-        className: "text-gray-700 dark:text-gray-300",
-      };
-  }
-};
 
 const ROW_COLORS = [
   "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
@@ -107,6 +56,7 @@ const MyAppointments = () => {
   >("");
   const filterRef = useRef<HTMLDivElement | null>(null);
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+  
 
   /* ================= COLUMN WIDTH STATE ================= */
 
@@ -174,10 +124,10 @@ useEffect(() => {
   Array.isArray(appointments) ? appointments : []
 )
     .filter((appointment) => {
-      const statusName = getAppointmentStatusName(appointment.booking_status);
+      const statusName = (appointment.booking_status);
 
       const doctorName =
-        appointment.doctor_name || `Doctor #${appointment.doctor_id}`;
+        appointment.doctor_name || "-";
       const specialization = appointment.specialization || "";
       const appointmentDate = appointment.booking_date || "";
       const appointmentTime =
@@ -328,25 +278,24 @@ useEffect(() => {
               Specialization
             </button>
 
-            {openSection === "specialization" && (
-              <div className="flex flex-col gap-2 mb-3">
-                {["Cardiology", "Neurology", "Orthopedic", "General"].map(
-                  (item) => (
-                    <button
-                      key={item}
-                      onClick={() => setSpecializationFilter(item)}
-                      className={`px-3 py-2 rounded-lg text-sm ${
-                        specializationFilter === item
-                          ? "bg-cyan-600 dark:bg-cyan-800 text-white"
-                          : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  )
-                )}
-              </div>
-            )}
+    {/* ROLE OPTIONS */}
+    {openSection === "specialization" && (
+  <div className="flex flex-col gap-2 mb-3">
+    {DOCTOR_SPECIALIZATIONS.map((item) => (
+      <button
+        key={item.value}
+        onClick={() => setSpecializationFilter(item.label)}
+        className={`px-3 py-2 rounded-lg text-sm capitalize ${
+          specializationFilter === item.label
+            ? "bg-cyan-600 dark:bg-cyan-800 text-white"
+            : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
+        }`}
+      >
+        {item.label}
+      </button>
+    ))}
+  </div>
+)}
 
             <button
               onClick={() => setShowFilter(false)}
@@ -470,37 +419,38 @@ useEffect(() => {
 
                 {!loading &&
                   filteredAppointments.map((appointment, index) => {
-                    const statusName = getAppointmentStatusName(
+                    const statusName = (
                       appointment.booking_status
                     );
 
-                    const statusUI = getStatusLabel(statusName);
+                    const statusUI = statusName
                     const color = ROW_COLORS[index % ROW_COLORS.length];
 
                     return (
                       <tr
-                        key={appointment.appointment_id}
+                        key={appointment.appointment_no}
                         className={`border-b border-gray-300 items-center ${color} transition duration-200`}
                       >
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
-                            <FaIdCard className="pt-1 text-2xl text-cyan-600 dark:text-cyan-700" />
-                            {appointment.appointment_id}
+                            
+                            {appointment.appointment_no || "Not Generated"}
                           </div>
                         </td>
 
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="flex items-center justify-center w-11 h-11 rounded-full bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm">
-                              {(appointment.doctor_name || "D")[0]}
+                             {appointment.doctor_avatar}
                             </div>
 
                             <div>
-                              {appointment.doctor_name ||
-                                `Doctor #${appointment.doctor_id}`}
+                              {appointment.doctor_name} 
                             </div>
                           </div>
                         </td>
+
+
 
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
@@ -512,17 +462,14 @@ useEffect(() => {
                         <td className="p-4">{appointment.booking_date ?? "-"}</td>
 
                         <td className="p-4">
-                          {appointment.slot_details?.start_time &&
-                          appointment.slot_details?.end_time
-                            ? `${appointment.slot_details.start_time} - ${appointment.slot_details.end_time}`
-                            : appointment.booking_time || "-"}
+                          {appointment.booking_time ?? "-"}
                         </td>
 
                         <td className="p-4">
                           <div
-                            className={`flex gap-2 justify items-center ${statusUI.className}`}
+                            className={`flex gap-2 justify items-center ${statusUI}`}
                           >
-                            <FaClock />
+                            
                             {statusName}
                           </div>
                         </td>

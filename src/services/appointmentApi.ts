@@ -28,6 +28,7 @@ export interface AppointmentSlotDetails {
 
 export interface Appointment{
   appointment_id: number;
+  appointment_no: string;
   patient_id: number;
   doctor_id: number;
   doctor_availability_id: number;
@@ -35,13 +36,14 @@ export interface Appointment{
   booking_time?: string | null;
   description?: string | null;
   document_id?: number | null;
-  booking_status: number;
+  booking_status: string;
   slot_details?: slot_details | null;
   created_on?: string | null;
   created_by?: number | null;
   updated_on?: string | null;
   updated_by?: number | null;
   doctor_name?: string;
+  doctor_avatar?: string;
   specialization?: string;
 };
 
