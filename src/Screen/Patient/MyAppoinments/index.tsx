@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   EyeIcon,
   AdjustmentsHorizontalIcon,
+  PlusIcon
 } from "@heroicons/react/24/outline";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { FaSearch, FaClock, FaIdCard } from "react-icons/fa";
@@ -239,6 +240,8 @@ useEffect(() => {
               </span>
             </button>
 
+
+
             <button
               onClick={() =>
                 setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
@@ -253,6 +256,20 @@ useEffect(() => {
           </div>
 
           <div className="flex items-center ml-auto gap-2">
+
+          <button
+          onClick={() =>
+             navigate("/patient/appointments/")
+              }
+            className="flex items-center gap-1 px-3 py-2 border border-cyan-600 dark:border-gray-200 rounded-4xl
+             backdrop-blur-md bg-white/10 shadow-sm hover:bg-cyan-100 dark:hover:bg-gray-400 transition"
+          >
+            <PlusIcon className="text-cyan-700 dark:text-gray-100 w-4 h-4" />
+            <span className="text-sm flex items-center justify-center pr-2  text-cyan-700 dark:text-gray-100">
+              Add
+            </span>
+          </button>
+
             <div className="flex items-center w-[400px] border border-cyan-600 dark:border-gray-200 rounded-full px-4 py-2 shadow-sm backdrop-blur-md">
               <input
                 type="text"
