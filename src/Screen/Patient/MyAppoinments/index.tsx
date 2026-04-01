@@ -129,7 +129,7 @@ useEffect(() => {
       const doctorName =
         appointment.doctor_name || "-";
       const specialization = appointment.specialization || "";
-      const appointmentDate = appointment.booking_date || "";
+      const appointmentDate = appointment.appointment_date || "";
       const appointmentTime =
         appointment.slot_details?.start_time && appointment.slot_details?.end_time
           ? `${appointment.slot_details.start_time} - ${appointment.slot_details.end_time}`
@@ -459,7 +459,7 @@ useEffect(() => {
                           </div>
                         </td>
 
-                        <td className="p-4">{appointment.booking_date ?? "-"}</td>
+                        <td className="p-4">{appointment.appointment_date ?? "-"}</td>
 
                         <td className="p-4">
                           {appointment.booking_time ?? "-"}

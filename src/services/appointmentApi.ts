@@ -32,8 +32,9 @@ export interface Appointment{
   patient_id: number;
   doctor_id: number;
   doctor_availability_id: number;
-  booking_date: string;
+  appointment_date: string;
   booking_time?: string | null;
+  experience: string;
   description?: string | null;
   document_id?: number | null;
   booking_status: string;

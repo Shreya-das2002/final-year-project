@@ -27,39 +27,7 @@ const appointment = useMemo(() => {
 }, [appointmentFromStore, appointmentFromState, appointment_id])
 
 
-    const getStatusText = (status: number | string | undefined) => {
-    if (status === 1 || status === "1") return "Booking Initiated";
-    if (status === 2 || status === "2") return "Booking Confirmed";
-    if (status === 3 || status === "3") return "Slot Assigned";
-    if (status === 4 || status === "4") return "Completed";
-    if (status === 5 || status === "5") return "Cancelled";
-    return "Upcoming";
-  };
 
-  const formatDate = (date: string | null | undefined) => {
-    if (!date) return "-";
-    const d = new Date(date);
-    if (Number.isNaN(d.getTime())) return date;
-    return d.toLocaleDateString("en-GB");
-  };
-
-  const formatTime = (value: string | null | undefined) => {
-    if (!value) return "-";
-
-    // if already plain time like "10:30:00"
-    if (typeof value === "string" && value.includes(":") && !value.includes("T")) {
-      return value;
-    }
-
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-
-    return d.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
       if (!appointment) {
     return <div className="p-10">No appointment data found</div>;
   }
@@ -142,15 +110,15 @@ const appointment = useMemo(() => {
 
                     <div className="mb-2 pl-5">
               <span className="text-cyan-600 text-sm font-semibold">
-                Status: {getStatusText(appointment.booking_status)}
+                Status: {appointment.booking_status}
               </span>
               <br />
               <span className="text-cyan-600 text-sm font-semibold">
-                Created: {formatDate(appointment.created_on)}
+                Created: {appointment.created_on}
               </span>
               <br />
               <span className="text-cyan-600 text-sm font-semibold">
-                Updated: {formatDate(appointment.updated_on)}
+                Updated: {appointment.updated_on}
               </span>
             </div>
           </div>
@@ -164,25 +132,29 @@ const appointment = useMemo(() => {
                 <div className=" pl-5 pt-2">
 
                  <span className="text-lg font-semibold flex items-center pl-1 gap-2 text-black dark:text-white"> 
-                   Dr.Rahul Sen 
+                   {appointment.doctor_name}
                   </span>
 
                      <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   Cardiologist
+                   {appointment.specialization}
                   </span>
 
                 <span className="font-sm flex items-center pl-0.5 gap-2 text-black dark:text-white"> 
-                   12+ Experience
+                   {Number(appointment.experience) === 0
+                        ? "Fresher"
+                        : `${Number(appointment.experience)} year${
+                            Number(appointment.experience) > 1 ? "s" : ""
+                          }`}
                   </span>
 
 
 
                 <span className="font-sm flex items-center pl-0.5 gap-2  pb-2 text-black dark:text-white"> 
-                   Fees: 500
+                   {appointment.fees}
                   </span>
                       </div>
 
-                                                            <button
+                    <button
                      
                       type="button"
                       className="text-xs p-2 w-40 ml-2 mt-5  border  border-cyan-50 text-cyan-500 dark:text-cyan-600 dark:bg-cyan-100 bg-blue-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
@@ -200,15 +172,15 @@ const appointment = useMemo(() => {
                 <div className=" pl-5 pt-2">
 
                  <span className="text-sm font-semibold flex items-center pl-1 gap-2 text-black dark:text-white"> 
-                   Appointment ID: APT-1025 
+                   Appointment ID: {appointment.appointment_no || "Not Generated"}
                   </span>
 
                      <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   Booking Date: 16/03/2026
+                   Appointment Date: {appointment.appointment_date || "-"}
                   </span>
 
                  <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   Booking Time: {formatTime(appointment.booking_time)}
+                   Appointment Time: {appointment.appointment_time || "-"}
                   </span>
 
                  <span className="font-sm flex items-center pl-0.5 gap-2  text-black dark:text-white"> 
@@ -216,7 +188,7 @@ const appointment = useMemo(() => {
                   </span>
 
                 <span className="font-sm flex items-center pl-0.5 gap-2  text-black dark:text-white"> 
-                  Status: Upcoming
+                  Status: {appointment.booking_status}
                   </span>
 
                 <span className="font-sm flex items-center pl-0.5 gap-2  pb-2 text-black dark:text-white"> 
