@@ -532,8 +532,7 @@ useEffect(() => {
                             <button
                               onClick={() => {
                                 navigate(
-                                  `/patient/my_appointments/booking_details/${appointment.appointment_id}`
-                                );
+                                  `/patient/my_appointments/booking_details/${appointment.appointment_id}`, { state: appointment });
                               }}
                               className="text-blue-600 hover:text-blue-800"
                             >

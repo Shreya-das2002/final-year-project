@@ -58,7 +58,8 @@ export interface PendingAppointment {
   doctor_name: string;
   specialization: number | string | null;
   booking_date: string;
-  booking_time?: string | null;
+  appointment_time: string | null;
+  booking_time: string | null;
   description?: string | null;
   document_id?: number | null;
   booking_status: number;

@@ -1,9 +1,69 @@
-import React from 'react';
-import { FaUser, FaCalendarAlt, FaStethoscope, FaIdCard } from 'react-icons/fa';
-import { MdOutlineCheckCircle, MdCurrencyRupee, MdPeople, MdEvent, MdEventAvailable, MdAddTask } from 'react-icons/md';
-import { FiCalendar } from "react-icons/fi";
+import { FaCalendarAlt, } from 'react-icons/fa';
+import {  MdPeople, MdEventAvailable, MdAddTask } from 'react-icons/md';
+// import { FaUser, FaStethoscope, FaIdCard } from 'react-icons/fa';
+// import { MdOutlineCheckCircle, MdCurrencyRupee,  MdEvent, } from 'react-icons/md';
+// import { FiCalendar } from "react-icons/fi";
+import { useLocation, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useMemo } from "react";
+import type { RootState } from "../../../../store/store";
 
 const AppoinmentDetail = () => {
+
+const { appointment_id } = useParams();
+const location = useLocation();
+
+const appointmentFromState = location.state;
+const appointmentFromStore = useSelector(
+  (state: RootState) => state.appointment.appointments
+);
+
+const appointment = useMemo(() => {
+  return (
+    appointmentFromStore.find(
+      (a) => a.appointment_id === Number(appointment_id)
+    ) || appointmentFromState
+  );
+}, [appointmentFromStore, appointmentFromState, appointment_id])
+
+
+    const getStatusText = (status: number | string | undefined) => {
+    if (status === 1 || status === "1") return "Booking Initiated";
+    if (status === 2 || status === "2") return "Booking Confirmed";
+    if (status === 3 || status === "3") return "Slot Assigned";
+    if (status === 4 || status === "4") return "Completed";
+    if (status === 5 || status === "5") return "Cancelled";
+    return "Upcoming";
+  };
+
+  const formatDate = (date: string | null | undefined) => {
+    if (!date) return "-";
+    const d = new Date(date);
+    if (Number.isNaN(d.getTime())) return date;
+    return d.toLocaleDateString("en-GB");
+  };
+
+  const formatTime = (value: string | null | undefined) => {
+    if (!value) return "-";
+
+    // if already plain time like "10:30:00"
+    if (typeof value === "string" && value.includes(":") && !value.includes("T")) {
+      return value;
+    }
+
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+
+    return d.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+      if (!appointment) {
+    return <div className="p-10">No appointment data found</div>;
+  }
+
   return (
      <div
       className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen">
@@ -46,6 +106,7 @@ const AppoinmentDetail = () => {
 
                         <span className="whitespace-nowrap text-cyan-900 dark:text-gray-100">Booking Initiated</span>
                     </div>
+                    
 
                     <div className="h-10 w-1 bg-cyan-700 rounded-full mt-1 ml-9"></div>
 
@@ -79,12 +140,20 @@ const AppoinmentDetail = () => {
 
                     <div className="h-0.5 w-60 bg-cyan-700 rounded-full  mt-1 ml-2 "></div>
 
-                    <div className="mb-2 pl-5">   
-                    <span className="text-cyan-600 text-sm font-semibold ">Status: Upcoming</span><br />
-                    <span className="text-cyan-600 text-sm font-semibold  ">Created: 10/03/2026</span><br />
-                    <span className="text-cyan-600 text-sm font-semibold  ">Updated: 10/03/2026</span>
-                    </div> 
-                </div>
+                    <div className="mb-2 pl-5">
+              <span className="text-cyan-600 text-sm font-semibold">
+                Status: {getStatusText(appointment.booking_status)}
+              </span>
+              <br />
+              <span className="text-cyan-600 text-sm font-semibold">
+                Created: {formatDate(appointment.created_on)}
+              </span>
+              <br />
+              <span className="text-cyan-600 text-sm font-semibold">
+                Updated: {formatDate(appointment.updated_on)}
+              </span>
+            </div>
+          </div>
 
 
                  {/* Doctor Summary */}
@@ -139,7 +208,7 @@ const AppoinmentDetail = () => {
                   </span>
 
                  <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   Booking Time: 10:30 AM
+                   Booking Time: {formatTime(appointment.booking_time)}
                   </span>
 
                  <span className="font-sm flex items-center pl-0.5 gap-2  text-black dark:text-white"> 
@@ -156,30 +225,8 @@ const AppoinmentDetail = () => {
                       </div>
 
                 </div>
-
-
-
-           
-
-
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
      </div>
-      
 
-            
-
-        
     </div>
   )
 }
