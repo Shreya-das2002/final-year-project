@@ -516,7 +516,8 @@ export const urls ={
   deleteAcoountUrl: '/account/deactivate',
   appointmentRequestUrl: '/appointment/create',
   appointmentsListUrl: '/appointment/list',
-  pendingAppoinmentsUrl: '/appointment/pending-list'
+  pendingAppoinmentsUrl: '/appointment/pending-list',
+  pendingappointmentsRequestUrl: '/appointment/update-status'
 }
 
 

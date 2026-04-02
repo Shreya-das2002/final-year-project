@@ -10,6 +10,13 @@ export interface AppointmentRequestPayload {
   booking_date: string;
 }
 
+export interface AppointmentStatusPayload {
+  appointment_id: number;
+  action: "approve" | "reject";
+  updated_by?: number;
+}
+
+
 export interface AppointmentSlotDetails {
   date: string | null;
   start_time: string | null;
@@ -124,4 +131,19 @@ export const getPendingAppointmentsApi = async (): Promise<PendingAppointment[]>
   );
 
   return response.data?.data || [];
+};
+
+
+/* ================= UPDATE Appointment STATUS ================= */
+
+export const pendingappointmentsRequestApi = (
+  data: AppointmentStatusPayload
+) => {
+  return API.put(
+    urls.pendingappointmentsRequestUrl,
+    data,
+    {
+      validateStatus: () => true
+    }
+  );
 };
