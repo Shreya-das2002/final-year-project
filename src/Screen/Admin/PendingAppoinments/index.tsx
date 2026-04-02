@@ -3,6 +3,8 @@ import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchPendingAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
+import { pendingappointmentsRequestApi } from "../../../services/appointmentApi";
+import toast from "react-hot-toast";
 
 const PendingAppointments: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,6 +20,28 @@ const PendingAppointments: React.FC = () => {
     hasFetched.current = true;
     dispatch(fetchPendingAppointmentsThunk());
   }, [dispatch]);
+
+  const handleAction = async (
+  appointment_id: number,
+  action: "approve" | "reject"
+) => {
+  try {
+    const response = await pendingappointmentsRequestApi({
+      appointment_id,
+      action,
+    });
+
+    if (response.data?.success) {
+      // reload list after action
+      dispatch(fetchPendingAppointmentsThunk());
+    } else {
+      alert(response.data?.message || "Action failed");
+    }
+  } catch (error) {
+    console.error("ACTION ERROR:", error);
+    toast("Something went wrong");
+  }
+};
 
   return (
     <div
@@ -123,25 +147,27 @@ const PendingAppointments: React.FC = () => {
                 Requested Appointment: April 10, 2026
               </div>
 
-              <div className="pt-4 flex justify-end gap-2">
-                <button
-                  type="button"
-                  className="flex items-center justify-center rounded-xl 
-                             bg-white/40 text-green-600 shadow px-4 py-1 cursor-pointer
-                             hover:bg-white/60 transition"
-                >
-                  Approve
-                </button>
+        <div className="pt-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => handleAction(item.appointment_id, "approve")}
+              className="flex items-center justify-center rounded-xl 
+                        bg-white/40 text-green-600 shadow px-4 py-1 cursor-pointer
+                        hover:bg-white/60 transition"
+            >
+              Approve
+            </button>
 
-                <button
-                  type="button"
-                  className="flex items-center justify-center rounded-xl 
-                             bg-white/40 text-red-600 shadow px-4 py-1 cursor-pointer
-                             hover:bg-white/60 transition"
-                >
-                  Reject
-                </button>
-              </div>
+            <button
+              type="button"
+              onClick={() => handleAction(item.appointment_id, "reject")}
+              className="flex items-center justify-center rounded-xl 
+                        bg-white/40 text-red-600 shadow px-4 py-1 cursor-pointer
+                        hover:bg-white/60 transition"
+            >
+              Reject
+            </button>
+          </div>
             </div>
           ))}
       </div>
