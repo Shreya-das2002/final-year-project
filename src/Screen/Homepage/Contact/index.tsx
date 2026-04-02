@@ -32,7 +32,7 @@ const Contact: React.FC = () => {
           <FaEnvelope className="text-cyan-500 dark:text-slate-400 text-3xl mx-auto mb-3" />
           <h3 className="text-gray-600 dark:text-slate-300 font-semibold text-lg mb-1">Email</h3>
           <p className="text-gray-600 dark:text-slate-300">
-            support@symptonexus.com
+            symptonexus333@gmail.com
           </p>
         </div>
 

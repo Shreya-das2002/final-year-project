@@ -37,10 +37,15 @@ export interface Appointment{
   appointment_id: number;
   appointment_no: string;
   patient_id: number;
+  patient_name: string;
+  patient_phone: string;
+  patient_gender: string;
+  patient_dob: string;
   doctor_id: number;
   doctor_availability_id: number;
   appointment_date: string;
   booking_time?: string | null;
+  appointment_time?: string | null;
   experience: string;
   description?: string | null;
   document_id?: number | null;
@@ -53,6 +58,14 @@ export interface Appointment{
   doctor_name?: string;
   doctor_avatar?: string;
   specialization?: string;
+  doc_slot: string;
+  license_number: string;
+  doctor_bio: string;
+  doctor_phone: string;
+  admin_name: string;
+  admin_phone: string;
+  admin_email: string;
+ 
 };
 
 export interface PendingAppointment {
