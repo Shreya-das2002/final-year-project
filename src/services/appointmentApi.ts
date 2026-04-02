@@ -80,7 +80,7 @@ export interface PendingAppointment {
   patient_name: string;
   name: string;
   patient_phone: string;
-
+  patient_dob: string;
 }
 
 export interface GetAppointmentsParams {
