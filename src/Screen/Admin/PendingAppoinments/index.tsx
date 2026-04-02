@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { FaEnvelope, FaPhone } from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaStethoscope, FaUser, FaVenusMars } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchPendingAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
@@ -88,9 +88,14 @@ const PendingAppointments: React.FC = () => {
                     Patient
                   </h2>
 
-                  <p>
-                    <b>Name:</b>{" "}
+                  <p className="flex items-center gap-2">
+                    <FaUser />
                     {item?.patient_name || "N/A"}
+                  </p>
+                  
+                  <p className="flex items-center gap-2">
+                    <FaVenusMars />
+                    {item?.patient_gender || "N/A"}
                   </p>
 
                   <p className="flex items-center gap-2">
@@ -103,10 +108,6 @@ const PendingAppointments: React.FC = () => {
                     {item?.patient_email || "N/A"}
                   </p>
 
-                  <p>
-                    <b>Gender:</b>{" "}
-                    {item?.patient_gender || "N/A"}
-                  </p>
                 </div>
 
                 {/* DOCTOR */}
@@ -115,13 +116,18 @@ const PendingAppointments: React.FC = () => {
                     Doctor
                   </h2>
 
-                  <p>
-                    <b>Name:</b>{" "}
+                  <p className="flex items-center gap-2">
+                    <FaUser />
                     {item?.doctor_name || "N/A"}
                   </p>
+                  
+                  <p className="flex items-center gap-2">
+                    <FaVenusMars />
+                    {item?.doctor_gender || "N/A"}
+                  </p>
 
-                  <p>
-                    <b>Specialization:</b>{" "}
+                  <p className="flex items-center gap-2">
+                    <FaStethoscope />
                     {item?.specialization || "N/A"}
                   </p>
 
@@ -135,10 +141,6 @@ const PendingAppointments: React.FC = () => {
                     {item?.doctor_email || "N/A"}
                   </p>
 
-                  <p>
-                    <b>Gender:</b>{" "}
-                    {item?.doctor_gender || "N/A"}
-                  </p>
                 </div>
               </div>
 
