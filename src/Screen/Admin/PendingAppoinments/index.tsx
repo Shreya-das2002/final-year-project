@@ -35,7 +35,7 @@ const PendingAppointments: React.FC = () => {
       // reload list after action
       dispatch(fetchPendingAppointmentsThunk());
     } else {
-      alert(response.data?.message || "Action failed");
+      toast(response.data?.message || "Action failed");
     }
   } catch (error) {
     console.error("ACTION ERROR:", error);
