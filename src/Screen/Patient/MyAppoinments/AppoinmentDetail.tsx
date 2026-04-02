@@ -1,5 +1,5 @@
-import { FaCalendarAlt, } from 'react-icons/fa';
-import {  MdPeople, MdEventAvailable, MdAddTask } from 'react-icons/md';
+import { FaCalendarAlt,  } from 'react-icons/fa';
+import {  MdPeople, MdEventAvailable, MdAddTask, MdCancel  } from 'react-icons/md';
 // import { FaUser, FaStethoscope, FaIdCard } from 'react-icons/fa';
 // import { MdOutlineCheckCircle, MdCurrencyRupee,  MdEvent, } from 'react-icons/md';
 // import { FiCalendar } from "react-icons/fi";
@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import type { RootState } from "../../../../store/store";
 import dayjs from 'dayjs';
+import { FaFilePrescription } from 'react-icons/fa6';
 
 const AppoinmentDetail = () => {
 
@@ -35,6 +36,32 @@ const dob = appointment?.patient_dob || null;
     return <div className="p-10">No appointment data found</div>;
   }
 
+const STATUS_ORDER = [
+  "Booking Initiated",
+  "Booking Confirmed",
+  "Slot Assigned",
+  "Consultation Completed",
+  "Prescription Generated",
+];
+
+const steps = [
+  { label: "Booking Initiated", icon: <MdEventAvailable className="text-lg" /> },
+  { label: "Booking Confirmed", icon: <MdAddTask className="text-lg" /> },
+  { label: "Slot Assigned", icon: <FaCalendarAlt className="text-lg" /> },
+  { label: "Consultation Completed", icon: <MdPeople className="text-lg" /> },
+  { label: "Prescription Generated", icon: <FaFilePrescription className="text-lg" /> },
+];
+
+const REJECTION_FLOW: Record<string, number> = {
+  "Booking Rejected": 0,
+  "Canceled by Doctor": 2,
+  "Canceled by Patient": 1,
+};
+
+const currentStatus = appointment.booking_status;
+const isRejected = Object.prototype.hasOwnProperty.call(REJECTION_FLOW, currentStatus);
+const rejectionIndex = isRejected ? REJECTION_FLOW[currentStatus] : -1;
+const currentIndex = STATUS_ORDER.indexOf(currentStatus);
   return (
      <div
       className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen">
@@ -68,50 +95,80 @@ const dob = appointment?.patient_dob || null;
 
                 <div className="bg-white/20 h-164 w-70 backdrop-blur-md shadow-md rounded-lg">
 
-                    <h2 className="pt-5 pl-5 text-2xl font-bold text-blue-500">Status Tracker</h2>
+                    <h2 className="pt-3 pl-5 text-xl font-bold text-blue-500">Status Tracker</h2>
+ <div className="flex flex-col pt-2">
+    {steps.map((step, index) => {
+      if (isRejected && index > rejectionIndex) return null;
 
-                    <div className="w-50 flex items-center gap-1 ml-5 mt-2">
-                        <span className="bg-cyan-700 dark:bg-cyan-700 p-2 rounded-full">
-                        <MdEventAvailable className="text-xl text-cyan-100 dark:text-gray-100" />
-                        </span>
+      const isDoneOrActive = isRejected ? index <= rejectionIndex : index <= currentIndex;
+      const isLastVisible = isRejected
+        ? index === rejectionIndex
+        : index === steps.length - 1;
 
-                        <span className="whitespace-nowrap text-cyan-900 dark:text-gray-100">Booking Initiated</span>
-                    </div>
-                    
+      return (
+        <div key={step.label} className="flex">
+          <div className="flex flex-col items-center ml-4 mr-3">
+            <span
+              className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                isDoneOrActive
+                  ? "bg-cyan-700 text-white"
+                  : "bg-gray-300 text-gray-600"
+              }`}
+            >
+              {step.icon}
+            </span>
 
-                    <div className="h-10 w-1 bg-cyan-700 rounded-full mt-1 ml-9"></div>
+            {!isLastVisible && (
+              <span
+                className={`w-1 h-10 mt-1 rounded-full ${
+                  isRejected
+                    ? "bg-cyan-700"
+                    : index < currentIndex
+                    ? "bg-cyan-700"
+                    : "bg-gray-300"
+                }`}
+              />
+            )}
 
-                    <div className="w-50 flex items-center gap-1 ml-5 mt-1">
-                        <span className="bg-cyan-700 dark:bg-cyan-700 p-2 rounded-full">
-                        <MdAddTask className="text-xl text-cyan-100 dark:text-gray-100" />
-                        </span>
+            {isRejected && index === rejectionIndex && (
+              <span className="w-1 h-10 mt-1 rounded-full bg-red-500" />
+            )}
+          </div>
 
-                        <span className="whitespace-nowrap text-cyan-900 dark:text-gray-100">Booking Confirmed</span>
-                    </div>
+          <div className="pt-2">
+            <span
+              className={`text-[15px] font-semibold ${
+                isDoneOrActive
+                  ? "text-cyan-900 dark:text-white"
+                  : "text-gray-400"
+              }`}
+            >
+              {step.label}
+            </span>
+          </div>
+        </div>
+      );
+    })}
 
-                    <div className="h-10 w-1 bg-cyan-700 rounded-full mt-1 ml-9"></div>
+    {isRejected && (
+      <div className="flex">
+        <div className="flex flex-col items-center mr-3">
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600 text-white text-xl">
+            <MdCancel/>
+          </span>
+        </div>
 
-                    <div className="w-50 flex items-center gap-1 ml-5 mt-1">
-                        <span className="bg-cyan-700 dark:bg-cyan-700 p-2 rounded-full">
-                        <FaCalendarAlt className="text-xl text-cyan-100 dark:text-gray-100" />
-                        </span>
+        <div className="pt-2">
+          <span className="text-[15px] font-semibold text-red-600">
+            {currentStatus}
+          </span>
+        </div>
+      </div>
+    )}
+  </div>
 
-                        <span className="whitespace-nowrap text-cyan-900 dark:text-gray-100">Slot Assigned</span>
-                    </div>
-
-                    <div className="h-10 w-1 bg-cyan-700 rounded-full  mt-1 ml-9"></div>
-
-                        <div className="w-50 flex items-center gap-1 ml-5 mb-3 mt-1">
-                        <span className="bg-cyan-700 dark:bg-cyan-700 p-2 rounded-full">
-                        <MdPeople className="text-xl text-cyan-100 dark:text-gray-100" />
-                        </span>
-
-                        <span className="whitespace-nowrap text-cyan-900 dark:text-gray-100">Completed</span>
-                    </div>
-
-                    <div className="h-0.5 w-60 bg-cyan-700 rounded-full  mt-1 ml-2 "></div>
-
-                    <div className="mb-2 pl-5">
+                    <div className="h-px w-60 bg-cyan-700  mt-3 ml-3 "></div>
+                    <div className="mb-2 pl-4">
               <span className="text-cyan-600 text-sm font-semibold">
                 Status: {appointment.booking_status}
               </span>
@@ -119,18 +176,15 @@ const dob = appointment?.patient_dob || null;
               <span className="text-cyan-600 text-sm font-semibold">
                 Created: {appointment.created_on}
               </span>
-              <br />
-              <span className="text-cyan-600 text-sm font-semibold">
-                Updated: {appointment.updated_on}
-              </span>
             </div>
-            <div className="h-0.5 w-60 bg-cyan-700 rounded-full mt-1 ml-2">
+            <div className="h-px w-60 bg-cyan-700 mt-1 ml-2 "> </div>
+            <div>
               <h2 className="pt-3 pl-2 text-xl font-semibold">Clinic SymptoNexus</h2>
                
-               <div className="mt-3 pl-2">
+               <div className="mt-1 pl-2 ">
 
               <span className="text-sm  text-black dark:text-white">
-               Krishnanagar, Nadia < br/> West Bengal - 741104
+               Krishnanagar, Nadia < br/> West Bengal - 741102
               </span>< br/>
               <span className="text-sm  text-black dark:text-white">
                Contact : +91 98765 43210 < br/> Email : symptonexus333@gmailcom
@@ -139,13 +193,11 @@ const dob = appointment?.patient_dob || null;
 
             </div>
 
-            </div>
+          </div>
               
 
 
           </div>
-
-
                  {/* Doctor Summary */}
 
             <div>
