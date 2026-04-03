@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { EyeIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { HiArrowsUpDown } from "react-icons/hi2";
@@ -17,7 +17,7 @@ type ColumnKey = "appointment_id" | "patient_name" | "doctor_name" | "specializa
 const AdminAppoinments = () => {
 
   const dispatch = useDispatch<AppDispatch>();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
   const { appointments, loading } = useSelector(
@@ -478,10 +478,9 @@ useEffect(() => {
                       <div className="flex justify-center gap-4">
 
       <button
-//       onClick={() => {
-//   dispatch(setSelectedDoctor(doc));
-//   navigate(`/admin/doctor_view_profile/${doc.doctor_id}`);
-// }}
+          onClick={() => {
+                    navigate(`/admin/appointments/appointment_details/${app.appointment_id}`, { state: appointments });
+                              }}
         type="button"
         className="text-blue-600 hover:text-blue-800"
         title="View Doctor"
