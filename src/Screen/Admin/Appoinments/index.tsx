@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { EyeIcon, PencilSquareIcon, AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { HiArrowsUpDown } from "react-icons/hi2";
-import { FaSearch, FaUsersSlash, FaUserCheck, FaTrash, FaClock } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import type { RootState, AppDispatch } from "../../../../store/store";
-import { fetchDoctorListThunk, setSelectedDoctor } from "../../../../store/slices/doctorSlice";
+import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 
 /* ================= COLUMN KEY TYPE ================= */
@@ -13,83 +13,15 @@ import { DOCTOR_SPECIALIZATIONS } from "../../../Environment";
 type ColumnKey = "appointment_id" | "patient_name" | "doctor_name" | "specialization" | "appointment_date" | "appointment_time" | "status" | "action";
 
 
-/* ================= STATUS UI HELPER ================= */
-
-type StatusUI = {
-  label: string;
-  className: string;
-};
-
-const getStatusLabel = (status?: string): StatusUI => {
-
-  const normalized = status?.toLowerCase();
-
-  switch (normalized) {
-
-    case "active":
-      return {
-        label: "Active",
-        className: " text-green-700 dark:text-green-700/70"
-      };
-
-    case "pending":
-      return {
-        label: "Pending",
-        className: "text-amber-700 dark:text-amber-700/70"
-      };
-
-    case "rejected":
-      return {
-        label: "Rejected",
-        className: "text-red-700 dark:text-red-700/70"
-      };
-
-      case "inactive":
-      return {
-        label: "Inactive",
-        className: "text-gray-700 dark:text-gray-700/70"
-      };
-
-    default:
-      return {
-        label: status || "Unknown",
-        className: "text-gray-700 dark:text-gray-700/70"
-      };
-
-  }
-
-};
-
-const ROW_COLORS = [
-  "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
-  "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100"
-];
-
-
 
 const AdminAppoinments = () => {
 
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
 
-  const { doctors, loading } = useSelector(
-    (state: RootState) => state.doctor
-  );
-
-
- 
-
- const buttons = useSelector(
-    (state: RootState) => state.auth.buttons
-  );
-
-  const canEdit = buttons?.some(
-    (btn) => btn.control_key === "doctor edit"
-  );
-
-  const canView = buttons?.some(
-    (btn) => btn.control_key === "doctor view"
+  const { appointments, loading } = useSelector(
+    (state: RootState) => state.appointment
   );
 
 
@@ -155,49 +87,61 @@ const AdminAppoinments = () => {
     };
   }, []);
 
-  
+    /* ================= FETCH APPOINTMENTS ================= */
+const hasFetched = useRef(false);
 
-  /* ================= FETCH DOCTORS ================= */
+useEffect(() => {
+  if (hasFetched.current) return;
+  hasFetched.current = true;
 
-  useEffect(() => {
-
-    dispatch(fetchDoctorListThunk());
-
-  }, [dispatch]);
+  dispatch(fetchAppointmentsThunk());
+}, [dispatch]);
 
 
 
   /* ================= FILTER DOCTORS ================= */
+ const filteredAppointments = (
+  Array.isArray(appointments) ? appointments : []
+)
+    .filter((appointment) => {
+      const statusName = (appointment.booking_status);
 
-const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
-  .filter((doctors) => {
-    const matchesStatus =
-      !statusFilter ||
-      doctors.status?.toLowerCase() === statusFilter.toLowerCase();
+      const doctorName =
+        appointment.doctor_name || "-";
+      const specialization = appointment.specialization || "";
+      const appointmentDate = appointment.appointment_date || "";
+      const appointmentTime =
+        appointment.slot_details?.start_time && appointment.slot_details?.end_time
+          ? `${appointment.slot_details.start_time} - ${appointment.slot_details.end_time}`
+          : appointment.booking_time || "";
 
-    const matchesRole =
-      !specializationFilter ||
-      doctors.specialization?.toLowerCase() === specializationFilter.toLowerCase();
+      const matchesStatus =
+        !statusFilter ||
+        statusName.toLowerCase() === statusFilter.toLowerCase();
 
-    const matchesSearch =
-      !search ||
-      doctors.first_name?.toLowerCase().includes(search.toLowerCase()) ||
-      doctors.last_name?.toLowerCase().includes(search.toLowerCase()) ||
-      doctors.email?.toLowerCase().includes(search.toLowerCase()) ||
-      doctors.specialization?.toLowerCase().includes(search.toLowerCase());
-      doctors.status?.toLowerCase().includes(search.toLowerCase());
+      const matchesSpecialization =
+        !specializationFilter ||
+        specialization.toLowerCase() === specializationFilter.toLowerCase();
 
-    return matchesStatus && matchesRole && matchesSearch;
-  })
-  .sort((a, b) => {
-    const dateA = a.created_on ? new Date(a.created_on).getTime() : 0;
-    const dateB = b.created_on ? new Date(b.created_on).getTime() : 0;
+      const matchesSearch =
+        !search ||
+        String(appointment.appointment_id)
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        doctorName.toLowerCase().includes(search.toLowerCase()) ||
+        specialization.toLowerCase().includes(search.toLowerCase()) ||
+        appointmentDate.toLowerCase().includes(search.toLowerCase()) ||
+        appointmentTime.toLowerCase().includes(search.toLowerCase()) ||
+        statusName.toLowerCase().includes(search.toLowerCase());
 
-    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
-  });
+      return matchesStatus && matchesSpecialization && matchesSearch;
+    })
+    .sort((a, b) => {
+      const dateA = a.created_on ? new Date(a.created_on).getTime() : 0;
+      const dateB = b.created_on ? new Date(b.created_on).getTime() : 0;
 
-
-
+      return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+    });
 
   /* ================= UI ================= */
 
@@ -469,7 +413,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
             {/* No Data */}
 
-            {!loading && filteredDoctors.length === 0 && (
+            {!loading && filteredAppointments.length === 0 && (
 
               <tr>
 
@@ -489,23 +433,19 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
             {/* Rows */}
 
             {!loading &&
-              filteredDoctors.map((doc, index) => {
-
-                const statusUI =
-                  getStatusLabel(doc.status);
-
-                const color = ROW_COLORS[index % ROW_COLORS.length];  
-                
+            filteredAppointments.map((app) => {
                   
 
                 return (
 
                   <tr
-                    key={doc.doctor_id}
-                    className={`border-b border-gray-300 items-center ${color} transition duration-200`}>
+                    key={app.appointment_id}
+                    className={`border-b border-gray-300 items-center transition duration-200`}>
                   
 
-<td className="p-4 "><div className="flex gap-2 justify items-center">{doc.doctor_no ?? "-"}</div></td>
+<td className="p-4 "><div className="flex gap-2 justify items-center">
+  {/* {doc.doctor_no ?? "-"} */}
+  </div></td>
 
 
   <td className="p-4">
@@ -513,29 +453,31 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
 
     <div>
-      {doc.first_name} {doc.middle_name ?? ""} {doc.last_name}
+      {/* {doc.first_name} {doc.middle_name ?? ""} {doc.last_name} */}
     </div>
 
   </div>
 </td>
 
 
-                 <td className="p-4 "><div className="flex gap-2 justify items-center">{doc.email ?? "-"}</div></td>
+                 <td className="p-4 "><div className="flex gap-2 justify items-center"></div></td>
 
 
-                   <td className="p-4 "><div className="flex gap-2 justify items-center">{doc.phone_no ?? "-"}</div></td>  
+                   <td className="p-4 "><div className="flex gap-2 justify items-center"></div></td>  
 
-                    <td className="p-4"><div className="flex gap-2 justify items-center">{doc.specialization ?? "-"}
+                    <td className="p-4"><div className="flex gap-2 justify items-center">
+                      {/* {doc.specialization ?? "-"} */}
                     </div></td>
 
                     <td className="p-4 "><div className="flex gap-2 justify items-center">
-                      {doc.created_on ?? "-"}</div></td>
+                      {/* {doc.created_on ?? "-"} */}
+                      </div></td>
 
 
                       <td className="p-4 ">
-                        <div className={`flex gap-2 justify items-center ${statusUI.className}`}>
+                        <div className={`flex gap-2 justify items-center`}>
                           
-                        {doc.status === "Active" && (
+                        {/* {doc.status === "Active" && (
                           <FaUserCheck className="text-green-500"/>
                         )} 
                         {doc.status === "Pending" && (
@@ -548,7 +490,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
                           <FaUsersSlash className="text-gray-500"/>
                         )}
 
-                        {doc.status?? "-"}
+                        {doc.status?? "-"} */}
                         </div>
                         </td> 
 
@@ -559,44 +501,20 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
                       <div className="flex justify-center gap-4">
 
                       
-    {/* VIEW */}
-    
-    {canView && (
+
       <button
-      onClick={() => {
-  dispatch(setSelectedDoctor(doc));
-  navigate(`/admin/doctor_view_profile/${doc.doctor_id}`);
-}}
+//       onClick={() => {
+//   dispatch(setSelectedDoctor(doc));
+//   navigate(`/admin/doctor_view_profile/${doc.doctor_id}`);
+// }}
         type="button"
         className="text-blue-600 hover:text-blue-800"
         title="View Doctor"
       >
-        {doc.status === "Active" && (
       
         <EyeIcon className="w-5 h-5" />
-)}
 
       </button>
-    )}
-    
-    {/* EDIT */}
-    {canEdit && (
-      <button
-        onClick={() => {
-  dispatch(setSelectedDoctor(doc));
-  navigate(`/admin/doctor_edit_profile/${doc.doctor_id}`);
-}}
-        type="button"
-        className="text-gray-600 hover:text-gray-800"
-        title="Edit Doctor"
-      >
-        <PencilSquareIcon className="w-5 h-5" />
-      </button>
-    )}
-
-    {/* DELETE */}
-
-
 
   </div>
 
