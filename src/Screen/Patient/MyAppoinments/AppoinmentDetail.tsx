@@ -1,4 +1,4 @@
-import { FaCalendarAlt,  } from 'react-icons/fa';
+import { FaCalendarAlt  } from 'react-icons/fa';
 import {  MdPeople, MdEventAvailable, MdAddTask, MdCancel  } from 'react-icons/md';
 // import { FaUser, FaStethoscope, FaIdCard } from 'react-icons/fa';
 // import { MdOutlineCheckCircle, MdCurrencyRupee,  MdEvent, } from 'react-icons/md';
@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import type { RootState } from "../../../../store/store";
 import dayjs from 'dayjs';
 import { FaFilePrescription } from 'react-icons/fa6';
+import { FiChevronRight } from 'react-icons/fi';
 
 const AppoinmentDetail = () => {
 
@@ -357,6 +358,15 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
 
                 <div className="h-50 w-296 rounded-lg mt-4 bg-white/20 backdrop-blur-md shadow-md ">
                 <h2 className="pt-3 pl-5 text-xl font-semibold text-blue-500">Notes & Instructions</h2>
+
+              <div className="pl-5 gap-3 text-black dark:text-gray-50">
+                <span className='flex items-center'> <FiChevronRight /> Please arrive at least 30 – 35 minutes before your scheduled appointment time to avoid delays. </span> 
+                <span className='flex items-center'> <FiChevronRight /> Carry the ACKNOWLEDGEMENT (*Absolutely Necessary) and any previous medical records, prescriptions or test reports for better consultation. </span>
+                <span className='flex items-center'> <FiChevronRight /> In case of any inability to attend, kindly cancel the appointment in advance. </span> 
+                <span className='flex items-center'> <FiChevronRight /> Follow proper guidelines, including hygiene and safety protocols. </span> 
+                <span className='flex items-center'> <FiChevronRight /> For follow-up consultations, ensure you mention previous visit details to the doctor. </span> 
+                <span className='flex items-center'> <FiChevronRight /> For any assistance, contact support via the Contact section of our website. </span>
+              </div>
 
                 </div>
 
