@@ -155,7 +155,7 @@ useEffect(() => {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">Doctor List</h2>
+        <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">Appointments </h2>
       </div>
 
       {/* SEARCH + FILTER */}
@@ -390,11 +390,6 @@ useEffect(() => {
 
           </thead>
 
-
-
-        
-
-
             {/* Loading */}
 
             <tbody className="text-sm text-gray-700">
@@ -443,64 +438,44 @@ useEffect(() => {
                     className={`border-b border-gray-300 items-center transition duration-200`}>
                   
 
-<td className="p-4 "><div className="flex gap-2 justify items-center">
-  {/* {doc.doctor_no ?? "-"} */}
+<td className="p-4 "><div className="flex gap-2 justify-center items-center">
+  {app.appointment_no || "-"}
   </div></td>
 
 
   <td className="p-4">
-  <div className="flex items-center gap-3">
+  <div className="flex justify-center items-center gap-3">
 
-
-    <div>
-      {/* {doc.first_name} {doc.middle_name ?? ""} {doc.last_name} */}
-    </div>
+      {app.doctor_name}
 
   </div>
 </td>
 
 
-                 <td className="p-4 "><div className="flex gap-2 justify items-center"></div></td>
+                 <td className="p-4 "><div className="flex gap-2 justify-center items-center"> {app.patient_name} </div></td>
 
 
-                   <td className="p-4 "><div className="flex gap-2 justify items-center"></div></td>  
+                   <td className="p-4 "><div className="flex gap-2 justify-center items-center"> {app.specialization} </div></td>  
 
-                    <td className="p-4"><div className="flex gap-2 justify items-center">
-                      {/* {doc.specialization ?? "-"} */}
+                    <td className="p-4"><div className="flex gap-2 justify-center items-center">
+                      {app.appointment_date}
                     </div></td>
 
-                    <td className="p-4 "><div className="flex gap-2 justify items-center">
-                      {/* {doc.created_on ?? "-"} */}
+                    <td className="p-4 "><div className="flex gap-2 justify-center items-center">
+                      {app.appointment_time || "-"} 
                       </div></td>
 
 
                       <td className="p-4 ">
-                        <div className={`flex gap-2 justify items-center`}>
+                        <div className={`flex gap-2 justify-center items-center`}>
                           
-                        {/* {doc.status === "Active" && (
-                          <FaUserCheck className="text-green-500"/>
-                        )} 
-                        {doc.status === "Pending" && (
-                          <FaClock className="text-amber-500"/>
-                        )}
-                       {doc.status === "Rejected" && (
-                          <FaTrash className="text-red-500"/>
-                        )}
-                        {doc.status === "Inactive" && (
-                          <FaUsersSlash className="text-gray-500"/>
-                        )}
-
-                        {doc.status?? "-"} */}
+                        {app.booking_status}
                         </div>
                         </td> 
-
-
 
                     <td className="p-4">
 
                       <div className="flex justify-center gap-4">
-
-                      
 
       <button
 //       onClick={() => {
