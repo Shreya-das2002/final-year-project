@@ -28,7 +28,7 @@ const AppointmentsRequests: React.FC = () => {
                     p-6 min-h-screen w-full"
     >
       <h1 className="text-4xl font-bold mb-6 text-cyan-800 dark:text-cyan-50">
-        Pending Appointments
+        Appointment Requests
       </h1>
       {loading && (
         <div className="text-cyan-900 dark:text-cyan-50 text-lg">
@@ -44,7 +44,7 @@ const AppointmentsRequests: React.FC = () => {
 
       {!loading && pendingAppointments.length === 0 && (
         <div className="text-cyan-900 dark:text-cyan-50 text-lg">
-          No pending appointments found
+          No appointment requests found
         </div>
       )}
 
@@ -96,13 +96,13 @@ const AppointmentsRequests: React.FC = () => {
             </div>
 
             <div className="mt-4 text-[12px] bg-white/30 backdrop-blur-md rounded-xl p-3 text-center font-medium text-cyan-900 dark:text-cyan-50">
-              Requested Appointment: April 10, 2026
+              Requested Appointment: {item.appointment_date || "N/A"}
             </div>
 
-            <div className="text-[24px] absolute top-1 right-3 pt-4 flex justify-end gap-2">
+            <div className="text-[24px] absolute top-0.5 right-3 pt-4 flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded-xl text-red-600 px-4 py-1 hover:text-red-700 hover:scale-[1.05] transition"
+                className="rounded-xl text-red-600/80 px-4 py-1 hover:text-red-700/90 hover:scale-[1.05] transition"
               >
                 <FiTrash2 />
               </button>
