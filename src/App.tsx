@@ -57,6 +57,8 @@ import PendingAppoinments from "./Screen/Admin/PendingAppoinments";
 import AdminAppoinments from "./Screen/Admin/Appoinments";
 import Slotmanagement from "./Screen/Admin/SlotManagament";
 import AppointmentDetail from "./Screen/Patient/MyAppoinments/AppoinmentDetail";
+import AppointmentDetails from "./Screen/Admin/Appoinments/AppointmentDetails";
+import DocAppointmentDetails from "./Screen/Doctor/DoctorAppointments/AppointmentDetails";
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -192,6 +194,7 @@ const AppLayout: React.FC = () => {
               <Route path="add_doctor" element={<AddDoctor/>} />
               <Route path="pending_appointment" element= {<PendingAppoinments/>} />
               <Route path="appointments" element= {<AdminAppoinments/>} />
+              <Route path="appointments/appointment_details/:appointmentId" element= {<AppointmentDetails/>} />
               <Route path="slot_availability"element= {<SlotAvailability/>} />
               <Route path="slot_management" element= {<Slotmanagement/>} />
               <Route path="doctor_view_profile/:doctorId" element={<DoctorViewProfile />} />
@@ -211,6 +214,7 @@ const AppLayout: React.FC = () => {
             >
               <Route index element={< DoctorDashbord/>} />
               <Route path="appointments" element={<DoctorAppointments/>} />
+              <Route path="appointments/appointment_details/:appointmentId" element={<DocAppointmentDetails/>} />
               <Route path="appointment_requests" element={<AppointmentRequests/>} />
               <Route path="doctor_feedback" element={<DoctorFeedback />} />
             </Route>
