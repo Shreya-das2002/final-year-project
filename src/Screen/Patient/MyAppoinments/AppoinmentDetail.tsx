@@ -1,15 +1,14 @@
 import { FaCalendarAlt  } from 'react-icons/fa';
 import {  MdPeople, MdEventAvailable, MdAddTask, MdCancel  } from 'react-icons/md';
-// import { FaUser, FaStethoscope, FaIdCard } from 'react-icons/fa';
-// import { MdOutlineCheckCircle, MdCurrencyRupee,  MdEvent, } from 'react-icons/md';
-// import { FiCalendar } from "react-icons/fi";
 import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import type { RootState } from "../../../../store/store";
+import { cancelAppointmentsApi } from "../../../services/appointmentApi";
 import dayjs from 'dayjs';
 import { FaFilePrescription } from 'react-icons/fa6';
 import { FiChevronRight } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 
 const AppoinmentDetail = () => {
 
@@ -29,6 +28,10 @@ const appointment = useMemo(() => {
     ) || appointmentFromState
   );
 }, [appointmentFromStore, appointmentFromState, appointment_id])
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
 const dob = appointment?.patient_dob || null;
   const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
@@ -63,6 +66,38 @@ const currentStatus = appointment.booking_status;
 const isRejected = Object.prototype.hasOwnProperty.call(REJECTION_FLOW, currentStatus);
 const rejectionIndex = isRejected ? REJECTION_FLOW[currentStatus] : -1;
 const currentIndex = STATUS_ORDER.indexOf(currentStatus);
+
+
+  const handleOpenCancelModal = (appointmentId: number) => {
+    setSelectedAppointmentId(appointmentId);
+    setShowModal(true);
+  };
+
+  const handleCancelAppointment = async () => {
+    if (!selectedAppointmentId) return;
+
+    try {
+      setCancelLoading(true);
+
+      const response = await cancelAppointmentsApi({
+        appointment_id: selectedAppointmentId,
+        action: "cancel",
+      });
+
+      if (response?.data?.success) {
+        setShowModal(false);
+        setSelectedAppointmentId(null);
+      } else {
+        toast(response?.data?.message || "Failed to cancel appointment");
+      }
+    } catch {
+
+      toast("Something went wrong while cancelling appointment");
+    } finally {
+      setCancelLoading(false);
+    }
+  }
+
   return (
      <div
       className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen">
@@ -73,6 +108,7 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
                     <button
                      
                       type="button"
+                      onClick={() => handleOpenCancelModal(appointment.appointment_id)}
                       className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
                     >
                       Cancel Booking
@@ -87,6 +123,56 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
                     </button>
                     </div>
                  </div>
+
+     {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-[350px] text-center">
+
+            {/* ICON */}
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full border-4 border-orange-300 flex items-center justify-center text-orange-400 text-3xl">
+              !
+            </div>
+
+            {/* TITLE */}
+            <h2 className="text-xl font-semibold mb-2">Are you sure?</h2>
+
+            {/* MESSAGE */}
+            <p className="text-gray-600 mb-6">
+              You want to cancel this appointment
+            </p>
+
+            {/* BUTTONS */}
+            <div className="flex justify-center gap-3">
+
+              {/* CONFIRM */}
+              <button
+                onClick={handleCancelAppointment}
+                disabled={cancelLoading}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {cancelLoading ? "Cancelling..." : "Yes"}
+              </button>
+
+              {/* CANCEL */}
+             <button
+                onClick={() => {
+                  setShowModal(false);
+                  setSelectedAppointmentId(null);
+                }}
+                disabled={cancelLoading}
+                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-600 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
 
      <div className="grid grid-cols-2 gap-0 bg-white/20 backdrop-blur-md shadow-md w-full  p-4  rounded-lg">
      <div className="grid grid-cols-2 gap-0">
@@ -108,7 +194,7 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
 
       return (
         <div key={step.label} className="flex">
-          <div className="flex flex-col items-center ml-4 mr-3">
+          <div className="flex flex-col items-center ml-4  mr-3">
             <span
               className={`flex items-center justify-center w-10 h-10 rounded-full ${
                 isDoneOrActive
@@ -121,7 +207,7 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
 
             {!isLastVisible && (
               <span
-                className={`w-1 h-10 mt-1 rounded-full ${
+                className={`w-1 h-10 mt-1 mb-1 rounded-full ${
                   isRejected
                     ? "bg-cyan-700"
                     : index < currentIndex
@@ -132,7 +218,7 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
             )}
 
             {isRejected && index === rejectionIndex && (
-              <span className="w-1 h-10 mt-1 rounded-full bg-red-500" />
+              <span className="w-1 h-10 mt-1  rounded-full bg-red-500" />
             )}
           </div>
 
@@ -154,7 +240,7 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     {isRejected && (
       <div className="flex">
         <div className="flex flex-col items-center mr-3">
-          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600 text-white text-xl">
+          <span className="flex items-center justify-center w-10 h-10 ml-4 mt-1 rounded-full bg-red-600 text-white text-xl">
             <MdCancel/>
           </span>
         </div>
