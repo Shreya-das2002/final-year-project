@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchPendingAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
+import { cancelAppointmentsApi } from "../../../services/appointmentApi";
 import { FaEnvelope, FaPhone, FaUser, FaVenusMars, FaHourglassHalf } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 const AppointmentsRequests = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,6 +18,8 @@ const AppointmentsRequests = () => {
   const hasFetched = useRef(false);
 
   const [showModal, setShowModal] = useState(false);
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
+  const [cancelLoading, setCancelLoading] = useState(false);
   
 
   useEffect(() => {
@@ -23,6 +27,38 @@ const AppointmentsRequests = () => {
     hasFetched.current = true;
     dispatch(fetchPendingAppointmentsThunk());
   }, [dispatch]);
+
+
+  const handleOpenCancelModal = (appointmentId: number) => {
+    setSelectedAppointmentId(appointmentId);
+    setShowModal(true);
+  };
+
+  const handleCancelAppointment = async () => {
+    if (!selectedAppointmentId) return;
+
+    try {
+      setCancelLoading(true);
+
+      const response = await cancelAppointmentsApi({
+        appointment_id: selectedAppointmentId,
+        action: "cancel",
+      });
+
+      if (response?.data?.success) {
+        setShowModal(false);
+        setSelectedAppointmentId(null);
+        dispatch(fetchPendingAppointmentsThunk());
+      } else {
+        toast(response?.data?.message || "Failed to cancel appointment");
+      }
+    } catch {
+
+      toast("Something went wrong while cancelling appointment");
+    } finally {
+      setCancelLoading(false);
+    }
+  }
 
   return (
     <div
@@ -103,15 +139,13 @@ const AppointmentsRequests = () => {
             </div>
 
             <div className="text-[24px] absolute top-0.5 right-3 pt-4 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => {                  
-                  setShowModal(true);
-                }}
-                className="rounded-xl text-red-600/80 px-4 py-1 hover:text-red-700/90 hover:scale-[1.05] transition"
-              >
-                <FiTrash2 />
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenCancelModal(item.appointment_id)}
+                    className="rounded-xl text-red-600/80 px-4 py-1 hover:text-red-700/90 hover:scale-[1.05] transition"
+                  >
+                    <FiTrash2 />
+                  </button>
             </div>
           </div>
         )})}
@@ -140,18 +174,21 @@ const AppointmentsRequests = () => {
 
               {/* CONFIRM */}
               <button
-                onClick={() => {                  
-                  setShowModal(false);
-                }}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                onClick={handleCancelAppointment}
+                disabled={cancelLoading}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
-                Yes
+                {cancelLoading ? "Cancelling..." : "Yes"}
               </button>
 
               {/* CANCEL */}
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+             <button
+                onClick={() => {
+                  setShowModal(false);
+                  setSelectedAppointmentId(null);
+                }}
+                disabled={cancelLoading}
+                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-600 disabled:opacity-50"
               >
                 Cancel
               </button>

@@ -10,6 +10,12 @@ export interface AppointmentRequestPayload {
   booking_date: string;
 }
 
+export interface CancelAppointmentsPayload {
+  appointment_id: number;
+  action: "cancel";
+  updated_by?: number;
+}
+
 export interface AppointmentStatusPayload {
   appointment_id: number;
   action: "approve" | "reject";
@@ -154,6 +160,19 @@ export const pendingappointmentsRequestApi = (
 ) => {
   return API.put(
     urls.pendingappointmentsRequestUrl,
+    data,
+    {
+      validateStatus: () => true
+    }
+  );
+};
+
+
+export const cancelAppointmentsApi = (
+  data: CancelAppointmentsPayload
+) => {
+  return API.put(
+    urls.cancelAppointmentsUrl,
     data,
     {
       validateStatus: () => true

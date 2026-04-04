@@ -517,7 +517,8 @@ export const urls ={
   appointmentRequestUrl: '/appointment/create',
   appointmentsListUrl: '/appointment/list',
   pendingAppoinmentsUrl: '/appointment/pending-list',
-  pendingappointmentsRequestUrl: '/appointment/update-status'
+  pendingappointmentsRequestUrl: '/appointment/update-status',
+  cancelAppointmentsUrl: '/appointment/cancel-appointment',
 }
 
 
