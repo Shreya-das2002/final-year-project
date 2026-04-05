@@ -44,6 +44,12 @@ const Slotmanagement = () => {
 
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
+  /* for appointment time */
+
+  const [hour, setHour] = useState("10");
+const [minute, setMinute] = useState("00");
+const [period, setPeriod] = useState("AM");
+
   /* ================= COLUMN WIDTH STATE ================= */
 
   const [columnWidths, setColumnWidths] = useState<Record<ColumnKey, number>>({
@@ -104,6 +110,8 @@ const Slotmanagement = () => {
     setSelectedAppointment(appointment);
     setShowSlotModal(true);
   };
+
+  
 
   const handleCloseSlotModal = () => {
     setShowSlotModal(false);
@@ -366,9 +374,9 @@ const Slotmanagement = () => {
 
         {showSlotModal && selectedAppointment && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white w-[420px] rounded-2xl p-6 shadow-lg border">
+            <div className="bg-white w-[420px] rounded-2xl p-5 shadow-lg border">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-cyan-700">
+                <h3 className="text-xl pl-1 font-semibold text-cyan-700">
                   Appointment Time
                 </h3>
                 <button
@@ -379,7 +387,7 @@ const Slotmanagement = () => {
                 </button>
               </div>
 
-              <div className="space-y-3 text-sm text-gray-700">
+              <div className="space-y-2 text-sm pl-1 text-gray-700">
                 <p>
                   <span className="font-semibold">Appointment No:</span>{" "}
                   {selectedAppointment.appointment_no || "-"}
@@ -404,7 +412,61 @@ const Slotmanagement = () => {
                   <span className="font-semibold">Slot Time:</span>{" "}
                   {selectedAppointment.doc_slot || "-"}
                 </p>
-              </div>
+                 </div>
+
+                 <div className="bg-cyan-600 h-px w-94 mt-2"></div>
+
+                <div className="flex items-center text-sm text-gray-700 mb-3">
+  
+                  <span className="font-semibold w-40 pl-1 ">
+                    Appointment Time :
+                  </span>
+
+                  <div className="flex gap-1 border shadow-md rounded-sm p-1 mt-2 items-center">
+                    
+                    {/* Hour */}
+                    <select
+                      value={hour}
+                      onChange={(e) => setHour(e.target.value)}
+                      className="outline-none bg-transparent"
+                    >
+                      {[...Array(12)].map((_, i) => (
+                        <option key={i} value={String(i + 1).padStart(2, "0")}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+
+                    <span>:</span>
+
+                    {/* Minute */}
+                    <select
+                      value={minute}
+                      onChange={(e) => setMinute(e.target.value)}
+                      className="outline-none bg-transparent"
+                    >
+                      {[...Array(60)].map((_, i) => (
+                        <option key={i} value={String(i).padStart(2, "0")}>
+                          {String(i).padStart(2, "0")}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* AM/PM */}
+                    <select
+                      value={period}
+                      onChange={(e) => setPeriod(e.target.value)}
+                      className="outline-none bg-transparent"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+
+                  </div>
+                </div>
+
+
+             
 
               <div className="flex justify-end gap-3 mt-6">
                 <button
