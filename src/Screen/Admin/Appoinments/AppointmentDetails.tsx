@@ -1,15 +1,13 @@
-import { FaCalendarAlt  } from 'react-icons/fa';
-import {  MdPeople, MdEventAvailable, MdAddTask  } from 'react-icons/md';
+
 import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import type { RootState } from "../../../../store/store";
-import { cancelAppointmentsApi } from "../../../services/appointmentApi";
 import dayjs from 'dayjs';
-import { FaFilePrescription } from 'react-icons/fa6';
-import toast from 'react-hot-toast';
+
 
 const AppointmentDetail = () => {
+
 
 const { appointment_id } = useParams();
 const location = useLocation();
@@ -28,10 +26,6 @@ const appointment = useMemo(() => {
   );
 }, [appointmentFromStore, appointmentFromState, appointment_id])
 
-  const [showModal, setShowModal] = useState(false);
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
-  const [cancelLoading, setCancelLoading] = useState(false);
-
 const dob = appointment?.patient_dob || null;
   const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
 
@@ -39,60 +33,10 @@ const dob = appointment?.patient_dob || null;
     return <div className="p-10">No appointment data found</div>;
   }
 
-const STATUS_ORDER = [
-  "Booking Initiated",
-  "Booking Confirmed",
-  "Slot Assigned",
-  "Consultation Completed",
-  "Prescription Generated",
-];
-
-const steps = [
-  { label: "Booking Initiated", icon: <MdEventAvailable className="text-lg" /> },
-  { label: "Booking Confirmed", icon: <MdAddTask className="text-lg" /> },
-  { label: "Slot Assigned", icon: <FaCalendarAlt className="text-lg" /> },
-  { label: "Consultation Completed", icon: <MdPeople className="text-lg" /> },
-  { label: "Prescription Generated", icon: <FaFilePrescription className="text-lg" /> },
-];
-
-const REJECTION_FLOW: Record<string, number> = {
-  "Booking Rejected": 0,
-  "Canceled by Doctor": 2,
-  "Canceled by Patient": 1,
-};
-
-const currentStatus = appointment.booking_status;
-const isRejected = Object.prototype.hasOwnProperty.call(REJECTION_FLOW, currentStatus);
-const rejectionIndex = isRejected ? REJECTION_FLOW[currentStatus] : -1;
-const currentIndex = STATUS_ORDER.indexOf(currentStatus);
 
 
 
 
-  const handleCancelAppointment = async () => {
-    if (!selectedAppointmentId) return;
-
-    try {
-      setCancelLoading(true);
-
-      const response = await cancelAppointmentsApi({
-        appointment_id: selectedAppointmentId,
-        action: "cancel",
-      });
-
-      if (response?.data?.success) {
-        setShowModal(false);
-        setSelectedAppointmentId(null);
-      } else {
-        toast(response?.data?.message || "Failed to cancel appointment");
-      }
-    } catch {
-
-      toast("Something went wrong while cancelling appointment");
-    } finally {
-      setCancelLoading(false);
-    }
-  }
 
   return (
      <div
@@ -103,13 +47,7 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
 
                  </div>
 
-
-
-
-
      <div className="grid grid-cols-2 gap-5 bg-white/20 backdrop-blur-md shadow-md w-full  p-4  rounded-lg">
-   
-
                  {/* Doctor Summary */}
 
             <div>
