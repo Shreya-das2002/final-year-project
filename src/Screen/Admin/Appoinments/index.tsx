@@ -479,7 +479,7 @@ useEffect(() => {
 
       <button
           onClick={() => {
-                    navigate(`/admin/appointments/appointment_details/${app.appointment_id}`, { state: appointments });
+                    navigate(`/admin/appointments/appointment_details/${app.appointment_id}`, { state: app });
                               }}
         type="button"
         className="text-blue-600 hover:text-blue-800"
