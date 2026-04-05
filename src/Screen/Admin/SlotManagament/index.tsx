@@ -1,13 +1,13 @@
 // import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { EyeIcon } from "@heroicons/react/24/outline";
 import { FaSearch } from "react-icons/fa";
-import { MdCalendarToday } from "react-icons/md";
+import { MdAccessTime, MdCalendarToday } from "react-icons/md";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -44,6 +44,11 @@ const Slotmanagement = () => {
     status: 100,
     action: 150,
   });
+
+  const ROW_COLORS = [
+  "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
+  "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100"
+];
 
   const resizingCol = useRef<ColumnKey | null>(null);
 
@@ -120,10 +125,9 @@ const Slotmanagement = () => {
     .filter((appointment) => {
       const statusName = appointment.booking_status || "";
       const patientName = appointment.patient_name || "-";
-      const phone = appointment.patient_phone || "";
-      const email = appointment.patient_email || "";
-      const appointmentDate = appointment.appointment_date || "";
-      const bookingDate = appointment.created_on || "";
+      const doctorName = appointment.doctor_name || "";
+      const email = appointment.patient_email || "";      const appointmentDate = appointment.appointment_date || "";
+      const appointmentNo = appointment.appointment_no || "";
 
       const normalizedAppointmentDate =
         typeof appointmentDate === "string" && appointmentDate.includes("T")
@@ -139,11 +143,11 @@ const Slotmanagement = () => {
           .toLowerCase()
           .includes(search.toLowerCase()) ||
         String(patientName).toLowerCase().includes(search.toLowerCase()) ||
-        String(phone).toLowerCase().includes(search.toLowerCase()) ||
+        String(doctorName).toLowerCase().includes(search.toLowerCase()) ||
         String(appointmentDate).toLowerCase().includes(search.toLowerCase()) ||
-        String(bookingDate).toLowerCase().includes(search.toLowerCase()) ||
-        String(statusName).toLowerCase().includes(search.toLowerCase()) ||
-        String(email).toLowerCase().includes(search.toLowerCase());
+        String(appointmentNo).toLowerCase().includes(search.toLowerCase()) ||
+        String(statusName).toLowerCase().includes(search.toLowerCase());
+
 
       return matchesDate && matchesSearch;
     })
@@ -477,11 +481,14 @@ const Slotmanagement = () => {
                 {/* Rows */}
 
                 {!loading &&
-                  filteredAppointments.map((app) => {
+                  filteredAppointments.map((app, index) => {
+
+                    const color = ROW_COLORS[index % ROW_COLORS.length];  
+
                     return (
                       <tr
                         key={app.appointment_id}
-                        className="border-b border-gray-300 items-center transition duration-200"
+                        className={`border-b border-gray-300 items-center ${color} transition duration-200`}
                       >
                         <td className="p-4 ">
                           <div className="flex gap-2 justify-center items-center">
@@ -491,29 +498,29 @@ const Slotmanagement = () => {
 
                         <td className="p-4 ">
                           <div className="flex gap-2 justify items-center"></div>
-                          {}
+                          {app.patient_name}
                         </td>
 
                         <td className="p-4 ">
                           <div className="flex gap-2 justify items-center"></div>
-                          {}
+                          {app.doctor_name}
                         </td>
 
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
-                            {}
+                            {app.appointment_date}
                           </div>
                         </td>
 
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
-                            {}
+                            {app.doc_slot}
                           </div>
                         </td>
 
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
-                            {}
+                            {app.appointment_time || "Not Generated"}
                           </div>
                         </td>
 
@@ -528,17 +535,11 @@ const Slotmanagement = () => {
                         <td className="p-4">
                           <div className="flex justify-center gap-4">
                             <button
-                              onClick={() => {
-                                navigate(
-                                  `/doctor/appointments/appointment_details/${app.appointment_id}`,
-                                  { state: app }
-                                );
-                              }}
                               type="button"
-                              className="text-blue-600 hover:text-blue-800"
+                              className="text-blue-600 hover:text-blue-800 p-2 bg-blue-100 rounded-full hover:bg-blue-200"
                               title="View Doctor"
                             >
-                              <EyeIcon className="w-5 h-5" />
+                              <MdAccessTime className="w-5 h-5" />
                             </button>
                           </div>
                         </td>
