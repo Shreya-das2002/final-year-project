@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import type { RootState } from "../../../../store/store";
 import dayjs from 'dayjs';
+import { Select, MenuItem } from "@mui/material";
+
 
 
 const AppointmentDetail = () => {
@@ -11,6 +13,7 @@ const AppointmentDetail = () => {
 
 const { appointment_id } = useParams();
 const location = useLocation();
+const user = useSelector((state: RootState) => state.auth.user);
 
 
 const appointmentFromState = location.state;
@@ -146,7 +149,7 @@ const dob = appointment?.patient_dob || null;
                   </span>
 
                  <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   Time: {appointment.appointment_time || "-"}
+                   Time: {appointment.appointment_time || "Not Generated"}
                   </span>
 
                 <span className="font-sm flex items-center pl-0.5 gap-2  text-black dark:text-white"> 
@@ -175,7 +178,7 @@ const dob = appointment?.patient_dob || null;
                      <div className=" pl-5 pt-2">
 
                  <span className="text-lg font-semibold flex items-center pl-1 gap-2 text-black dark:text-white"> 
-                   Booking Number : 
+                   Booking Number : {appointment.booking_no}
                   </span>
 
                      <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
@@ -187,35 +190,33 @@ const dob = appointment?.patient_dob || null;
                   </span>
 
                     </div>
-                    <div className="h-0.5 w-100 bg-cyan-700 ml-3 mt-10"></div>
-                      <div>
-                         <h1 className="text-sm pt-0.5 pl-1">Status</h1>
-                     
-                                      
-                    {/* <Select
-                      
-                     
-                      size="small"
-                      fullWidth                      
-                      className="h-10.5 mt-0.5  ">
-                    <MenuItem
-                      value="Status">
-                      Status
-                    </MenuItem>
+                   
+                   {user?.role?.toLowerCase() === "standard admin" && (
+                  <>
+                    <div className="h-0.5 w-138 bg-cyan-700 ml-3 mt-10"></div>
 
-                   <MenuItem
-                    value="Active">
-                    Active
-                  </MenuItem>
+                    <div>
+                      <h1 className="text-lg font-semibold text-gray-700 dark:text-gray-200 pt-5 pl-5">
+                        Consultation Status
+                      </h1>
 
-                  <MenuItem
-                    value="Inactive">
-                    Inactive
-                  </MenuItem>
-                    </Select> */}
-                
+                      <Select
+                        size="small"
+                        className="h-10.5 mt-0.5 w-138 ml-4"
+                      >
+                        <MenuItem value="">Status</MenuItem>
 
-                  </div>
+                        <MenuItem value="Completed">
+                          Consultation Completed
+                        </MenuItem>
+
+                        <MenuItem value="Missed">
+                          Consultation Missed
+                        </MenuItem>
+                      </Select>
+                    </div>
+                  </>
+                )}
 
 
                       </div>
