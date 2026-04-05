@@ -6,8 +6,6 @@ import { MdAccessTime, MdCalendarToday } from "react-icons/md";
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 import { HiArrowsUpDown } from "react-icons/hi2";
-import { useNavigate } from "react-router-dom";
-
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -21,15 +19,29 @@ type ColumnKey =
   | "status"
   | "action";
 
+type AppointmentRow = {
+  appointment_id: number;
+  appointment_no?: string | null;
+  patient_name?: string | null;
+  doctor_name?: string | null;
+  appointment_date?: string | null;
+  doc_slot?: string | null;
+  appointment_time?: string | null;
+  booking_status?: string | null;
+};
+
 const Slotmanagement = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
 
   const { appointments, loading } = useSelector(
     (state: RootState) => state.appointment
   );
 
   const [search, setSearch] = useState("");
+  const [showSlotModal, setShowSlotModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<AppointmentRow | null>(null);
+
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
   /* ================= COLUMN WIDTH STATE ================= */
@@ -46,9 +58,9 @@ const Slotmanagement = () => {
   });
 
   const ROW_COLORS = [
-  "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
-  "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100"
-];
+    "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
+    "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100",
+  ];
 
   const resizingCol = useRef<ColumnKey | null>(null);
 
@@ -88,6 +100,16 @@ const Slotmanagement = () => {
     setTempSelectedDate("");
   };
 
+  const handleOpenSlotModal = (appointment: AppointmentRow) => {
+    setSelectedAppointment(appointment);
+    setShowSlotModal(true);
+  };
+
+  const handleCloseSlotModal = () => {
+    setShowSlotModal(false);
+    setSelectedAppointment(null);
+  };
+
   const startResize = (
     _e: React.MouseEvent<HTMLDivElement>,
     column: ColumnKey
@@ -119,14 +141,14 @@ const Slotmanagement = () => {
   }, [dispatch]);
 
   /* ================= FILTER APPOINTMENTS (SEARCH + DATE) ================= */
-  const filteredAppointments = (
+  const filteredAppointments: AppointmentRow[] = (
     Array.isArray(appointments) ? appointments : []
   )
     .filter((appointment) => {
       const statusName = appointment.booking_status || "";
       const patientName = appointment.patient_name || "-";
       const doctorName = appointment.doctor_name || "";
-      const email = appointment.patient_email || "";      const appointmentDate = appointment.appointment_date || "";
+      const appointmentDate = appointment.appointment_date || "";
       const appointmentNo = appointment.appointment_no || "";
 
       const normalizedAppointmentDate =
@@ -148,7 +170,6 @@ const Slotmanagement = () => {
         String(appointmentNo).toLowerCase().includes(search.toLowerCase()) ||
         String(statusName).toLowerCase().includes(search.toLowerCase());
 
-
       return matchesDate && matchesSearch;
     })
     .sort((a, b) => {
@@ -162,25 +183,20 @@ const Slotmanagement = () => {
       return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
     });
 
-  /* ================= UI ================= */
-
   return (
     <div
       className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
       onMouseMove={resize}
       onMouseUp={stopResize}
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">
           Appointments
         </h2>
       </div>
 
-      {/* SEARCH */}
       <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg">
         <div className="flex items-center justify-between gap-3 mb-4">
-          {/* Sort Button */}
           <div className="flex items-center justify-between gap-2 ">
             <button
               onClick={() =>
@@ -196,7 +212,6 @@ const Slotmanagement = () => {
             </button>
           </div>
 
-          {/* Calendar */}
           <button
             onClick={() => setIsCalendarOpen(true)}
             className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
@@ -205,7 +220,6 @@ const Slotmanagement = () => {
             <MdCalendarToday className="text-cyan-700 dark:text-gray-100 w-4 h-4" />
           </button>
 
-          {/* Search Bar */}
           <div className="flex items-center ml-auto gap-2">
             <div className="flex items-center w-[400px] border border-cyan-600 dark:border-gray-200 rounded-full px-4 py-2 shadow-sm backdrop-blur-md">
               <input
@@ -223,7 +237,6 @@ const Slotmanagement = () => {
         {selectedDate && (
           <div className="mb-4 text-sm font-medium text-cyan-800 dark:text-gray-200">
             Selected Date: {selectedDate}
-            
           </div>
         )}
 
@@ -233,7 +246,6 @@ const Slotmanagement = () => {
               <div className="flex justify-between mb-4">
                 <div className="text-lg font-semibold text-cyan-700">
                   Select Date
-
                 </div>
                 <button
                   onClick={() => {
@@ -265,8 +277,6 @@ const Slotmanagement = () => {
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                     <div key={d}>{d}</div>
                   ))}
-
-                  
                 </div>
 
                 <div className="grid grid-cols-7 gap-2">
@@ -308,7 +318,6 @@ const Slotmanagement = () => {
                 </div>
               </div>
 
-             {/* Clear Button */}
               <div className="flex justify-between mt-4">
                 <button
                   onClick={() => {
@@ -319,9 +328,7 @@ const Slotmanagement = () => {
                 >
                   Clear
                 </button>
-
               </div>
-
             </div>
           </div>
         )}
@@ -330,7 +337,7 @@ const Slotmanagement = () => {
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white w-[360px] rounded-2xl p-6 shadow-lg border">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Confirm Date
+                Select Date
               </h3>
 
               <p className="text-sm text-gray-600 mb-6">
@@ -357,14 +364,67 @@ const Slotmanagement = () => {
           </div>
         )}
 
-        {/* Table */}
+        {showSlotModal && selectedAppointment && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white w-[420px] rounded-2xl p-6 shadow-lg border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-cyan-700">
+                  Appointment Time
+                </h3>
+                <button
+                  onClick={handleCloseSlotModal}
+                  className="text-gray-500 hover:text-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3 text-sm text-gray-700">
+                <p>
+                  <span className="font-semibold">Appointment No:</span>{" "}
+                  {selectedAppointment.appointment_no || "-"}
+                </p>
+
+                <p>
+                  <span className="font-semibold">Patient Name:</span>{" "}
+                  {selectedAppointment.patient_name || "-"}
+                </p>
+
+                <p>
+                  <span className="font-semibold">Doctor Name:</span>{" "}
+                  {selectedAppointment.doctor_name || "-"}
+                </p>
+
+                <p>
+                  <span className="font-semibold">Appointment Date:</span>{" "}
+                  {selectedAppointment.appointment_date || "-"}
+                </p>
+
+                <p>
+                  <span className="font-semibold">Slot Time:</span>{" "}
+                  {selectedAppointment.doc_slot || "-"}
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={handleCloseSlotModal}
+                  className="px-4 py-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+
+                <button className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700">
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-md">
-          {/* SCROLL CONTAINER */}
           <div className="max-h-[450px] overflow-y-auto rounded-2xl">
             <table className="w-full text-left">
-              {/* TABLE HEADER */}
-
               <thead className="bg-cyan-600 text-gray-100 text-sm sticky top-0 z-10">
                 <tr className="divide-x divide-gray-100">
                   <th
@@ -457,8 +517,6 @@ const Slotmanagement = () => {
                 </tr>
               </thead>
 
-              {/* Loading */}
-
               <tbody className="text-sm text-gray-700">
                 {loading && (
                   <tr>
@@ -468,8 +526,6 @@ const Slotmanagement = () => {
                   </tr>
                 )}
 
-                {/* No Data */}
-
                 {!loading && filteredAppointments.length === 0 && (
                   <tr>
                     <td colSpan={9} className="p-6 text-center text-gray-500">
@@ -478,12 +534,9 @@ const Slotmanagement = () => {
                   </tr>
                 )}
 
-                {/* Rows */}
-
                 {!loading &&
                   filteredAppointments.map((app, index) => {
-
-                    const color = ROW_COLORS[index % ROW_COLORS.length];  
+                    const color = ROW_COLORS[index % ROW_COLORS.length];
 
                     return (
                       <tr
@@ -497,12 +550,10 @@ const Slotmanagement = () => {
                         </td>
 
                         <td className="p-4 ">
-                          <div className="flex gap-2 justify items-center"></div>
                           {app.patient_name}
                         </td>
 
                         <td className="p-4 ">
-                          <div className="flex gap-2 justify items-center"></div>
                           {app.doctor_name}
                         </td>
 
@@ -524,8 +575,6 @@ const Slotmanagement = () => {
                           </div>
                         </td>
 
-
-
                         <td className="p-4 ">
                           <div className="flex gap-2 justify items-center">
                             {app.booking_status || "-"}
@@ -535,6 +584,7 @@ const Slotmanagement = () => {
                         <td className="p-4">
                           <div className="flex justify-center gap-4">
                             <button
+                              onClick={() => handleOpenSlotModal(app)}
                               type="button"
                               className="text-blue-600 hover:text-blue-800 p-2 bg-blue-100 rounded-full hover:bg-blue-200"
                               title="View Doctor"
