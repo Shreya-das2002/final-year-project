@@ -485,7 +485,7 @@ const Slotmanagement = () => {
                       >
                         <td className="p-4 ">
                           <div className="flex gap-2 justify-center items-center">
-                            {}
+                            {app.appointment_no}
                           </div>
                         </td>
 
