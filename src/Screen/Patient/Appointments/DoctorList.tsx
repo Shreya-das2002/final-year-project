@@ -19,7 +19,7 @@ const SpDoctorList = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { doctors, loading, selectedDoctor } = useSelector(
-    (state: RootState) => state.doctor
+    (state: RootState) => state.doctor,
   );
   const doctorSlots = useSelector((state: RootState) => state.doctor.slot);
   const user = useSelector((state: RootState) => state.auth.user);
@@ -51,7 +51,7 @@ const SpDoctorList = () => {
 
   const today = new Date();
   const todayDate = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
+    today.getMonth() + 1,
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   const convertToAMPM = (time: string) => {
@@ -88,14 +88,12 @@ const SpDoctorList = () => {
 
   const handleDateClick = (
     fullDate: string,
-    slotInfo?:
-      | {
-          doctor_availability_id?: number;
-          start_time?: string;
-          end_time?: string;
-          fee?: string | number;
-        }
-      | null
+    slotInfo?: {
+      doctor_availability_id?: number;
+      start_time?: string;
+      end_time?: string;
+      fee?: string | number;
+    } | null,
   ) => {
     setSelectedBookingDate(fullDate);
 
@@ -107,7 +105,7 @@ const SpDoctorList = () => {
             end_time: slotInfo.end_time,
             fee: slotInfo.fee ? Number(slotInfo.fee) : 0,
           }
-        : null
+        : null,
     );
 
     setShowConfirmModal(true);
@@ -122,13 +120,14 @@ const SpDoctorList = () => {
         return;
       }
 
-      const dateSlot = doctorSlots[selectedDoctor.doctor_id]?.[selectedBookingDate];
+      const dateSlot =
+        doctorSlots[selectedDoctor.doctor_id]?.[selectedBookingDate];
 
-       const doctorAvailabilityId =
-      selectedBookingSlot?.doctor_availability_id ||
-      dateSlot?.doctor_availability_id ||
-      selectedDoctor.doctor_availability?.[selectedBookingDate]
-        ?.doctor_availability_id;
+      const doctorAvailabilityId =
+        selectedBookingSlot?.doctor_availability_id ||
+        dateSlot?.doctor_availability_id ||
+        selectedDoctor.doctor_availability?.[selectedBookingDate]
+          ?.doctor_availability_id;
 
       if (!doctorAvailabilityId) {
         toast("Doctor availability id not found for selected date.");
@@ -160,6 +159,8 @@ const SpDoctorList = () => {
       setBookingLoading(false);
     }
   };
+
+  const [symptoms, setSymptoms] = useState("");
 
   return (
     <div className="bg-gradient-to-r from-sky-100/50 via-sky-50/50 to-sky-100/50 dark:from-sky-950 dark:via-sky-900 dark:to-sky-950 p-6 min-h-screen w-full">
@@ -292,7 +293,7 @@ const SpDoctorList = () => {
 
                   const fullDate = `${year}-${String(month + 1).padStart(
                     2,
-                    "0"
+                    "0",
                   )}-${String(day).padStart(2, "0")}`;
 
                   const slotInfo =
@@ -324,34 +325,39 @@ const SpDoctorList = () => {
 
       {showConfirmModal && selectedDoctor && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-[420px] rounded-2xl p-6 shadow-xl border">
-            <h2 className="text-xl font-semibold text-cyan-700 mb-4">
+          <div className="bg-cyan-100/70 backdrop-blur-md border border-white/20 w-[420px] rounded-2xl p-6 shadow-xl">
+            <h2 className="text-2xl flex items-center justify-center font-semibold text-cyan-700 mb-2">
               Confirm Booking
             </h2>
 
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                <span className="font-semibold">Doctor:</span> Dr.{" "}
-                {selectedDoctor.first_name} {selectedDoctor.last_name}
-              </p>
+            <div className=" border w-90 border-cyan-400/30 mt-1 mb-2 ml-1 items-center"></div>
 
-              <p>
-                <span className="font-semibold">Date:</span>{" "}
-                {formatDateForDisplay(selectedBookingDate)}
+            <div className="space-y-2 text-sm text-gray-700 pl-2">
+              <p className="text-cyan-950 flex items-center gap-2">
+                  <span className="font-semibold">Doctor:</span>
+                <span>
+                  Dr. {selectedDoctor.first_name} {selectedDoctor.last_name}
+                </span>
               </p>
 
               {selectedBookingSlot?.start_time &&
               selectedBookingSlot?.end_time ? (
                 <>
-                  <p>
-                    <span className="font-semibold">Time:</span>{" "}
+                  <p className="text-cyan-950 flex items-center gap-1.5 ">
+                    <span className="font-semibold"> Date: </span>{" "}
+                    {formatDateForDisplay(selectedBookingDate)}
+                  </p>
+                  <p className="text-cyan-950 flex items-center gap-1.5">
+                    <span className="font-semibold"> Time: </span>{" "}
                     {convertToAMPM(selectedBookingSlot.start_time)} -{" "}
                     {convertToAMPM(selectedBookingSlot.end_time)}
                   </p>
-
-                  <p>
-                    <span className="font-semibold">Fee:</span> ₹
-                    {selectedBookingSlot.fee ?? 0}
+                  
+                  <p className="text-cyan-950 flex items-center gap-1.5">
+                    <span className="font-semibold">
+                      Fees:
+                    </span>
+                    {selectedBookingSlot?.fee ?? "-"} /-
                   </p>
                 </>
               ) : (
@@ -360,6 +366,25 @@ const SpDoctorList = () => {
                 </p>
               )}
             </div>
+
+            <div className="mt-4">
+              <p className="text-cyan-950 pb-1.5 pl-1.5"> Describe your symptoms</p>
+              <textarea
+                value={symptoms}
+                onChange={(e) => {
+                  if (e.target.value.length <= 350) {
+                    setSymptoms(e.target.value);
+                  }
+                }}
+                placeholder="(maximum 350 characters)"
+                className="w-full text-[12px] bg-white/30 backdrop-blur-md rounded-xl p-3 text-left font-medium text-cyan-900 dark:text-cyan-50 min-h-[90px] resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+
+              {/* Character Counter */}
+              <div className="text-right text-[10px] text-gray-500 mt-1">
+                {symptoms.length}/350
+              </div>
+            </div>            
 
             <div className="flex justify-end gap-3 mt-6">
               <button
@@ -384,12 +409,17 @@ const SpDoctorList = () => {
 
       {showSuccessModal && selectedDoctor && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60]">
-          <div className="bg-white w-[400px] rounded-2xl p-6 shadow-xl border text-center">
-            <h2 className="text-xl font-semibold text-green-600 mb-3">
+          <div className="bg-white w-[420px] rounded-2xl p-6 shadow-2xl border text-center">
+
+            <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center mx-auto mb-3 shadow">
+              ✓
+            </div>
+
+            <h2 className="text-2xl font-semibold text-green-700 mb-2">
               Booking Successful
             </h2>
 
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm text-gray-700 mb-3">
               Your appointment with{" "}
               <span className="font-semibold">
                 Dr. {selectedDoctor.first_name} {selectedDoctor.last_name}
@@ -397,8 +427,15 @@ const SpDoctorList = () => {
               has been booked successfully.
             </p>
 
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-gray-600 mb-1">
               Date: {formatDateForDisplay(selectedBookingDate)}
+            </p>
+
+            <div className="border-t my-3"></div>
+
+            <p className="text-base font-semibold text-gray-800 mb-5">
+              Your slot will be assigned shortly! <br/>
+              You can check your booking status in your "My appointment" section.
             </p>
 
             <button
@@ -406,7 +443,7 @@ const SpDoctorList = () => {
                 setShowSuccessModal(false);
                 setShowCalendar(false);
               }}
-              className="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+              className="px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
             >
               Close
             </button>
