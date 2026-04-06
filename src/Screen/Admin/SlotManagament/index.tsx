@@ -22,6 +22,11 @@ type ColumnKey =
   | "status"
   | "action";
 
+  type AppointmentWithSlot = Appointment & {
+  start_time?: string | null;
+  end_time?: string | null;
+};
+
 
 const Slotmanagement = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -37,8 +42,8 @@ const Slotmanagement = () => {
 
   const [search, setSearch] = useState("");
   const [showSlotModal, setShowSlotModal] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<Appointment | null>(null);
+const [selectedAppointment, setSelectedAppointment] =
+  useState<AppointmentWithSlot | null>(null);
 
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
@@ -269,6 +274,39 @@ const Slotmanagement = () => {
 
       return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
     });
+          const parseTime = (time: string) => {
+        const [hm, period] = time.split(" ");
+        const [h, m] = hm.split(":");
+
+        return {
+          hour: parseInt(h),
+          minute: parseInt(m),
+          period,
+        };
+      };
+
+      const slot =
+        selectedAppointment?.start_time && selectedAppointment?.end_time
+          ? {
+              start: parseTime(selectedAppointment.start_time),
+              end: parseTime(selectedAppointment.end_time),
+            }
+          : null;
+
+      let minuteStart = 0;
+      let minuteEnd = 59;
+
+      if (slot) {
+        const selectedHour = parseInt(hour);
+
+        if (selectedHour === slot.start.hour) {
+          minuteStart = slot.start.minute;
+        }
+
+        if (selectedHour === slot.end.hour) {
+          minuteEnd = slot.end.minute;
+        }
+      }
 
   return (
     <div
@@ -507,40 +545,58 @@ const Slotmanagement = () => {
                 </span>
 
                 <div className="flex gap-1 border shadow-md rounded-sm p-1 mt-2 items-center">
-                  <select
-                    value={hour}
-                    onChange={(e) => setHour(e.target.value)}
-                    className="outline-none bg-transparent"
-                  >
-                    {[...Array(12)].map((_, i) => (
-                      <option key={i} value={String(i + 1).padStart(2, "0")}>
-                        {i + 1}
-                      </option>
-                    ))}
-                  </select>
+                 <select
+                  value={hour}
+                  onChange={(e) => setHour(e.target.value)}
+                  className="outline-none bg-transparent"
+                >
+                  {slot
+                    ? Array.from(
+                        { length: slot.end.hour - slot.start.hour + 1 },
+                        (_, i) => slot.start.hour + i
+                      ).map((h) => (
+                        <option key={h} value={String(h).padStart(2, "0")}>
+                          {h}
+                        </option>
+                      ))
+                    : [...Array(12)].map((_, i) => (
+                        <option key={i} value={String(i + 1).padStart(2, "0")}>
+                          {i + 1}
+                        </option>
+                      ))}
+                </select>
 
                   <span>:</span>
 
-                  <select
-                    value={minute}
-                    onChange={(e) => setMinute(e.target.value)}
-                    className="outline-none bg-transparent"
-                  >
-                    {[...Array(60)].map((_, i) => (
-                      <option key={i} value={String(i).padStart(2, "0")}>
-                        {String(i).padStart(2, "0")}
-                      </option>
-                    ))}
-                  </select>
+                    <select
+                      value={minute}
+                      onChange={(e) => setMinute(e.target.value)}
+                      className="outline-none bg-transparent"
+                    >
+                      {Array.from(
+                        { length: minuteEnd - minuteStart + 1 },
+                        (_, i) => minuteStart + i
+                      ).map((m) => (
+                        <option key={m} value={String(m).padStart(2, "0")}>
+                          {String(m).padStart(2, "0")}
+                        </option>
+                      ))}
+                    </select>
 
-                  <select
-                    value={period}
-                    onChange={(e) => setPeriod(e.target.value)}
-                    className="outline-none bg-transparent"
-                  >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
-                  </select>
+                      <select
+                        value={period}
+                        onChange={(e) => setPeriod(e.target.value)}
+                        className="outline-none bg-transparent"
+                      >
+                        {slot ? (
+                          <option value={slot.start.period}>{slot.start.period}</option>
+                        ) : (
+                          <>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                          </>
+                        )}
+                      </select>
                 </div>
               </div>
 
