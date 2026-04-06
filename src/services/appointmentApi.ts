@@ -16,6 +16,12 @@ export interface CancelAppointmentsPayload {
   updated_by?: number;
 }
 
+export interface slotassignAppointmentPayload {
+  appointment_id: number;
+  appointment_time: string;
+  updated_by?: number;
+}
+
 export interface AppointmentStatusPayload {
   appointment_id: number;
   action: "approve" | "reject";
@@ -179,3 +185,15 @@ export const cancelAppointmentsApi = (
     }
   );
 };
+
+export const slotassignAppointmentApi = (
+  data: slotassignAppointmentPayload
+) => {
+  return API.put(
+    urls.slotassignAppointmentUrl,
+    data,
+    {
+      validateStatus: () => true
+    }
+  );
+}
