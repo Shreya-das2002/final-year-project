@@ -1,11 +1,14 @@
-// import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaSearch } from "react-icons/fa";
 import { MdAccessTime, MdCalendarToday } from "react-icons/md";
+import { HiArrowsUpDown } from "react-icons/hi2";
+import toast from "react-hot-toast";
+
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
-import { HiArrowsUpDown } from "react-icons/hi2";
+import { slotassignAppointmentApi } from "../../../services/appointmentApi";
+import type { Appointment } from "../../../services/appointmentApi";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -19,16 +22,6 @@ type ColumnKey =
   | "status"
   | "action";
 
-type AppointmentRow = {
-  appointment_id: number;
-  appointment_no?: string | null;
-  patient_name?: string | null;
-  doctor_name?: string | null;
-  appointment_date?: string | null;
-  doc_slot?: string | null;
-  appointment_time?: string | null;
-  booking_status?: string | null;
-};
 
 const Slotmanagement = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -37,39 +30,24 @@ const Slotmanagement = () => {
     (state: RootState) => state.appointment
   );
 
-  const [search, setSearch] = useState("");
-  const [showSlotModal, setShowSlotModal] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<AppointmentRow | null>(null);
-
-  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
-
-  /* for appointment time */
-
-  const [hour, setHour] = useState("10");
-const [minute, setMinute] = useState("00");
-const [period, setPeriod] = useState("AM");
-
-  /* ================= COLUMN WIDTH STATE ================= */
-
-  const [columnWidths, setColumnWidths] = useState<Record<ColumnKey, number>>({
-    appointment_id: 200,
-    patient_name: 250,
-    doctor_name: 250,
-    appointment_date: 200,
-    slot_time: 150,
-    appointment_time: 150,
-    status: 100,
-    action: 150,
-  });
-
   const ROW_COLORS = [
     "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
     "bg-gray-50 hover:bg-gray-200 dark:bg-gray-300/100",
   ];
 
-  const resizingCol = useRef<ColumnKey | null>(null);
+  const [search, setSearch] = useState("");
+  const [showSlotModal, setShowSlotModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
 
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+
+  /* appointment time */
+  const [hour, setHour] = useState("01");
+  const [minute, setMinute] = useState("00");
+  const [period, setPeriod] = useState("AM");
+
+  /* calendar */
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
@@ -90,33 +68,20 @@ const [period, setPeriod] = useState("AM");
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
-  const handleDateClick = (fullDate: string) => {
-    setTempSelectedDate(fullDate);
-    setShowConfirmModal(true);
-  };
+  /* ================= COLUMN WIDTH STATE ================= */
 
-  const handleConfirmDate = () => {
-    setSelectedDate(tempSelectedDate);
-    setShowConfirmModal(false);
-    setIsCalendarOpen(false);
-  };
+  const [columnWidths, setColumnWidths] = useState<Record<ColumnKey, number>>({
+    appointment_id: 200,
+    patient_name: 250,
+    doctor_name: 250,
+    appointment_date: 200,
+    slot_time: 180,
+    appointment_time: 180,
+    status: 150,
+    action: 150,
+  });
 
-  const handleCancelDate = () => {
-    setShowConfirmModal(false);
-    setTempSelectedDate("");
-  };
-
-  const handleOpenSlotModal = (appointment: AppointmentRow) => {
-    setSelectedAppointment(appointment);
-    setShowSlotModal(true);
-  };
-
-  
-
-  const handleCloseSlotModal = () => {
-    setShowSlotModal(false);
-    setSelectedAppointment(null);
-  };
+  const resizingCol = useRef<ColumnKey | null>(null);
 
   const startResize = (
     _e: React.MouseEvent<HTMLDivElement>,
@@ -138,7 +103,34 @@ const [period, setPeriod] = useState("AM");
     }));
   };
 
+  /* ================= HELPERS ================= */
+
+  const convertTo24Hour = (hour: string, minute: string, period: string) => {
+    let hh = parseInt(hour, 10);
+
+    if (period === "AM") {
+      if (hh === 12) hh = 0;
+    } else {
+      if (hh !== 12) hh += 12;
+    }
+
+    return `${String(hh).padStart(2, "0")}:${minute}:00`;
+  };
+
+  const convertToAMPM = (time?: string | null) => {
+    if (!time) return "";
+
+    const [h, m] = time.split(":");
+    let hour = parseInt(h, 10);
+
+    const meridian = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+
+    return `${String(hour).padStart(2, "0")}:${m} ${meridian}`;
+  };
+
   /* ================= FETCH APPOINTMENTS ================= */
+
   const hasFetched = useRef(false);
 
   useEffect(() => {
@@ -148,13 +140,100 @@ const [period, setPeriod] = useState("AM");
     dispatch(fetchAppointmentsThunk());
   }, [dispatch]);
 
-  /* ================= FILTER APPOINTMENTS (SEARCH + DATE) ================= */
-  const filteredAppointments: AppointmentRow[] = (
+  /* ================= HANDLERS ================= */
+
+  const handleDateClick = (fullDate: string) => {
+    setTempSelectedDate(fullDate);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmDate = () => {
+    setSelectedDate(tempSelectedDate);
+    setShowConfirmModal(false);
+    setIsCalendarOpen(false);
+  };
+
+  const handleCancelDate = () => {
+    setShowConfirmModal(false);
+    setTempSelectedDate("");
+  };
+
+  const handleOpenSlotModal = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+
+    if (appointment.appointment_time) {
+      const timeValue = appointment.appointment_time.trim();
+
+      if (timeValue.includes("AM") || timeValue.includes("PM")) {
+        const [time, meridian] = timeValue.split(" ");
+        const [hh, mm] = time.split(":");
+        setHour(hh.padStart(2, "0"));
+        setMinute(mm.padStart(2, "0"));
+        setPeriod(meridian as "AM" | "PM");
+      } else {
+        const [h, m] = timeValue.split(":");
+        let hourNum = parseInt(h, 10);
+        const meridian = hourNum >= 12 ? "PM" : "AM";
+        hourNum = hourNum % 12 || 12;
+
+        setHour(String(hourNum).padStart(2, "0"));
+        setMinute((m || "00").padStart(2, "0"));
+        setPeriod(meridian);
+      }
+    } else {
+      setHour("01");
+      setMinute("00");
+      setPeriod("AM");
+    }
+
+    setShowSlotModal(true);
+  };
+
+  const handleCloseSlotModal = () => {
+    setShowSlotModal(false);
+    setSelectedAppointment(null);
+    setHour("01");
+    setMinute("00");
+    setPeriod("AM");
+  };
+
+  const handleSaveAppointmentTime = async () => {
+    try {
+      if (!selectedAppointment?.appointment_id) {
+        toast.error("Appointment not found");
+        return;
+      }
+
+      const appointment_time = convertTo24Hour(hour, minute, period);
+
+      const response = await slotassignAppointmentApi({
+        appointment_id: selectedAppointment.appointment_id,
+        appointment_time,
+      });
+
+      if (response?.data?.success) {
+        toast.success(
+          response.data.message || "Appointment time assigned successfully"
+        );
+        handleCloseSlotModal();
+        dispatch(fetchAppointmentsThunk());
+      } else {
+        toast.error(response?.data?.message || "Failed to assign appointment time");
+      }
+    } catch (error) {
+      console.error("SAVE APPOINTMENT TIME ERROR:", error);
+      toast.error("Something went wrong while saving appointment time");
+    }
+  };
+
+  /* ================= FILTER APPOINTMENTS ================= */
+
+  const filteredAppointments: Appointment[] = (
     Array.isArray(appointments) ? appointments : []
   )
     .filter((appointment) => {
       const statusName = appointment.booking_status || "";
-      const patientName = appointment.patient_name || "-";
+      const patientName = appointment.patient_name || "";
       const doctorName = appointment.doctor_name || "";
       const appointmentDate = appointment.appointment_date || "";
       const appointmentNo = appointment.appointment_no || "";
@@ -197,21 +276,21 @@ const [period, setPeriod] = useState("AM");
       onMouseMove={resize}
       onMouseUp={stopResize}
     >
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">
-          Appointments
+          Slot Management
         </h2>
       </div>
 
       <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <div className="flex items-center justify-between gap-2 ">
+          <div className="flex items-center justify-between gap-2">
             <button
               onClick={() =>
                 setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
               }
-              className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
-                          rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
+              className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
             >
               <HiArrowsUpDown className="text-cyan-700 dark:text-gray-100 w-5 h-5" />
               <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">
@@ -222,8 +301,7 @@ const [period, setPeriod] = useState("AM");
 
           <button
             onClick={() => setIsCalendarOpen(true)}
-            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
-                          rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
+            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
           >
             <MdCalendarToday className="text-cyan-700 dark:text-gray-100 w-4 h-4" />
           </button>
@@ -232,7 +310,7 @@ const [period, setPeriod] = useState("AM");
             <div className="flex items-center w-[400px] border border-cyan-600 dark:border-gray-200 rounded-full px-4 py-2 shadow-sm backdrop-blur-md">
               <input
                 type="text"
-                placeholder="Search by name, email, or no..."
+                placeholder="Search by name, no, or status..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="flex-1 outline-none text-sm bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-700 dark:placeholder-gray-200"
@@ -248,8 +326,9 @@ const [period, setPeriod] = useState("AM");
           </div>
         )}
 
+        {/* ================= CALENDAR ================= */}
         {isCalendarOpen && (
-          <div className="fixed inset-0 bg-black/30 flex items-start justify-center z-40 ">
+          <div className="fixed inset-0 bg-black/30 flex items-start justify-center z-40">
             <div className="bg-white w-[600px] rounded-2xl p-6 border shadow-lg">
               <div className="flex justify-between mb-4">
                 <div className="text-lg font-semibold text-cyan-700">
@@ -268,7 +347,9 @@ const [period, setPeriod] = useState("AM");
 
               <div className="border rounded-xl p-4">
                 <div className="flex justify-between mb-3">
-                  <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))}>
+                  <button
+                    onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+                  >
                     ◀
                   </button>
 
@@ -276,7 +357,9 @@ const [period, setPeriod] = useState("AM");
                     {monthName} {year}
                   </h3>
 
-                  <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))}>
+                  <button
+                    onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+                  >
                     ▶
                   </button>
                 </div>
@@ -341,6 +424,7 @@ const [period, setPeriod] = useState("AM");
           </div>
         )}
 
+        {/* ================= DATE CONFIRM MODAL ================= */}
         {showConfirmModal && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white w-[360px] rounded-2xl p-6 shadow-lg border">
@@ -363,7 +447,7 @@ const [period, setPeriod] = useState("AM");
 
                 <button
                   onClick={handleConfirmDate}
-                  className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-60"
+                  className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700"
                 >
                   Ok
                 </button>
@@ -372,6 +456,7 @@ const [period, setPeriod] = useState("AM");
           </div>
         )}
 
+        {/* ================= SLOT MODAL ================= */}
         {showSlotModal && selectedAppointment && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white w-[420px] rounded-2xl p-5 shadow-lg border">
@@ -412,61 +497,52 @@ const [period, setPeriod] = useState("AM");
                   <span className="font-semibold">Slot Time:</span>{" "}
                   {selectedAppointment.doc_slot || "-"}
                 </p>
-                 </div>
+              </div>
 
-                 <div className="bg-cyan-600 h-px w-94 mt-2"></div>
+              <div className="bg-cyan-600 h-px w-full mt-3"></div>
 
-                <div className="flex items-center text-sm text-gray-700 mb-3">
-  
-                  <span className="font-semibold w-40 pl-1 ">
-                    Appointment Time :
-                  </span>
+              <div className="flex items-center text-sm text-gray-700 mb-3 mt-4">
+                <span className="font-semibold w-40 pl-1">
+                  Appointment Time :
+                </span>
 
-                  <div className="flex gap-1 border shadow-md rounded-sm p-1 mt-2 items-center">
-                    
-                    {/* Hour */}
-                    <select
-                      value={hour}
-                      onChange={(e) => setHour(e.target.value)}
-                      className="outline-none bg-transparent"
-                    >
-                      {[...Array(12)].map((_, i) => (
-                        <option key={i} value={String(i + 1).padStart(2, "0")}>
-                          {i + 1}
-                        </option>
-                      ))}
-                    </select>
+                <div className="flex gap-1 border shadow-md rounded-sm p-1 mt-2 items-center">
+                  <select
+                    value={hour}
+                    onChange={(e) => setHour(e.target.value)}
+                    className="outline-none bg-transparent"
+                  >
+                    {[...Array(12)].map((_, i) => (
+                      <option key={i} value={String(i + 1).padStart(2, "0")}>
+                        {i + 1}
+                      </option>
+                    ))}
+                  </select>
 
-                    <span>:</span>
+                  <span>:</span>
 
-                    {/* Minute */}
-                    <select
-                      value={minute}
-                      onChange={(e) => setMinute(e.target.value)}
-                      className="outline-none bg-transparent"
-                    >
-                      {[...Array(60)].map((_, i) => (
-                        <option key={i} value={String(i).padStart(2, "0")}>
-                          {String(i).padStart(2, "0")}
-                        </option>
-                      ))}
-                    </select>
+                  <select
+                    value={minute}
+                    onChange={(e) => setMinute(e.target.value)}
+                    className="outline-none bg-transparent"
+                  >
+                    {[...Array(60)].map((_, i) => (
+                      <option key={i} value={String(i).padStart(2, "0")}>
+                        {String(i).padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
 
-                    {/* AM/PM */}
-                    <select
-                      value={period}
-                      onChange={(e) => setPeriod(e.target.value)}
-                      className="outline-none bg-transparent"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-
-                  </div>
+                  <select
+                    value={period}
+                    onChange={(e) => setPeriod(e.target.value)}
+                    className="outline-none bg-transparent"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
                 </div>
-
-
-             
+              </div>
 
               <div className="flex justify-end gap-3 mt-6">
                 <button
@@ -476,7 +552,10 @@ const [period, setPeriod] = useState("AM");
                   Cancel
                 </button>
 
-                <button className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700">
+                <button
+                  onClick={handleSaveAppointmentTime}
+                  className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700"
+                >
                   Save
                 </button>
               </div>
@@ -484,6 +563,7 @@ const [period, setPeriod] = useState("AM");
           </div>
         )}
 
+        {/* ================= TABLE ================= */}
         <div className="bg-white rounded-2xl shadow-md">
           <div className="max-h-[450px] overflow-y-auto rounded-2xl">
             <table className="w-full text-left">
@@ -582,7 +662,7 @@ const [period, setPeriod] = useState("AM");
               <tbody className="text-sm text-gray-700">
                 {loading && (
                   <tr>
-                    <td colSpan={9} className="p-6 text-center">
+                    <td colSpan={8} className="p-6 text-center">
                       Loading...
                     </td>
                   </tr>
@@ -590,7 +670,7 @@ const [period, setPeriod] = useState("AM");
 
                 {!loading && filteredAppointments.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="p-6 text-center text-gray-500">
+                    <td colSpan={8} className="p-6 text-center text-gray-500">
                       No appointments found
                     </td>
                   </tr>
@@ -605,40 +685,38 @@ const [period, setPeriod] = useState("AM");
                         key={app.appointment_id}
                         className={`border-b border-gray-300 items-center ${color} transition duration-200`}
                       >
-                        <td className="p-4 ">
+                        <td className="p-4">
                           <div className="flex gap-2 justify-center items-center">
-                            {app.appointment_no}
+                            {app.appointment_no || "-"}
                           </div>
                         </td>
 
-                        <td className="p-4 ">
-                          {app.patient_name}
-                        </td>
+                        <td className="p-4">{app.patient_name || "-"}</td>
 
-                        <td className="p-4 ">
-                          {app.doctor_name}
-                        </td>
+                        <td className="p-4">{app.doctor_name || "-"}</td>
 
                         <td className="p-4">
-                          <div className="flex gap-2 justify items-center">
-                            {app.appointment_date}
+                          <div className="flex gap-2 items-center">
+                            {app.appointment_date || "-"}
                           </div>
                         </td>
 
                         <td className="p-4">
-                          <div className="flex gap-2 justify items-center">
-                            {app.doc_slot}
+                          <div className="flex gap-2 items-center">
+                            {app.doc_slot || "-"}
                           </div>
                         </td>
 
                         <td className="p-4">
-                          <div className="flex gap-2 justify items-center">
-                            {app.appointment_time || "Not Generated"}
+                          <div className="flex gap-2 items-center">
+                            {app.appointment_time
+                              ? convertToAMPM(app.appointment_time)
+                              : "Not Generated"}
                           </div>
                         </td>
 
-                        <td className="p-4 ">
-                          <div className="flex gap-2 justify items-center">
+                        <td className="p-4">
+                          <div className="flex gap-2 items-center">
                             {app.booking_status || "-"}
                           </div>
                         </td>
@@ -649,7 +727,7 @@ const [period, setPeriod] = useState("AM");
                               onClick={() => handleOpenSlotModal(app)}
                               type="button"
                               className="text-blue-600 hover:text-blue-800 p-2 bg-blue-100 rounded-full hover:bg-blue-200"
-                              title="View Doctor"
+                              title="Assign Appointment Time"
                             >
                               <MdAccessTime className="w-5 h-5" />
                             </button>
