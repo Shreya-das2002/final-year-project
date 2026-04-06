@@ -191,7 +191,8 @@ const dob = appointment?.patient_dob || null;
 
                     </div>
                    
-                   {user?.role?.toLowerCase() === "standard admin" && (
+                   {user?.role?.toLowerCase() === "standard admin" &&
+                    appointment?.booking_status?.toLowerCase() === "booking confirmed" && (
                   <>
                     <div className="h-0.5 w-138 bg-cyan-700 ml-3 mt-10"></div>
 
