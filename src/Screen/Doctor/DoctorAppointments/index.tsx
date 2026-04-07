@@ -17,6 +17,7 @@ type ColumnKey =
   | "patient_gender"
   | "patient_phone"
   | "patient_email"
+  | "slot_time"
   | "appointment_date"
   | "appointment_time"
   | "status"
@@ -41,6 +42,7 @@ const DoctorAppointments = () => {
     patient_gender: 250,
     patient_phone: 250,
     patient_email: 250,
+    slot_time: 250,
     appointment_date: 150,
     appointment_time: 170,
     status: 100,
@@ -421,6 +423,17 @@ const DoctorAppointments = () => {
                   </th>
 
                   <th
+                    style={{ width: columnWidths.slot_time }}
+                    className="p-4 relative"
+                  >
+                    Slot Time
+                    <div
+                      className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
+                      onMouseDown={(e) => startResize(e, "slot_time")}
+                    />
+                  </th>
+
+                  <th
                     style={{ width: columnWidths.appointment_date }}
                     className="p-4 relative"
                   >
@@ -521,6 +534,12 @@ const DoctorAppointments = () => {
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
                             {app.patient_email}
+                          </div>
+                        </td>
+
+                        <td className="p-4">
+                          <div className="flex gap-2 justify items-center">
+                            {app.doc_slot}
                           </div>
                         </td>
 
