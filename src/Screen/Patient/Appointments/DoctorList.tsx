@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
+import { useLocation } from "react-router-dom";
 import {
   fetchDoctorListThunk,
   setSelectedDoctor,
 } from "../../../../store/slices/doctorSlice";
+
 
 import { FaEnvelope, FaUser } from "react-icons/fa";
 
@@ -18,12 +19,20 @@ import { FaXmark } from "react-icons/fa6";
 const SpDoctorList = () => {
   const { specializationId } = useParams();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { doctors, loading, selectedDoctor } = useSelector(
     (state: RootState) => state.doctor,
   );
+  const isAuthenticated = useSelector(
+  (state: RootState) => state.auth.isAuthenticated
+  );
   const doctorSlots = useSelector((state: RootState) => state.doctor.slot);
   const user = useSelector((state: RootState) => state.auth.user);
+
+
+    const [symptoms, setSymptoms] = useState("");
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -76,16 +85,41 @@ const SpDoctorList = () => {
     });
   };
 
-  useEffect(() => {
-    if (specializationId) {
-      dispatch(fetchDoctorListThunk(Number(specializationId)));
-    }
-  }, [dispatch, specializationId]);
+ useEffect(() => {
+  if (specializationId) {
+    dispatch(
+      fetchDoctorListThunk({
+        specializationId: Number(specializationId),
+        isPatientRoute: location.pathname.startsWith("/patient"),
+      })
+    );
+  }
+}, [dispatch, specializationId, location.pathname]);
 
   const openCalendar = (doc: Doctor) => {
     dispatch(setSelectedDoctor(doc));
     setShowCalendar(true);
   };
+
+   const handleBookNow = (doctor: Doctor) => {
+    const isPatientRoute = location.pathname.startsWith("/patient");
+
+    if (isPatientRoute) {
+      openCalendar(doctor);
+      return;
+    }
+
+    if (!isAuthenticated) {
+      toast.error("To book your appointment, login first.");
+      navigate("/registrationlogin/login");
+      return;
+    }
+
+    openCalendar(doctor);
+  };
+
+
+
 
   const handleDateClick = (
     fullDate: string,
@@ -161,7 +195,7 @@ const SpDoctorList = () => {
     }
   };
 
-  const [symptoms, setSymptoms] = useState("");
+
 
   return (
     <div className="bg-gradient-to-r from-sky-100/50 via-sky-50/50 to-sky-100/50 dark:from-sky-950 dark:via-sky-900 dark:to-sky-950 p-6 min-h-screen w-full">
@@ -235,7 +269,7 @@ const SpDoctorList = () => {
                   </div>
 
                   <button
-                    onClick={() => openCalendar(doc)}
+                    onClick={() => handleBookNow(doc)}
                     className="mt-2 bg-cyan-600 text-white px-4 py-2 mr-3 rounded hover:bg-cyan-700"
                   >
                     Book Now

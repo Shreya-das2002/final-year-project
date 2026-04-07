@@ -134,7 +134,13 @@ const Appointments: React.FC<AppointmentsProps> = ({ showHeader = true }) => {
           return (
             <div
               key={item.value}
-              onClick={() => navigate(`/patient/doctors/${item.value}`)} 
+              
+              onClick={() =>
+                  navigate(
+                    location.pathname === "/"
+                      ? `/doctors/${item.value}`
+                      : `/patient/doctors/${item.value}`
+                  )} 
               className={`
     flex items-center gap-3
     rounded-xl

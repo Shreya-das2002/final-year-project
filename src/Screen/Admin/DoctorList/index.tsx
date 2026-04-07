@@ -134,7 +134,12 @@ const DoctorList = () => {
       if (response?.data?.success) {
         toast.success("Doctor deactivated successfully ");
   
-        dispatch(fetchDoctorListThunk());
+        dispatch(
+  fetchDoctorListThunk({
+    specializationId: undefined,
+    isPatientRoute: true,
+  })
+);
       } else {
         toast.error(response?.data?.message || "Failed to deactivate");
       }
@@ -202,13 +207,14 @@ const DoctorList = () => {
   
 
   /* ================= FETCH DOCTORS ================= */
-
-  useEffect(() => {
-
-    dispatch(fetchDoctorListThunk());
-
-  }, [dispatch]);
-
+useEffect(() => {
+  dispatch(
+    fetchDoctorListThunk({
+      specializationId: undefined,
+      isPatientRoute: true,
+    })
+  );
+}, [dispatch]);
 
 
   /* ================= FILTER DOCTORS ================= */

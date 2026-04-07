@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-import { createDoctorApi, getDoctorListApi } from "../../src/services/doctorApi";
+import { createDoctorApi, getDoctorListApi, getpublicDoctorListApi } from "../../src/services/doctorApi";
 import type { RootState } from "../store";
 
 
@@ -183,18 +183,21 @@ export const createDoctorThunk = createAsyncThunk<Doctor, CreateDoctorPayload>(
 
 
 /* ================= FETCH DOCTOR LIST THUNK ================= */
-
 export const fetchDoctorListThunk = createAsyncThunk<
   Doctor[],
-  number | undefined,
+  { specializationId?: number; isPatientRoute: boolean },
   { rejectValue: string }
 >(
   "doctor/doctor-list",
-  async (specializationId, { rejectWithValue }) => {
+  async ({ specializationId, isPatientRoute }, { rejectWithValue }) => {
     try {
-      const res = await getDoctorListApi(specializationId);
 
-      return res; 
+      const res = isPatientRoute
+        ? await getDoctorListApi(specializationId)        
+        : await getpublicDoctorListApi(specializationId);
+
+      return res;
+
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -210,7 +213,6 @@ export const fetchDoctorListThunk = createAsyncThunk<
     }
   }
 );
-
 /* ================= SLICE ================= */
 
 const doctorSlice = createSlice({

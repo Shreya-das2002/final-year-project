@@ -161,6 +161,24 @@ export const getDoctorListApi = async (
   return response.data.data;
 };
 
+/* ================= GET PUBLIC DOCTOR LIST API ================= */
+
+export const getpublicDoctorListApi = async (
+  specializationId?: number
+): Promise<Doctor[]> => {
+
+  const response = await API.get(
+    urls.getpublicDoctorListUrl,
+    {
+      params: {
+        specializationId
+      }
+    }
+  );
+
+  return response.data.data;
+};
+
 /* ================= UPSERT SLOT API ================= */
 
 export const upsertSlotApi = (
