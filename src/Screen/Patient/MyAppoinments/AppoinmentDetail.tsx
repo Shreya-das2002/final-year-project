@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useState, useMemo } from "react";
 import type { RootState } from "../../../../store/store";
 import { cancelAppointmentsApi } from "../../../services/appointmentApi";
+import { getAcknowledgementApi } from "../../../services/acknoledgementPdf";
 import dayjs from 'dayjs';
 import { FaFilePrescription } from 'react-icons/fa6';
 import { FiChevronRight } from 'react-icons/fi';
@@ -97,7 +98,34 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
       setCancelLoading(false);
     }
   }
+const handleDownloadPdf = async () => {
+  try {
+    const response = await getAcknowledgementApi({
+      appointment_id: appointment.appointment_id,
+      patient_id: appointment.patient_id
+    });
 
+    if (response.status === 200) {
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `acknowledgement_${appointment.appointment_id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("PDF successfully downloaded");
+    } else {
+      toast.error("Failed to download PDF");
+    }
+  } catch {
+    toast.error("Something went wrong");
+  }
+};
   return (
      <div
       className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen">
@@ -105,22 +133,41 @@ const currentIndex = STATUS_ORDER.indexOf(currentStatus);
               <div className="flex items-center justify-between mb-6">
                     <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">Appointments Details</h2>
                 <div className=" p-2 grid grid-cols-2 gap-4  ">
-                    <button
-                     
-                      type="button"
-                      onClick={() => handleOpenCancelModal(appointment.appointment_id)}
-                      className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
-                    >
-                      Cancel Booking
-                    </button>
+                    {(
+                      appointment.booking_status === "Booking Initiated" || 
+                      appointment.booking_status === "Booking Confirmed" ) && (
+                      <button
+                      
+                        type="button"
+                        onClick={() => handleOpenCancelModal(appointment.appointment_id)}
+                        className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
+                      >
+                        Cancel Booking
+                      </button>
+                    )}
 
-                     <button
-                     
-                      type="button"
-                      className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
-                    >
-                      Download Details as PDF
-                    </button>
+                    {(
+                      appointment.booking_status === "Slot Assigned") && (
+                      <button
+                      onClick={handleDownloadPdf}
+                        type="button"
+                        className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
+                      >
+                        Download Details as PDF
+                      </button>
+                    )}
+
+                    {(
+                      appointment.booking_status === "Prescription Generated") && (
+                      <button
+
+                        type="button"
+                        className="text-xs p-2 w-full border border-red-50 text-red-500 dark:text-red-600 dark:bg-red-100 bg-red-100 rounded-full font-semibold hover:bg-red-200 dark:hover:bg-red-300 transition"
+                      >
+                        Download Prescription as PDF
+                      </button>
+                    )}
+
                     </div>
                  </div>
 

@@ -22,10 +22,6 @@ type ColumnKey =
   | "status"
   | "action";
 
-  type AppointmentWithSlot = Appointment & {
-  start_time?: string | null;
-  end_time?: string | null;
-};
 
 
 const Slotmanagement = () => {
@@ -42,8 +38,8 @@ const Slotmanagement = () => {
 
   const [search, setSearch] = useState("");
   const [showSlotModal, setShowSlotModal] = useState(false);
-const [selectedAppointment, setSelectedAppointment] =
-  useState<AppointmentWithSlot | null>(null);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
 
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
@@ -134,6 +130,49 @@ const [selectedAppointment, setSelectedAppointment] =
     return `${String(hour).padStart(2, "0")}:${m} ${meridian}`;
   };
 
+  const parseTime = (time: string) => {
+    const [hm, period] = time.split(" ");
+    const [h, m] = hm.split(":");
+
+    return {
+      hour: parseInt(h, 10),
+      minute: parseInt(m, 10),
+      period: period as "AM" | "PM",
+    };
+  };
+
+  const getSlotHourOptions = (
+    startTime?: string | null,
+    endTime?: string | null
+  ) => {
+    if (!startTime || !endTime) return [];
+
+    const start = parseTime(startTime);
+    const end = parseTime(endTime);
+
+    const options: { hour: string; period: "AM" | "PM" }[] = [];
+
+    const to24 = (h: number, p: "AM" | "PM") => {
+      if (p === "AM") return h === 12 ? 0 : h;
+      return h === 12 ? 12 : h + 12;
+    };
+
+    const start24 = to24(start.hour, start.period);
+    const end24 = to24(end.hour, end.period);
+
+    for (let h24 = start24; h24 < end24; h24++) {
+      const optionPeriod: "AM" | "PM" = h24 < 12 ? "AM" : "PM";
+      const optionHour12 = h24 % 12 === 0 ? 12 : h24 % 12;
+
+      options.push({
+        hour: String(optionHour12).padStart(2, "0"),
+        period: optionPeriod,
+      });
+    }
+
+    return options;
+  };
+
   /* ================= FETCH APPOINTMENTS ================= */
 
   const hasFetched = useRef(false);
@@ -164,7 +203,13 @@ const [selectedAppointment, setSelectedAppointment] =
   };
 
   const handleOpenSlotModal = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
+    const selectedApp = appointment as Appointment;
+    setSelectedAppointment(selectedApp);
+
+    const slotHourOptions = getSlotHourOptions(
+      selectedApp.start_time,
+      selectedApp.end_time
+    );
 
     if (appointment.appointment_time) {
       const timeValue = appointment.appointment_time.trim();
@@ -185,6 +230,10 @@ const [selectedAppointment, setSelectedAppointment] =
         setMinute((m || "00").padStart(2, "0"));
         setPeriod(meridian);
       }
+    } else if (slotHourOptions.length > 0) {
+      setHour(slotHourOptions[0].hour);
+      setMinute("00");
+      setPeriod(slotHourOptions[0].period);
     } else {
       setHour("01");
       setMinute("00");
@@ -223,7 +272,9 @@ const [selectedAppointment, setSelectedAppointment] =
         handleCloseSlotModal();
         dispatch(fetchAppointmentsThunk());
       } else {
-        toast.error(response?.data?.message || "Failed to assign appointment time");
+        toast.error(
+          response?.data?.message || "Failed to assign appointment time"
+        );
       }
     } catch (error) {
       console.error("SAVE APPOINTMENT TIME ERROR:", error);
@@ -274,39 +325,53 @@ const [selectedAppointment, setSelectedAppointment] =
 
       return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
     });
-          const parseTime = (time: string) => {
-        const [hm, period] = time.split(" ");
-        const [h, m] = hm.split(":");
 
-        return {
-          hour: parseInt(h),
-          minute: parseInt(m),
-          period,
-        };
-      };
-
-      const slot =
-        selectedAppointment?.start_time && selectedAppointment?.end_time
-          ? {
-              start: parseTime(selectedAppointment.start_time),
-              end: parseTime(selectedAppointment.end_time),
-            }
-          : null;
-
-      let minuteStart = 0;
-      let minuteEnd = 59;
-
-      if (slot) {
-        const selectedHour = parseInt(hour);
-
-        if (selectedHour === slot.start.hour) {
-          minuteStart = slot.start.minute;
+  const slot =
+    selectedAppointment?.start_time && selectedAppointment?.end_time
+      ? {
+          start: parseTime(selectedAppointment.start_time),
+          end: parseTime(selectedAppointment.end_time),
         }
+      : null;
 
-        if (selectedHour === slot.end.hour) {
-          minuteEnd = slot.end.minute;
-        }
+  const slotHourOptions = getSlotHourOptions(
+    selectedAppointment?.start_time,
+    selectedAppointment?.end_time
+  );
+
+  let minuteStart = 0;
+  let minuteEnd = 59;
+
+  if (slot) {
+    const selectedHourNum = parseInt(hour, 10);
+    const selectedHourWithPeriod = slotHourOptions.find(
+      (h) => h.hour === hour && h.period === period
+    );
+
+    if (selectedHourWithPeriod) {
+      const isFirstSlotHour =
+        selectedHourWithPeriod.hour === slotHourOptions[0]?.hour &&
+        selectedHourWithPeriod.period === slotHourOptions[0]?.period;
+
+      const lastSlotHour = slotHourOptions[slotHourOptions.length - 1];
+      const isLastSlotHour =
+        selectedHourWithPeriod.hour === lastSlotHour?.hour &&
+        selectedHourWithPeriod.period === lastSlotHour?.period;
+
+      if (isFirstSlotHour) {
+        minuteStart = slot.start.minute;
       }
+
+      if (isLastSlotHour) {
+        minuteEnd = slot.end.minute;
+      }
+    }
+
+    if (selectedHourNum < 1 || selectedHourNum > 12) {
+      minuteStart = 0;
+      minuteEnd = 59;
+    }
+  }
 
   return (
     <div
@@ -314,7 +379,6 @@ const [selectedAppointment, setSelectedAppointment] =
       onMouseMove={resize}
       onMouseUp={stopResize}
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">
           Slot Management
@@ -364,7 +428,6 @@ const [selectedAppointment, setSelectedAppointment] =
           </div>
         )}
 
-        {/* ================= CALENDAR ================= */}
         {isCalendarOpen && (
           <div className="fixed inset-0 bg-black/30 flex items-start justify-center z-40">
             <div className="bg-white w-[600px] rounded-2xl p-6 border shadow-lg">
@@ -462,7 +525,6 @@ const [selectedAppointment, setSelectedAppointment] =
           </div>
         )}
 
-        {/* ================= DATE CONFIRM MODAL ================= */}
         {showConfirmModal && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white w-[360px] rounded-2xl p-6 shadow-lg border">
@@ -494,7 +556,6 @@ const [selectedAppointment, setSelectedAppointment] =
           </div>
         )}
 
-        {/* ================= SLOT MODAL ================= */}
         {showSlotModal && selectedAppointment && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white w-[420px] rounded-2xl p-5 shadow-lg border">
@@ -545,58 +606,72 @@ const [selectedAppointment, setSelectedAppointment] =
                 </span>
 
                 <div className="flex gap-1 border shadow-md rounded-sm p-1 mt-2 items-center">
-                 <select
-                  value={hour}
-                  onChange={(e) => setHour(e.target.value)}
-                  className="outline-none bg-transparent"
-                >
-                  {slot
-                    ? Array.from(
-                        { length: slot.end.hour - slot.start.hour + 1 },
-                        (_, i) => slot.start.hour + i
-                      ).map((h) => (
-                        <option key={h} value={String(h).padStart(2, "0")}>
-                          {h}
-                        </option>
-                      ))
-                    : [...Array(12)].map((_, i) => (
-                        <option key={i} value={String(i + 1).padStart(2, "0")}>
-                          {i + 1}
-                        </option>
-                      ))}
-                </select>
+                  <select
+                    value={hour}
+                    onChange={(e) => {
+                      const selectedHour = e.target.value;
+                      setHour(selectedHour);
+
+                      const selectedOption = slotHourOptions.find(
+                        (opt) => opt.hour === selectedHour
+                      );
+
+                      if (selectedOption) {
+                        setPeriod(selectedOption.period);
+                      }
+                    }}
+                    className="outline-none bg-transparent"
+                  >
+                    {slotHourOptions.length > 0
+                      ? slotHourOptions.map((hObj, index) => (
+                          <option key={`${hObj.hour}-${hObj.period}-${index}`} value={hObj.hour}>
+                            {hObj.hour}
+                          </option>
+                        ))
+                      : [...Array(12)].map((_, i) => (
+                          <option key={i} value={String(i + 1).padStart(2, "0")}>
+                            {i + 1}
+                          </option>
+                        ))}
+                  </select>
 
                   <span>:</span>
 
-                    <select
-                      value={minute}
-                      onChange={(e) => setMinute(e.target.value)}
-                      className="outline-none bg-transparent"
-                    >
-                      {Array.from(
-                        { length: minuteEnd - minuteStart + 1 },
-                        (_, i) => minuteStart + i
-                      ).map((m) => (
-                        <option key={m} value={String(m).padStart(2, "0")}>
-                          {String(m).padStart(2, "0")}
-                        </option>
-                      ))}
-                    </select>
+                  <select
+                    value={minute}
+                    onChange={(e) => setMinute(e.target.value)}
+                    className="outline-none bg-transparent"
+                  >
+                    {Array.from(
+                      { length: minuteEnd - minuteStart + 1 },
+                      (_, i) => minuteStart + i
+                    ).map((m) => (
+                      <option key={m} value={String(m).padStart(2, "0")}>
+                        {String(m).padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
 
-                      <select
-                        value={period}
-                        onChange={(e) => setPeriod(e.target.value)}
-                        className="outline-none bg-transparent"
-                      >
-                        {slot ? (
-                          <option value={slot.start.period}>{slot.start.period}</option>
-                        ) : (
-                          <>
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
-                          </>
-                        )}
-                      </select>
+                  <select
+                    value={period}
+                    onChange={(e) => setPeriod(e.target.value as "AM" | "PM")}
+                    className="outline-none bg-transparent"
+                  >
+                    {slotHourOptions.length > 0 ? (
+                      Array.from(new Set(slotHourOptions.map((h) => h.period))).map(
+                        (p) => (
+                          <option key={p} value={p}>
+                            {p}
+                          </option>
+                        )
+                      )
+                    ) : (
+                      <>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </>
+                    )}
+                  </select>
                 </div>
               </div>
 
@@ -619,7 +694,6 @@ const [selectedAppointment, setSelectedAppointment] =
           </div>
         )}
 
-        {/* ================= TABLE ================= */}
         <div className="bg-white rounded-2xl shadow-md">
           <div className="max-h-[450px] overflow-y-auto rounded-2xl">
             <table className="w-full text-left">

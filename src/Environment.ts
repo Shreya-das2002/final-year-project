@@ -519,7 +519,8 @@ export const urls ={
   pendingAppoinmentsUrl: '/appointment/pending-list',
   pendingappointmentsRequestUrl: '/appointment/update-status',
   cancelAppointmentsUrl: '/appointment/cancel-appointment',
-  slotassignAppointmentUrl: '/appointment/assign-appointment-time'
+  slotassignAppointmentUrl: '/appointment/assign-appointment-time',
+  acknowledgementPdfUrl: '/acknowledgement'
 }
 
 

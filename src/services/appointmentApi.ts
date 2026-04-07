@@ -78,7 +78,8 @@ export interface Appointment{
   admin_name: string;
   admin_phone: string;
   admin_email: string;
- 
+  start_time?: string;
+  end_time?: string;
 };
 
 export interface PendingAppointment {
