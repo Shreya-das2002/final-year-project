@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
+import { useLocation } from "react-router-dom";
 import {
   fetchDoctorListThunk,
   setSelectedDoctor,
 } from "../../../../store/slices/doctorSlice";
+
 
 import { FaEnvelope, FaUser } from "react-icons/fa";
 
@@ -13,16 +14,25 @@ import type { RootState, AppDispatch } from "../../../../store/store";
 import type { Doctor } from "../../../services/doctorApi";
 import { appointmentRequestApi } from "../../../services/appointmentApi";
 import toast from "react-hot-toast";
+import { FaXmark } from "react-icons/fa6";
 
 const SpDoctorList = () => {
   const { specializationId } = useParams();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { doctors, loading, selectedDoctor } = useSelector(
     (state: RootState) => state.doctor,
   );
+  const isAuthenticated = useSelector(
+  (state: RootState) => state.auth.isAuthenticated
+  );
   const doctorSlots = useSelector((state: RootState) => state.doctor.slot);
   const user = useSelector((state: RootState) => state.auth.user);
+
+
+    const [symptoms, setSymptoms] = useState("");
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -75,16 +85,41 @@ const SpDoctorList = () => {
     });
   };
 
-  useEffect(() => {
-    if (specializationId) {
-      dispatch(fetchDoctorListThunk(Number(specializationId)));
-    }
-  }, [dispatch, specializationId]);
+ useEffect(() => {
+  if (specializationId) {
+    dispatch(
+      fetchDoctorListThunk({
+        specializationId: Number(specializationId),
+        isPatientRoute: location.pathname.startsWith("/patient"),
+      })
+    );
+  }
+}, [dispatch, specializationId, location.pathname]);
 
   const openCalendar = (doc: Doctor) => {
     dispatch(setSelectedDoctor(doc));
     setShowCalendar(true);
   };
+
+   const handleBookNow = (doctor: Doctor) => {
+    const isPatientRoute = location.pathname.startsWith("/patient");
+
+    if (isPatientRoute) {
+      openCalendar(doctor);
+      return;
+    }
+
+    if (!isAuthenticated) {
+      toast.error("To book your appointment, login first.");
+      navigate("/registrationlogin/login");
+      return;
+    }
+
+    openCalendar(doctor);
+  };
+
+
+
 
   const handleDateClick = (
     fullDate: string,
@@ -160,7 +195,7 @@ const SpDoctorList = () => {
     }
   };
 
-  const [symptoms, setSymptoms] = useState("");
+
 
   return (
     <div className="bg-gradient-to-r from-sky-100/50 via-sky-50/50 to-sky-100/50 dark:from-sky-950 dark:via-sky-900 dark:to-sky-950 p-6 min-h-screen w-full">
@@ -234,7 +269,7 @@ const SpDoctorList = () => {
                   </div>
 
                   <button
-                    onClick={() => openCalendar(doc)}
+                    onClick={() => handleBookNow(doc)}
                     className="mt-2 bg-cyan-600 text-white px-4 py-2 mr-3 rounded hover:bg-cyan-700"
                   >
                     Book Now
@@ -246,128 +281,135 @@ const SpDoctorList = () => {
         </div>
       )}
 
-     {showCalendar && selectedDoctor && (
-  <div className="fixed inset-0 z-40 flex items-start justify-center bg-black/30 pt-16">
-    <div className="w-[700px] max-w-[95vw] h-[500px] mt-10 mb-4 rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
+{showCalendar && selectedDoctor && (
+  <div className="fixed inset-0 z-40 flex items-start justify-center bg-black/30 pt-20">
+    
+    <div className="w-[700px] max-w-[95vw] h-[500px] mt-10 mb-4 rounded-2xl bg-white shadow-2xl border border-cyan-200 overflow-hidden flex flex-col">
+      
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between px-6 py-4">
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-cyan-900">
             Appointment Calendar
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-cyan-700 mt-1">
             Dr. {selectedDoctor.first_name} {selectedDoctor.last_name}
           </p>
         </div>
 
         <button
           onClick={() => setShowCalendar(false)}
-          className="h-10 w-10 rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition"
+          className="text-2xl text-red-700 hover:text-red-900 
+                     hover:scale-105 transition"
         >
-          ✕
+          <FaXmark />
         </button>
       </div>
 
-      {/* Month Navigation */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <button
-          onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
-          className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
-        >
-          Previous
-        </button>
+      <div className="flex-1 overflow-y-auto">
+        <div className="border border-cyan-200 m-2 mr-2.5 [scrollbar-gutter:stable]">
 
-        <h3 className="text-lg font-semibold text-gray-800">
-          {monthName} {year}
-        </h3>
-
-        <button
-          onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
-          className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
-        >
-          Next
-        </button>
-      </div>
-
-      {/* Week Header */}
-      <div className="grid grid-cols-7 border-b border-gray-200 bg-white">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div
-            key={day}
-            className="border-r last:border-r-0 border-gray-200 px-4 py-4 text-center text-sm font-semibold text-slate-700"
-          >
-            {day}
-          </div>
-        ))}
-      </div>
-
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7">
-        {[...Array(firstDay)].map((_, i) => (
-          <div
-            key={`empty-${i}`}
-            className="min-h-[50px] border-r border-b border-gray-200 bg-gray-50/40"
-          />
-        ))}
-
-        {[...Array(daysInMonth)].map((_, i) => {
-          const day = i + 1;
-
-          const fullDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-            day,
-          ).padStart(2, "0")}`;
-
-          const slotInfo =
-            selectedDoctor &&
-            doctorSlots[selectedDoctor.doctor_id]?.[fullDate];
-
-          const isToday = fullDate === todayDate;
-          const hasSlot = !!slotInfo;
-
-          return (
-            <div
-              key={day}
-              onClick={() => hasSlot && handleDateClick(fullDate, slotInfo)}
-              className={`relative min-h-[140px] border-r border-b border-gray-200 p-3 transition
-                ${hasSlot ? "cursor-pointer hover:bg-sky-50" : "bg-white"}
-              `}
+          {/* Month Navigation */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-cyan-200 bg-cyan-100">
+            <button
+              onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+              className="rounded-lg border  border-cyan-300 bg-white px-4 py-2 text-sm font-medium text-cyan-800 hover:bg-cyan-700 hover:border-cyan-800 hover:text-cyan-50 transition"
             >
-              {/* Date */}
-              <div className="flex justify-end">
-                <span
-                  className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold
-                    ${
-                      isToday
-                        ? "bg-indigo-500 text-white"
-                        : "text-gray-700"
-                    }
+              Previous
+            </button>
+
+            <h3 className="text-lg font-semibold text-cyan-900">
+              {monthName} {year}
+            </h3>
+
+            <button
+              onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+              className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-medium text-cyan-800 hover:bg-cyan-700 hover:border-cyan-800 hover:text-cyan-50 transition"
+            >
+              Next
+            </button>
+          </div>
+
+          {/* Week Header */}
+          <div className="grid grid-cols-7 border-b border-cyan-200 bg-cyan-50">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div
+                key={day}
+                className="border-r last:border-r-0 border-cyan-200 px-4 py-4 text-center text-sm font-semibold text-cyan-900"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7">
+            {[...Array(firstDay)].map((_, i) => (
+              <div
+                key={`empty-${i}`}
+                className="min-h-[50px] border-r border-b border-cyan-200 bg-cyan-50/40"
+              />
+            ))}
+
+            {[...Array(daysInMonth)].map((_, i) => {
+              const day = i + 1;
+
+              const fullDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+                day,
+              ).padStart(2, "0")}`;
+
+              const slotInfo =
+                selectedDoctor &&
+                doctorSlots[selectedDoctor.doctor_id]?.[fullDate];
+
+              const isToday = fullDate === todayDate;
+              const hasSlot = !!slotInfo;
+
+              return (
+                <div
+                  key={day}
+                  onClick={() => hasSlot && handleDateClick(fullDate, slotInfo)}
+                  className={`relative min-h-[80px] border-r border-b border-cyan-200 p-1 transition
+                    ${hasSlot ? "cursor-pointer hover:bg-cyan-100" : "bg-white"}
                   `}
                 >
-                  {String(day).padStart(2, "0")}
-                </span>
-              </div>
-
-              {/* Appointment Card */}
-              {slotInfo && (
-                <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
-                  <div className="flex items-center gap-2 mb-2">
-                   
+                  {/* Date */}
+                  <div className="flex justify-end">
+                    <span
+                      className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold
+                        ${
+                          isToday
+                            ? "bg-cyan-700 text-white"
+                            : "text-cyan-900"
+                        }
+                      `}
+                    >
+                      {String(day).padStart(2, "0")}
+                    </span>
                   </div>
 
-                  <p className="text-xs text-gray-500 mb-1">
-                    {convertToAMPM(slotInfo.start_time || "")} -{" "}
-                    {convertToAMPM(slotInfo.end_time || "")}
-                  </p>
+                  {/* Appointment Card */}
+                  {slotInfo && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2"></div>
 
-                  <p className="text-xs font-medium text-emerald-700">
-                    Fee: ₹{slotInfo.fee ?? 0}
-                  </p>
+                      <p className="text-[9.5px] text-cyan-700 mb-1 justify-center">
+                        {convertToAMPM(slotInfo.start_time || "")} -{" "}
+                        {convertToAMPM(slotInfo.end_time || "")}
+                      </p>
+
+                      <p className="text-[11px] font-medium text-emerald-700 pl-0.5">
+                        Fee: ₹{slotInfo.fee ?? 0}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>        
+        </div>
       </div>
+
     </div>
   </div>
 )}

@@ -505,6 +505,7 @@ export const urls ={
   getPendingDoctorsUrl: 'doctor/pending-doctors',
   updateDoctorStatusUrl: 'doctor/update-status',
   getDoctorListUrl: 'doctor/doctor-list',
+  getpublicDoctorListUrl: 'doctor/public-doctor-list',
   applyDoctorUrl: 'apply-doctor',
   docProfileUrl: 'doctor/profile',
   adminProfileUrl: 'admin/profile',
