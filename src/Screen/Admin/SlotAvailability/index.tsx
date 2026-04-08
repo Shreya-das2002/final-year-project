@@ -73,9 +73,13 @@ const [slotData, setSlotData] = useState<
     month: "long",
   });
 
-  useEffect(() => {
-    dispatch(fetchDoctorListThunk());
-  }, [dispatch]);
+useEffect(() => {
+  dispatch(
+    fetchDoctorListThunk({
+      isPatientRoute: true,
+    })
+  );
+}, [dispatch]);
 
 const convertToAMPM = (time: string) => {
   if (!time) return "";
