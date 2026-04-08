@@ -7,7 +7,7 @@ import {
   isValidGender,
   getPasswordStrength,
   doPasswordsMatch,
-  isStrongPassword,
+  validatePassword,
   isValidEmail,
   isValidPhone
 } from "../../../Environment";
@@ -91,12 +91,7 @@ const Signup: React.FC = () => {
       toast.error("Please select a valid gender");
       return;
     }
-
-    if (!isStrongPassword(formData.password)) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
-
+    
     if (!passwordsMatch) {
       toast.error("Passwords do not match");
       return;
@@ -111,7 +106,12 @@ if (!isValidPhone(formData.phone.trim())) {
   toast.error("Please enter a valid 10-digit phone number");
   return;
 }
+const passwordError = validatePassword(formData.password);
 
+if (passwordError) {
+  toast.error(passwordError); 
+  return;
+}
     try {
       setLoading(true);
 
@@ -312,6 +312,21 @@ if (!isValidPhone(formData.phone.trim())) {
                   <EyeSlashIcon className="w-5 h-5" />
                 )}
               </button>
+               <small
+                  className={`${
+                    !formData.confirmPassword
+                      ? "text-gray-500 dark:text-gray-400"
+                      : passwordsMatch
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-500 dark:text-red-400"
+                  }`}
+                >
+                  {!formData.confirmPassword
+                    ? ""
+                    : passwordsMatch
+                    ? "Passwords match"
+                    : "Passwords do not match"}
+                </small>
           </div>
 
           <button

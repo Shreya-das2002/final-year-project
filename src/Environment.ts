@@ -361,6 +361,29 @@ export const getPasswordStrength = (
   return "Weak";
 };
 
+export const validatePassword = (password: string): string => {
+  if (password.length < 8) {
+    return "Password must be at least 8 characters"
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return "Use at least one uppercase letter (A-Z)"
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return "Use at least one lowercase letter (a-z)"
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return "Use at least one special character (@#$...)"
+  }
+
+  if (!/[0-9]/.test(password)) {
+    return "Use at least one number (0-9)"
+  }
+  return ""
+
+};
 
 /**
  * Match password and confirm password
