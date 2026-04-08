@@ -37,7 +37,7 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
       </h1>
 
       <p className="text-2xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-3">
-        Everything you need for better health management in one intelligent platform
+        Everything you need to understand symptoms, identify possible conditions, and connect with the right specialist in one intelligent platform
       </p>
 
       <div className="grid gap-8 md:grid-cols-3 p-8">
@@ -57,7 +57,8 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
           </h3>
 
           <p className="text-neutral-900 text-[17px]/7">
-            Understand your symptoms with clear and structured health information using our AI-powered symptom checker.
+            Analyze your symptoms with our AI-powered symptom checker to understand possible 
+            health conditions and the most relevant type of specialist to consult.
           </p>
         </div>
 
@@ -69,11 +70,12 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
             </div>
 
             <h3 className="text-neutral-950 font-semibold text-3xl mb-3">
-              Safe Remedies
+              Condition Prediction
             </h3>
 
             <p className="text-neutral-900 text-[17px]/7">
-              Discover trusted home remedies and natural health tips that help manage common issues while minimizing the risk of side effects.
+            Get intelligent predictions of possible diseases or health conditions based on your symptoms, 
+            helping you understand when professional medical attention may be needed.
             </p>
           </div>
         </div>
@@ -93,7 +95,7 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
             </h3>
 
             <p className="text-neutral-900 text-[17px]/7">
-              Connect with doctors when expert advice is needed, bridging basic health guidance with professional medical support.
+              Get matched with the right doctor based on predicted conditions and recommended specialization, so you can seek expert care faster.
             </p>
           </div>
         </div>
@@ -116,9 +118,9 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
             </h2>
 
             <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-              SymptoNexus combines cutting-edge AI technology with medical expertise
-              to provide you with the most accurate health assessments and
-              personalized care recommendations.
+              SymptoNexus combines AI-driven symptom analysis with smart condition prediction
+to help users understand possible health issues and connect with doctors
+based on the right specialization.
             </p>
 
             <div className="grid grid-cols-2 gap-6">
@@ -203,10 +205,10 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
             <div>
               <div className="text-6xl font-bold text-blue-300 mb-4">02</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                2. Get Advice & Insights
+                2.  Get Condition Prediction
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Understand possible causes and recommended next steps.
+                View possible diseases or conditions based on your symptoms and understand the recommended specialist category.
               </p>
             </div>
 
@@ -216,7 +218,7 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
                 3. Connect With Doctors
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                If needed, talk to a medical expert directly.
+                Consult the most relevant doctor based on the predicted condition and specialization mapping.
               </p>
             </div>
           </div>
