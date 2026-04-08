@@ -1,14 +1,17 @@
 
 import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useMemo } from "react";
+import { useMemo, useState} from "react";
 import type { RootState } from "../../../../store/store";
+import { consultationAppointmentApi } from "../../../services/appointmentApi";
 import dayjs from 'dayjs';
 import { Select, MenuItem } from "@mui/material";
+import toast from "react-hot-toast";
 
 
 
 const AppointmentDetail = () => {
+  const [consultationStatus, setConsultationStatus] = useState("");
 
 
 const { appointment_id } = useParams();
@@ -32,14 +35,30 @@ const appointment = useMemo(() => {
 const dob = appointment?.patient_dob || null;
   const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
 
+  const handleConsultationAction = async (
+  appointment_id: number,
+  action: "consultation_completed" | "consultation_missed"
+) => {
+  try {
+    const response = await consultationAppointmentApi({
+      appointment_id,
+      action,
+    });
+
+    if (response.data?.success) {
+      toast.success(response.data.message || "Consultation updated");
+
+    } else {
+      toast.error(response.data?.message || "Action failed");
+    }
+  } catch  {
+    toast.error("Something went wrong");
+  }
+};
+
       if (!appointment) {
     return <div className="p-10">No appointment data found</div>;
   }
-
-
-
-
-
 
   return (
      <div
@@ -192,26 +211,45 @@ const dob = appointment?.patient_dob || null;
                     </div>
                    
                    {user?.role?.toLowerCase() === "standard admin" &&
-                    appointment?.booking_status?.toLowerCase() === "booking confirmed" && (
+                    appointment?.booking_status?.toLowerCase() === "slot assigned" && (
                   <>
-                    <div className="h-0.5 w-138 bg-cyan-700 ml-3 mt-10"></div>
+                    <div className="h-px w-138 bg-cyan-700 ml-3 mt-10"></div>
 
                     <div>
                       <h1 className="text-lg font-semibold text-gray-700 dark:text-gray-200 pt-5 pl-5">
                         Consultation Status
                       </h1>
-
                       <Select
+                        value={consultationStatus}
                         size="small"
                         className="h-10.5 mt-0.5 w-138 ml-4"
+                        displayEmpty
                       >
                         <MenuItem value="">Status</MenuItem>
 
-                        <MenuItem value="Completed">
+                        <MenuItem
+                          value="Completed"
+                          onClick={() => {
+                            setConsultationStatus("Completed");
+                            handleConsultationAction(
+                              appointment.appointment_id,
+                              "consultation_completed"
+                            );
+                          }}
+                        >
                           Consultation Completed
                         </MenuItem>
 
-                        <MenuItem value="Missed">
+                        <MenuItem
+                          value="Missed"
+                          onClick={() => {
+                            setConsultationStatus("Missed");
+                            handleConsultationAction(
+                              appointment.appointment_id,
+                              "consultation_missed"
+                            );
+                          }}
+                        >
                           Consultation Missed
                         </MenuItem>
                       </Select>

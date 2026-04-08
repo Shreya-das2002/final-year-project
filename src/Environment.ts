@@ -517,11 +517,13 @@ export const urls ={
   deleteAcoountUrl: '/account/deactivate',
   appointmentRequestUrl: '/appointment/create',
   appointmentsListUrl: '/appointment/list',
+  slotmanagementListUrl: '/appointment/slot-management-list',
   pendingAppoinmentsUrl: '/appointment/pending-list',
   pendingappointmentsRequestUrl: '/appointment/update-status',
   cancelAppointmentsUrl: '/appointment/cancel-appointment',
   slotassignAppointmentUrl: '/appointment/assign-appointment-time',
-  acknowledgementPdfUrl: '/acknowledgement'
+  acknowledgementPdfUrl: '/acknowledgement',
+  consultationAppointMentUrl: '/appointment/update-consultation-status',
 }
 
 

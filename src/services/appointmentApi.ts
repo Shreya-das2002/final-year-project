@@ -22,6 +22,13 @@ export interface slotassignAppointmentPayload {
   updated_by?: number;
 }
 
+export interface consultationAppointmentStatusPayload {
+  appointment_id: number;
+  action: "consultation_completed" | "consultation_missed";
+  updated_by?: number;
+}
+
+
 export interface AppointmentStatusPayload {
   appointment_id: number;
   action: "approve" | "reject";
@@ -146,6 +153,21 @@ export const getAppointmentsApi = async (
   return response.data?.data || [];
 };
 
+
+export const getSlotmanagementListApi = async (
+  params?: GetAppointmentsParams
+): Promise<Appointment[]> => {
+  const response = await API.get(
+    urls.slotmanagementListUrl,
+    {
+      params,
+      validateStatus: () => true,
+    }
+  );
+
+  return response.data?.data || [];
+};
+
 /* ================= GET PENDING APPOINTMENTS FOR STANDARD ADMIN ================= */
 
 export const getPendingAppointmentsApi = async (): Promise<PendingAppointment[]> => {
@@ -192,6 +214,18 @@ export const slotassignAppointmentApi = (
 ) => {
   return API.put(
     urls.slotassignAppointmentUrl,
+    data,
+    {
+      validateStatus: () => true
+    }
+  );
+}
+
+export const consultationAppointmentApi = (
+  data: consultationAppointmentStatusPayload
+) => {
+  return API.put(
+    urls.consultationAppointMentUrl,
     data,
     {
       validateStatus: () => true

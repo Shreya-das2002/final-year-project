@@ -4,6 +4,7 @@ import {
   appointmentRequestApi,
   getAppointmentsApi,
   getPendingAppointmentsApi,
+  getSlotmanagementListApi,
 } from "../../src/services/appointmentApi";
 
 import type {
@@ -15,16 +16,20 @@ import type {
 
 interface AppointmentState {
   loading: boolean;
+  slotLoading: boolean;
   appointments: Appointment[];
   pendingAppointments: PendingAppointment[];
+  slotManagementList: Appointment[];
   bookedAppointment: Appointment | null;
   error: string | null;
 }
 
 const initialState: AppointmentState = {
   loading: false,
+  slotLoading: false,
   appointments: [],
   pendingAppointments: [],
+  slotManagementList: [],
   bookedAppointment: null,
   error: null,
 };
@@ -48,14 +53,8 @@ export const bookAppointmentThunk = createAsyncThunk<
       }
 
       return response.data.data;
-    } catch (error: unknown) {
-      let errorMessage = "Failed to book appointment";
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      return rejectWithValue(errorMessage);
+    } catch {
+      return rejectWithValue("Failed to book appointment");
     }
   }
 );
@@ -70,21 +69,14 @@ export const fetchAppointmentsThunk = createAsyncThunk<
   "appointment/fetchAppointments",
   async (params, { rejectWithValue }) => {
     try {
-      const data = await getAppointmentsApi(params);
-      return data;
-    } catch (error: unknown) {
-      let errorMessage = "Failed to fetch appointments";
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      return rejectWithValue(errorMessage);
+      return await getAppointmentsApi(params);
+    } catch {
+      return rejectWithValue("Failed to fetch appointments");
     }
   }
 );
 
-/* ================= GET PENDING APPOINTMENTS ================= */
+/* ================= GET PENDING ================= */
 
 export const fetchPendingAppointmentsThunk = createAsyncThunk<
   PendingAppointment[],
@@ -94,16 +86,26 @@ export const fetchPendingAppointmentsThunk = createAsyncThunk<
   "appointment/fetchPendingAppointments",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await getPendingAppointmentsApi();
-      return data;
-    } catch (error: unknown) {
-      let errorMessage = "Failed to fetch pending appointments";
+      return await getPendingAppointmentsApi();
+    } catch {
+      return rejectWithValue("Failed to fetch pending appointments");
+    }
+  }
+);
 
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
+/* ================= GET SLOT MANAGEMENT LIST ================= */
 
-      return rejectWithValue(errorMessage);
+export const fetchSlotManagementListThunk = createAsyncThunk<
+  Appointment[],
+  void,
+  { rejectValue: string }
+>(
+  "appointment/fetchSlotManagementList",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getSlotmanagementListApi();
+    } catch {
+      return rejectWithValue("Failed to fetch slot management list");
     }
   }
 );
@@ -124,38 +126,32 @@ const appointmentSlice = createSlice({
     clearPendingAppointments: (state) => {
       state.pendingAppointments = [];
     },
+    clearSlotManagementList: (state) => {
+      state.slotManagementList = [];
+    },
   },
   extraReducers: (builder) => {
     builder
-      /* BOOK APPOINTMENT */
+      /* BOOK */
       .addCase(bookAppointmentThunk.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(
         bookAppointmentThunk.fulfilled,
         (state, action: PayloadAction<Appointment>) => {
           state.loading = false;
           state.bookedAppointment = action.payload;
-
-          const alreadyExists = state.appointments.some(
-            (item) => item.appointment_id === action.payload.appointment_id
-          );
-
-          if (!alreadyExists) {
-            state.appointments.unshift(action.payload);
-          }
+          state.appointments.unshift(action.payload);
         }
       )
       .addCase(bookAppointmentThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to book appointment";
+        state.error = action.payload || null;
       })
 
-      /* GET APPOINTMENTS */
+      /* ALL APPOINTMENTS */
       .addCase(fetchAppointmentsThunk.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(
         fetchAppointmentsThunk.fulfilled,
@@ -166,13 +162,12 @@ const appointmentSlice = createSlice({
       )
       .addCase(fetchAppointmentsThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch appointments";
+        state.error = action.payload || null;
       })
 
-      /* GET PENDING APPOINTMENTS */
+      /* PENDING */
       .addCase(fetchPendingAppointmentsThunk.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(
         fetchPendingAppointmentsThunk.fulfilled,
@@ -183,7 +178,23 @@ const appointmentSlice = createSlice({
       )
       .addCase(fetchPendingAppointmentsThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch pending appointments";
+        state.error = action.payload || null;
+      })
+
+      /* SLOT MANAGEMENT */
+      .addCase(fetchSlotManagementListThunk.pending, (state) => {
+        state.slotLoading = true;
+      })
+      .addCase(
+        fetchSlotManagementListThunk.fulfilled,
+        (state, action: PayloadAction<Appointment[]>) => {
+          state.slotLoading = false;
+          state.slotManagementList = action.payload;
+        }
+      )
+      .addCase(fetchSlotManagementListThunk.rejected, (state, action) => {
+        state.slotLoading = false;
+        state.error = action.payload || null;
       });
   },
 });
@@ -193,6 +204,7 @@ export const {
   clearBookedAppointment,
   clearAppointments,
   clearPendingAppointments,
+  clearSlotManagementList,
 } = appointmentSlice.actions;
 
 export default appointmentSlice.reducer;

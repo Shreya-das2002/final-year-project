@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaSearch } from "react-icons/fa";
 import { MdAccessTime, MdCalendarToday } from "react-icons/md";
@@ -6,11 +6,9 @@ import { HiArrowsUpDown } from "react-icons/hi2";
 import toast from "react-hot-toast";
 
 import type { RootState, AppDispatch } from "../../../../store/store";
-import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
+import { fetchSlotManagementListThunk } from "../../../../store/slices/appointmentSlice";
 import { slotassignAppointmentApi } from "../../../services/appointmentApi";
 import type { Appointment } from "../../../services/appointmentApi";
-
-/* ================= COLUMN KEY TYPE ================= */
 
 type ColumnKey =
   | "appointment_id"
@@ -18,18 +16,20 @@ type ColumnKey =
   | "doctor_name"
   | "appointment_date"
   | "slot_time"
-  | "appointment_time"
   | "status"
   | "action";
-
-
 
 const Slotmanagement = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { appointments, loading } = useSelector(
-    (state: RootState) => state.appointment
-  );
+  const { slotManagementList, slotLoading } = useSelector(
+  (state: RootState) => state.appointment
+);
+
+
+const appointmentList: Appointment[] = useMemo(() => {
+  return Array.isArray(slotManagementList) ? slotManagementList : [];
+}, [slotManagementList]);
 
   const ROW_COLORS = [
     "bg-gray-100 hover:bg-gray-200 dark:bg-gray-400/60",
@@ -43,12 +43,10 @@ const Slotmanagement = () => {
 
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
-  /* appointment time */
   const [hour, setHour] = useState("01");
   const [minute, setMinute] = useState("00");
   const [period, setPeriod] = useState("AM");
 
-  /* calendar */
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
@@ -69,15 +67,12 @@ const Slotmanagement = () => {
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
-  /* ================= COLUMN WIDTH STATE ================= */
-
   const [columnWidths, setColumnWidths] = useState<Record<ColumnKey, number>>({
     appointment_id: 200,
     patient_name: 250,
     doctor_name: 250,
     appointment_date: 200,
     slot_time: 180,
-    appointment_time: 180,
     status: 150,
     action: 150,
   });
@@ -100,11 +95,12 @@ const Slotmanagement = () => {
 
     setColumnWidths((prev) => ({
       ...prev,
-      [resizingCol.current!]: prev[resizingCol.current!] + e.movementX,
+      [resizingCol.current!]: Math.max(
+        120,
+        prev[resizingCol.current!] + e.movementX
+      ),
     }));
   };
-
-  /* ================= HELPERS ================= */
 
   const convertTo24Hour = (hour: string, minute: string, period: string) => {
     let hh = parseInt(hour, 10);
@@ -118,17 +114,6 @@ const Slotmanagement = () => {
     return `${String(hh).padStart(2, "0")}:${minute}:00`;
   };
 
-  const convertToAMPM = (time?: string | null) => {
-    if (!time) return "";
-
-    const [h, m] = time.split(":");
-    let hour = parseInt(h, 10);
-
-    const meridian = hour >= 12 ? "PM" : "AM";
-    hour = hour % 12 || 12;
-
-    return `${String(hour).padStart(2, "0")}:${m} ${meridian}`;
-  };
 
   const parseTime = (time: string) => {
     const [hm, period] = time.split(" ");
@@ -173,18 +158,14 @@ const Slotmanagement = () => {
     return options;
   };
 
-  /* ================= FETCH APPOINTMENTS ================= */
-
   const hasFetched = useRef(false);
 
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
 
-    dispatch(fetchAppointmentsThunk());
+    dispatch(fetchSlotManagementListThunk());
   }, [dispatch]);
-
-  /* ================= HANDLERS ================= */
 
   const handleDateClick = (fullDate: string) => {
     setTempSelectedDate(fullDate);
@@ -203,12 +184,11 @@ const Slotmanagement = () => {
   };
 
   const handleOpenSlotModal = (appointment: Appointment) => {
-    const selectedApp = appointment as Appointment;
-    setSelectedAppointment(selectedApp);
+    setSelectedAppointment(appointment);
 
     const slotHourOptions = getSlotHourOptions(
-      selectedApp.start_time,
-      selectedApp.end_time
+      appointment.start_time,
+      appointment.end_time
     );
 
     if (appointment.appointment_time) {
@@ -270,23 +250,18 @@ const Slotmanagement = () => {
           response.data.message || "Appointment time assigned successfully"
         );
         handleCloseSlotModal();
-        dispatch(fetchAppointmentsThunk());
+        dispatch(fetchSlotManagementListThunk());
       } else {
         toast.error(
           response?.data?.message || "Failed to assign appointment time"
         );
       }
-    } catch (error) {
-      console.error("SAVE APPOINTMENT TIME ERROR:", error);
+    } catch {
       toast.error("Something went wrong while saving appointment time");
     }
   };
 
-  /* ================= FILTER APPOINTMENTS ================= */
-
-  const filteredAppointments: Appointment[] = (
-    Array.isArray(appointments) ? appointments : []
-  )
+  const filteredAppointments = appointmentList
     .filter((appointment) => {
       const statusName = appointment.booking_status || "";
       const patientName = appointment.patient_name || "";
@@ -358,13 +333,8 @@ const Slotmanagement = () => {
         selectedHourWithPeriod.hour === lastSlotHour?.hour &&
         selectedHourWithPeriod.period === lastSlotHour?.period;
 
-      if (isFirstSlotHour) {
-        minuteStart = slot.start.minute;
-      }
-
-      if (isLastSlotHour) {
-        minuteEnd = slot.end.minute;
-      }
+      if (isFirstSlotHour) minuteStart = slot.start.minute;
+      if (isLastSlotHour) minuteEnd = slot.end.minute;
     }
 
     if (selectedHourNum < 1 || selectedHourNum > 12) {
@@ -755,17 +725,6 @@ const Slotmanagement = () => {
                   </th>
 
                   <th
-                    style={{ width: columnWidths.appointment_time }}
-                    className="p-4 relative"
-                  >
-                    Appointment Time
-                    <div
-                      className="absolute right-0 top-0 h-full w-2 cursor-col-resize"
-                      onMouseDown={(e) => startResize(e, "appointment_time")}
-                    />
-                  </th>
-
-                  <th
                     style={{ width: columnWidths.status }}
                     className="p-4 relative"
                   >
@@ -790,7 +749,7 @@ const Slotmanagement = () => {
               </thead>
 
               <tbody className="text-sm text-gray-700">
-                {loading && (
+                {slotLoading && (
                   <tr>
                     <td colSpan={8} className="p-6 text-center">
                       Loading...
@@ -798,7 +757,7 @@ const Slotmanagement = () => {
                   </tr>
                 )}
 
-                {!loading && filteredAppointments.length === 0 && (
+                {!slotLoading && filteredAppointments.length === 0 && (
                   <tr>
                     <td colSpan={8} className="p-6 text-center text-gray-500">
                       No appointments found
@@ -806,7 +765,7 @@ const Slotmanagement = () => {
                   </tr>
                 )}
 
-                {!loading &&
+                {!slotLoading &&
                   filteredAppointments.map((app, index) => {
                     const color = ROW_COLORS[index % ROW_COLORS.length];
 
@@ -837,13 +796,6 @@ const Slotmanagement = () => {
                           </div>
                         </td>
 
-                        <td className="p-4">
-                          <div className="flex gap-2 items-center">
-                            {app.appointment_time
-                              ? convertToAMPM(app.appointment_time)
-                              : "Not Generated"}
-                          </div>
-                        </td>
 
                         <td className="p-4">
                           <div className="flex gap-2 items-center">
