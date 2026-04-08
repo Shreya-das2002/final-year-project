@@ -8,6 +8,7 @@ export interface AppointmentRequestPayload {
   doctor_id: number;
   doctor_availability_id: number;
   booking_date: string;
+  description: string;
 }
 
 export interface CancelAppointmentsPayload {
@@ -67,7 +68,7 @@ export interface Appointment{
   booking_time?: string | null;
   appointment_time?: string | null;
   experience: string;
-  description?: string | null;
+  description: string;
   document_id?: number | null;
   booking_status: string;
   slot_details?: slot_details | null;

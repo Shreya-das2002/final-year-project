@@ -169,6 +169,23 @@ const SpDoctorList = () => {
         return;
       }
 
+      const desc = symptoms.trim();
+
+          if (!desc) {
+            toast.error("Please describe your symptoms");
+            return;
+          }
+
+          if (desc.length < 10) {
+            toast.error("Description must be at least 10 characters");
+            return;
+          }
+
+          if (desc.length > 350) {
+            toast.error("Description cannot exceed 350 characters");
+            return;
+          }
+
       setBookingLoading(true);
 
       const response = await appointmentRequestApi({
@@ -176,6 +193,7 @@ const SpDoctorList = () => {
         doctor_id: Number(selectedDoctor.doctor_id),
         doctor_availability_id: Number(doctorAvailabilityId),
         booking_date: selectedBookingDate,
+        description: desc, 
       });
 
       const resData = response?.data;
@@ -183,6 +201,7 @@ const SpDoctorList = () => {
       if (resData?.success === true || resData?.isSuccess === true) {
         setShowConfirmModal(false);
         setShowSuccessModal(true);
+        setSymptoms("");
         return;
       }
 

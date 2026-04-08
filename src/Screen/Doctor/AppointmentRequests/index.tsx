@@ -131,7 +131,7 @@ const AppointmentsRequests = () => {
             </div>
 
             <div className="mt-4 text-[12px] bg-white/30 backdrop-blur-md rounded-xl p-3 text-left font-medium text-cyan-900 dark:text-cyan-50 min-h-[90px]">
-                symptom
+                {item.description}
             </div>
 
             <div className="mt-4 text-[12px] bg-white/30 backdrop-blur-md rounded-xl p-3 text-center font-medium text-cyan-900 dark:text-cyan-50">
