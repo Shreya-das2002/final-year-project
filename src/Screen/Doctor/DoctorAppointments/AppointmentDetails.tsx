@@ -66,21 +66,21 @@ const dob = appointment?.patient_dob || null;
             <div className="bg-white/20 backdrop-blur-md shadow-md rounded-lg w-auto h-auto ">
 
             <h2 className="text-3xl flex justify-center pt-5 font-bold text-blue-500">Appointment Summary</h2>
-                <div className=" grid grid-cols-2 pt-10">
+                <div className=" grid grid-cols-2 pl-10 pt-10">
 
-                 <span className="text-lg font-semibold flex items-center pl-1 gap-2 text-black dark:text-white"> 
+                 <span className="text-lg font-semibold border flex items-center pl-1 gap-2 text-black dark:text-white"> 
                   Appointment ID : {appointment.appointment_no || "Not Generated"}
                   </span>
 
-                     <span className="text-lg flex items-center pl-1 gap-2  text-black dark:text-white"> 
+                     <span className="text-lg flex items-center border pl-1 gap-2  text-black dark:text-white"> 
                    Date : {appointment.appointment_date || "-"}
                   </span>
 
-                 <span className="text-lg flex items-center pl-1 gap-2  text-black dark:text-white"> 
+                 <span className="text-lg flex items-center border pl-1 gap-2  text-black dark:text-white"> 
                    Time : {appointment.appointment_time || "Not Generated"}
                   </span>
 
-                <span className="text-lg flex items-center pl-0.5 gap-2  text-black dark:text-white"> 
+                <span className="text-lg flex items-center border pl-0.5 gap-2  text-black dark:text-white"> 
                   Status : {appointment.booking_status}
                   </span>
 
