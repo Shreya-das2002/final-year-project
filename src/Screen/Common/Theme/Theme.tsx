@@ -25,7 +25,7 @@ const Theme: React.FC = () => {
       onClick={toggleTheme}
       className="
         flex items-center justify-center
-        w-10 h-10 rounded-full
+        w-8.5 h-8.5 rounded-full mr-4
         border transition-all duration-300
         
         bg-blue-50 text-cyan-700 border-blue-50

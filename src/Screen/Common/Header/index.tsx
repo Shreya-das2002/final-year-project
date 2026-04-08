@@ -97,12 +97,12 @@ const Header: React.FC = () => {
 <div className="flex items-center text-sm text-white font-medium pl-10">
 
   {/* THEME */}
-  <div className="w-20 flex justify-center">
+  <div className=" flex justify-center">
     <Theme />
   </div>
 
   {/* DATE */}
-  <div className="w-40 flex items-center gap-1">
+  <div className="w-40 flex items-center gap-2">
     <span className="bg-gray-50 dark:bg-cyan-700 p-2 rounded-full">
       <FaRegCalendarAlt className="text-lg text-cyan-800 dark:text-gray-100" />
     </span>
@@ -111,7 +111,7 @@ const Header: React.FC = () => {
   </div>
 
   {/* TIME */}
-  <div className="w-36 flex pl-3 items-center gap-1">
+  <div className="w-36 flex pl-3 items-center gap-2">
     <span className="bg-gray-50 dark:bg-cyan-700 p-2 rounded-full ">
       <FaRegClock className="text-lg text-cyan-800 dark:text-gray-100" />
     </span>
