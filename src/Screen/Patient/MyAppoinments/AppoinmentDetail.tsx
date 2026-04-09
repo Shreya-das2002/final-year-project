@@ -446,7 +446,7 @@ const handleDownloadPdf = async () => {
                   </span>
 
                    <span className="font-sm flex items-center pl-0.5 gap-2  text-black dark:text-white"> 
-                  Consultation Reason: Symptoms
+                  Consultation Reason: {appointment.description}
                   </span>
 
                       </div>
@@ -459,7 +459,7 @@ const handleDownloadPdf = async () => {
                      <div className=" pl-5 pt-2">
 
                  <span className="text-lg font-semibold flex items-center pl-1 gap-2 text-black dark:text-white"> 
-                   Booking Number : 
+                   Booking Number : {appointment.booking_no}
                   </span>
 
                      <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 

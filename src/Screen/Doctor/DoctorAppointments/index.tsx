@@ -1,7 +1,6 @@
-// import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { AdjustmentsHorizontalIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { FaSearch } from "react-icons/fa";
 import { MdCalendarToday } from "react-icons/md";
 import type { RootState, AppDispatch } from "../../../../store/store";
@@ -50,12 +49,16 @@ const DoctorAppointments = () => {
   });
 
   const resizingCol = useRef<ColumnKey | null>(null);
+  const filterRef = useRef<HTMLDivElement | null>(null);
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("");
   const [tempSelectedDate, setTempSelectedDate] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [openSection, setOpenSection] = useState<"status" | "">("");
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -117,7 +120,34 @@ const DoctorAppointments = () => {
     dispatch(fetchAppointmentsThunk());
   }, [dispatch]);
 
-  /* ================= FILTER APPOINTMENTS (SEARCH + DATE) ================= */
+  /* ================= CLOSE FILTER ON OUTSIDE CLICK ================= */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
+        setShowFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  /* ================= STATUS OPTIONS FROM booking_status ================= */
+  const statusOptions = Array.from(
+    new Set(
+      (Array.isArray(appointments) ? appointments : [])
+        .map((item) => item?.booking_status)
+        .filter((status): status is string => Boolean(status && status.trim()))
+    )
+  );
+
+  /* ================= FILTER APPOINTMENTS (SEARCH + DATE + STATUS) ================= */
   const filteredAppointments = (
     Array.isArray(appointments) ? appointments : []
   )
@@ -128,6 +158,10 @@ const DoctorAppointments = () => {
       const email = appointment.patient_email || "";
       const appointmentDate = appointment.appointment_date || "";
       const appointmentTime = appointment.appointment_time || "";
+
+      const matchesStatus =
+        !statusFilter ||
+        statusName.toLowerCase() === statusFilter.toLowerCase();
 
       const normalizedAppointmentDate =
         typeof appointmentDate === "string" && appointmentDate.includes("T")
@@ -149,7 +183,7 @@ const DoctorAppointments = () => {
         String(statusName).toLowerCase().includes(search.toLowerCase()) ||
         String(email).toLowerCase().includes(search.toLowerCase());
 
-      return matchesDate && matchesSearch;
+      return matchesDate && matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       const dateA = a.appointment_date
@@ -182,12 +216,22 @@ const DoctorAppointments = () => {
         <div className="flex items-center justify-between gap-3 mb-4">
           {/* Sort Button */}
           <div className="flex items-center justify-between gap-2 ">
+
+               <button
+            onClick={() => setShowFilter(!showFilter)}
+            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
+          >
+            <AdjustmentsHorizontalIcon className="text-cyan-700 dark:text-gray-100 w-5 h-5" />
+            <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">
+              Filter
+            </span>
+          </button>
+
             <button
               onClick={() =>
                 setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
               }
-              className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
-                          rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
+              className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
             >
               <HiArrowsUpDown className="text-cyan-700 dark:text-gray-100 w-5 h-5" />
               <span className="text-sm font-semibold text-cyan-700 dark:text-gray-100">
@@ -196,13 +240,13 @@ const DoctorAppointments = () => {
             </button>
           </div>
 
-          {/* Calendar */}
+
+         {/* Calendar */}
           <button
             onClick={() => setIsCalendarOpen(true)}
-            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
-                          rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
+            className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
           >
-            <MdCalendarToday className="text-cyan-700 dark:text-gray-100 w-4 h-4" />
+            <MdCalendarToday className="text-cyan-700 dark:text-gray-100 w-5 h-5" />
           </button>
 
           {/* Search Bar */}
@@ -220,10 +264,68 @@ const DoctorAppointments = () => {
           </div>
         </div>
 
+        {/* DROPDOWN FILTER BOX */}
+        {showFilter && (
+          <div
+            ref={filterRef}
+            className="absolute mt-2 w-64 bg-white dark:bg-cyan-950 rounded-xl shadow-xl border border-gray-200 dark:border-cyan-700 p-4 z-50"
+          >
+            {/* STATUS HEADER */}
+            <button
+              onClick={() =>
+                setOpenSection(openSection === "status" ? "" : "status")
+              }
+              className="w-full text-left px-3 py-2 font-semibold bg-gray-100 dark:bg-gray-600 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg mb-2"
+            >
+              Status
+            </button>
+
+            {/* STATUS OPTIONS */}
+            {openSection === "status" && (
+              <div className="flex flex-col gap-2 mb-3 max-h-56 overflow-y-auto">
+                {statusOptions.length > 0 ? (
+                  statusOptions.map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setStatusFilter(status)}
+                      className={`px-3 py-2 rounded-lg text-sm text-left ${
+                        statusFilter === status
+                          ? "bg-cyan-600 dark:bg-cyan-800 text-white"
+                          : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 px-2">No status found</p>
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowFilter(false)}
+              className="w-full py-2 bg-cyan-600 dark:bg-cyan-700 text-white rounded-lg mb-2 hover:bg-cyan-800 dark:hover:bg-cyan-500"
+            >
+              Apply Filters
+            </button>
+
+            <button
+              onClick={() => {
+                setStatusFilter("");
+                setSearch("");
+                setShowFilter(false);
+              }}
+              className="w-full py-2 bg-gray-200 dark:bg-slate-400 text-black dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-300"
+            >
+              Clear Filters
+            </button>
+          </div>
+        )}
+
         {selectedDate && (
           <div className="mb-4 text-sm font-medium text-cyan-800 dark:text-gray-200">
             Selected Date: {selectedDate}
-            
           </div>
         )}
 
@@ -233,7 +335,6 @@ const DoctorAppointments = () => {
               <div className="flex justify-between mb-4">
                 <div className="text-lg font-semibold text-cyan-700">
                   Select Date
-
                 </div>
                 <button
                   onClick={() => {
@@ -248,7 +349,11 @@ const DoctorAppointments = () => {
 
               <div className="border rounded-xl p-4">
                 <div className="flex justify-between mb-3">
-                  <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))}>
+                  <button
+                    onClick={() =>
+                      setCurrentDate(new Date(year, month - 1, 1))
+                    }
+                  >
                     ◀
                   </button>
 
@@ -256,17 +361,21 @@ const DoctorAppointments = () => {
                     {monthName} {year}
                   </h3>
 
-                  <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))}>
+                  <button
+                    onClick={() =>
+                      setCurrentDate(new Date(year, month + 1, 1))
+                    }
+                  >
                     ▶
                   </button>
                 </div>
 
                 <div className="grid grid-cols-7 text-sm text-gray-400 text-center mb-2">
-                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-                    <div key={d}>{d}</div>
-                  ))}
-
-                  
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                    (d) => (
+                      <div key={d}>{d}</div>
+                    )
+                  )}
                 </div>
 
                 <div className="grid grid-cols-7 gap-2">
@@ -289,16 +398,15 @@ const DoctorAppointments = () => {
                     return (
                       <div
                         key={day}
-                        className={`min-h-[50px] flex flex-col items-center justify-center border rounded-lg cursor-pointer transition
-                          ${
-                            isSelected
-                              ? "bg-cyan-600 text-white"
-                              : isTempSelected
-                              ? "bg-cyan-200 text-cyan-900"
-                              : isToday
-                              ? "bg-cyan-50 border-cyan-400"
-                              : "hover:bg-cyan-100"
-                          }`}
+                        className={`min-h-[50px] flex flex-col items-center justify-center border rounded-lg cursor-pointer transition ${
+                          isSelected
+                            ? "bg-cyan-600 text-white"
+                            : isTempSelected
+                            ? "bg-cyan-200 text-cyan-900"
+                            : isToday
+                            ? "bg-cyan-50 border-cyan-400"
+                            : "hover:bg-cyan-100"
+                        }`}
                         onClick={() => handleDateClick(fullDate)}
                       >
                         <span>{day}</span>
@@ -308,7 +416,6 @@ const DoctorAppointments = () => {
                 </div>
               </div>
 
-             {/* Clear Button */}
               <div className="flex justify-between mt-4">
                 <button
                   onClick={() => {
@@ -319,9 +426,7 @@ const DoctorAppointments = () => {
                 >
                   Clear
                 </button>
-
               </div>
-
             </div>
           </div>
         )}
@@ -358,13 +463,9 @@ const DoctorAppointments = () => {
         )}
 
         {/* Table */}
-
         <div className="bg-white rounded-2xl shadow-md">
-          {/* SCROLL CONTAINER */}
           <div className="max-h-[450px] overflow-y-auto rounded-2xl">
             <table className="w-full text-left">
-              {/* TABLE HEADER */}
-
               <thead className="bg-cyan-600 text-gray-100 text-sm sticky top-0 z-10">
                 <tr className="divide-x divide-gray-100">
                   <th
@@ -479,28 +580,22 @@ const DoctorAppointments = () => {
                 </tr>
               </thead>
 
-              {/* Loading */}
-
               <tbody className="text-sm text-gray-700">
                 {loading && (
                   <tr>
-                    <td colSpan={9} className="p-6 text-center">
+                    <td colSpan={10} className="p-6 text-center">
                       Loading...
                     </td>
                   </tr>
                 )}
 
-                {/* No Data */}
-
                 {!loading && filteredAppointments.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="p-6 text-center text-gray-500">
+                    <td colSpan={10} className="p-6 text-center text-gray-500">
                       No appointments found
                     </td>
                   </tr>
                 )}
-
-                {/* Rows */}
 
                 {!loading &&
                   filteredAppointments.map((app) => {
@@ -509,53 +604,51 @@ const DoctorAppointments = () => {
                         key={app.appointment_id}
                         className="border-b border-gray-300 items-center transition duration-200"
                       >
-                        <td className="p-4 ">
+                        <td className="p-4">
                           <div className="flex gap-2 justify-center items-center">
                             {app.appointment_no || "-"}
                           </div>
                         </td>
 
-                        <td className="p-4 ">
-                          <div className="flex gap-2 justify items-center"></div>
-                          {app.patient_name}
+                        <td className="p-4">
+                          {app.patient_name || "-"}
                         </td>
 
-                        <td className="p-4 ">
-                          <div className="flex gap-2 justify items-center"></div>
-                          {app.patient_gender}
+                        <td className="p-4">
+                          {app.patient_gender || "-"}
                         </td>
 
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
-                            {app.patient_phone}
-                          </div>
-                        </td>
-
-                        <td className="p-4">
-                          <div className="flex gap-2 justify items-center">
-                            {app.patient_email}
+                            {app.patient_phone || "-"}
                           </div>
                         </td>
 
                         <td className="p-4">
                           <div className="flex gap-2 justify items-center">
-                            {app.doc_slot}
+                            {app.patient_email || "-"}
                           </div>
                         </td>
 
-                        <td className="p-4 ">
+                        <td className="p-4">
                           <div className="flex gap-2 justify items-center">
-                            {app.appointment_date}
+                            {app.doc_slot || "-"}
                           </div>
                         </td>
 
-                        <td className="p-4 ">
+                        <td className="p-4">
+                          <div className="flex gap-2 justify items-center">
+                            {app.appointment_date || "-"}
+                          </div>
+                        </td>
+
+                        <td className="p-4">
                           <div className="flex gap-2 justify items-center">
                             {app.appointment_time || "Not Generated"}
                           </div>
                         </td>
 
-                        <td className="p-4 ">
+                        <td className="p-4">
                           <div className="flex gap-2 justify items-center">
                             {app.booking_status || "-"}
                           </div>

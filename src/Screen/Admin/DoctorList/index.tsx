@@ -272,7 +272,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
 
           {/* FILTER BUTTON */}
           <div className="flex items-center justify-between gap-2">
-                   <button
+                  <button
             onClick={() => setShowFilter(!showFilter)}
             className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
             rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
