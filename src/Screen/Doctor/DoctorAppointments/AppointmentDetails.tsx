@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import type { RootState } from "../../../../store/store";
 import dayjs from 'dayjs';
-import { Select, MenuItem } from "@mui/material";
+// import { Select, MenuItem } from "@mui/material";
 
 
 
@@ -12,7 +12,7 @@ const DocAppointmentDetails = () => {
 
 const { appointment_id } = useParams();
 const location = useLocation();
-const user = useSelector((state: RootState) => state.auth.user);
+// const user = useSelector((state: RootState) => state.auth.user);
 
 
 const appointmentFromState = location.state;

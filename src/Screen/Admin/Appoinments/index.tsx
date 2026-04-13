@@ -97,7 +97,14 @@ useEffect(() => {
   dispatch(fetchAppointmentsThunk());
 }, [dispatch]);
 
-
+/* ================= STATUS OPTIONS FROM booking_status ================= */
+  const statusOptions = Array.from(
+    new Set(
+      (Array.isArray(appointments) ? appointments : [])
+        .map((item) => item?.booking_status)
+        .filter((status): status is string => Boolean(status && status.trim()))
+    )
+  );
 
   /* ================= FILTER DOCTORS ================= */
  const filteredAppointments = (
@@ -166,7 +173,7 @@ useEffect(() => {
 
           {/* FILTER BUTTON */}
           <div className="flex items-center justify-between gap-2">
-                   <button
+                  <button
             onClick={() => setShowFilter(!showFilter)}
             className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200
             rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
@@ -227,32 +234,29 @@ useEffect(() => {
       Status
     </button>
 
-    {/* Specialization OPTIONS */}
-    {openSection === "status" && (
-      <div className="flex flex-col gap-2 mb-3">
-        <button
-          onClick={() => setStatusFilter("active")}
-          className={`px-3 py-2 rounded-lg text-sm ${
-            statusFilter === "active"
-              ? "bg-cyan-600 dark:bg-cyan-800 text-white"
-              : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700" 
-          }`}
-        >
-          Active
-        </button>
-
-        <button
-          onClick={() => setStatusFilter("inactive")}
-          className={`px-3 py-2 rounded-lg text-sm ${
-            statusFilter === "inactive"
-              ? "bg-cyan-600 dark:bg-cyan-800 text-white "
-              : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
-          }`}
-        >
-          Inactive
-        </button>
-      </div>
-    )}
+ {/* STATUS OPTIONS */}
+            {openSection === "status" && (
+              <div className="flex flex-col gap-2 mb-3 max-h-48 overflow-y-auto pr-1
+                          scrollbar-thin scrollbar-thumb-cyan-600 scrollbar-track-gray-200">
+                {statusOptions.length > 0 ? (
+                  statusOptions.map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setStatusFilter(status)}
+                      className={`px-3 py-2 rounded-lg text-sm text-left ${
+                        statusFilter === status
+                          ? "bg-cyan-600 dark:bg-cyan-800 text-white"
+                          : "bg-gray-200 dark:bg-slate-500 text-black dark:text-white hover:bg-cyan-500 dark:hover:bg-cyan-700"
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 px-2">No status found</p>
+                )}
+              </div>
+            )}
 
 {/* ROLE HEADER */}
     <button
@@ -266,7 +270,8 @@ useEffect(() => {
 
     {/* ROLE OPTIONS */}
     {openSection === "specialization" && (
-  <div className="flex flex-col gap-2 mb-3">
+  <div className="flex flex-col gap-2 mb-3 max-h-48 overflow-y-auto pr-1
+  scrollbar-thin scrollbar-thumb-cyan-600 scrollbar-track-gray-200">
     {DOCTOR_SPECIALIZATIONS.map((item) => (
       <button
         key={item.value}
