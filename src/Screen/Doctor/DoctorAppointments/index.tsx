@@ -7,6 +7,7 @@ import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import { FaXmark } from "react-icons/fa6";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -200,10 +201,11 @@ const DoctorAppointments = () => {
 
   return (
     <div
-      className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
+      className="relative p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen"
       onMouseMove={resize}
       onMouseUp={stopResize}
     >
+      <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">
@@ -217,7 +219,7 @@ const DoctorAppointments = () => {
           {/* Sort Button */}
           <div className="flex items-center justify-between gap-2 ">
 
-               <button
+              <button
             onClick={() => setShowFilter(!showFilter)}
             className="flex items-center gap-1 px-3 py-2 ml-1 border border-cyan-600 dark:border-gray-200 rounded-4xl backdrop-blur-md bg-white/10 shadow-sm hover:bg-white/30 dark:hover:bg-white/20 transition"
           >
@@ -320,145 +322,6 @@ const DoctorAppointments = () => {
             >
               Clear Filters
             </button>
-          </div>
-        )}
-
-        {selectedDate && (
-          <div className="mb-4 text-sm font-medium text-cyan-800 dark:text-gray-200">
-            Selected Date: {selectedDate}
-          </div>
-        )}
-
-        {isCalendarOpen && (
-          <div className="fixed inset-0 bg-black/30 flex items-start justify-center z-40 ">
-            <div className="bg-white w-[600px] rounded-2xl p-6 border shadow-lg">
-              <div className="flex justify-between mb-4">
-                <div className="text-lg font-semibold text-cyan-700">
-                  Select Date
-                </div>
-                <button
-                  onClick={() => {
-                    setIsCalendarOpen(false);
-                    setShowConfirmModal(false);
-                    setTempSelectedDate("");
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="border rounded-xl p-4">
-                <div className="flex justify-between mb-3">
-                  <button
-                    onClick={() =>
-                      setCurrentDate(new Date(year, month - 1, 1))
-                    }
-                  >
-                    ◀
-                  </button>
-
-                  <h3>
-                    {monthName} {year}
-                  </h3>
-
-                  <button
-                    onClick={() =>
-                      setCurrentDate(new Date(year, month + 1, 1))
-                    }
-                  >
-                    ▶
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-7 text-sm text-gray-400 text-center mb-2">
-                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                    (d) => (
-                      <div key={d}>{d}</div>
-                    )
-                  )}
-                </div>
-
-                <div className="grid grid-cols-7 gap-2">
-                  {[...Array(firstDay)].map((_, i) => (
-                    <div key={i}></div>
-                  ))}
-
-                  {[...Array(daysInMonth)].map((_, i) => {
-                    const day = i + 1;
-
-                    const fullDate = `${year}-${String(month + 1).padStart(
-                      2,
-                      "0"
-                    )}-${String(day).padStart(2, "0")}`;
-
-                    const isToday = fullDate === todayDate;
-                    const isSelected = fullDate === selectedDate;
-                    const isTempSelected = fullDate === tempSelectedDate;
-
-                    return (
-                      <div
-                        key={day}
-                        className={`min-h-[50px] flex flex-col items-center justify-center border rounded-lg cursor-pointer transition ${
-                          isSelected
-                            ? "bg-cyan-600 text-white"
-                            : isTempSelected
-                            ? "bg-cyan-200 text-cyan-900"
-                            : isToday
-                            ? "bg-cyan-50 border-cyan-400"
-                            : "hover:bg-cyan-100"
-                        }`}
-                        onClick={() => handleDateClick(fullDate)}
-                      >
-                        <span>{day}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex justify-between mt-4">
-                <button
-                  onClick={() => {
-                    setSelectedDate("");
-                    setTempSelectedDate("");
-                  }}
-                  className="px-4 py-2 rounded-lg border border-red-400 text-red-600 hover:bg-red-50"
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showConfirmModal && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white w-[360px] rounded-2xl p-6 shadow-lg border">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Select Date
-              </h3>
-
-              <p className="text-sm text-gray-600 mb-6">
-                Show appointments for{" "}
-                <span className="font-semibold">{tempSelectedDate}</span>?
-              </p>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={handleCancelDate}
-                  className="px-4 py-2 rounded-lg border text-gray-700 hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  onClick={handleConfirmDate}
-                  className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-60"
-                >
-                  Ok
-                </button>
-              </div>
-            </div>
           </div>
         )}
 
@@ -679,6 +542,175 @@ const DoctorAppointments = () => {
           </div>
         </div>
       </div>
+              {selectedDate && (
+          <div className="mb-4 text-sm font-medium text-cyan-800 dark:text-gray-200">
+            Selected Date: {selectedDate}
+          </div>
+        )}
+
+                {isCalendarOpen && (
+            <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/40 p-6">
+              <div className="w-[700px] max-w-[95vw] h-[500px] max-h-[90vh] rounded-2xl  mt-10 bg-white shadow-2xl border border-cyan-200 overflow-hidden flex flex-col -translate-y-4">
+                
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4">
+                  <div>
+                    <h2 className="font-semibold text-cyan-900">Select Date</h2>
+                  </div>
+          
+                  <button
+                    onClick={() => {
+                      setIsCalendarOpen(false);
+                      setShowConfirmModal(false);
+                      setTempSelectedDate("");
+                    }}
+                    className="text-2xl text-red-700 hover:text-red-900 hover:scale-105 transition"
+                  >
+                    <FaXmark />
+                  </button>
+                </div>
+          
+                <div className="flex-1 overflow-y-auto">
+                  <div className="border border-cyan-200 m-2 mr-2.5 [scrollbar-gutter:stable]">
+                    
+                    {/* Month Navigation */}
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-cyan-200 bg-cyan-100">
+                      <button
+                        onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+                        className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-medium text-cyan-800 hover:bg-cyan-700 hover:border-cyan-800 hover:text-cyan-50 transition"
+                      >
+                        Previous
+                      </button>
+          
+                      <h3 className="text-lg font-semibold text-cyan-900">
+                        {monthName} {year}
+                      </h3>
+          
+                      <button
+                        onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+                        className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-medium text-cyan-800 hover:bg-cyan-700 hover:border-cyan-800 hover:text-cyan-50 transition"
+                      >
+                        Next
+                      </button>
+                    </div>
+          
+                    {/* Week Header */}
+                    <div className="grid grid-cols-7 border-b border-cyan-200 bg-cyan-50">
+                      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                        <div
+                          key={day}
+                          className="border-r last:border-r-0 border-cyan-200 px-4 py-4 text-center text-sm font-semibold text-cyan-900"
+                        >
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+          
+                    {/* Calendar Grid */}
+                    <div className="grid grid-cols-7">
+                      {[...Array(firstDay)].map((_, i) => (
+                        <div
+                          key={`empty-${i}`}
+                          className="min-h-[50px] border-r border-b border-cyan-200 bg-cyan-50/40"
+                        />
+                      ))}
+          
+                      {[...Array(daysInMonth)].map((_, i) => {
+                        const day = i + 1;
+          
+                        const fullDate = `${year}-${String(month + 1).padStart(
+                          2,
+                          "0"
+                        )}-${String(day).padStart(2, "0")}`;
+          
+                        const isToday = fullDate === todayDate;
+                        const isSelected = fullDate === selectedDate;
+                        const isTempSelected = fullDate === tempSelectedDate;
+          
+                        return (
+                          <div
+                            key={day}
+                            className={`relative min-h-[80px] border-r border-b border-cyan-200 p-1 transition cursor-pointer
+                              ${
+                                isSelected
+                                  ? "bg-cyan-600 text-white"
+                                  : isTempSelected
+                                  ? "bg-cyan-200 text-cyan-900"
+                                  : isToday
+                                  ? "bg-cyan-50 border-cyan-400 hover:bg-cyan-100"
+                                  : "bg-white hover:bg-cyan-50"
+                              }`}
+                            onClick={() => handleDateClick(fullDate)}
+                          >
+                            <div className="flex justify-end">
+                              <span
+                                className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold
+                                  ${
+                                    isToday
+                                      ? "bg-cyan-700 text-white"
+                                      : isSelected
+                                      ? "text-white"
+                                      : "text-cyan-900"
+                                  }`}
+                              >
+                                {String(day).padStart(2, "0")}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+          
+                {/* Footer */}
+                <div className="flex justify-between px-4 py-3 border-t border-cyan-200 bg-white">
+                  <button
+                    onClick={() => {
+                      setSelectedDate("");
+                      setTempSelectedDate("");
+                    }}
+                    className="px-4 py-2 rounded-lg border border-red-400 text-red-600 hover:bg-red-50"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+      
+
+        {showConfirmModal && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white w-[360px] rounded-2xl p-6 shadow-lg border">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                Select Date
+              </h3>
+
+              <p className="text-sm text-gray-600 mb-6">
+                Show appointments for{" "}
+                <span className="font-semibold">{tempSelectedDate}</span>?
+              </p>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={handleCancelDate}
+                  className="px-4 py-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleConfirmDate}
+                  className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-60"
+                >
+                  Ok
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+    </div>
     </div>
   );
 };
