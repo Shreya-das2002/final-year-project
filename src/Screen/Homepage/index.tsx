@@ -3,9 +3,12 @@ import logo from "../../assets/logo_2.0.png";
 import new_background from "../../assets/new_background.png";
 import { FiArrowRight, FiUsers, FiAward, FiShield, FiClock } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { getDashboardCountApi } from "../../services/homepageCountApi";
+import toast from "react-hot-toast";
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const [patientCount, setPatientCount] = useState(0);
   const [doctorCount, setDoctorCount] = useState(0);
 
@@ -73,6 +76,10 @@ const HomePage: React.FC = () => {
 
         <div className="grid grid-cols-2 gap-4 w-130 h-auto mb-10">
           <button
+              onClick={() => {
+              toast("To check your symptoms, login first");
+              navigate("/admin/create_admin");
+            }}
             className="flex items-center gap-2 w-55 px-2 pr-5 mt-6 ml-5 h-11 rounded-lg font-semibold text-white 
               bg-linear-to-r from-sky-600 to-cyan-800 hover:from-sky-700 hover:to-cyan-900 
               dark:from-sky-800 dark:to-cyan-950
