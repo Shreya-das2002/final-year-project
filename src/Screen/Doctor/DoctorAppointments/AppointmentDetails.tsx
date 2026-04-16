@@ -1,12 +1,13 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import type { RootState } from "../../../../store/store";
 import dayjs from "dayjs";
 
 const DocAppointmentDetails = () => {
   const { appointment_id } = useParams();
   const location = useLocation();
+  const prescriptionRef = useRef<HTMLDivElement | null>(null);
 
   const appointmentFromState = location.state;
   const appointmentFromStore = useSelector(
@@ -38,6 +39,13 @@ const DocAppointmentDetails = () => {
     return "No";
   };
 
+  const handleViewPrescription = () => {
+    prescriptionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   if (!appointment) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#eef7f9]">
@@ -64,9 +72,10 @@ const DocAppointmentDetails = () => {
 
           <button
             type="button"
+            onClick={handleViewPrescription}
             className="bg-[#0891b2] hover:bg-[#0e7c98] text-white text-[17px] font-semibold px-6 py-4 rounded-2xl shadow-md transition"
           >
-            View Generated Prescriptions
+            View Generated Prescription
           </button>
         </div>
 
@@ -133,7 +142,7 @@ const DocAppointmentDetails = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
               <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
                 <span className="block text-[15px] text-slate-500">Name</span>
-                <span className="mt-2 block text-[17px] font-bold text-slate-700 ">
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
                   {appointment.patient_name || "-"}
                 </span>
               </div>
@@ -161,7 +170,7 @@ const DocAppointmentDetails = () => {
 
               <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
                 <span className="block text-[15px] text-slate-500">Phone</span>
-                <span className="mt-2 block text-[17px] font-bold text-slate-700 ">
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
                   {appointment.patient_phone || "-"}
                 </span>
               </div>
@@ -209,38 +218,34 @@ const DocAppointmentDetails = () => {
                 <span className="block text-[15px] text-slate-500">
                   Allergies
                 </span>
-                <span
-                  className={`mt-3 inline-flex items-center rounded-full px-4 py-1.5 text-[15px] font-bold `}
-                >
-<div className="mt-3 flex flex-wrap gap-3">
-  {appointment.patient_allergies.length > 0 ? (
-    appointment.patient_allergies.map((allergy: string, index: number) => (
-      <span
-        key={index}
-        className="px-4 py-1.5 rounded-full text-sm font-semibold bg-rose-100 text-rose-600"
-      >
-        {allergy}
-      </span>
-    ))
-  ) : (
-    <span className="px-4 py-1.5 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-700">
-      None
-    </span>
-  )}
-</div>
-                </span>
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {appointment.patient_allergies?.length > 0 ? (
+                    appointment.patient_allergies.map((allergy: string, index: number) => (
+                      <span
+                        key={index}
+                        className="px-4 py-1.5 rounded-full text-sm font-semibold bg-rose-100 text-rose-600"
+                      >
+                        {allergy}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="px-4 py-1.5 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-700">
+                      None
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
                 <span className="block text-[15px] text-slate-500">Smoking</span>
                 <span
                   className={`mt-3 inline-flex items-center rounded-full px-4 py-1.5 text-[15px] font-bold ${
-                    formatBoolean(appointment.patient_smoking) === "Yes"
+                    formatBoolean(appointment.patient_smooking) === "Yes"
                       ? "bg-emerald-100 text-emerald-700"
                       : "bg-rose-100 text-rose-600"
                   }`}
                 >
-                  {formatBoolean(appointment.patient_smoking)}
+                  {formatBoolean(appointment.patient_smooking)}
                 </span>
               </div>
 
@@ -258,6 +263,30 @@ const DocAppointmentDetails = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Generated Prescription */}
+        <div
+          ref={prescriptionRef}
+          className="mt-8 rounded-[22px] border border-slate-200 bg-white/80 shadow-[0_8px_30px_rgba(15,23,42,0.08)] px-7 py-8"
+        >
+          <div className="mb-7">
+            <h2 className="text-2xl font-bold text-cyan-700">
+              Generated Prescription
+            </h2>
+            <div className="mt-3 h-[6px] w-20 rounded-full bg-[#0ea5c6]" />
+          </div>
+
+          {appointment.prescription ? (
+            <div
+              className="rounded-2xl border border-slate-200 bg-white overflow-auto"
+              dangerouslySetInnerHTML={{ __html: appointment.prescription }}
+            />
+          ) : (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-[#f8fbfc] px-6 py-10 text-center text-slate-500 text-lg font-medium">
+              No generated prescription found
+            </div>
+          )}
         </div>
       </div>
     </div>

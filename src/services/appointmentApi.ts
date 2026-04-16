@@ -86,6 +86,7 @@ export interface Appointment{
   doctor_name?: string;
   doctor_avatar?: string;
   specialization?: string;
+  prescription?: string | null;
   doc_slot: string;
   license_number: string;
   reg_no: string;
@@ -123,6 +124,12 @@ export interface PendingAppointment {
   patient_name: string;
   patient_phone: string;
   patient_dob: string;
+}
+
+export interface GeneratePrescriptionPayload {
+  appointment_id: number;
+  prescription: string;
+  updated_by?: number;
 }
 
 export interface GetAppointmentsParams {
@@ -241,3 +248,15 @@ export const consultationAppointmentApi = (
     }
   );
 }
+
+export const generatePrescriptionApi = (
+  data: GeneratePrescriptionPayload
+) => {
+  return API.post(
+    urls.generatePrescriptionUrl,
+    data,
+    {
+      validateStatus: () => true
+    }
+  );
+};

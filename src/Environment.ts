@@ -547,6 +547,7 @@ export const urls ={
   slotassignAppointmentUrl: '/appointment/assign-appointment-time',
   acknowledgementPdfUrl: '/acknowledgement',
   consultationAppointMentUrl: '/appointment/update-consultation-status',
+  generatePrescriptionUrl: '/appointment/generate-prescription',
 }
 
 
