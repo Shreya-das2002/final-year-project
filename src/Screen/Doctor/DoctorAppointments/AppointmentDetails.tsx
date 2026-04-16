@@ -2,153 +2,266 @@ import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import type { RootState } from "../../../../store/store";
-import dayjs from 'dayjs';
-// import { Select, MenuItem } from "@mui/material";
-
-
+import dayjs from "dayjs";
 
 const DocAppointmentDetails = () => {
+  const { appointment_id } = useParams();
+  const location = useLocation();
 
-
-const { appointment_id } = useParams();
-const location = useLocation();
-// const user = useSelector((state: RootState) => state.auth.user);
-
-
-const appointmentFromState = location.state;
-const appointmentFromStore = useSelector(
-  (state: RootState) => state.appointment.appointments
-);
-
-const appointment = useMemo(() => {
-  return (
-    appointmentFromStore.find(
-      (a) => a.appointment_id === Number(appointment_id)
-    ) || appointmentFromState
+  const appointmentFromState = location.state;
+  const appointmentFromStore = useSelector(
+    (state: RootState) => state.appointment.appointments
   );
-}, [appointmentFromStore, appointmentFromState, appointment_id])
 
-const dob = appointment?.patient_dob || null;
+  const appointment = useMemo(() => {
+    return (
+      appointmentFromStore.find(
+        (a) => a.appointment_id === Number(appointment_id)
+      ) || appointmentFromState
+    );
+  }, [appointmentFromStore, appointmentFromState, appointment_id]);
+
+  const dob = appointment?.patient_dob || null;
   const age = dob ? dayjs().diff(dayjs(dob), "year") : null;
 
-      if (!appointment) {
-    return <div className="p-10">No appointment data found</div>;
+  const formatBoolean = (value: unknown) => {
+    if (
+      value === true ||
+      value === 1 ||
+      value === "1" ||
+      value === "true" ||
+      value === "yes" ||
+      value === "Yes"
+    ) {
+      return "Yes";
+    }
+    return "No";
+  };
+
+  if (!appointment) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#eef7f9]">
+        <span className="text-xl font-semibold text-slate-700">
+          No appointment data found
+        </span>
+      </div>
+    );
   }
 
-
-
-
-
-
   return (
-     <div
-      className="p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 min-h-screen">
-        
-              <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-4xl font-bold text-cyan-700 dark:text-gray-300">Appointments Details</h2>
-                                        <button
-                     
-                      type="button"
-                     
-                      className="text-xs p-2 w-auto mt-2 border border-cyan-200 text-gray-700 dark:text-gray-200 dark:bg-cyan-700 bg-cyan-100 rounded-full font-semibold hover:bg-cyan-200 dark:hover:bg-cyan-500 transition"
-                    >
-                      
-                      View Generated Prescriptions
-                    </button>
+    <div className="min-h-screen bg-[#eef7f9] border-t-[6px] border-[#0b87a5] px-6 py-8 md:px-10">
+      <div className="mx-auto w-full">
+        {/* Header */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-10">
+          <div>
+            <h1 className="text-4xl leading-tight font-extrabold text-cyan-900">
+              Appointment Details
+            </h1>
+            <p className="mt-2 text-lg text-slate-500">
+              View appointment summary and patient profile
+            </p>
+          </div>
 
-                 </div>
+          <button
+            type="button"
+            className="bg-[#0891b2] hover:bg-[#0e7c98] text-white text-[17px] font-semibold px-6 py-4 rounded-2xl shadow-md transition"
+          >
+            View Generated Prescriptions
+          </button>
+        </div>
 
-     <div className=" bg-white/20 backdrop-blur-md shadow-md w-full  p-4  rounded-lg">
+        {/* Main Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Appointment Summary */}
+          <div className="xl:col-span-1 rounded-[22px] border border-slate-200 bg-white/70 shadow-[0_8px_30px_rgba(15,23,42,0.08)] px-7 py-8">
+            <div className="mb-7">
+              <h2 className="text-2xl font-bold text-cyan-700">
+                Appointment Summary
+              </h2>
+              <div className="mt-3 h-[6px] w-20 rounded-full bg-[#0ea5c6]" />
+            </div>
 
+            <div className="grid grid-cols-1 gap-5">
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">
+                  Appointment ID
+                </span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.appointment_no || "Not Generated"}
+                </span>
+              </div>
 
-                        {/*Appoinment Details */}
-            
-            <div className="bg-white/20 backdrop-blur-md shadow-md rounded-lg w-auto h-auto ">
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Date</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.appointment_date || "-"}
+                </span>
+              </div>
 
-            <h2 className="text-3xl flex justify-center pt-5 font-bold text-blue-500">Appointment Summary</h2>
-                <div className=" grid grid-cols-2 pl-10 pt-10">
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Time</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.appointment_time || "-"}
+                </span>
+              </div>
 
-                 <span className="text-lg font-semibold border flex items-center pl-1 gap-2 text-black dark:text-white"> 
-                  Appointment ID : {appointment.appointment_no || "Not Generated"}
-                  </span>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Status</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.booking_status || "-"}
+                </span>
+              </div>
 
-                     <span className="text-lg flex items-center border pl-1 gap-2  text-black dark:text-white"> 
-                   Date : {appointment.appointment_date || "-"}
-                  </span>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Fees</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.fees || "-"}
+                </span>
+              </div>
+            </div>
+          </div>
 
-                 <span className="text-lg flex items-center border pl-1 gap-2  text-black dark:text-white"> 
-                   Time : {appointment.appointment_time || "Not Generated"}
-                  </span>
+          {/* Patient Details */}
+          <div className="xl:col-span-2 rounded-[22px] border border-slate-200 bg-white/70 shadow-[0_8px_30px_rgba(15,23,42,0.08)] px-7 py-8">
+            <div className="mb-7">
+              <h2 className="text-2xl font-bold text-cyan-700">
+                Patient Details
+              </h2>
+              <div className="mt-3 h-[6px] w-20 rounded-full bg-[#0ea5c6]" />
+            </div>
 
-                <span className="text-lg flex items-center border pl-0.5 gap-2  text-black dark:text-white"> 
-                  Status : {appointment.booking_status}
-                  </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Name</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700 ">
+                  {appointment.patient_name || "-"}
+                </span>
+              </div>
 
-                <span className="text-lg flex items-center pl-0.5 gap-2 text-black dark:text-white"> 
-                  Consultation : Follow-Up
-                  </span>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Gender</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.patient_gender || "-"}
+                </span>
+              </div>
 
-                   <span className="text-lg flex items-center pl-0.5 gap-2  text-black dark:text-white"> 
-                  Consultation Type : In-Person
-                  </span>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">DOB</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.patient_dob || "-"}
+                </span>
+              </div>
 
-                   <span className="text-lg flex items-center pl-0.5 gap-2 pb-5  text-black dark:text-white"> 
-                  Consultation Reason : Symptoms
-                  </span>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Age</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {age ?? "-"}
+                </span>
+              </div>
 
-                  <span className="text-lg flex items-center pl-0.5 gap-2 pb-5 text-black dark:text-white"> 
-                  Fees : {appointment.fees}
-                  </span>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Phone</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700 ">
+                  {appointment.patient_phone || "-"}
+                </span>
+              </div>
 
-                      </div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Email</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700 break-words">
+                  {appointment.patient_email || "-"}
+                </span>
+              </div>
 
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">
+                  Blood Group
+                </span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.patient_blood_group || "-"}
+                </span>
+              </div>
 
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Height</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.patient_height ? `${appointment.patient_height} cm` : "-"}
+                </span>
+              </div>
 
-                      {/* Line Divider div */} 
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Weight</span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.patient_weight ? `${appointment.patient_weight} kg` : "-"}
+                </span>
+              </div>
 
-                      <div className="bg-cyan-600 h-0.5 w-290 ml-3"></div>        
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">
+                  Occupation
+                </span>
+                <span className="mt-2 block text-[17px] font-bold text-slate-700">
+                  {appointment.patient_occupation || "-"}
+                </span>
+              </div>
 
-            
-                       {/* Patient Details */}
-                     
-                     <h2 className="pt-5 pl-5 text-2xl font-bold text-blue-500">Patient Details</h2>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">
+                  Allergies
+                </span>
+                <span
+                  className={`mt-3 inline-flex items-center rounded-full px-4 py-1.5 text-[15px] font-bold `}
+                >
+<div className="mt-3 flex flex-wrap gap-3">
+  {appointment.patient_allergies.length > 0 ? (
+    appointment.patient_allergies.map((allergy: string, index: number) => (
+      <span
+        key={index}
+        className="px-4 py-1.5 rounded-full text-sm font-semibold bg-rose-100 text-rose-600"
+      >
+        {allergy}
+      </span>
+    ))
+  ) : (
+    <span className="px-4 py-1.5 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-700">
+      None
+    </span>
+  )}
+</div>
+                </span>
+              </div>
 
-                    <div className=" pl-5 pt-2">
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Smoking</span>
+                <span
+                  className={`mt-3 inline-flex items-center rounded-full px-4 py-1.5 text-[15px] font-bold ${
+                    formatBoolean(appointment.patient_smoking) === "Yes"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-rose-100 text-rose-600"
+                  }`}
+                >
+                  {formatBoolean(appointment.patient_smoking)}
+                </span>
+              </div>
 
-                 <span className="text-lg font-semibold flex items-center pl-1 gap-2 text-black dark:text-white"> 
-                   Name : {appointment.patient_name}
-                  </span>
-
-                     <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   Gender : {appointment.patient_gender}
-                  </span>
-
-                  <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   DOB : {appointment.patient_dob}
-                  </span>
-
-                 <span className="font-sm flex items-center pl-1 gap-2  text-black dark:text-white"> 
-                   Age : {age}
-                  </span>
-
-                 <span className="font-sm flex items-center pb-5 pl-0.5 gap-2  text-black dark:text-white"> 
-                  Phone : {appointment.patient_phone}
-                  </span>
-
-
-                    </div>
-                      </div>            
-
-
-
-
-
-               
-     </div>
-     
-
+              <div className="rounded-2xl border border-slate-200 bg-[#f7f9fc] px-5 py-6">
+                <span className="block text-[15px] text-slate-500">Alcohol</span>
+                <span
+                  className={`mt-3 inline-flex items-center rounded-full px-4 py-1.5 text-[15px] font-bold ${
+                    formatBoolean(appointment.patient_alcohol) === "Yes"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-rose-100 text-rose-600"
+                  }`}
+                >
+                  {formatBoolean(appointment.patient_alcohol)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default DocAppointmentDetails;

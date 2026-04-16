@@ -67,6 +67,13 @@ export interface Appointment{
   appointment_date: string;
   booking_time?: string | null;
   appointment_time?: string | null;
+  patient_blood_group: string | null,
+  patient_height: number | null,
+  patient_weight: number | null,
+  patient_occupation: string | null,
+  patient_allergies: string[] | null ,
+  patient_smooking: boolean | null,
+  patient_alcohol: boolean | null,
   experience: string;
   description: string;
   document_id?: number | null;
@@ -81,6 +88,7 @@ export interface Appointment{
   specialization?: string;
   doc_slot: string;
   license_number: string;
+  reg_no: string;
   doctor_bio: string;
   doctor_phone: string;
   admin_name: string;

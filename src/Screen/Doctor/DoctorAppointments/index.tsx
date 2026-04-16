@@ -8,6 +8,7 @@ import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlic
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { FaXmark } from "react-icons/fa6";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 
 /* ================= COLUMN KEY TYPE ================= */
 
@@ -531,7 +532,21 @@ const DoctorAppointments = () => {
                               title="View Doctor"
                             >
                               <EyeIcon className="w-5 h-5" />
+                              
                             </button>
+                            
+                    {app.booking_status?.toLowerCase() === "consultation completed".toLowerCase() && (
+                          <button
+                            onClick={() => {
+                              navigate(`/doctor/appointments/prescription/${app.appointment_id}`, { state: app });
+                            }}
+                            type="button"
+                            className="text-green-600 hover:text-green-800"
+                            title="Generate Prescription"
+                          >
+                            <DocumentTextIcon className="w-5 h-5" />
+                          </button>
+                        )}
                           </div>
                         </td>
                       </tr>

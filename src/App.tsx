@@ -59,6 +59,8 @@ import Slotmanagement from "./Screen/Admin/SlotManagament";
 import AppointmentDetail from "./Screen/Patient/MyAppoinments/AppoinmentDetail";
 import AppointmentDetails from "./Screen/Admin/Appoinments/AppointmentDetails";
 import DocAppointmentDetails from "./Screen/Doctor/DoctorAppointments/AppointmentDetails";
+import Prescription from "./Screen/Doctor/Prescription";
+
 
 /* ================= LAYOUT (SAFE PLACE FOR useLocation) ================= */
 
@@ -217,6 +219,7 @@ const AppLayout: React.FC = () => {
               <Route index element={< DoctorDashbord/>} />
               <Route path="appointments" element={<DoctorAppointments/>} />
               <Route path="appointments/appointment_details/:appointmentId" element={<DocAppointmentDetails/>} />
+              <Route path="appointments/prescription/:appointmentId" element={<Prescription/>} /> 
               <Route path="appointment_requests" element={<AppointmentRequests/>} />
               <Route path="doctor_feedback" element={<DoctorFeedback />} />
             </Route>

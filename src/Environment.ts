@@ -573,8 +573,8 @@ export const SIDE_NAV_CONTROLS: string[] = [
   
 
   "doctor dashboard",
-  "doctor appointment",
   "appointment requests",
+  "doctor appointment",
   "doctor feedback",
 
   "feedback",
