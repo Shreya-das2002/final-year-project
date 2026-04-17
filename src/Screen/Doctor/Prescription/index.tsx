@@ -55,42 +55,61 @@ const Prescription = () => {
             Dr. ${appointment?.doctor_name || "-"}
           </h2>
 
-          <p style="margin:14px 0 0 0; font-size:13px; color:#334155;">
+          <p style="margin:5px 0 0 0; font-size:13px; color:#334155;">
             ${appointment?.specialization || "-"}
           </p>
 
-          <p style="margin:14px 0 0 0; font-size:12px; color:#0f172a;">
+          <p style="margin:5px 0 0 0; font-size:12px; color:#0f172a;">
             <strong>License No:</strong> ${appointment?.license_number || "-"}
           </p>
 
-          <p style="margin:8px 0 0 0; font-size:12px; color:#0f172a;">
+          <p style="margin:5px 0 0 0; font-size:12px; color:#0f172a;">
             <strong>Reg No:</strong> ${appointment?.reg_no || "-"}
           </p>
 
-          <p style="margin:14px 0 0 0; font-size:12px; line-height:1.45; color:#475569;">
+          <p style="margin:5px 0 0 0; font-size:12px; line-height:1.45; color:#475569;">
             ${appointment?.doctor_bio || ""}
           </p>
         </div>
 
         <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
-          <div style="text-align:center; color:white; margin-top:2px;">
-            <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:14px;">
+          <div style="text-align:center; color:white; margin-top:2px; margin-left:20px;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:9px; margin-left:40px margin-bottom:14px ">
               <img
                 src="${logo}"
                 alt=""
-                style="width:52px; height:52px; object-fit:contain; display:block;"
+                style="  width:56px;
+                        height:56px;
+                        object-fit:contain;
+                        display:block;"
               />
               <div style="text-align:left; line-height:1.25;">
-                <p style="margin:0; font-size:11px; letter-spacing:2px; text-transform:uppercase;">
+                <p style="margin:0;
+                          font-size:13px;
+                          letter-spacing:3px;
+                          text-transform:uppercase;">
                   Smart Healthcare
                 </p>
-                <p style="margin:0; font-size:11px; letter-spacing:2px; text-transform:uppercase;">
+                <p style=" margin:0;
+                          font-size:13px;
+                          letter-spacing:3px;
+                          text-transform:uppercase;">
                   Trusted Care
                 </p>
               </div>
             </div>
 
-            <h1 style="margin:5; font-size:46px; font-family:Georgia, serif; font-weight:700; line-height:1;">
+            <h1 style="     margin:0;
+                          font-size:58px;
+                          font-family:Georgia, serif;
+                          font-weight:500;
+                          line-height:1;
+                          color:#f5f5f5;
+                          letter-spacing:1px;
+                          white-space:nowrap;
+                          position:relative;
+                          left:100px;
+                          margin-left:60px;">
               SymptoNexus Clinic
             </h1>
           </div>
@@ -127,7 +146,39 @@ const Prescription = () => {
         ${formattedPrescription}
       </div>
 
-      <div style="height:12px; background:linear-gradient(to right, #06b6d4, #155e75, #0891b2);"></div>
+        <div style="
+          background: linear-gradient(to right, #06b6d4, #155e75, #0891b2);
+          color: #ffffff;
+          padding: 18px 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 20px;
+          font-family: Arial, sans-serif;
+          font-size: 15px;
+          border-bottom-left-radius: 4px;
+          border-bottom-right-radius: 4px;
+        ">
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            ✉️ <span>symptonexus333@gmail.com</span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            📍 <span>Krishnanagar, Nadia</span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            📞 <span>+91 98765 43210</span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            🌐 <span>SymptoNexus</span>
+          </div>
+
+        </div>
+
     </div>
   `;
 };
