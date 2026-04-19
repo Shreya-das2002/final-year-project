@@ -548,6 +548,7 @@ export const urls ={
   acknowledgementPdfUrl: '/acknowledgement',
   consultationAppointMentUrl: '/appointment/update-consultation-status',
   generatePrescriptionUrl: '/appointment/generate-prescription',
+  prescriptionPdfUrl: '/prescription',
 }
 
 
