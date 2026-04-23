@@ -22,6 +22,7 @@
     "axios": "^1.13.2",
     "ckeditor5": "^48.0.0",
     "dayjs": "^1.11.19",
+    "lucide-react": "^1.8.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-hot-toast": "^2.5.2",

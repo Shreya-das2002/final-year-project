@@ -102,8 +102,12 @@ const PendingDoctorList: React.FC = () => {
         );
 
         // 🔥 IMPORTANT FIX
-        dispatch(fetchDoctorListThunk());
-
+            dispatch(
+            fetchDoctorListThunk({
+              specializationId: undefined,
+              isPatientRoute: true,
+  })
+);
       }
 
     } catch (error) {

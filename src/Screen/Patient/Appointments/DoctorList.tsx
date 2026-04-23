@@ -30,6 +30,14 @@ const SpDoctorList = () => {
   const doctorSlots = useSelector((state: RootState) => state.doctor.slot);
   const user = useSelector((state: RootState) => state.auth.user);
 
+    const buttons = useSelector(
+      (state: RootState) => state.auth.buttons
+    );
+  
+    const canBook = buttons?.some(
+      (btn) => btn.control_key === "book now"
+    );
+
   const [symptoms, setSymptoms] = useState("");
 
   const [showCalendar, setShowCalendar] = useState(false);
@@ -299,13 +307,14 @@ const SpDoctorList = () => {
                       {todayFee ? "(Today's Fee)" : "Doctor Unavailable today"}
                     </div>
                   </div>
-
+                {canBook && (
                   <button
                     onClick={() => handleBookNow(doc)}
                     className="mt-2 bg-cyan-600 text-white px-4 py-2 mr-3 rounded hover:bg-cyan-700"
                   >
                     Book Now
                   </button>
+                  )}
                 </div>
               </div>
             );

@@ -23,6 +23,9 @@ const appointmentFromStore = useSelector(
   (state: RootState) => state.appointment.appointments
 );
 
+
+
+
 const appointment = useMemo(() => {
   return (
     appointmentFromStore.find(
@@ -47,6 +50,7 @@ const STATUS_ORDER = [
   "Booking Confirmed",
   "Slot Assigned",
   "Consultation Completed",
+  "Consultation Missed",
   "Prescription Generated",
 ];
 
@@ -537,9 +541,8 @@ const handleDownloadPrescriptionPdf = async () => {
 
                 </div>
 
-               
-     </div>
-     
+      </div>
+
 
     </div>
   )
