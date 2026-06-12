@@ -4,6 +4,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 /* ================= USER TYPES ================= */
 
 interface User {
+  user_id: number;
   specialization: string;
   email: string;
   role: string;

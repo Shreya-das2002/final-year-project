@@ -81,7 +81,7 @@ const bloodGroupToNumber: Record<string, number> = {
 
 const Profile: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-   const reduxProfile = useSelector(
+  const reduxProfile = useSelector(
   (state: RootState) => state.auth.profile
 );
   const [step, setStep] = useState(1);

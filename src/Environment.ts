@@ -549,6 +549,7 @@ export const urls ={
   consultationAppointMentUrl: '/appointment/update-consultation-status',
   generatePrescriptionUrl: '/appointment/generate-prescription',
   prescriptionPdfUrl: '/prescription',
+  chatUrl: `/chat`,
 }
 
 
