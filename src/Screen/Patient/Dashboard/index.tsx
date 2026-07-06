@@ -5,18 +5,9 @@ import {
   Bell,
   CalendarDays,
   ChevronRight,
-  Clock3,
   FileText,
   HeartPulse,
-  MessageCircle,
   Pill,
-  ShieldCheck,
-  Star,
-  Stethoscope,
-  TrendingUp,
-  Upload,
-  UserRound,
-  Video,
 } from "lucide-react";
 import { HEALTH_TIPS } from "../../../Environment";
 
@@ -28,12 +19,6 @@ interface StatCardProps {
   bg: string;
 }
 
-interface QuickActionProps {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  onClick?: () => void;
-}
 
 interface Appointment {
   doctor: string;
@@ -63,24 +48,6 @@ const appointments: Appointment[] = [
   },
 ];
 
-const medicationList = [
-  {
-    name: "Morning Tablet",
-    time: "08:00 AM",
-    status: "Taken",
-  },
-  {
-    name: "Afternoon Tablet",
-    time: "02:00 PM",
-    status: "Pending",
-  },
-  {
-    name: "Night Tablet",
-    time: "09:00 PM",
-    status: "Pending",
-  },
-];
-
 const Patientpage: React.FC = () => {
   const navigate = useNavigate();
   const [tipIndex, setTipIndex] = useState(0);
@@ -98,80 +65,15 @@ const Patientpage: React.FC = () => {
   }, []);
 
   return (
-    <main className="min-h-screen flex-1 bg-slate-100 p-4 md:p-6 lg:p-8">
+    <main className="min-h-screen flex-1p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Top Header */}
-        <section className="overflow-hidden rounded-3xl bg-gradient-to-r from-teal-700 via-cyan-700 to-blue-700 text-white shadow-lg">
-          <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-3 md:p-8">
-            <div className="md:col-span-2">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20">
-                  <UserRound size={24} />
-                </div>
-                <div>
-                  <p className="text-sm text-white/80">Patient Dashboard</p>
-                  <h1 className="text-3xl font-bold">Welcome back</h1>
-                </div>
-              </div>
-
-              <p className="max-w-2xl text-white/85">
-                Track your appointments, prescriptions, reports, health score,
-                and AI-powered healthcare support from one place.
-              </p>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <button
-                  onClick={() => navigate("/patient/symptom_checker")}
-                  className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-teal-700 transition hover:bg-slate-100"
-                >
-                  Check Symptoms
-                </button>
-
-                <button
-                  onClick={() => navigate("/patient/chatbot")}
-                  className="rounded-xl bg-white/15 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/30 transition hover:bg-white/20"
-                >
-                  Chat with SymptoBot
-                </button>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-white/15 p-5 ring-1 ring-white/20 backdrop-blur">
-              <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm text-white/80">Health Score</p>
-                <HeartPulse size={22} />
-              </div>
-
-              <h2 className="text-5xl font-bold">85%</h2>
-
-              <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/20">
-                <div className="h-full w-[85%] rounded-full bg-white" />
-              </div>
-
-              <p className="mt-3 text-sm text-white/80">
-                Your health score improved by 5% this week.
-              </p>
-            </div>
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">
+              Welcome Back, Name
+            </h2>
           </div>
-        </section>
-
-        {/* Small Status Bar */}
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <StatusPill
-            icon={<Clock3 size={18} />}
-            title="Last Updated"
-            value="2 hours ago"
-          />
-          <StatusPill
-            icon={<TrendingUp size={18} />}
-            title="Weekly Trend"
-            value="Improving"
-          />
-          <StatusPill
-            icon={<ShieldCheck size={18} />}
-            title="Profile Status"
-            value="Verified"
-          />
         </section>
 
         {/* Stats */}
@@ -182,6 +84,14 @@ const Patientpage: React.FC = () => {
             subtitle="Next: 10 Jan, 10:30 AM"
             icon={<CalendarDays size={24} />}
             bg="from-blue-500 to-indigo-600"
+          />
+
+          <StatCard
+            title="Total Appointments"
+            value="13"
+            subtitle="Next: 10 Jan, 10:30 AM"
+            icon={<CalendarDays size={24} />}
+            bg="from-rose-500 to-red-600"
           />
 
           <StatCard
@@ -206,7 +116,7 @@ const Patientpage: React.FC = () => {
             subtitle="SymptoBot chats this month"
             icon={<Activity size={24} />}
             bg="from-emerald-500 to-green-600"
-          />
+          />          
         </section>
 
         {/* Main Grid */}
@@ -362,109 +272,12 @@ const Patientpage: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick Access */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-slate-900">
-                Quick Access
-              </h2>
-              <p className="mb-5 mt-1 text-sm text-slate-500">
-                Common actions for patients
-              </p>
-
-              <div className="space-y-3">
-                <QuickAction
-                  title="Check Symptoms"
-                  description="AI-guided symptom checker"
-                  icon={<Stethoscope size={20} />}
-                  onClick={() => navigate("/patient/symptom_checker")}
-                />
-
-                <QuickAction
-                  title="Chat with SymptoBot"
-                  description="Ask health questions"
-                  icon={<MessageCircle size={20} />}
-                  onClick={() => navigate("/patient/chatbot")}
-                />
-
-                <QuickAction
-                  title="Book Consultation"
-                  description="Find doctors and schedule visit"
-                  icon={<Video size={20} />}
-                  onClick={() => navigate("/patient/doctors")}
-                />
-
-                <QuickAction
-                  title="Upload Report"
-                  description="Add medical documents"
-                  icon={<Upload size={20} />}
-                  onClick={() => navigate("/patient/upload-report")}
-                />
-
-                <QuickAction
-                  title="Give Feedback"
-                  description="Help us improve SymptoNexus"
-                  icon={<Star size={20} />}
-                  onClick={() => navigate("/patient/feedback")}
-                />
-              </div>
-            </div>
-
-            {/* Medication Reminder */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-xl font-bold text-slate-900">
-                Medication Reminder
-              </h2>
-
-              <div className="space-y-3">
-                {medicationList.map((item) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between rounded-2xl border border-slate-200 p-4"
-                  >
-                    <div>
-                      <p className="font-semibold text-slate-900">
-                        {item.name}
-                      </p>
-                      <p className="text-sm text-slate-500">{item.time}</p>
-                    </div>
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        item.status === "Taken"
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-amber-100 text-amber-700"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </aside>
         </section>
       </div>
     </main>
   );
 };
-
-const StatusPill = ({
-  icon,
-  title,
-  value,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-}) => (
-  <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-    <div className="rounded-xl bg-teal-50 p-3 text-teal-700">{icon}</div>
-    <div>
-      <p className="text-xs text-slate-500">{title}</p>
-      <p className="font-semibold text-slate-900">{value}</p>
-    </div>
-  </div>
-);
 
 const StatCard: React.FC<StatCardProps> = ({
   title,
@@ -490,32 +303,6 @@ const StatCard: React.FC<StatCardProps> = ({
   </div>
 );
 
-const QuickAction: React.FC<QuickActionProps> = ({
-  title,
-  description,
-  icon,
-  onClick,
-}) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className="w-full rounded-2xl border border-slate-200 p-4 text-left transition hover:border-teal-300 hover:bg-teal-50"
-  >
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-start gap-3">
-        <div className="rounded-xl bg-slate-100 p-2 text-slate-700">
-          {icon}
-        </div>
-        <div>
-          <p className="font-semibold text-slate-900">{title}</p>
-          <p className="mt-1 text-sm text-slate-500">{description}</p>
-        </div>
-      </div>
-
-      <ChevronRight size={18} className="text-slate-400" />
-    </div>
-  </button>
-);
 
 const InfoCard = ({
   icon,
