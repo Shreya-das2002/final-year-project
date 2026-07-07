@@ -441,7 +441,7 @@ useEffect(() => {
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="flex items-center justify-center w-11 h-11 rounded-full bg-cyan-600 dark:bg-cyan-700 text-white font-semibold shadow-sm">
-                             {appointment.doctor_avatar}
+                            {appointment.doctor_avatar}
                             </div>
 
                             <div>
