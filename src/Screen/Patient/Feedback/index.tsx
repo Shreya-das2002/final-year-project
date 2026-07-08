@@ -18,16 +18,19 @@ const ratingColumns = [
   { value: 5, label: "Excellent" },
 ];
 
-const ratingAreas = [
-  "Doctor Consultation",
-  "SymptoBot Experience",
-  "Symptom Checker",
-  "Doctor Consultation Booking",
-  "Website Speed",
-  "Website Design",
-  "Ease of Use",
-  "Information Quality",
-  "Overall SymptoNexus Service",
+const platformRatingAreas = [
+  "AI Symptom Checker Accuracy",
+  "Website Design & UI",
+  "Overrall Platform Experience",
+];
+
+const consultationRatingAreas = [
+  "Ease of Booking",
+  "Doctor Communication",
+  "Doctor Professionalism",
+  "Waiting Time",
+  "Quality of Consultation",
+  "Staff Behaviour"
 ];
 
 const Feedback: React.FC = () => {
@@ -36,6 +39,7 @@ const Feedback: React.FC = () => {
   const [recommend, setRecommend] = useState("yes");
   const [callback, setCallback] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [consultedDoctor, setConsultedDoctor] = useState(false);
 
   const [formData, setFormData] = useState({
     patientName: "",
@@ -128,87 +132,11 @@ const Feedback: React.FC = () => {
         </div>
 
         <div className="p-5 space-y-4">
-          {/* Patient Details */}
-          <section className="border border-gray-200 rounded-lg p-4 bg-white">
-            <h2 className="text-teal-700 font-bold mb-4">
-              1. Patient Details
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Input
-                label="Patient Name"
-                required
-                placeholder="Enter patient name"
-                value={formData.patientName}
-                onChange={(v) => handleInputChange("patientName", v)}
-              />
-
-              <Input
-                label="Mobile Number"
-                required
-                placeholder="Enter mobile number"
-                value={formData.mobileNumber}
-                onChange={(v) => handleInputChange("mobileNumber", v)}
-              />
-
-              <Input
-                label="Patient ID / UHID"
-                placeholder="Enter patient ID"
-                value={formData.patientId}
-                onChange={(v) => handleInputChange("patientId", v)}
-              />
-
-              <Input
-                label="Visit Date"
-                required
-                type="date"
-                value={formData.visitDate}
-                onChange={(v) => handleInputChange("visitDate", v)}
-              />
-
-              <Select
-                label="Department"
-                required
-                value={formData.department}
-                onChange={(v) => handleInputChange("department", v)}
-                options={[
-                  "General Medicine",
-                  "Cardiology",
-                  "Neurology",
-                  "Orthopedics",
-                  "Pediatrics",
-                  "Dermatology",
-                ]}
-              />
-
-              <Input
-                label="Doctor Name"
-                required
-                placeholder="Select doctor"
-                value={formData.doctorName}
-                onChange={(v) => handleInputChange("doctorName", v)}
-              />
-
-              <Select
-                label="Visit Type"
-                required
-                value={formData.visitType}
-                onChange={(v) => handleInputChange("visitType", v)}
-                options={[
-                  "OPD",
-                  "IPD",
-                  "Emergency",
-                  "Teleconsultation",
-                  "Online Consultation",
-                ]}
-              />
-            </div>
-          </section>
 
           {/* Overall Experience */}
           <section className="border border-gray-200 rounded-lg p-4 bg-white">
             <h2 className="text-teal-700 font-bold mb-5">
-              2. How was your overall experience?
+              How was your overall experience?
             </h2>
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
@@ -270,7 +198,7 @@ const Feedback: React.FC = () => {
                     </thead>
 
                     <tbody>
-                      {ratingAreas.map((area) => (
+                      {platformRatingAreas.map((area) => (
                         <tr key={area}>
                           <td className="p-3 border border-gray-200 font-medium">
                             {area}
@@ -296,6 +224,66 @@ const Feedback: React.FC = () => {
                     </tbody>
                   </table>
                 </div>
+              </section>
+
+              <section className="border border-gray-200 rounded-lg p-4 bg-white">
+                <h2 className="text-teal-700 font-bold mb-4">
+                  Doctor Consultation
+                </h2>
+
+                <p className="mb-3 font-medium">
+                  Did you consult with our doctor?
+                </p>
+
+                <div className="flex gap-6 mb-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={consultedDoctor}
+                      onChange={() => setConsultedDoctor(true)}
+                    />
+                    Yes
+                  </label>
+
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={!consultedDoctor}
+                      onChange={() => setConsultedDoctor(false)}
+                    />
+                    No
+                  </label>
+                </div>
+
+                {consultedDoctor && (
+                  <table className="w-full text-sm border border-gray-200">
+                    <tbody>
+                      {consultationRatingAreas.map((area) => (
+                        <tr key={area}>
+                          <td className="p-3 border border-gray-200 font-medium">
+                            {area}
+                          </td>
+
+                          {ratingColumns.map((col) => (
+                            <td
+                              key={col.value}
+                              className="p-3 border border-gray-200 text-center"
+                            >
+                              <input
+                                type="radio"
+                                name={area}
+                                checked={areaRatings[area] === col.value}
+                                onChange={() =>
+                                  handleAreaRating(area, col.value)
+                                }
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </section>
 
               {/* Additional Feedback + Comment */}
@@ -362,35 +350,8 @@ const Feedback: React.FC = () => {
               </div>
 
               {/* Upload + Consent */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <section className="border border-gray-200 rounded-lg p-4 bg-white">
-                  <h2 className="text-teal-700 font-bold mb-4">
-                    6. Upload Optional Document
-                  </h2>
+              <div className="border border-gray-200 rounded-lg p-4 bg-white">
 
-                  <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 text-center bg-blue-50/40">
-                    <input
-                      type="file"
-                      className="hidden"
-                      id="feedback-file"
-                      accept=".jpg,.jpeg,.png,.pdf"
-                    />
-                    <label
-                      htmlFor="feedback-file"
-                      className="cursor-pointer text-teal-700 font-medium"
-                    >
-                      ⬆ Click to upload
-                    </label>
-                    <p className="text-xs text-gray-500 mt-2">
-                      or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      JPG, PNG, PDF Max: 5MB
-                    </p>
-                  </div>
-                </section>
-
-                <section className="border border-gray-200 rounded-lg p-4 bg-white">
                   <h2 className="text-teal-700 font-bold mb-4">
                     7. Consent
                   </h2>
@@ -460,7 +421,7 @@ const Feedback: React.FC = () => {
                       </label>
                     </div>
                   </div>
-                </section>
+
               </div>
             </div>
 
