@@ -9,10 +9,13 @@ import {
   Activity,
   Bell,
   CalendarDays,
+  CheckCircle2,
   ChevronRight,
+  ClipboardList,
   FileText,
   HeartPulse,
   Pill,
+  UserRound,
 } from "lucide-react";
 
 import { HEALTH_TIPS } from "../../../Environment";
@@ -24,6 +27,11 @@ interface StatCardProps {
   subtitle: string;
   icon: React.ReactNode;
   bg: string;
+}
+
+interface MonthwiseAppointmentData {
+  month: string;
+  count: number;
 }
 
 const Patientpage: React.FC = () => {
@@ -46,7 +54,7 @@ const Patientpage: React.FC = () => {
 
     const interval = window.setInterval(() => {
       setTipIndex((prev) => (prev + 1) % HEALTH_TIPS.length);
-    }, 2 * 60 * 1000); // 2 minutes
+    }, 2 * 60 * 1000);
 
     return () => window.clearInterval(interval);
   }, []);
@@ -69,7 +77,7 @@ const Patientpage: React.FC = () => {
   }, [appointments]);
 
   /* ================= HELPERS ================= */
-  const normalizeStatus = useCallback((status?: string | null) => {
+  const normalizeStatus = useCallback((status?: string | number | null) => {
     return String(status || "")
       .toLowerCase()
       .replace(/_/g, " ")
@@ -186,11 +194,38 @@ const Patientpage: React.FC = () => {
   }, []);
 
   const getStatusClass = useCallback(
-    (status: string) => {
+    (status: string | number) => {
       const normalizedStatus = normalizeStatus(status);
 
       if (normalizedStatus === "slot assigned") {
         return "bg-emerald-100 text-emerald-700";
+      }
+
+      if (normalizedStatus === "booking confirmed") {
+        return "bg-blue-100 text-blue-700";
+      }
+
+      if (
+        normalizedStatus === "booking initiated" ||
+        normalizedStatus === "pending"
+      ) {
+        return "bg-amber-100 text-amber-700";
+      }
+
+      if (
+        normalizedStatus === "booking rejected" ||
+        normalizedStatus === "canceled by doctor" ||
+        normalizedStatus === "canceled by patient" ||
+        normalizedStatus === "consultation missed"
+      ) {
+        return "bg-red-100 text-red-700";
+      }
+
+      if (
+        normalizedStatus === "consultation completed" ||
+        normalizedStatus === "prescription generated"
+      ) {
+        return "bg-violet-100 text-violet-700";
       }
 
       return "bg-slate-100 text-slate-700";
@@ -227,6 +262,66 @@ const Patientpage: React.FC = () => {
       )}`
     : "No upcoming slot assigned appointment";
 
+  /* ================= PROFILE COMPLETION ================= */
+  const profileCompletion = useMemo(() => {
+    const profile = (user || {}) as Record<string, unknown>;
+
+    const fieldsToCheck = [
+      "first_name",
+      "last_name",
+      "email",
+      "phone",
+      "gender",
+      "dob",
+      "blood_group",
+      "height",
+      "weight",
+      "address",
+    ];
+
+    const completedFields = fieldsToCheck.filter((field) => {
+      const value = profile[field];
+
+      if (Array.isArray(value)) return value.length > 0;
+
+      return value !== undefined && value !== null && String(value).trim() !== "";
+    });
+
+    return Math.round((completedFields.length / fieldsToCheck.length) * 100);
+  }, [user]);
+
+  /* ================= ACKNOWLEDGEMENT SLIPS ================= */
+  const prescriptionCount = useMemo(() => {
+    return appointmentList.filter((appointment) =>
+      Boolean(appointment.prescription)
+    ).length;
+  }, [appointmentList]);
+
+  const reportCount = 5;
+
+  /* ================= ALL APPOINTMENTS MONTH-WISE LINE GRAPH ================= */
+  const monthwiseAppointmentData = useMemo<MonthwiseAppointmentData[]>(() => {
+    const monthMap = new Map<string, number>();
+
+    appointmentList.forEach((appointment) => {
+      const appointmentDate = getOnlyDate(appointment.appointment_date);
+
+      if (!appointmentDate) return;
+
+      const monthKey = appointmentDate.toLocaleString("default", {
+        month: "short",
+        year: "2-digit",
+      });
+
+      monthMap.set(monthKey, (monthMap.get(monthKey) || 0) + 1);
+    });
+
+    return Array.from(monthMap.entries()).map(([month, count]) => ({
+      month,
+      count,
+    }));
+  }, [appointmentList, getOnlyDate]);
+
   /* ================= LOGIN TOAST NOTIFICATIONS ================= */
   useEffect(() => {
     if (!appointmentList.length) return;
@@ -237,7 +332,6 @@ const Patientpage: React.FC = () => {
 
     const toastMessages: string[] = [];
 
-    /* Today's appointment toast */
     const todaysAppointments = slotAssignedAppointments.filter((appointment) =>
       isTodayDate(appointment.appointment_date)
     );
@@ -250,7 +344,6 @@ const Patientpage: React.FC = () => {
       );
     });
 
-    /* Booking status changed toast */
     const statusStorageKey = getStatusStorageKey();
 
     const oldStatusData = localStorage.getItem(statusStorageKey);
@@ -332,16 +425,16 @@ const Patientpage: React.FC = () => {
 
           <StatCard
             title="Recent Reports"
-            value="5"
-            subtitle="Last uploaded 2 days ago"
+            value={String(reportCount)}
+            subtitle="Acknowledgement slips"
             icon={<FileText size={24} />}
             bg="from-violet-500 to-purple-600"
           />
 
           <StatCard
             title="Prescriptions"
-            value="3"
-            subtitle="1 refill due soon"
+            value={String(prescriptionCount)}
+            subtitle="Available from appointments"
             icon={<Pill size={24} />}
             bg="from-orange-500 to-amber-500"
           />
@@ -484,6 +577,9 @@ const Patientpage: React.FC = () => {
               )}
             </div>
 
+            {/* All Appointments Line Graph */}
+            <MonthwiseAppointmentGraph data={monthwiseAppointmentData} />
+
             {/* Reports and Prescriptions */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <InfoCard
@@ -497,9 +593,9 @@ const Patientpage: React.FC = () => {
               <InfoCard
                 icon={<Pill size={22} />}
                 title="Prescriptions"
-                description="Access current and past prescriptions anytime."
-                buttonText="View Prescriptions"
-                onClick={() => navigate("/patient/prescriptions")}
+                description="Access prescriptions from appointment details."
+                buttonText="View Appointments"
+                onClick={() => navigate("/patient/my_appointments")}
               />
             </div>
 
@@ -535,6 +631,18 @@ const Patientpage: React.FC = () => {
 
           {/* Right Sidebar */}
           <aside className="space-y-6">
+            <ProfileCompletionCard
+              percentage={profileCompletion}
+              onClick={() => navigate("/patient/profile")}
+            />
+
+            <AcknowledgementSlipsCard
+              reportCount={reportCount}
+              prescriptionCount={prescriptionCount}
+              onReportsClick={() => navigate("/patient/reports")}
+              onPrescriptionClick={() => navigate("/patient/my_appointments")}
+            />
+
             {/* Notification */}
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
@@ -600,6 +708,415 @@ const StatCard: React.FC<StatCardProps> = ({
     </div>
   </div>
 );
+
+const ProfileCompletionCard = ({
+  percentage,
+  onClick,
+}: {
+  percentage: number;
+  onClick: () => void;
+}) => {
+  const safePercentage = Math.min(Math.max(percentage, 0), 100);
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">
+            Profile Completion
+          </h2>
+          <p className="text-sm text-slate-500">
+            Complete your medical profile
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-teal-100 p-3 text-teal-700">
+          <UserRound size={20} />
+        </div>
+      </div>
+
+      <div className="flex justify-center">
+        <div className="relative flex h-36 w-36 items-center justify-center">
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: `conic-gradient(#0f766e ${
+                safePercentage * 3.6
+              }deg, #e2e8f0 0deg)`,
+            }}
+          />
+
+          <div className="absolute inset-4 rounded-full bg-white shadow-inner" />
+
+          <div className="relative text-center">
+            <h3 className="text-3xl font-bold text-slate-900">
+              {safePercentage}%
+            </h3>
+            <p className="text-xs text-slate-500">Completed</p>
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={onClick}
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"
+      >
+        Complete Profile
+        <ChevronRight size={16} />
+      </button>
+    </div>
+  );
+};
+
+const AcknowledgementSlipsCard = ({
+  reportCount,
+  prescriptionCount,
+  onReportsClick,
+  onPrescriptionClick,
+}: {
+  reportCount: number;
+  prescriptionCount: number;
+  onReportsClick: () => void;
+  onPrescriptionClick: () => void;
+}) => (
+  <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="mb-5 flex items-center justify-between">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900">
+          Acknowledgement Slips
+        </h2>
+        <p className="text-sm text-slate-500">
+          Reports and prescription receipts
+        </p>
+      </div>
+
+      <div className="rounded-xl bg-indigo-100 p-3 text-indigo-700">
+        <ClipboardList size={20} />
+      </div>
+    </div>
+
+    <div className="space-y-3">
+      <SlipItem
+        icon={<FileText size={18} />}
+        title="Report Slips"
+        count={reportCount}
+        buttonText="View Reports"
+        onClick={onReportsClick}
+      />
+
+      <SlipItem
+        icon={<Pill size={18} />}
+        title="Prescription Slips"
+        count={prescriptionCount}
+        buttonText="View Appointments"
+        onClick={onPrescriptionClick}
+      />
+    </div>
+  </div>
+);
+
+const SlipItem = ({
+  icon,
+  title,
+  count,
+  buttonText,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  count: number;
+  buttonText: string;
+  onClick: () => void;
+}) => (
+  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <div className="rounded-xl bg-white p-2 text-teal-700 shadow-sm">
+          {icon}
+        </div>
+
+        <div>
+          <p className="font-semibold text-slate-900">{title}</p>
+          <p className="text-xs text-slate-500">{count} available</p>
+        </div>
+      </div>
+
+      <CheckCircle2 size={18} className="text-emerald-600" />
+    </div>
+
+    <button
+      type="button"
+      onClick={onClick}
+      className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-teal-700 shadow-sm hover:bg-teal-50"
+    >
+      {buttonText}
+      <ChevronRight size={14} />
+    </button>
+  </div>
+);
+
+const MonthwiseAppointmentGraph = ({
+  data,
+}: {
+  data: MonthwiseAppointmentData[];
+}) => {
+  const sortedData = [...data];
+
+  const maxCount = Math.max(...sortedData.map((item) => item.count), 1);
+  const totalAppointments = sortedData.reduce(
+    (sum, item) => sum + item.count,
+    0
+  );
+
+  const average =
+    sortedData.length > 0
+      ? Math.round(totalAppointments / sortedData.length)
+      : 0;
+
+  const chartWidth = Math.max(sortedData.length * 90, 700);
+  const chartHeight = 260;
+  const paddingTop = 30;
+  const paddingBottom = 45;
+  const paddingLeft = 45;
+  const paddingRight = 30;
+
+  const graphHeight = chartHeight - paddingTop - paddingBottom;
+  const graphWidth = chartWidth - paddingLeft - paddingRight;
+
+  const getX = (index: number) => {
+    if (sortedData.length === 1) return paddingLeft + graphWidth / 2;
+
+    return paddingLeft + (index / (sortedData.length - 1)) * graphWidth;
+  };
+
+  const getY = (count: number) => {
+    return paddingTop + graphHeight - (count / maxCount) * graphHeight;
+  };
+
+  const linePath = sortedData
+    .map((item, index) => {
+      const x = getX(index);
+      const y = getY(item.count);
+
+      return `${index === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
+
+  const areaPath =
+    sortedData.length > 0
+      ? `${linePath} L ${getX(sortedData.length - 1)} ${
+          paddingTop + graphHeight
+        } L ${getX(0)} ${paddingTop + graphHeight} Z`
+      : "";
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-teal-600">
+            Appointment Trend
+          </p>
+
+          <h2 className="mt-1 text-2xl font-bold text-slate-900">
+            All Appointments Graph
+          </h2>
+
+          <p className="text-sm text-slate-500">
+            Month-wise appointment trend with total and average comparison
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-blue-50 px-4 py-3 text-right">
+          <p className="text-xs font-semibold text-slate-500">
+            Total Appointments
+          </p>
+          <p className="text-2xl font-bold text-slate-900">
+            {totalAppointments}
+          </p>
+        </div>
+      </div>
+
+      {sortedData.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
+          No appointment data available for graph.
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <div
+            className="relative"
+            style={{
+              width: `${chartWidth}px`,
+              minWidth: "100%",
+            }}
+          >
+            {/* Average Bars */}
+            <div className="mb-4 flex items-end gap-4 pl-10">
+              <div className="text-center">
+                <p className="mb-2 text-xs font-semibold text-slate-500">
+                  Average
+                </p>
+
+                <div className="flex h-24 items-end gap-2">
+                  <div
+                    className="w-10 rounded-t-xl bg-cyan-300"
+                    style={{
+                      height: `${Math.max(
+                        (average / maxCount) * 100,
+                        10
+                      )}%`,
+                    }}
+                  />
+
+                  <div
+                    className="w-10 rounded-t-xl bg-violet-300"
+                    style={{
+                      height: `${Math.max(
+                        (totalAppointments / maxCount / sortedData.length) *
+                          100,
+                        10
+                      )}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="pb-3">
+                <p className="text-sm font-semibold text-slate-700">
+                  Appointments are shown month-wise.
+                </p>
+                <p className="text-xs text-slate-500">
+                  Blue line represents appointment volume trend.
+                </p>
+              </div>
+            </div>
+
+            {/* SVG Line Chart */}
+            <svg
+              width={chartWidth}
+              height={chartHeight}
+              className="overflow-visible"
+            >
+              <defs>
+                <linearGradient
+                  id="appointmentAreaGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+
+              {/* Grid Lines */}
+              {[0, 25, 50, 75, 100].map((percent) => {
+                const y =
+                  paddingTop + graphHeight - (percent / 100) * graphHeight;
+
+                return (
+                  <g key={percent}>
+                    <line
+                      x1={paddingLeft}
+                      x2={chartWidth - paddingRight}
+                      y1={y}
+                      y2={y}
+                      stroke="#e2e8f0"
+                      strokeDasharray="4 4"
+                    />
+
+                    <text
+                      x={10}
+                      y={y + 4}
+                      className="fill-slate-400 text-[11px]"
+                    >
+                      {Math.round((maxCount * percent) / 100)}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Area */}
+              <path d={areaPath} fill="url(#appointmentAreaGradient)" />
+
+              {/* Line */}
+              <path
+                d={linePath}
+                fill="none"
+                stroke="#0891b2"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              {/* Points and Labels */}
+              {sortedData.map((item, index) => {
+                const x = getX(index);
+                const y = getY(item.count);
+
+                return (
+                  <g key={item.month}>
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r="6"
+                      fill="#ffffff"
+                      stroke="#0891b2"
+                      strokeWidth="3"
+                    />
+
+                    <text
+                      x={x}
+                      y={y - 12}
+                      textAnchor="middle"
+                      className="fill-slate-700 text-[12px] font-semibold"
+                    >
+                      {item.count}
+                    </text>
+
+                    <text
+                      x={x}
+                      y={chartHeight - 14}
+                      textAnchor="middle"
+                      className="fill-slate-500 text-[12px] font-semibold"
+                    >
+                      {item.month}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Legend */}
+            <div className="mt-3 flex flex-wrap items-center gap-5 rounded-2xl bg-slate-50 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-8 rounded-full bg-cyan-600" />
+                <span className="text-xs font-semibold text-slate-600">
+                  Appointment Trend
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded bg-cyan-300" />
+                <span className="text-xs font-semibold text-slate-600">
+                  Average: {average}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded bg-violet-300" />
+                <span className="text-xs font-semibold text-slate-600">
+                  Total: {totalAppointments}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const InfoCard = ({
   icon,
