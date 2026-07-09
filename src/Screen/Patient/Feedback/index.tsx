@@ -1,6 +1,8 @@
-import { useState } from "react";
-
-
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../../../../store/store";
+import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
+import type { Appointment } from "../../../services/appointmentApi";
 
 const overallRatings = [
   { value: 1, label: "Poor", emoji: "😟" },
@@ -21,7 +23,7 @@ const ratingColumns = [
 const platformRatingAreas = [
   "AI Symptom Checker Accuracy",
   "Website Design & UI",
-  "Overrall Platform Experience",
+  "Overall Platform Experience",
 ];
 
 const consultationRatingAreas = [
@@ -30,16 +32,26 @@ const consultationRatingAreas = [
   "Doctor Professionalism",
   "Waiting Time",
   "Quality of Consultation",
-  "Staff Behaviour"
+  "Staff Behaviour",
 ];
 
 const Feedback: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { appointments } = useSelector(
+    (state: RootState) => state.appointment
+  );
+
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const patientId = (user as { patient_id?: number } | null)?.patient_id;
+
   const [overallRating, setOverallRating] = useState<number>(0);
   const [areaRatings, setAreaRatings] = useState<Record<string, number>>({});
   const [recommend, setRecommend] = useState("yes");
-  const [callback, setCallback] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [consultedDoctor, setConsultedDoctor] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState("");
 
   const [formData, setFormData] = useState({
     patientName: "",
@@ -52,15 +64,64 @@ const Feedback: React.FC = () => {
     websiteExperience: "",
     whatWentWell: "",
     improvements: "",
-    feedbackType: "",
-    preferredTime: "",
-    alternateMobile: "",
   });
 
-  const handleInputChange = (
-    field: keyof typeof formData,
-    value: string
-  ) => {
+  useEffect(() => {
+    if (patientId) {
+      dispatch(fetchAppointmentsThunk({ patient_id: patientId }));
+    } else {
+      dispatch(fetchAppointmentsThunk());
+    }
+  }, [dispatch, patientId]);
+
+  const appointmentList = useMemo(() => {
+    return Array.isArray(appointments) ? appointments : [];
+  }, [appointments]);
+
+  const normalizeStatus = useCallback((status?: string | number | null) => {
+    return String(status || "")
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }, []);
+
+  const feedbackAppointments = useMemo(() => {
+    return appointmentList.filter((appointment) => {
+      const status = normalizeStatus(appointment.booking_status);
+
+      return (
+        status === "slot assigned" ||
+        status === "consultation completed" ||
+        status === "prescription generated"
+      );
+    });
+  }, [appointmentList, normalizeStatus]);
+
+  const selectedAppointment = useMemo(() => {
+    return feedbackAppointments.find(
+      (appointment) =>
+        String(appointment.appointment_id) === String(selectedAppointmentId)
+    );
+  }, [feedbackAppointments, selectedAppointmentId]);
+
+  const getAppointmentTime = (appointment: Appointment) => {
+    if (
+      appointment.slot_details?.start_time &&
+      appointment.slot_details?.end_time
+    ) {
+      return `${appointment.slot_details.start_time} - ${appointment.slot_details.end_time}`;
+    }
+
+    return (
+      appointment.appointment_time ||
+      appointment.booking_time ||
+      appointment.start_time ||
+      "-"
+    );
+  };
+
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -80,7 +141,15 @@ const Feedback: React.FC = () => {
       overallRating,
       areaRatings,
       recommend,
-      callback,
+      consultedDoctor,
+      appointment_id: selectedAppointment?.appointment_id || null,
+      doctor_id: selectedAppointment?.doctor_id || null,
+      doctorName: selectedAppointment?.doctor_name || "",
+      appointmentDate: selectedAppointment?.appointment_date || "",
+      appointmentTime: selectedAppointment
+        ? getAppointmentTime(selectedAppointment)
+        : "",
+      bookingStatus: selectedAppointment?.booking_status || "",
     };
 
     console.log("Feedback Payload:", payload);
@@ -91,8 +160,9 @@ const Feedback: React.FC = () => {
     setOverallRating(0);
     setAreaRatings({});
     setRecommend("yes");
-    setCallback(false);
     setSubmitted(false);
+    setConsultedDoctor(false);
+    setSelectedAppointmentId("");
 
     setFormData({
       patientName: "",
@@ -105,9 +175,6 @@ const Feedback: React.FC = () => {
       websiteExperience: "",
       whatWentWell: "",
       improvements: "",
-      feedbackType: "",
-      preferredTime: "",
-      alternateMobile: "",
     });
   };
 
@@ -121,8 +188,10 @@ const Feedback: React.FC = () => {
               <button className="text-2xl">←</button>
               <h1 className="text-2xl font-bold">Patient Feedback</h1>
             </div>
+
             <p className="text-sm mt-1 ml-10">
-              Your feedback helps us improve our services and patient experience.
+              Your feedback helps us improve our services and patient
+              experience.
             </p>
           </div>
 
@@ -132,7 +201,6 @@ const Feedback: React.FC = () => {
         </div>
 
         <div className="p-5 space-y-4">
-
           {/* Overall Experience */}
           <section className="border border-gray-200 rounded-lg p-4 bg-white">
             <h2 className="text-teal-700 font-bold mb-5">
@@ -152,10 +220,13 @@ const Feedback: React.FC = () => {
                   }`}
                 >
                   <div className="text-4xl mb-2">{item.emoji}</div>
+
                   <div className="text-yellow-400 text-lg">
                     {"★".repeat(item.value)}
                   </div>
+
                   <div className="font-semibold">{item.value}</div>
+
                   <div className="text-sm text-gray-600">{item.label}</div>
                 </button>
               ))}
@@ -163,9 +234,9 @@ const Feedback: React.FC = () => {
           </section>
 
           {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
             <div className="lg:col-span-3 space-y-4">
-              {/* Rating Table */}
+              {/* Platform Rating Table */}
               <section className="border border-gray-200 rounded-lg bg-white overflow-hidden">
                 <div className="p-4">
                   <h2 className="text-teal-700 font-bold">
@@ -180,15 +251,18 @@ const Feedback: React.FC = () => {
                         <th className="text-left p-3 border border-gray-200 min-w-[220px]">
                           Feedback Area
                         </th>
+
                         {ratingColumns.map((col) => (
                           <th
                             key={col.value}
                             className="p-3 border border-gray-200 text-center min-w-[110px]"
                           >
                             <div>{col.label}</div>
+
                             <div className="text-yellow-400">
                               {"★".repeat(col.value)}
                             </div>
+
                             <div className="text-xs text-gray-500">
                               {col.value}
                             </div>
@@ -226,6 +300,7 @@ const Feedback: React.FC = () => {
                 </div>
               </section>
 
+              {/* Doctor Consultation */}
               <section className="border border-gray-200 rounded-lg p-4 bg-white">
                 <h2 className="text-teal-700 font-bold mb-4">
                   Doctor Consultation
@@ -239,6 +314,7 @@ const Feedback: React.FC = () => {
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
+                      name="consultedDoctor"
                       checked={consultedDoctor}
                       onChange={() => setConsultedDoctor(true)}
                     />
@@ -248,41 +324,154 @@ const Feedback: React.FC = () => {
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
+                      name="consultedDoctor"
                       checked={!consultedDoctor}
-                      onChange={() => setConsultedDoctor(false)}
+                      onChange={() => {
+                        setConsultedDoctor(false);
+                        setSelectedAppointmentId("");
+                      }}
                     />
                     No
                   </label>
                 </div>
 
                 {consultedDoctor && (
-                  <table className="w-full text-sm border border-gray-200">
-                    <tbody>
-                      {consultationRatingAreas.map((area) => (
-                        <tr key={area}>
-                          <td className="p-3 border border-gray-200 font-medium">
-                            {area}
-                          </td>
+                  <div className="mb-4 rounded-lg border border-teal-100 bg-teal-50 p-4">
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">
+                      Select Appointment for Feedback
+                    </label>
 
-                          {ratingColumns.map((col) => (
-                            <td
-                              key={col.value}
-                              className="p-3 border border-gray-200 text-center"
-                            >
-                              <input
-                                type="radio"
-                                name={area}
-                                checked={areaRatings[area] === col.value}
-                                onChange={() =>
-                                  handleAreaRating(area, col.value)
-                                }
-                              />
-                            </td>
-                          ))}
-                        </tr>
+                    <select
+                      value={selectedAppointmentId}
+                      onChange={(e) =>
+                        setSelectedAppointmentId(e.target.value)
+                      }
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    >
+                      <option value="">Select appointment</option>
+
+                      {feedbackAppointments.map((appointment) => (
+                        <option
+                          key={appointment.appointment_id}
+                          value={appointment.appointment_id}
+                        >
+                          {appointment.doctor_name || "Doctor"} |{" "}
+                          {appointment.specialization || "General"} |{" "}
+                          {appointment.appointment_date || "-"} |{" "}
+                          {getAppointmentTime(appointment)}
+                        </option>
                       ))}
-                    </tbody>
-                  </table>
+                    </select>
+
+                    {feedbackAppointments.length === 0 && (
+                      <p className="mt-2 text-xs text-red-500">
+                        No eligible appointment found for doctor feedback.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {consultedDoctor && selectedAppointment && (
+                  <>
+                    <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4">
+                      <h3 className="font-bold text-gray-800 mb-3">
+                        Selected Appointment Details
+                      </h3>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        <p>
+                          <span className="font-semibold">Doctor:</span>{" "}
+                          {selectedAppointment.doctor_name || "-"}
+                        </p>
+
+                        <p>
+                          <span className="font-semibold">
+                            Specialization:
+                          </span>{" "}
+                          {selectedAppointment.specialization || "-"}
+                        </p>
+
+                        <p>
+                          <span className="font-semibold">
+                            Appointment Date:
+                          </span>{" "}
+                          {selectedAppointment.appointment_date || "-"}
+                        </p>
+
+                        <p>
+                          <span className="font-semibold">Time:</span>{" "}
+                          {getAppointmentTime(selectedAppointment)}
+                        </p>
+
+                        <p>
+                          <span className="font-semibold">Status:</span>{" "}
+                          {selectedAppointment.booking_status || "-"}
+                        </p>
+
+                        <p>
+                          <span className="font-semibold">
+                            Appointment No:
+                          </span>{" "}
+                          {selectedAppointment.appointment_no || "-"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm border border-gray-200">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="text-left p-3 border border-gray-200 min-w-[220px]">
+                              Consultation Area
+                            </th>
+
+                            {ratingColumns.map((col) => (
+                              <th
+                                key={col.value}
+                                className="p-3 border border-gray-200 text-center min-w-[110px]"
+                              >
+                                <div>{col.label}</div>
+
+                                <div className="text-yellow-400">
+                                  {"★".repeat(col.value)}
+                                </div>
+
+                                <div className="text-xs text-gray-500">
+                                  {col.value}
+                                </div>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {consultationRatingAreas.map((area) => (
+                            <tr key={area}>
+                              <td className="p-3 border border-gray-200 font-medium">
+                                {area}
+                              </td>
+
+                              {ratingColumns.map((col) => (
+                                <td
+                                  key={col.value}
+                                  className="p-3 border border-gray-200 text-center"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={area}
+                                    checked={areaRatings[area] === col.value}
+                                    onChange={() =>
+                                      handleAreaRating(area, col.value)
+                                    }
+                                  />
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
                 )}
               </section>
 
@@ -328,75 +517,7 @@ const Feedback: React.FC = () => {
                     }
                   />
 
-                  <div className="mt-4">
-                    <Select
-                      label="Type of Feedback"
-                      required
-                      value={formData.feedbackType}
-                      onChange={(v) => handleInputChange("feedbackType", v)}
-                      options={[
-                        "Appreciation",
-                        "Complaint",
-                        "Suggestion",
-                        "Website Issue",
-                        "Doctor Related",
-                        "SymptoBot Related",
-                        "Symptom Checker Issue",
-                        "Other",
-                      ]}
-                    />
-                  </div>
-                </section>
-              </div>
-
-              {/* Upload + Consent */}
-              <div className="border border-gray-200 rounded-lg p-4 bg-white">
-
-                  <h2 className="text-teal-700 font-bold mb-4">
-                    7. Consent
-                  </h2>
-
-                  <label className="flex items-start gap-2 text-sm mb-3">
-                    <input type="checkbox" className="mt-1" />
-                    <span>
-                      I agree that SymptoNexus may contact me regarding this
-                      feedback.
-                    </span>
-                  </label>
-
-                  <label className="flex items-start gap-2 text-sm mb-4">
-                    <input
-                      type="checkbox"
-                      className="mt-1"
-                      checked={callback}
-                      onChange={(e) => setCallback(e.target.checked)}
-                    />
-                    <span>I want a callback from the team.</span>
-                  </label>
-
-                  {callback && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <Input
-                        label="Preferred Contact Time"
-                        type="time"
-                        value={formData.preferredTime}
-                        onChange={(v) =>
-                          handleInputChange("preferredTime", v)
-                        }
-                      />
-
-                      <Input
-                        label="Alternate Mobile Number"
-                        placeholder="Enter alternate number"
-                        value={formData.alternateMobile}
-                        onChange={(v) =>
-                          handleInputChange("alternateMobile", v)
-                        }
-                      />
-                    </div>
-                  )}
-
-                  <div className="mt-4">
+                  <div className="mt-5 border-t border-gray-200 pt-4">
                     <p className="font-medium mb-2">
                       Would you recommend SymptoNexus?
                     </p>
@@ -405,6 +526,7 @@ const Feedback: React.FC = () => {
                       <label className="flex items-center gap-2 text-sm">
                         <input
                           type="radio"
+                          name="recommend"
                           checked={recommend === "yes"}
                           onChange={() => setRecommend("yes")}
                         />
@@ -414,6 +536,7 @@ const Feedback: React.FC = () => {
                       <label className="flex items-center gap-2 text-sm">
                         <input
                           type="radio"
+                          name="recommend"
                           checked={recommend === "no"}
                           onChange={() => setRecommend("no")}
                         />
@@ -421,25 +544,64 @@ const Feedback: React.FC = () => {
                       </label>
                     </div>
                   </div>
-
+                </section>
               </div>
             </div>
 
             {/* Right Side Cards */}
             <aside className="space-y-4">
-              <div className="border border-green-100 bg-green-50 rounded-lg p-5 text-center">
+              <div className="border border-green-100 bg-green-50 rounded-lg p-5 text-center min-h-[205px] flex flex-col justify-center">
                 <div className="text-5xl mb-3">✅</div>
+
                 <h3 className="text-green-700 font-bold text-lg">
                   Thank You!
                 </h3>
-                <p className="text-sm text-gray-600 mt-2">
+
+                <p className="text-sm text-gray-600 mt-2 leading-6">
                   Your feedback is very important to us. We use your feedback to
                   improve our services.
                 </p>
-                <div className="text-5xl mt-6">📋🙂</div>
+
+                <div className="text-5xl mt-5">📋🙂</div>
               </div>
 
-              <div className="border border-gray-200 rounded-lg p-5 bg-white">
+              <div className="border border-gray-200 rounded-lg p-5 bg-white min-h-[190px]">
+                <h3 className="text-teal-700 font-bold mb-4">
+                  Feedback Summary
+                </h3>
+
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
+                    <span className="text-gray-600">Overall Rating</span>
+                    <span className="font-semibold text-gray-800">
+                      {overallRating ? `${overallRating}/5` : "Not selected"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
+                    <span className="text-gray-600">Doctor Consulted</span>
+                    <span className="font-semibold text-gray-800">
+                      {consultedDoctor ? "Yes" : "No"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
+                    <span className="text-gray-600">Appointment</span>
+                    <span className="font-semibold text-gray-800">
+                      {selectedAppointment ? "Selected" : "Not selected"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
+                    <span className="text-gray-600">Recommend</span>
+                    <span className="font-semibold text-gray-800 capitalize">
+                      {recommend}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border border-gray-200 rounded-lg p-5 bg-white min-h-[262px]">
                 <h3 className="text-teal-700 font-bold mb-4">
                   Why Give Feedback?
                 </h3>
@@ -449,14 +611,17 @@ const Feedback: React.FC = () => {
                     <span>🛡️</span>
                     <span>Help us improve our services</span>
                   </li>
+
                   <li className="flex gap-3">
                     <span>👥</span>
                     <span>Better patient experience</span>
                   </li>
+
                   <li className="flex gap-3">
                     <span>⚡</span>
                     <span>Quick resolution of issues</span>
                   </li>
+
                   <li className="flex gap-3">
                     <span>♡</span>
                     <span>We value your opinion</span>
@@ -492,10 +657,12 @@ const Feedback: React.FC = () => {
                 <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl">
                   ✓
                 </div>
+
                 <div>
                   <h3 className="font-bold text-green-700">
                     Thank you for your feedback!
                   </h3>
+
                   <p className="text-sm text-gray-600">
                     Your feedback has been recorded successfully. Our team will
                     review it and contact you if required.
@@ -507,11 +674,13 @@ const Feedback: React.FC = () => {
                 <p className="text-xs text-gray-500">
                   Feedback Reference No.
                 </p>
+
                 <p className="font-semibold">SN-FBK-</p>
               </div>
 
               <div>
                 <p className="text-xs text-gray-500">Status</p>
+
                 <span className="inline-block bg-green-200 text-green-700 px-3 py-1 rounded-md text-sm font-semibold">
                   Submitted
                 </span>
@@ -520,75 +689,6 @@ const Feedback: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
-  );
-};
-
-type InputProps = {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  type?: string;
-  required?: boolean;
-};
-
-const Input = ({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  required = false,
-}: InputProps) => {
-  return (
-    <div>
-      <label className="block text-xs font-semibold mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
-      />
-    </div>
-  );
-};
-
-type SelectProps = {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-  required?: boolean;
-};
-
-const Select = ({
-  label,
-  value,
-  onChange,
-  options,
-  required = false,
-}: SelectProps) => {
-  return (
-    <div>
-      <label className="block text-xs font-semibold mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
-      >
-        <option value="">Select {label.toLowerCase()}</option>
-        {options.map((item) => (
-          <option key={item} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
     </div>
   );
 };
