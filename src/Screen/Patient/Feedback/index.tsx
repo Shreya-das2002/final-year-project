@@ -23,7 +23,6 @@ const ratingColumns = [
 const platformRatingAreas = [
   "AI Symptom Checker Accuracy",
   "Website Design & UI",
-  "Overall Platform Experience",
 ];
 
 const consultationRatingAreas = [
@@ -476,35 +475,8 @@ const Feedback: React.FC = () => {
               </section>
 
               {/* Additional Feedback + Comment */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <section className="border border-gray-200 rounded-lg p-4 bg-white">
-                  <h2 className="text-teal-700 font-bold mb-4">
-                    4. Additional Feedback
-                  </h2>
-
-                  <RadioQuestion
-                    title="Was the doctor polite and clear in explanation?"
-                    options={["Yes", "No", "Partially"]}
-                  />
-
-                  <RadioQuestion
-                    title="Was your website experience smooth?"
-                    options={["Yes", "No", "Partially"]}
-                  />
-
-                  <RadioQuestion
-                    title="Was SymptoBot helpful?"
-                    options={["Yes", "No", "Partially"]}
-                  />
-
-                  <RadioQuestion
-                    title="Was the symptom checker easy to use?"
-                    options={["Yes", "No", "Needs Improvement"]}
-                  />
-                </section>
-
-                <section className="border border-gray-200 rounded-lg p-4 bg-white">
-                  <h2 className="text-teal-700 font-bold mb-4">
+              <div className="border border-gray-200 rounded-lg p-4 bg-white">
+                    <h2 className="text-teal-700 font-bold mb-4">
                     5. Tell us more about your experience
                   </h2>
 
@@ -517,7 +489,7 @@ const Feedback: React.FC = () => {
                     }
                   />
 
-                  <div className="mt-5 border-t border-gray-200 pt-4">
+                  <div className="mt-5 border-t border-gray-200 pt-4 text-center">
                     <p className="font-medium mb-2">
                       Would you recommend SymptoNexus?
                     </p>
@@ -544,7 +516,6 @@ const Feedback: React.FC = () => {
                       </label>
                     </div>
                   </div>
-                </section>
               </div>
             </div>
 
@@ -693,32 +664,6 @@ const Feedback: React.FC = () => {
   );
 };
 
-type RadioQuestionProps = {
-  title: string;
-  options: string[];
-};
 
-const RadioQuestion = ({ title, options }: RadioQuestionProps) => {
-  const [selected, setSelected] = useState(options[0]);
-
-  return (
-    <div className="mb-4">
-      <p className="text-sm font-medium mb-2">{title}</p>
-
-      <div className="flex flex-wrap gap-4">
-        {options.map((option) => (
-          <label key={option} className="flex items-center gap-2 text-sm">
-            <input
-              type="radio"
-              checked={selected === option}
-              onChange={() => setSelected(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 export default Feedback;
