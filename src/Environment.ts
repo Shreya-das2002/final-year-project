@@ -550,7 +550,7 @@ export const urls ={
   generatePrescriptionUrl: '/appointment/generate-prescription',
   prescriptionPdfUrl: '/prescription',
   chatUrl: `/chat`,
-  createPatientFeedbackUrl: '/patient-feedback/create'
+  createPatientFeedbackUrl: '/feedback/patient'
 }
 
 
