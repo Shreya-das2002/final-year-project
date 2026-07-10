@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 import type { Appointment } from "../../../services/appointmentApi";
+
+import {
+  createPatientFeedbackApi,
+  type CreatePatientFeedbackPayload,
+} from "../../../services/feedbackApi";
 
 const overallRatings = [
   { value: 1, label: "Poor", emoji: "😟" },
@@ -34,60 +40,185 @@ const consultationRatingAreas = [
   "Staff Behaviour",
 ];
 
+interface RatingTableProps {
+  title?: string;
+  areaHeader: string;
+  areas: string[];
+  ratings: Record<string, number>;
+  onRate: (area: string, rating: number) => void;
+}
+
+const RatingTable: React.FC<RatingTableProps> = ({
+  title,
+  areaHeader,
+  areas,
+  ratings,
+  onRate,
+}) => {
+  return (
+    <section className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+      {title && (
+        <div className="p-4">
+          <h2 className="font-bold text-teal-700">{title}</h2>
+        </div>
+      )}
+
+      <div className="overflow-x-auto">
+        <table className="w-full border-t border-gray-200 text-sm">
+          <thead>
+            <tr className="bg-gray-50">
+              <th className="min-w-[220px] border border-gray-200 p-3 text-left">
+                {areaHeader}
+              </th>
+
+              {ratingColumns.map((column) => (
+                <th
+                  key={column.value}
+                  className="min-w-[110px] border border-gray-200 p-3 text-center"
+                >
+                  <div>{column.label}</div>
+
+                  <div className="text-yellow-400">
+                    {"★".repeat(column.value)}
+                  </div>
+
+                  <div className="text-xs text-gray-500">
+                    {column.value}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {areas.map((area) => (
+              <tr key={area}>
+                <td className="border border-gray-200 p-3 font-medium">
+                  {area}
+                </td>
+
+                {ratingColumns.map((column) => (
+                  <td
+                    key={column.value}
+                    className="border border-gray-200 p-3 text-center"
+                  >
+                    <input
+                      type="radio"
+                      name={area}
+                      checked={ratings[area] === column.value}
+                      onChange={() => onRate(area, column.value)}
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+
 const Feedback: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { appointments } = useSelector(
-    (state: RootState) => state.appointment
+    (state: RootState) => state.appointment,
   );
 
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector(
+    (state: RootState) => state.auth.user,
+  );
 
-  const patientId = (user as { patient_id?: number } | null)?.patient_id;
+  /*
+   * Supports both patient_id and ref_id depending on
+   * the authenticated user object returned by your backend.
+   */
+  const patientId =
+    (
+      user as {
+        patient_id?: number;
+        ref_id?: number;
+      } | null
+    )?.patient_id ??
+    (
+      user as {
+        patient_id?: number;
+        ref_id?: number;
+      } | null
+    )?.ref_id;
 
-  const [overallRating, setOverallRating] = useState<number>(0);
-  const [areaRatings, setAreaRatings] = useState<Record<string, number>>({});
-  const [recommend, setRecommend] = useState("yes");
+  const [overallRating, setOverallRating] =
+    useState<number>(0);
+
+  const [areaRatings, setAreaRatings] =
+    useState<Record<string, number>>({});
+
+  const [recommend, setRecommend] =
+    useState<"yes" | "no">("yes");
+
+  const [consultedDoctor, setConsultedDoctor] =
+    useState(false);
+
+  const [
+    selectedAppointmentId,
+    setSelectedAppointmentId,
+  ] = useState("");
+
+  const [description, setDescription] = useState("");
+
+  const [submitting, setSubmitting] = useState(false);
+
   const [submitted, setSubmitted] = useState(false);
-  const [consultedDoctor, setConsultedDoctor] = useState(false);
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState("");
 
-  const [formData, setFormData] = useState({
-    patientName: "",
-    mobileNumber: "",
-    patientId: "",
-    visitDate: "",
-    department: "",
-    doctorName: "",
-    visitType: "",
-    websiteExperience: "",
-    whatWentWell: "",
-    improvements: "",
-  });
+  const [submitError, setSubmitError] = useState("");
 
+  const [
+    feedbackReference,
+    setFeedbackReference,
+  ] = useState("");
+
+  /*
+   * Load appointments for the logged-in patient.
+   */
   useEffect(() => {
     if (patientId) {
-      dispatch(fetchAppointmentsThunk({ patient_id: patientId }));
+      dispatch(
+        fetchAppointmentsThunk({
+          patient_id: patientId,
+        }),
+      );
     } else {
       dispatch(fetchAppointmentsThunk());
     }
   }, [dispatch, patientId]);
 
   const appointmentList = useMemo(() => {
-    return Array.isArray(appointments) ? appointments : [];
+    return Array.isArray(appointments)
+      ? appointments
+      : [];
   }, [appointments]);
 
-  const normalizeStatus = useCallback((status?: string | number | null) => {
-    return String(status || "")
-      .toLowerCase()
-      .replace(/_/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }, []);
+  const normalizeStatus = useCallback(
+    (status?: string | number | null) => {
+      return String(status || "")
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    },
+    [],
+  );
 
+  /*
+   * Only these appointments can be selected
+   * for consultation feedback.
+   */
   const feedbackAppointments = useMemo(() => {
     return appointmentList.filter((appointment) => {
-      const status = normalizeStatus(appointment.booking_status);
+      const status = normalizeStatus(
+        appointment.booking_status,
+      );
 
       return (
         status === "slot assigned" ||
@@ -100,11 +231,17 @@ const Feedback: React.FC = () => {
   const selectedAppointment = useMemo(() => {
     return feedbackAppointments.find(
       (appointment) =>
-        String(appointment.appointment_id) === String(selectedAppointmentId)
+        String(appointment.appointment_id) ===
+        String(selectedAppointmentId),
     );
-  }, [feedbackAppointments, selectedAppointmentId]);
+  }, [
+    feedbackAppointments,
+    selectedAppointmentId,
+  ]);
 
-  const getAppointmentTime = (appointment: Appointment) => {
+  const getAppointmentTime = (
+    appointment: Appointment,
+  ) => {
     if (
       appointment.slot_details?.start_time &&
       appointment.slot_details?.end_time
@@ -120,188 +257,377 @@ const Feedback: React.FC = () => {
     );
   };
 
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleAreaRating = (area: string, rating: number) => {
-    setAreaRatings((prev) => ({
-      ...prev,
+  const handleAreaRating = (
+    area: string,
+    rating: number,
+  ) => {
+    setAreaRatings((previous) => ({
+      ...previous,
       [area]: rating,
     }));
+
+    setSubmitError("");
   };
 
-  const handleSubmit = () => {
-    const payload = {
-      ...formData,
-      overallRating,
-      areaRatings,
-      recommend,
-      consultedDoctor,
-      appointment_id: selectedAppointment?.appointment_id || null,
-      doctor_id: selectedAppointment?.doctor_id || null,
-      doctorName: selectedAppointment?.doctor_name || "",
-      appointmentDate: selectedAppointment?.appointment_date || "",
-      appointmentTime: selectedAppointment
-        ? getAppointmentTime(selectedAppointment)
-        : "",
-      bookingStatus: selectedAppointment?.booking_status || "",
-    };
+  /*
+   * When consultation is changed to No:
+   *
+   * 1. Remove selected appointment.
+   * 2. Remove consultation-specific ratings.
+   * 3. Send appointment and consultation ratings as null.
+   */
+  const handleConsultationChange = (
+    value: boolean,
+  ) => {
+    setConsultedDoctor(value);
+    setSubmitError("");
 
-    console.log("Feedback Payload:", payload);
-    setSubmitted(true);
+    if (!value) {
+      setSelectedAppointmentId("");
+
+      setAreaRatings((previous) => {
+        const updatedRatings = {
+          ...previous,
+        };
+
+        consultationRatingAreas.forEach((area) => {
+          delete updatedRatings[area];
+        });
+
+        return updatedRatings;
+      });
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setSubmitError("");
+      setSubmitted(false);
+      setFeedbackReference("");
+
+      /* ================= PATIENT VALIDATION ================= */
+
+      if (!patientId) {
+        setSubmitError(
+          "Patient information was not found. Please log in again.",
+        );
+
+        return;
+      }
+
+      /* ================= OVERALL RATING ================= */
+
+      if (!overallRating) {
+        setSubmitError(
+          "Please select your overall experience rating.",
+        );
+
+        return;
+      }
+
+      /* ================= PLATFORM RATINGS ================= */
+
+      const aiAccuracy =
+        areaRatings[
+          "AI Symptom Checker Accuracy"
+        ];
+
+      const websiteRating =
+        areaRatings["Website Design & UI"];
+
+      if (!aiAccuracy) {
+        setSubmitError(
+          "Please rate AI Symptom Checker Accuracy.",
+        );
+
+        return;
+      }
+
+      if (!websiteRating) {
+        setSubmitError(
+          "Please rate Website Design & UI.",
+        );
+
+        return;
+      }
+
+      /* ================= CONSULTATION VALIDATION ================= */
+
+      if (consultedDoctor) {
+        if (!selectedAppointment) {
+          setSubmitError(
+            "Please select an appointment for feedback.",
+          );
+
+          return;
+        }
+
+        const missingConsultationRating =
+          consultationRatingAreas.find(
+            (area) => !areaRatings[area],
+          );
+
+        if (missingConsultationRating) {
+          setSubmitError(
+            `Please rate ${missingConsultationRating}.`,
+          );
+
+          return;
+        }
+      }
+
+      /* ================= PREPARE PAYLOAD ================= */
+
+      const payload: CreatePatientFeedbackPayload = {
+        patient_id: Number(patientId),
+
+        appointment_id:
+          consultedDoctor && selectedAppointment
+            ? Number(
+                selectedAppointment.appointment_id,
+              )
+            : null,
+
+        /*
+         * How was your overall experience?
+         */
+        experience: overallRating,
+
+        /*
+         * Ease of Booking
+         */
+        booking: consultedDoctor
+          ? areaRatings["Ease of Booking"]
+          : null,
+
+        /*
+         * Doctor Communication
+         */
+        doc_communication: consultedDoctor
+          ? areaRatings["Doctor Communication"]
+          : null,
+
+        /*
+         * Doctor Professionalism
+         */
+        doc_professionalism: consultedDoctor
+          ? areaRatings[
+              "Doctor Professionalism"
+            ]
+          : null,
+
+        /*
+         * Waiting Time
+         */
+        waiting: consultedDoctor
+          ? areaRatings["Waiting Time"]
+          : null,
+
+        /*
+         * Quality of Consultation
+         */
+        quality: consultedDoctor
+          ? areaRatings[
+              "Quality of Consultation"
+            ]
+          : null,
+
+        /*
+         * Staff Behaviour
+         */
+        staff: consultedDoctor
+          ? areaRatings["Staff Behaviour"]
+          : null,
+
+        /*
+         * AI Symptom Checker Accuracy
+         */
+        ai_accuracy: aiAccuracy,
+
+        /*
+         * Website Design & UI
+         */
+        website: websiteRating,
+
+        /*
+         * Would you recommend SymptoNexus?
+         */
+        recommendation: recommend === "yes",
+
+        /*
+         * Did you consult with our doctor?
+         */
+        consultation: consultedDoctor,
+
+        /*
+         * Tell us more about your experience
+         */
+        desc: description.trim() || null,
+      };
+
+      /* ================= CALL API ================= */
+
+      setSubmitting(true);
+
+      const response =
+        await createPatientFeedbackApi(payload);
+
+      const result = response.data;
+
+      /*
+       * validateStatus returns all HTTP status responses,
+       * so success must be checked manually.
+       */
+      if (!result?.success) {
+        setSubmitError(
+          result?.message ||
+            "Failed to submit patient feedback.",
+        );
+
+        return;
+      }
+
+      const feedbackId =
+        result.data?.patient_feedback_id;
+
+      setFeedbackReference(
+        feedbackId
+          ? `SN-FBK-${feedbackId}`
+          : "SN-FBK-",
+      );
+
+      setSubmitted(true);
+    } catch (error: unknown) {
+      console.error(
+        "PATIENT FEEDBACK API ERROR:",
+        error,
+      );
+
+      const apiError = error as {
+        message?: string;
+
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+      };
+
+      setSubmitError(
+        apiError.response?.data?.message ||
+          apiError.message ||
+          "Something went wrong while submitting feedback.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleClear = () => {
     setOverallRating(0);
     setAreaRatings({});
     setRecommend("yes");
-    setSubmitted(false);
     setConsultedDoctor(false);
     setSelectedAppointmentId("");
-
-    setFormData({
-      patientName: "",
-      mobileNumber: "",
-      patientId: "",
-      visitDate: "",
-      department: "",
-      doctorName: "",
-      visitType: "",
-      websiteExperience: "",
-      whatWentWell: "",
-      improvements: "",
-    });
+    setDescription("");
+    setSubmitting(false);
+    setSubmitted(false);
+    setSubmitError("");
+    setFeedbackReference("");
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <div className="mx-auto max-w-7xl bg-white shadow-xl rounded-sm border border-gray-200">
+      <div className="mx-auto max-w-7xl rounded-sm border border-gray-200 bg-white shadow-xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-700 to-cyan-600 text-white px-6 py-4 flex items-center justify-between">
+
+        <div className="flex items-center justify-between bg-gradient-to-r from-teal-700 to-cyan-600 px-6 py-4 text-white">
           <div>
             <div className="flex items-center gap-3">
-              <button className="text-2xl">←</button>
-              <h1 className="text-2xl font-bold">Patient Feedback</h1>
+              <button
+                type="button"
+                className="text-2xl"
+              >
+                ←
+              </button>
+
+              <h1 className="text-2xl font-bold">
+                Patient Feedback
+              </h1>
             </div>
 
-            <p className="text-sm mt-1 ml-10">
-              Your feedback helps us improve our services and patient
-              experience.
+            <p className="ml-10 mt-1 text-sm">
+              Your feedback helps us improve our
+              services and patient experience.
             </p>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 text-4xl">
+          <div className="hidden items-center gap-2 text-4xl md:flex">
             📋 ❤️
           </div>
         </div>
 
-        <div className="p-5 space-y-4">
+        <div className="space-y-4 p-5">
           {/* Overall Experience */}
-          <section className="border border-gray-200 rounded-lg p-4 bg-white">
-            <h2 className="text-teal-700 font-bold mb-5">
+
+          <section className="rounded-lg border border-gray-200 bg-white p-4">
+            <h2 className="mb-5 font-bold text-teal-700">
               How was your overall experience?
             </h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-5">
               {overallRatings.map((item) => (
                 <button
                   key={item.value}
                   type="button"
-                  onClick={() => setOverallRating(item.value)}
-                  className={`rounded-lg p-4 text-center transition border ${
+                  onClick={() => {
+                    setOverallRating(item.value);
+                    setSubmitError("");
+                  }}
+                  className={`rounded-lg border p-4 text-center transition ${
                     overallRating === item.value
                       ? "border-teal-500 bg-teal-50"
                       : "border-transparent hover:bg-gray-50"
                   }`}
                 >
-                  <div className="text-4xl mb-2">{item.emoji}</div>
+                  <div className="mb-2 text-4xl">
+                    {item.emoji}
+                  </div>
 
-                  <div className="text-yellow-400 text-lg">
+                  <div className="text-lg text-yellow-400">
                     {"★".repeat(item.value)}
                   </div>
 
-                  <div className="font-semibold">{item.value}</div>
+                  <div className="font-semibold">
+                    {item.value}
+                  </div>
 
-                  <div className="text-sm text-gray-600">{item.label}</div>
+                  <div className="text-sm text-gray-600">
+                    {item.label}
+                  </div>
                 </button>
               ))}
             </div>
           </section>
 
           {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
-            <div className="lg:col-span-3 space-y-4">
+
+          <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-4">
+            <div className="space-y-4 lg:col-span-3">
               {/* Platform Rating Table */}
-              <section className="border border-gray-200 rounded-lg bg-white overflow-hidden">
-                <div className="p-4">
-                  <h2 className="text-teal-700 font-bold">
-                    3. Please rate the following areas
-                  </h2>
-                </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm border-t border-gray-200">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left p-3 border border-gray-200 min-w-[220px]">
-                          Feedback Area
-                        </th>
-
-                        {ratingColumns.map((col) => (
-                          <th
-                            key={col.value}
-                            className="p-3 border border-gray-200 text-center min-w-[110px]"
-                          >
-                            <div>{col.label}</div>
-
-                            <div className="text-yellow-400">
-                              {"★".repeat(col.value)}
-                            </div>
-
-                            <div className="text-xs text-gray-500">
-                              {col.value}
-                            </div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {platformRatingAreas.map((area) => (
-                        <tr key={area}>
-                          <td className="p-3 border border-gray-200 font-medium">
-                            {area}
-                          </td>
-
-                          {ratingColumns.map((col) => (
-                            <td
-                              key={col.value}
-                              className="p-3 border border-gray-200 text-center"
-                            >
-                              <input
-                                type="radio"
-                                name={area}
-                                checked={areaRatings[area] === col.value}
-                                onChange={() =>
-                                  handleAreaRating(area, col.value)
-                                }
-                              />
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+              <RatingTable
+                title="3. Please rate the following areas"
+                areaHeader="Feedback Area"
+                areas={platformRatingAreas}
+                ratings={areaRatings}
+                onRate={handleAreaRating}
+              />
 
               {/* Doctor Consultation */}
-              <section className="border border-gray-200 rounded-lg p-4 bg-white">
-                <h2 className="text-teal-700 font-bold mb-4">
+
+              <section className="rounded-lg border border-gray-200 bg-white p-4">
+                <h2 className="mb-4 font-bold text-teal-700">
                   Doctor Consultation
                 </h2>
 
@@ -309,14 +635,17 @@ const Feedback: React.FC = () => {
                   Did you consult with our doctor?
                 </p>
 
-                <div className="flex gap-6 mb-4">
+                <div className="mb-4 flex gap-6">
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
                       name="consultedDoctor"
                       checked={consultedDoctor}
-                      onChange={() => setConsultedDoctor(true)}
+                      onChange={() =>
+                        handleConsultationChange(true)
+                      }
                     />
+
                     Yes
                   </label>
 
@@ -325,307 +654,364 @@ const Feedback: React.FC = () => {
                       type="radio"
                       name="consultedDoctor"
                       checked={!consultedDoctor}
-                      onChange={() => {
-                        setConsultedDoctor(false);
-                        setSelectedAppointmentId("");
-                      }}
+                      onChange={() =>
+                        handleConsultationChange(false)
+                      }
                     />
+
                     No
                   </label>
                 </div>
 
+                {/* Appointment Selection */}
+
                 {consultedDoctor && (
                   <div className="mb-4 rounded-lg border border-teal-100 bg-teal-50 p-4">
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">
                       Select Appointment for Feedback
                     </label>
 
                     <select
                       value={selectedAppointmentId}
-                      onChange={(e) =>
-                        setSelectedAppointmentId(e.target.value)
-                      }
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
-                    >
-                      <option value="">Select appointment</option>
+                      onChange={(event) => {
+                        setSelectedAppointmentId(
+                          event.target.value,
+                        );
 
-                      {feedbackAppointments.map((appointment) => (
-                        <option
-                          key={appointment.appointment_id}
-                          value={appointment.appointment_id}
-                        >
-                          {appointment.doctor_name || "Doctor"} |{" "}
-                          {appointment.specialization || "General"} |{" "}
-                          {appointment.appointment_date || "-"} |{" "}
-                          {getAppointmentTime(appointment)}
-                        </option>
-                      ))}
+                        setSubmitError("");
+                      }}
+                      className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    >
+                      <option value="">
+                        Select appointment
+                      </option>
+
+                      {feedbackAppointments.map(
+                        (appointment) => (
+                          <option
+                            key={
+                              appointment.appointment_id
+                            }
+                            value={
+                              appointment.appointment_id
+                            }
+                          >
+                            {appointment.doctor_name ||
+                              "Doctor"}{" "}
+                            |{" "}
+                            {appointment.specialization ||
+                              "General"}{" "}
+                            |{" "}
+                            {appointment.appointment_date ||
+                              "-"}{" "}
+                            |{" "}
+                            {getAppointmentTime(
+                              appointment,
+                            )}
+                          </option>
+                        ),
+                      )}
                     </select>
 
-                    {feedbackAppointments.length === 0 && (
+                    {feedbackAppointments.length ===
+                      0 && (
                       <p className="mt-2 text-xs text-red-500">
-                        No eligible appointment found for doctor feedback.
+                        No eligible appointment found
+                        for doctor feedback.
                       </p>
                     )}
                   </div>
                 )}
 
-                {consultedDoctor && selectedAppointment && (
-                  <>
-                    <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4">
-                      <h3 className="font-bold text-gray-800 mb-3">
-                        Selected Appointment Details
-                      </h3>
+                {/* Selected Appointment Details */}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                        <p>
-                          <span className="font-semibold">Doctor:</span>{" "}
-                          {selectedAppointment.doctor_name || "-"}
-                        </p>
+                {consultedDoctor &&
+                  selectedAppointment && (
+                    <>
+                      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4">
+                        <h3 className="mb-3 font-bold text-gray-800">
+                          Selected Appointment Details
+                        </h3>
 
-                        <p>
-                          <span className="font-semibold">
-                            Specialization:
-                          </span>{" "}
-                          {selectedAppointment.specialization || "-"}
-                        </p>
+                        <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                          <p>
+                            <span className="font-semibold">
+                              Doctor:
+                            </span>{" "}
+                            {selectedAppointment.doctor_name ||
+                              "-"}
+                          </p>
 
-                        <p>
-                          <span className="font-semibold">
-                            Appointment Date:
-                          </span>{" "}
-                          {selectedAppointment.appointment_date || "-"}
-                        </p>
+                          <p>
+                            <span className="font-semibold">
+                              Specialization:
+                            </span>{" "}
+                            {selectedAppointment.specialization ||
+                              "-"}
+                          </p>
 
-                        <p>
-                          <span className="font-semibold">Time:</span>{" "}
-                          {getAppointmentTime(selectedAppointment)}
-                        </p>
+                          <p>
+                            <span className="font-semibold">
+                              Appointment Date:
+                            </span>{" "}
+                            {selectedAppointment.appointment_date ||
+                              "-"}
+                          </p>
 
-                        <p>
-                          <span className="font-semibold">Status:</span>{" "}
-                          {selectedAppointment.booking_status || "-"}
-                        </p>
+                          <p>
+                            <span className="font-semibold">
+                              Time:
+                            </span>{" "}
+                            {getAppointmentTime(
+                              selectedAppointment,
+                            )}
+                          </p>
 
-                        <p>
-                          <span className="font-semibold">
-                            Appointment No:
-                          </span>{" "}
-                          {selectedAppointment.appointment_no || "-"}
-                        </p>
+                          <p>
+                            <span className="font-semibold">
+                              Status:
+                            </span>{" "}
+                            {selectedAppointment.booking_status ||
+                              "-"}
+                          </p>
+
+                          <p>
+                            <span className="font-semibold">
+                              Appointment No:
+                            </span>{" "}
+                            {selectedAppointment.appointment_no ||
+                              "-"}
+                          </p>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm border border-gray-200">
-                        <thead>
-                          <tr className="bg-gray-50">
-                            <th className="text-left p-3 border border-gray-200 min-w-[220px]">
-                              Consultation Area
-                            </th>
-
-                            {ratingColumns.map((col) => (
-                              <th
-                                key={col.value}
-                                className="p-3 border border-gray-200 text-center min-w-[110px]"
-                              >
-                                <div>{col.label}</div>
-
-                                <div className="text-yellow-400">
-                                  {"★".repeat(col.value)}
-                                </div>
-
-                                <div className="text-xs text-gray-500">
-                                  {col.value}
-                                </div>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          {consultationRatingAreas.map((area) => (
-                            <tr key={area}>
-                              <td className="p-3 border border-gray-200 font-medium">
-                                {area}
-                              </td>
-
-                              {ratingColumns.map((col) => (
-                                <td
-                                  key={col.value}
-                                  className="p-3 border border-gray-200 text-center"
-                                >
-                                  <input
-                                    type="radio"
-                                    name={area}
-                                    checked={areaRatings[area] === col.value}
-                                    onChange={() =>
-                                      handleAreaRating(area, col.value)
-                                    }
-                                  />
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                )}
+                      <RatingTable
+                        areaHeader="Consultation Area"
+                        areas={
+                          consultationRatingAreas
+                        }
+                        ratings={areaRatings}
+                        onRate={handleAreaRating}
+                      />
+                    </>
+                  )}
               </section>
 
-              {/* Additional Feedback + Comment */}
-              <div className="border border-gray-200 rounded-lg p-4 bg-white">
-                    <h2 className="text-teal-700 font-bold mb-4">
-                    5. Tell us more about your experience
-                  </h2>
+              {/* Description and Recommendation */}
 
-                  <textarea
-                    className="w-full h-24 border border-gray-300 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
-                    placeholder="Please share your suggestions, complaints, or appreciation here..."
-                    value={formData.websiteExperience}
-                    onChange={(e) =>
-                      handleInputChange("websiteExperience", e.target.value)
-                    }
-                  />
+              <section className="rounded-lg border border-gray-200 bg-white p-4">
+                <h2 className="mb-4 font-bold text-teal-700">
+                  5. Tell us more about your
+                  experience
+                </h2>
 
-                  <div className="mt-5 border-t border-gray-200 pt-4 text-center">
-                    <p className="font-medium mb-2">
-                      Would you recommend SymptoNexus?
-                    </p>
+                <textarea
+                  className="h-24 w-full rounded-md border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  placeholder="Please share your suggestions, complaints, or appreciation here..."
+                  value={description}
+                  onChange={(event) => {
+                    setDescription(event.target.value);
+                    setSubmitError("");
+                  }}
+                />
 
-                    <div className="flex gap-6">
-                      <label className="flex items-center gap-2 text-sm">
-                        <input
-                          type="radio"
-                          name="recommend"
-                          checked={recommend === "yes"}
-                          onChange={() => setRecommend("yes")}
-                        />
-                        Yes
-                      </label>
+                <div className="mt-5 border-t border-gray-200 pt-4 text-center">
+                  <p className="mb-2 font-medium">
+                    Would you recommend SymptoNexus?
+                  </p>
 
-                      <label className="flex items-center gap-2 text-sm">
-                        <input
-                          type="radio"
-                          name="recommend"
-                          checked={recommend === "no"}
-                          onChange={() => setRecommend("no")}
-                        />
-                        No
-                      </label>
-                    </div>
+                  <div className="flex gap-6">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name="recommend"
+                        checked={recommend === "yes"}
+                        onChange={() =>
+                          setRecommend("yes")
+                        }
+                      />
+
+                      Yes
+                    </label>
+
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name="recommend"
+                        checked={recommend === "no"}
+                        onChange={() =>
+                          setRecommend("no")
+                        }
+                      />
+
+                      No
+                    </label>
                   </div>
-              </div>
+                </div>
+              </section>
             </div>
 
             {/* Right Side Cards */}
-            <aside className="space-y-4">
-              <div className="border border-green-100 bg-green-50 rounded-lg p-5 text-center min-h-[205px] flex flex-col justify-center">
-                <div className="text-5xl mb-3">✅</div>
 
-                <h3 className="text-green-700 font-bold text-lg">
+            <aside className="space-y-4">
+              <div className="flex min-h-[205px] flex-col justify-center rounded-lg border border-green-100 bg-green-50 p-5 text-center">
+                <div className="mb-3 text-5xl">
+                  ✅
+                </div>
+
+                <h3 className="text-lg font-bold text-green-700">
                   Thank You!
                 </h3>
 
-                <p className="text-sm text-gray-600 mt-2 leading-6">
-                  Your feedback is very important to us. We use your feedback to
-                  improve our services.
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  Your feedback is very important to us.
+                  We use your feedback to improve our
+                  services.
                 </p>
 
-                <div className="text-5xl mt-5">📋🙂</div>
+                <div className="mt-5 text-5xl">
+                  📋🙂
+                </div>
               </div>
 
-              <div className="border border-gray-200 rounded-lg p-5 bg-white min-h-[190px]">
-                <h3 className="text-teal-700 font-bold mb-4">
+              {/* Feedback Summary */}
+
+              <div className="min-h-[190px] rounded-lg border border-gray-200 bg-white p-5">
+                <h3 className="mb-4 font-bold text-teal-700">
                   Feedback Summary
                 </h3>
 
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
-                    <span className="text-gray-600">Overall Rating</span>
+                    <span className="text-gray-600">
+                      Overall Rating
+                    </span>
+
                     <span className="font-semibold text-gray-800">
-                      {overallRating ? `${overallRating}/5` : "Not selected"}
+                      {overallRating
+                        ? `${overallRating}/5`
+                        : "Not selected"}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
-                    <span className="text-gray-600">Doctor Consulted</span>
+                    <span className="text-gray-600">
+                      Doctor Consulted
+                    </span>
+
                     <span className="font-semibold text-gray-800">
-                      {consultedDoctor ? "Yes" : "No"}
+                      {consultedDoctor
+                        ? "Yes"
+                        : "No"}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
-                    <span className="text-gray-600">Appointment</span>
+                    <span className="text-gray-600">
+                      Appointment
+                    </span>
+
                     <span className="font-semibold text-gray-800">
-                      {selectedAppointment ? "Selected" : "Not selected"}
+                      {selectedAppointment
+                        ? "Selected"
+                        : "Not selected"}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2">
-                    <span className="text-gray-600">Recommend</span>
-                    <span className="font-semibold text-gray-800 capitalize">
+                    <span className="text-gray-600">
+                      Recommend
+                    </span>
+
+                    <span className="font-semibold capitalize text-gray-800">
                       {recommend}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="border border-gray-200 rounded-lg p-5 bg-white min-h-[262px]">
-                <h3 className="text-teal-700 font-bold mb-4">
+              {/* Why Give Feedback */}
+
+              <div className="min-h-[262px] rounded-lg border border-gray-200 bg-white p-5">
+                <h3 className="mb-4 font-bold text-teal-700">
                   Why Give Feedback?
                 </h3>
 
                 <ul className="space-y-4 text-sm text-gray-600">
                   <li className="flex gap-3">
                     <span>🛡️</span>
-                    <span>Help us improve our services</span>
+                    <span>
+                      Help us improve our services
+                    </span>
                   </li>
 
                   <li className="flex gap-3">
                     <span>👥</span>
-                    <span>Better patient experience</span>
+                    <span>
+                      Better patient experience
+                    </span>
                   </li>
 
                   <li className="flex gap-3">
                     <span>⚡</span>
-                    <span>Quick resolution of issues</span>
+                    <span>
+                      Quick resolution of issues
+                    </span>
                   </li>
 
                   <li className="flex gap-3">
                     <span>♡</span>
-                    <span>We value your opinion</span>
+                    <span>
+                      We value your opinion
+                    </span>
                   </li>
                 </ul>
               </div>
             </aside>
           </div>
 
+          {/* Error Message */}
+
+          {submitError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-medium text-red-700">
+              {submitError}
+            </div>
+          )}
+
           {/* Buttons */}
+
           <div className="flex justify-center gap-5 pt-2">
             <button
               type="button"
               onClick={handleSubmit}
-              className="bg-green-600 hover:bg-green-700 text-white px-10 py-3 rounded-md font-semibold transition"
+              disabled={submitting}
+              className={`rounded-md px-10 py-3 font-semibold text-white transition ${
+                submitting
+                  ? "cursor-not-allowed bg-green-400"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
             >
-              Submit Feedback
+              {submitting
+                ? "Submitting..."
+                : "Submit Feedback"}
             </button>
 
             <button
               type="button"
               onClick={handleClear}
-              className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-10 py-3 rounded-md font-semibold transition"
+              disabled={submitting}
+              className="rounded-md border border-gray-300 bg-white px-10 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Clear Form
             </button>
           </div>
 
           {/* Success Footer */}
+
           {submitted && (
-            <div className="border border-green-200 bg-green-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <div className="md:col-span-2 flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl">
+            <div className="grid grid-cols-1 items-center gap-4 rounded-lg border border-green-200 bg-green-50 p-4 md:grid-cols-4">
+              <div className="flex items-center gap-4 md:col-span-2">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-2xl text-white">
                   ✓
                 </div>
 
@@ -635,8 +1021,9 @@ const Feedback: React.FC = () => {
                   </h3>
 
                   <p className="text-sm text-gray-600">
-                    Your feedback has been recorded successfully. Our team will
-                    review it and contact you if required.
+                    Your feedback has been recorded
+                    successfully. Our team will review it
+                    and contact you if required.
                   </p>
                 </div>
               </div>
@@ -646,13 +1033,18 @@ const Feedback: React.FC = () => {
                   Feedback Reference No.
                 </p>
 
-                <p className="font-semibold">SN-FBK-</p>
+                <p className="font-semibold">
+                  {feedbackReference ||
+                    "SN-FBK-"}
+                </p>
               </div>
 
               <div>
-                <p className="text-xs text-gray-500">Status</p>
+                <p className="text-xs text-gray-500">
+                  Status
+                </p>
 
-                <span className="inline-block bg-green-200 text-green-700 px-3 py-1 rounded-md text-sm font-semibold">
+                <span className="inline-block rounded-md bg-green-200 px-3 py-1 text-sm font-semibold text-green-700">
                   Submitted
                 </span>
               </div>
@@ -663,7 +1055,5 @@ const Feedback: React.FC = () => {
     </div>
   );
 };
-
-
 
 export default Feedback;
