@@ -108,3 +108,99 @@ export const createPatientFeedbackApi = (
   );
 
 };
+
+
+/* ================= DOCTOR FEEDBACK TYPE ================= */
+
+export interface DoctorFeedback {
+
+  doctor_feedback_id: number;
+
+  doctor_id: number;
+
+  experience: number;
+
+  website: number;
+
+  management: number;
+
+  p_info: number;
+
+  system_performance: number;
+
+  support_service: number;
+
+  p_cooperation: number;
+
+  staff: number;
+
+  recommendation: boolean;
+
+  desc: string | null;
+
+}
+
+
+/* ================= CREATE DOCTOR FEEDBACK PAYLOAD ================= */
+
+export interface CreateDoctorFeedbackPayload {
+
+  /*
+   * Optional because the backend can get doctor_id
+   * from the authenticated user's req.user.ref_id.
+   */
+  doctor_id?: number;
+
+  experience: number;
+
+  website: number;
+
+  management: number;
+
+  p_info: number;
+
+  system_performance: number;
+
+  support_service: number;
+
+  p_cooperation: number;
+
+  staff: number;
+
+  recommendation: boolean;
+
+  desc: string | null;
+
+}
+
+
+/* ================= DOCTOR FEEDBACK API RESPONSE ================= */
+
+export interface DoctorFeedbackApiResponse {
+
+  success: boolean;
+
+  message: string;
+
+  data: DoctorFeedback | null;
+
+  errorCode?: string | null;
+
+}
+
+
+/* ================= CREATE DOCTOR FEEDBACK API ================= */
+
+export const createDoctorFeedbackApi = (
+  data: CreateDoctorFeedbackPayload
+) => {
+
+  return API.post<DoctorFeedbackApiResponse>(
+    urls.createDoctorFeedbackUrl,
+    data,
+    {
+      validateStatus: () => true,
+    }
+  );
+
+};
