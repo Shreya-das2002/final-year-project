@@ -16,6 +16,7 @@ import {
 } from "react";
 import doctorPhone from "../../assets/doc_phone.png";
 import Appointments from "../Patient/Appointments";
+
 import {
   getAllDoctorFeedbackApi,
   getAllPatientFeedbackApi,
@@ -30,6 +31,7 @@ export type CardsRef = {
 const Cards = forwardRef<CardsRef>((_, ref) => {
   const navigate = useNavigate();
   const browseSpecialtyRef = useRef<HTMLDivElement | null>(null);
+  const hasFetchedFeedbackRef = useRef(false);
 
   const [patientFeedbacks, setPatientFeedbacks] = useState<PatientFeedback[]>(
     []
@@ -49,6 +51,10 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
   }));
 
   useEffect(() => {
+    if (hasFetchedFeedbackRef.current) return;
+
+    hasFetchedFeedbackRef.current = true;
+
     const fetchFeedbacks = async () => {
       try {
         setFeedbackLoading(true);
@@ -332,7 +338,8 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
                 </div>
 
                 <p className="text-gray-600 dark:text-gray-300 leading-7">
-                  {feedback.desc || "Great healthcare experience with SymptoNexus."}
+                  {feedback.desc ||
+                    "Great healthcare experience with SymptoNexus."}
                 </p>
 
                 <div className="mt-5 border-t border-gray-200 dark:border-gray-700 pt-4">
@@ -356,7 +363,8 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
                 </div>
 
                 <p className="text-gray-600 dark:text-gray-300 leading-7">
-                  {feedback.desc || "Smooth platform experience for doctor workflow."}
+                  {feedback.desc ||
+                    "Smooth platform experience for doctor workflow."}
                 </p>
 
                 <div className="mt-5 border-t border-gray-200 dark:border-gray-700 pt-4">
