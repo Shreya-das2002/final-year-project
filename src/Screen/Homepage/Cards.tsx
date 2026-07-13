@@ -7,9 +7,21 @@ import {
   FaHandsHelping,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import {
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+  useEffect,
+  useState,
+} from "react";
 import doctorPhone from "../../assets/doc_phone.png";
 import Appointments from "../Patient/Appointments";
+import {
+  getAllDoctorFeedbackApi,
+  getAllPatientFeedbackApi,
+  type DoctorFeedback,
+  type PatientFeedback,
+} from "../../services/feedbackApi";
 
 export type CardsRef = {
   scrollToBrowseSpecialty: () => void;
@@ -18,6 +30,12 @@ export type CardsRef = {
 const Cards = forwardRef<CardsRef>((_, ref) => {
   const navigate = useNavigate();
   const browseSpecialtyRef = useRef<HTMLDivElement | null>(null);
+
+  const [patientFeedbacks, setPatientFeedbacks] = useState<PatientFeedback[]>(
+    []
+  );
+  const [doctorFeedbacks, setDoctorFeedbacks] = useState<DoctorFeedback[]>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
 
   const scrollToBrowseSpecialty = () => {
     browseSpecialtyRef.current?.scrollIntoView({
@@ -30,6 +48,41 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
     scrollToBrowseSpecialty,
   }));
 
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        setFeedbackLoading(true);
+
+        const [patientResponse, doctorResponse] = await Promise.all([
+          getAllPatientFeedbackApi(),
+          getAllDoctorFeedbackApi(),
+        ]);
+
+        if (patientResponse.data?.success) {
+          setPatientFeedbacks(patientResponse.data.data || []);
+        }
+
+        if (doctorResponse.data?.success) {
+          setDoctorFeedbacks(doctorResponse.data.data || []);
+        }
+      } catch (error) {
+        console.error("FETCH FEEDBACK ERROR:", error);
+      } finally {
+        setFeedbackLoading(false);
+      }
+    };
+
+    fetchFeedbacks();
+  }, []);
+
+  const getStars = (rating?: number | null) => {
+    const safeRating = Math.max(0, Math.min(Number(rating || 0), 5));
+    return "★".repeat(safeRating) + "☆".repeat(5 - safeRating);
+  };
+
+  const latestPatientFeedbacks = patientFeedbacks.slice(0, 3);
+  const latestDoctorFeedbacks = doctorFeedbacks.slice(0, 3);
+
   return (
     <div className="bg-gradient-to-r from-gray-200 via-slate-50 to-gray-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
       <h1 className="text-6xl pt-7 font-bold text-center text-cyan-800 dark:text-gray-100 mb-3">
@@ -37,7 +90,9 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
       </h1>
 
       <p className="text-2xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-3">
-        Everything you need to understand symptoms, identify possible conditions, and connect with the right specialist in one intelligent platform
+        Everything you need to understand symptoms, identify possible
+        conditions, and connect with the right specialist in one intelligent
+        platform
       </p>
 
       <div className="grid gap-8 md:grid-cols-3 p-8">
@@ -57,8 +112,9 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
           </h3>
 
           <p className="text-neutral-900 text-[17px]/7">
-            Analyze your symptoms with our AI-powered symptom checker to understand possible 
-            health conditions and the most relevant type of specialist to consult.
+            Analyze your symptoms with our AI-powered symptom checker to
+            understand possible health conditions and the most relevant type of
+            specialist to consult.
           </p>
         </div>
 
@@ -74,8 +130,9 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
             </h3>
 
             <p className="text-neutral-900 text-[17px]/7">
-            Get intelligent predictions of possible diseases or health conditions based on your symptoms, 
-            helping you understand when professional medical attention may be needed.
+              Get intelligent predictions of possible diseases or health
+              conditions based on your symptoms, helping you understand when
+              professional medical attention may be needed.
             </p>
           </div>
         </div>
@@ -95,7 +152,9 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
             </h3>
 
             <p className="text-neutral-900 text-[17px]/7">
-              Get matched with the right doctor based on predicted conditions and recommended specialization, so you can seek expert care faster.
+              Get matched with the right doctor based on predicted conditions
+              and recommended specialization, so you can seek expert care
+              faster.
             </p>
           </div>
         </div>
@@ -118,9 +177,9 @@ const Cards = forwardRef<CardsRef>((_, ref) => {
             </h2>
 
             <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-              SymptoNexus combines AI-driven symptom analysis with smart condition prediction
-to help users understand possible health issues and connect with doctors
-based on the right specialization.
+              SymptoNexus combines AI-driven symptom analysis with smart
+              condition prediction to help users understand possible health
+              issues and connect with doctors based on the right specialization.
             </p>
 
             <div className="grid grid-cols-2 gap-6">
@@ -205,10 +264,11 @@ based on the right specialization.
             <div>
               <div className="text-6xl font-bold text-blue-300 mb-4">02</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                2.  Get Condition Prediction
+                2. Get Condition Prediction
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                View possible diseases or conditions based on your symptoms and understand the recommended specialist category.
+                View possible diseases or conditions based on your symptoms and
+                understand the recommended specialist category.
               </p>
             </div>
 
@@ -218,7 +278,8 @@ based on the right specialization.
                 3. Connect With Doctors
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Consult the most relevant doctor based on the predicted condition and specialization mapping.
+                Consult the most relevant doctor based on the predicted
+                condition and specialization mapping.
               </p>
             </div>
           </div>
@@ -235,7 +296,8 @@ based on the right specialization.
         </h2>
 
         <p className="text-xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-7">
-          Find the right specialist for your health needs from our diverse network of medical professionals
+          Find the right specialist for your health needs from our diverse
+          network of medical professionals
         </p>
 
         <div>
@@ -243,14 +305,81 @@ based on the right specialization.
         </div>
       </div>
 
+      {/* What Our Users Say */}
       <div className="py-16 px-8 bg-gradient-to-r from-gray-200 via-slate-50 to-gray-200 dark:bg-gradient-to-r dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
         <h2 className="text-6xl font-bold text-center text-cyan-900 dark:text-gray-100 mb-3">
           What Our Users Say
         </h2>
 
-        <p className="text-xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-3">
-          Join thousands of satisfied users who trust SymptoNexus for their healthcare needs
+        <p className="text-xl pl-2 text-center text-gray-600 dark:text-gray-100 mb-10">
+          Join thousands of satisfied users who trust SymptoNexus for their
+          healthcare needs
         </p>
+
+        {feedbackLoading ? (
+          <p className="text-center text-gray-600 dark:text-gray-300">
+            Loading feedback...
+          </p>
+        ) : (
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            {latestPatientFeedbacks.map((feedback) => (
+              <div
+                key={`patient-${feedback.patient_feedback_id}`}
+                className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 shadow-md"
+              >
+                <div className="mb-3 text-yellow-400 text-xl">
+                  {getStars(feedback.experience)}
+                </div>
+
+                <p className="text-gray-600 dark:text-gray-300 leading-7">
+                  {feedback.desc || "Great healthcare experience with SymptoNexus."}
+                </p>
+
+                <div className="mt-5 border-t border-gray-200 dark:border-gray-700 pt-4">
+                  <p className="font-bold text-cyan-900 dark:text-white">
+                    Patient Feedback
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Recommendation: {feedback.recommendation ? "Yes" : "No"}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {latestDoctorFeedbacks.map((feedback) => (
+              <div
+                key={`doctor-${feedback.doctor_feedback_id}`}
+                className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 shadow-md"
+              >
+                <div className="mb-3 text-yellow-400 text-xl">
+                  {getStars(feedback.experience)}
+                </div>
+
+                <p className="text-gray-600 dark:text-gray-300 leading-7">
+                  {feedback.desc || "Smooth platform experience for doctor workflow."}
+                </p>
+
+                <div className="mt-5 border-t border-gray-200 dark:border-gray-700 pt-4">
+                  <p className="font-bold text-cyan-900 dark:text-white">
+                    Doctor Feedback
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Recommendation: {feedback.recommendation ? "Yes" : "No"}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {latestPatientFeedbacks.length === 0 &&
+              latestDoctorFeedbacks.length === 0 && (
+                <div className="md:col-span-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 text-center shadow-md">
+                  <p className="text-gray-600 dark:text-gray-300">
+                    No feedback available yet.
+                  </p>
+                </div>
+              )}
+          </div>
+        )}
       </div>
     </div>
   );
