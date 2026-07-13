@@ -1,11 +1,9 @@
 import { urls } from "../Environment";
 import { API } from "./api";
 
-
 /* ================= PATIENT FEEDBACK TYPE ================= */
 
 export interface PatientFeedback {
-
   patient_feedback_id: number;
 
   patient_id: number;
@@ -35,14 +33,11 @@ export interface PatientFeedback {
   consultation: boolean;
 
   desc: string | null;
-
 }
-
 
 /* ================= CREATE PATIENT FEEDBACK PAYLOAD ================= */
 
 export interface CreatePatientFeedbackPayload {
-
   /*
    * Optional because the backend can get patient_id
    * from the authenticated user's req.user.ref_id.
@@ -74,14 +69,11 @@ export interface CreatePatientFeedbackPayload {
   consultation: boolean;
 
   desc: string | null;
-
 }
-
 
 /* ================= PATIENT FEEDBACK API RESPONSE ================= */
 
 export interface PatientFeedbackApiResponse {
-
   success: boolean;
 
   message: string;
@@ -89,16 +81,25 @@ export interface PatientFeedbackApiResponse {
   data: PatientFeedback | null;
 
   errorCode?: string | null;
-
 }
 
+/* ================= PATIENT FEEDBACK LIST RESPONSE ================= */
+
+export interface PatientFeedbackListApiResponse {
+  success: boolean;
+
+  message: string;
+
+  data: PatientFeedback[];
+
+  errorCode?: string | null;
+}
 
 /* ================= CREATE PATIENT FEEDBACK API ================= */
 
 export const createPatientFeedbackApi = (
   data: CreatePatientFeedbackPayload
 ) => {
-
   return API.post<PatientFeedbackApiResponse>(
     urls.createPatientFeedbackUrl,
     data,
@@ -106,14 +107,22 @@ export const createPatientFeedbackApi = (
       validateStatus: () => true,
     }
   );
-
 };
 
+/* ================= GET ALL PATIENT FEEDBACK API ================= */
+
+export const getAllPatientFeedbackApi = () => {
+  return API.get<PatientFeedbackListApiResponse>(
+    urls.getAllPatientFeedbackUrl,
+    {
+      validateStatus: () => true,
+    }
+  );
+};
 
 /* ================= DOCTOR FEEDBACK TYPE ================= */
 
 export interface DoctorFeedback {
-
   doctor_feedback_id: number;
 
   doctor_id: number;
@@ -137,14 +146,11 @@ export interface DoctorFeedback {
   recommendation: boolean;
 
   desc: string | null;
-
 }
-
 
 /* ================= CREATE DOCTOR FEEDBACK PAYLOAD ================= */
 
 export interface CreateDoctorFeedbackPayload {
-
   /*
    * Optional because the backend can get doctor_id
    * from the authenticated user's req.user.ref_id.
@@ -170,14 +176,11 @@ export interface CreateDoctorFeedbackPayload {
   recommendation: boolean;
 
   desc: string | null;
-
 }
-
 
 /* ================= DOCTOR FEEDBACK API RESPONSE ================= */
 
 export interface DoctorFeedbackApiResponse {
-
   success: boolean;
 
   message: string;
@@ -185,16 +188,25 @@ export interface DoctorFeedbackApiResponse {
   data: DoctorFeedback | null;
 
   errorCode?: string | null;
-
 }
 
+/* ================= DOCTOR FEEDBACK LIST RESPONSE ================= */
+
+export interface DoctorFeedbackListApiResponse {
+  success: boolean;
+
+  message: string;
+
+  data: DoctorFeedback[];
+
+  errorCode?: string | null;
+}
 
 /* ================= CREATE DOCTOR FEEDBACK API ================= */
 
 export const createDoctorFeedbackApi = (
   data: CreateDoctorFeedbackPayload
 ) => {
-
   return API.post<DoctorFeedbackApiResponse>(
     urls.createDoctorFeedbackUrl,
     data,
@@ -202,5 +214,15 @@ export const createDoctorFeedbackApi = (
       validateStatus: () => true,
     }
   );
+};
 
+/* ================= GET ALL DOCTOR FEEDBACK API ================= */
+
+export const getAllDoctorFeedbackApi = () => {
+  return API.get<DoctorFeedbackListApiResponse>(
+    urls.getAllDoctorFeedbackUrl,
+    {
+      validateStatus: () => true,
+    }
+  );
 };

@@ -551,7 +551,9 @@ export const urls ={
   prescriptionPdfUrl: '/prescription',
   chatUrl: `/chat`,
   createPatientFeedbackUrl: '/feedback/patient',
-  createDoctorFeedbackUrl: '/feedback/doctor'
+  createDoctorFeedbackUrl: '/feedback/doctor',
+  getAllPatientFeedbackUrl: `/feedback/patient-feedbacks`,
+  getAllDoctorFeedbackUrl: `/feedback/doctor-feedbacks`,
 }
 
 
