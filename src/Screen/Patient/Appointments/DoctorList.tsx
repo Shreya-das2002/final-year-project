@@ -30,13 +30,15 @@ const SpDoctorList = () => {
   const doctorSlots = useSelector((state: RootState) => state.doctor.slot);
   const user = useSelector((state: RootState) => state.auth.user);
 
-    const buttons = useSelector(
-      (state: RootState) => state.auth.buttons
-    );
-  
-    const canBook = buttons?.some(
-      (btn) => btn.control_key === "book now"
-    );
+const buttons = useSelector((state: RootState) => state.auth.buttons);
+
+const canBook = buttons?.some(
+  (btn) => btn.control_key === "book now"
+);
+const isPatientRoute = location.pathname.startsWith("/patient");
+const isPublicDoctorRoute = location.pathname.startsWith("/doctors/");
+
+const shouldShowBookNow = isPublicDoctorRoute || (isPatientRoute && canBook);
 
   const [symptoms, setSymptoms] = useState("");
 
@@ -123,22 +125,23 @@ const SpDoctorList = () => {
     setShowCalendar(true);
   };
 
-  const handleBookNow = (doctor: Doctor) => {
-    const isPatientRoute = location.pathname.startsWith("/patient");
+const handleBookNow = (doctor: Doctor) => {
+  const isPatientRoute = location.pathname.startsWith("/patient");
 
-    if (isPatientRoute) {
-      openCalendar(doctor);
-      return;
-    }
+  if (!isPatientRoute) {
+    toast.error("Login first to book your appointment");
+    navigate("/registrationlogin/login");
+    return;
+  }
 
-    if (!isAuthenticated) {
-      toast.error("To book your appointment, login first.");
-      navigate("/registrationlogin/login");
-      return;
-    }
+  if (!isAuthenticated) {
+    toast.error("Login first to book your appointment");
+    navigate("/registrationlogin/login");
+    return;
+  }
 
-    openCalendar(doctor);
-  };
+  openCalendar(doctor);
+};
 
   const handleDateClick = (
     fullDate: string,
@@ -307,14 +310,14 @@ const SpDoctorList = () => {
                       {todayFee ? "(Today's Fee)" : "Doctor Unavailable today"}
                     </div>
                   </div>
-                {canBook && (
-                  <button
-                    onClick={() => handleBookNow(doc)}
-                    className="mt-2 bg-cyan-600 text-white px-4 py-2 mr-3 rounded hover:bg-cyan-700"
-                  >
-                    Book Now
-                  </button>
-                  )}
+            {shouldShowBookNow && (
+          <button
+            onClick={() => handleBookNow(doc)}
+            className="mt-2 bg-cyan-600 text-white px-4 py-2 mr-3 rounded hover:bg-cyan-700"
+          >
+            Book Now
+          </button>
+        )}
                 </div>
               </div>
             );

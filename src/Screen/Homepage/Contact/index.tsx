@@ -1,17 +1,50 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
-import  { teamMembers } from "../../../Environment";
+import { teamMembers } from "../../../Environment";
+import { sendContactMessageApi } from "../../../services/contactApi";
 
 const Contact: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setName("");
-    setEmail("");
-    setMessage("");
+
+    try {
+      setLoading(true);
+      setSuccessMessage("");
+      setErrorMessage("");
+
+      const response = await sendContactMessageApi({
+        name,
+        email,
+        message,
+      });
+
+      if (!response.data?.success) {
+        setErrorMessage(
+          response.data?.message || "Failed to send message. Please try again."
+        );
+        return;
+      }
+
+      setSuccessMessage(
+        response.data.message || "Message sent successfully."
+      );
+
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (error) {
+      console.error("SEND CONTACT MESSAGE ERROR:", error);
+      setErrorMessage("Something went wrong. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,7 +63,9 @@ const Contact: React.FC = () => {
       <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-6 mb-10">
         <div className="bg-gradient-to-r from-cyan-50 to-cyan-200 dark:from-cyan-800 dark:to-sky-800 p-6 rounded-xl shadow text-center">
           <FaEnvelope className="text-cyan-500 dark:text-slate-400 text-3xl mx-auto mb-3" />
-          <h3 className="text-gray-600 dark:text-slate-300 font-semibold text-lg mb-1">Email</h3>
+          <h3 className="text-gray-600 dark:text-slate-300 font-semibold text-lg mb-1">
+            Email
+          </h3>
           <p className="text-gray-600 dark:text-slate-300">
             symptonexus333@gmail.com
           </p>
@@ -38,7 +73,9 @@ const Contact: React.FC = () => {
 
         <div className="bg-linear-to-r from-cyan-50 to-cyan-200 dark:from-cyan-800 dark:to-sky-800 p-6 rounded-xl shadow text-center">
           <FaPhoneAlt className="text-cyan-500 dark:text-slate-400 text-3xl mx-auto mb-3" />
-          <h3 className="text-gray-600 dark:text-slate-300 font-semibold text-lg mb-1">Phone</h3>
+          <h3 className="text-gray-600 dark:text-slate-300 font-semibold text-lg mb-1">
+            Phone
+          </h3>
           <p className="text-gray-600 dark:text-slate-300">
             +91 98765 43210
           </p>
@@ -46,56 +83,67 @@ const Contact: React.FC = () => {
 
         <div className="bg-linear-to-r from-cyan-50 to-cyan-200 dark:from-cyan-800 dark:to-sky-800 p-6 rounded-xl shadow text-center">
           <FaMapMarkerAlt className="text-cyan-500 dark:text-slate-400 text-3xl mx-auto mb-3" />
-          <h3 className="text-gray-600 dark:text-slate-300 font-semibold text-lg mb-1">Location</h3>
-          <p className="text-gray-600 dark:text-slate-300">
-            India
-          </p>
+          <h3 className="text-gray-600 dark:text-slate-300 font-semibold text-lg mb-1">
+            Location
+          </h3>
+          <p className="text-gray-600 dark:text-slate-300">India</p>
         </div>
       </div>
 
       {/* ================= OUR TEAM ================= */}
-<div className="max-w-4xl mx-auto mb-12">
-  <h2 className="text-3xl font-bold text-center bg-linear-to-r from-cyan-800 to-cyan-400 bg-clip-text text-transparent dark:from-gray-300 dark:to-gray-400 mb-6">
-    Our Team
-  </h2>
+      <div className="max-w-4xl mx-auto mb-12">
+        <h2 className="text-3xl font-bold text-center bg-linear-to-r from-cyan-800 to-cyan-400 bg-clip-text text-transparent dark:from-gray-300 dark:to-gray-400 mb-6">
+          Our Team
+        </h2>
 
-  <div className="grid md:grid-cols-4 gap-6">
-    {teamMembers.map((member) => (
-      <div
-        key={member.name}
-        className="bg-linear-to-r from-cyan-100 to-cyan-50 dark:from-cyan-800 dark:to-sky-800 p-6 rounded-xl shadow text-center rounded-xl shadow-lg overflow-hidden
-                 transition-all duration-300 ease-in-out
-                 hover:-translate-y-2 hover:shadow-2xl hover:scale-105"
-      >
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-          {member.name}
-        </h3>
+        <div className="grid md:grid-cols-4 gap-6">
+          {teamMembers.map((member) => (
+            <div
+              key={member.name}
+              className="bg-linear-to-r from-cyan-100 to-cyan-50 dark:from-cyan-800 dark:to-sky-800 p-6 rounded-xl shadow text-center shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl hover:scale-105"
+            >
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                {member.name}
+              </h3>
 
-        <p className="text-sm text-cyan-800 dark:text-slate-300 mb-3">
-          {member.role}
-        </p>
+              <p className="text-sm text-cyan-800 dark:text-slate-300 mb-3">
+                {member.role}
+              </p>
 
-        <p className="text-gray-600 dark:text-slate-300 text-center flex items-center gap-2">
-          <FaPhoneAlt/> {member.num}
-        </p>
+              <p className="text-gray-600 dark:text-slate-300 text-center flex items-center gap-2">
+                <FaPhoneAlt /> {member.num}
+              </p>
 
-        <p className="text-gray-600 dark:text-slate-300 text-xs text-center flex items-center gap-2">
-        <FaEnvelope className="flex-shrink-0" />
-  <span className="truncate">{member.email}</span>
-        </p>
+              <p className="text-gray-600 dark:text-slate-300 text-xs text-center flex items-center gap-2">
+                <FaEnvelope className="flex-shrink-0" />
+                <span className="truncate">{member.email}</span>
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
+
       {/* ================= CONTACT FORM ================= */}
       <div className="max-w-3xl mx-auto bg-linear-to-r from-cyan-100 via-cyan-50 to-cyan-100 dark:from-sky-800 dark:via-cyan-800 dark:to-sky-800 rounded-2xl shadow-lg p-8">
         <h2 className="text-2xl font-semibold text-cyan-700 dark:text-slate-300 mb-6 text-center">
           Send Us a Message
         </h2>
 
+        {successMessage && (
+          <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            {successMessage}
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {errorMessage}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1  text-gray-700 dark:text-gray-200">
+            <label className="block mb-1 text-gray-700 dark:text-gray-200">
               Name
             </label>
             <input
@@ -138,9 +186,10 @@ const Contact: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-linear-to-r from-cyan-400 to-cyan-600 dark:from-cyan-900 dark:to-sky-950 text-white py-2 rounded-md font-semibold hover:from-sky-600 hover:to-cyan-900 dark:hover:from-sky-700 dark:hover:to-cyan-700 transition"
+            disabled={loading}
+            className="w-full bg-linear-to-r from-cyan-400 to-cyan-600 dark:from-cyan-900 dark:to-sky-950 text-white py-2 rounded-md font-semibold hover:from-sky-600 hover:to-cyan-900 dark:hover:from-sky-700 dark:hover:to-cyan-700 transition disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Send Message
+            {loading ? "Sending..." : "Send Message"}
           </button>
         </form>
       </div>

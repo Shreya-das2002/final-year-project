@@ -554,6 +554,7 @@ export const urls ={
   createDoctorFeedbackUrl: '/feedback/doctor',
   getAllPatientFeedbackUrl: `/feedback/patient-feedbacks`,
   getAllDoctorFeedbackUrl: `/feedback/doctor-feedbacks`,
+  sendContactMessageUrl: `/contact/send-message`,
 }
 
 
