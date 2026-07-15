@@ -10,6 +10,8 @@ export interface PatientFeedback {
 
   appointment_id: number | null;
 
+  patient_name: string;
+
   experience: number;
 
   booking: number | null;
@@ -126,6 +128,10 @@ export interface DoctorFeedback {
   doctor_feedback_id: number;
 
   doctor_id: number;
+
+  doctor_name: string;
+
+  specialization: string;
 
   experience: number;
 
