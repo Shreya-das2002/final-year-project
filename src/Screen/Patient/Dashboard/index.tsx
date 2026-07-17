@@ -1,20 +1,26 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
+
 import type { RootState, AppDispatch } from "../../../../store/store";
 import { fetchAppointmentsThunk } from "../../../../store/slices/appointmentSlice";
 
 import {
   Activity,
+  BarChart3,
   Bell,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
-  ClipboardList,
+  Clock,
   FileText,
   HeartPulse,
   Pill,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
   UserRound,
 } from "lucide-react";
 
@@ -25,13 +31,16 @@ interface StatCardProps {
   title: string;
   value: string;
   subtitle: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   bg: string;
+  iconBg: string;
+  glow: string;
 }
 
 interface MonthwiseAppointmentData {
   month: string;
   count: number;
+  sortValue: number;
 }
 
 const Patientpage: React.FC = () => {
@@ -48,7 +57,6 @@ const Patientpage: React.FC = () => {
 
   const patientId = (user as { patient_id?: number } | null)?.patient_id;
 
-  /* ================= HEALTH TIPS TIMER ================= */
   useEffect(() => {
     if (!HEALTH_TIPS.length) return;
 
@@ -59,14 +67,9 @@ const Patientpage: React.FC = () => {
     return () => window.clearInterval(interval);
   }, []);
 
-  /* ================= FETCH APPOINTMENTS ================= */
   useEffect(() => {
     if (patientId) {
-      dispatch(
-        fetchAppointmentsThunk({
-          patient_id: patientId,
-        })
-      );
+      dispatch(fetchAppointmentsThunk({ patient_id: patientId }));
     } else {
       dispatch(fetchAppointmentsThunk());
     }
@@ -76,7 +79,6 @@ const Patientpage: React.FC = () => {
     return Array.isArray(appointments) ? appointments : [];
   }, [appointments]);
 
-  /* ================= HELPERS ================= */
   const normalizeStatus = useCallback((status?: string | number | null) => {
     return String(status || "")
       .toLowerCase()
@@ -120,9 +122,7 @@ const Patientpage: React.FC = () => {
   const isTodayDate = useCallback(
     (dateValue?: string | null) => {
       const appointmentDate = getOnlyDate(dateValue);
-
       if (!appointmentDate) return false;
-
       return appointmentDate.getTime() === today.getTime();
     },
     [getOnlyDate, today]
@@ -198,18 +198,18 @@ const Patientpage: React.FC = () => {
       const normalizedStatus = normalizeStatus(status);
 
       if (normalizedStatus === "slot assigned") {
-        return "bg-emerald-100 text-emerald-700";
+        return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
       }
 
       if (normalizedStatus === "booking confirmed") {
-        return "bg-blue-100 text-blue-700";
+        return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
       }
 
       if (
         normalizedStatus === "booking initiated" ||
         normalizedStatus === "pending"
       ) {
-        return "bg-amber-100 text-amber-700";
+        return "bg-amber-100 text-amber-700 ring-1 ring-amber-200";
       }
 
       if (
@@ -218,22 +218,21 @@ const Patientpage: React.FC = () => {
         normalizedStatus === "canceled by patient" ||
         normalizedStatus === "consultation missed"
       ) {
-        return "bg-red-100 text-red-700";
+        return "bg-red-100 text-red-700 ring-1 ring-red-200";
       }
 
       if (
         normalizedStatus === "consultation completed" ||
         normalizedStatus === "prescription generated"
       ) {
-        return "bg-violet-100 text-violet-700";
+        return "bg-violet-100 text-violet-700 ring-1 ring-violet-200";
       }
 
-      return "bg-slate-100 text-slate-700";
+      return "bg-slate-100 text-slate-700 ring-1 ring-slate-200";
     },
     [normalizeStatus]
   );
 
-  /* ================= ONLY SLOT ASSIGNED + TODAY/UPCOMING APPOINTMENTS ================= */
   const slotAssignedAppointments = useMemo(() => {
     return appointmentList
       .filter((appointment) => {
@@ -249,7 +248,6 @@ const Patientpage: React.FC = () => {
       .sort((a, b) => {
         const dateA = getOnlyDate(a.appointment_date)?.getTime() || 0;
         const dateB = getOnlyDate(b.appointment_date)?.getTime() || 0;
-
         return dateA - dateB;
       });
   }, [appointmentList, normalizeStatus, getOnlyDate, today]);
@@ -257,12 +255,11 @@ const Patientpage: React.FC = () => {
   const nextAppointment = slotAssignedAppointments[0];
 
   const nextAppointmentSubtitle = nextAppointment
-    ? `Next: ${getAppointmentDate(nextAppointment)}, ${getAppointmentTime(
+    ? `${getAppointmentDate(nextAppointment)} • ${getAppointmentTime(
         nextAppointment
       )}`
     : "No upcoming slot assigned appointment";
 
-  /* ================= PROFILE COMPLETION ================= */
   const profileCompletion = useMemo(() => {
     const profile = (user || {}) as Record<string, unknown>;
 
@@ -290,18 +287,34 @@ const Patientpage: React.FC = () => {
     return Math.round((completedFields.length / fieldsToCheck.length) * 100);
   }, [user]);
 
-  /* ================= ACKNOWLEDGEMENT SLIPS ================= */
   const prescriptionCount = useMemo(() => {
     return appointmentList.filter((appointment) =>
       Boolean(appointment.prescription)
     ).length;
   }, [appointmentList]);
 
+  const completedCount = useMemo(() => {
+    return appointmentList.filter((appointment) => {
+      const status = normalizeStatus(appointment.booking_status);
+
+      return (
+        status === "consultation completed" ||
+        status === "prescription generated"
+      );
+    }).length;
+  }, [appointmentList, normalizeStatus]);
+
+  const pendingCount = useMemo(() => {
+    return appointmentList.filter((appointment) => {
+      const status = normalizeStatus(appointment.booking_status);
+      return status === "booking initiated" || status === "pending";
+    }).length;
+  }, [appointmentList, normalizeStatus]);
+
   const reportCount = 5;
 
-  /* ================= ALL APPOINTMENTS MONTH-WISE LINE GRAPH ================= */
   const monthwiseAppointmentData = useMemo<MonthwiseAppointmentData[]>(() => {
-    const monthMap = new Map<string, number>();
+    const monthMap = new Map<string, { count: number; sortValue: number }>();
 
     appointmentList.forEach((appointment) => {
       const appointmentDate = getOnlyDate(appointment.appointment_date);
@@ -313,16 +326,26 @@ const Patientpage: React.FC = () => {
         year: "2-digit",
       });
 
-      monthMap.set(monthKey, (monthMap.get(monthKey) || 0) + 1);
+      const sortValue =
+        appointmentDate.getFullYear() * 100 + appointmentDate.getMonth();
+
+      const existing = monthMap.get(monthKey);
+
+      monthMap.set(monthKey, {
+        count: existing ? existing.count + 1 : 1,
+        sortValue,
+      });
     });
 
-    return Array.from(monthMap.entries()).map(([month, count]) => ({
-      month,
-      count,
-    }));
+    return Array.from(monthMap.entries())
+      .map(([month, value]) => ({
+        month,
+        count: value.count,
+        sortValue: value.sortValue,
+      }))
+      .sort((a, b) => a.sortValue - b.sortValue);
   }, [appointmentList, getOnlyDate]);
 
-  /* ================= LOGIN TOAST NOTIFICATIONS ================= */
   useEffect(() => {
     if (!appointmentList.length) return;
 
@@ -394,293 +417,286 @@ const Patientpage: React.FC = () => {
   ]);
 
   return (
-    <div className="min-h-screen flex-1 p-6 bg-gradient-to-r from-slate-300 via-cyan-100 to-slate-300 dark:from-cyan-900 dark:via-slate-700 dark:to-cyan-900 md:p-6 lg:p-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        {/* Top Header */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold text-cyan-700 dark:text-gray-300">
-              Welcome Back, {user?.first_name || "Patient"}
-            </h2>
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-sky-50 to-indigo-100 p-4 dark:from-slate-950 dark:via-cyan-950 dark:to-slate-950 md:p-6 lg:p-8">
+      <div className="mx-auto max-w-[1600px] space-y-6">
+        {/* TOP WELCOME CARD */}
+        <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-r from-cyan-700 via-teal-600 to-indigo-800 p-6 text-white shadow-xl shadow-cyan-900/20 md:p-7">
+          <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute -bottom-24 left-1/3 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
+
+          <div className="relative grid grid-cols-1 gap-6 xl:grid-cols-12 xl:items-center">
+            <div className="xl:col-span-8">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
+                <Sparkles size={16} />
+                Patient Health Dashboard
+              </div>
+
+              <h1 className="text-3xl font-extrabold tracking-tight md:text-5xl">
+                Welcome back, {user?.first_name || "Patient"}
+              </h1>
+
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-50 md:text-base">
+                Track appointments, prescriptions, reports, health tips, and
+                profile completion from one colorful care workspace.
+              </p>
+
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <DashboardMiniInfo
+                  label="Upcoming"
+                  value={String(slotAssignedAppointments.length)}
+                  icon={<CalendarDays size={18} />}
+                />
+
+                <DashboardMiniInfo
+                  label="Completed"
+                  value={String(completedCount)}
+                  icon={<CheckCircle2 size={18} />}
+                />
+
+                <DashboardMiniInfo
+                  label="Pending"
+                  value={String(pendingCount)}
+                  icon={<Activity size={18} />}
+                />
+              </div>
+            </div>
+
+            <div className="xl:col-span-4">
+              <CompactProfileCompletionCard
+                percentage={profileCompletion}
+                onClick={() => navigate("/patient/profile")}
+              />
+            </div>
           </div>
         </section>
 
-        {/* Stats */}
-        <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {/* KPI CARDS */}
+        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
           <StatCard
-            title="Upcoming Appointments"
+            title="Upcoming"
             value={String(slotAssignedAppointments.length)}
             subtitle={nextAppointmentSubtitle}
-            icon={<CalendarDays size={24} />}
-            bg="from-blue-500 to-indigo-600"
+            icon={<CalendarDays size={22} />}
+            bg="from-cyan-400 via-sky-500 to-blue-700"
+            iconBg="bg-white/20"
+            glow="shadow-blue-500/25"
           />
 
           <StatCard
-            title="Total Appointments"
+            title="Total Visits"
             value={String(appointmentList.length)}
-            subtitle="All consultations booked"
-            icon={<CalendarDays size={24} />}
-            bg="from-rose-500 to-red-600"
+            subtitle="All booked consultations"
+            icon={<Stethoscope size={22} />}
+            bg="from-fuchsia-500 via-rose-500 to-red-600"
+            iconBg="bg-white/20"
+            glow="shadow-rose-500/25"
           />
 
           <StatCard
-            title="Recent Reports"
+            title="Reports"
             value={String(reportCount)}
             subtitle="Acknowledgement slips"
-            icon={<FileText size={24} />}
-            bg="from-violet-500 to-purple-600"
+            icon={<FileText size={22} />}
+            bg="from-indigo-500 via-purple-500 to-pink-600"
+            iconBg="bg-white/20"
+            glow="shadow-purple-500/25"
           />
 
           <StatCard
             title="Prescriptions"
             value={String(prescriptionCount)}
-            subtitle="Available from appointments"
-            icon={<Pill size={24} />}
-            bg="from-orange-500 to-amber-500"
+            subtitle="From appointment details"
+            icon={<Pill size={22} />}
+            bg="from-amber-400 via-orange-500 to-red-500"
+            iconBg="bg-white/20"
+            glow="shadow-orange-500/25"
           />
 
           <StatCard
             title="AI Interactions"
             value="12"
             subtitle="SymptoBot chats this month"
-            icon={<Activity size={24} />}
-            bg="from-emerald-500 to-green-600"
+            icon={<Activity size={22} />}
+            bg="from-emerald-400 via-teal-500 to-cyan-700"
+            iconBg="bg-white/20"
+            glow="shadow-emerald-500/25"
           />
         </section>
 
-        {/* Main Grid */}
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left/Main Content */}
-          <div className="space-y-6 lg:col-span-2">
-            {/* Appointments */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    Upcoming Appointments
-                  </h2>
-                  <p className="text-sm text-slate-500">
-                    Only today and upcoming slot assigned appointments are shown
-                    here.
-                  </p>
-                </div>
+        {/* MAIN GRID */}
+        <section className="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
+          <div className="space-y-6 xl:col-span-8">
+            <AppointmentsPanel
+              loading={loading}
+              appointments={slotAssignedAppointments}
+              getDoctorName={getDoctorName}
+              getSpecialization={getSpecialization}
+              getAppointmentDate={getAppointmentDate}
+              getAppointmentTime={getAppointmentTime}
+              getAppointmentStatus={getAppointmentStatus}
+              getStatusClass={getStatusClass}
+              navigate={navigate}
+            />
 
-                <button
-                  onClick={() => navigate("/patient/my_appointments")}
-                  className="hidden rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 md:block"
-                >
-                  View All
-                </button>
-              </div>
-
-              {loading ? (
-                <div className="rounded-2xl border border-slate-200 p-6 text-center text-slate-500">
-                  Loading appointments...
-                </div>
-              ) : slotAssignedAppointments.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
-                  <CalendarDays
-                    size={36}
-                    className="mx-auto mb-3 text-slate-400"
-                  />
-
-                  <h3 className="font-semibold text-slate-800">
-                    No upcoming slot assigned appointments
-                  </h3>
-
-                  <p className="mt-1 text-sm text-slate-500">
-                    You do not have any slot assigned consultations for today or
-                    upcoming dates.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {slotAssignedAppointments.slice(0, 3).map((appointment) => {
-                    const doctorName = getDoctorName(appointment);
-                    const specialization = getSpecialization(appointment);
-                    const appointmentDate = getAppointmentDate(appointment);
-                    const appointmentTime = getAppointmentTime(appointment);
-                    const appointmentStatus = getAppointmentStatus(appointment);
-
-                    return (
-                      <div
-                        key={appointment.appointment_id}
-                        className="rounded-2xl border border-slate-200 p-4 transition hover:border-teal-300 hover:bg-teal-50/40"
-                      >
-                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-teal-100 text-lg font-bold text-teal-700">
-                              {appointment.doctor_avatar ? (
-                                <img
-                                  src={appointment.doctor_avatar}
-                                  alt={doctorName}
-                                  className="h-full w-full object-cover"
-                                />
-                              ) : (
-                                doctorName.charAt(0).toUpperCase()
-                              )}
-                            </div>
-
-                            <div>
-                              <h3 className="font-semibold text-slate-900">
-                                {doctorName}
-                              </h3>
-
-                              <p className="text-sm text-slate-500">
-                                {specialization}
-                              </p>
-
-                              <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                                <span className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">
-                                  {appointmentDate}
-                                </span>
-
-                                <span className="rounded-full bg-cyan-50 px-3 py-1 text-cyan-700">
-                                  {appointmentTime}
-                                </span>
-
-                                {appointment.doc_slot && (
-                                  <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
-                                    {appointment.doc_slot}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            <span
-                              className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(
-                                appointmentStatus
-                              )}`}
-                            >
-                              {appointmentStatus}
-                            </span>
-
-                            <button
-                              onClick={() =>
-                                navigate(
-                                  `/patient/my_appointments/booking_details/${appointment.appointment_id}`,
-                                  { state: appointment }
-                                )
-                              }
-                              className="rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700"
-                            >
-                              Details
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* All Appointments Line Graph */}
             <MonthwiseAppointmentGraph data={monthwiseAppointmentData} />
-
-            {/* Reports and Prescriptions */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <InfoCard
-                icon={<FileText size={22} />}
-                title="Medical Reports"
-                description="View uploaded lab reports, diagnostic files, and history."
-                buttonText="View Reports"
-                onClick={() => navigate("/patient/reports")}
-              />
-
-              <InfoCard
-                icon={<Pill size={22} />}
-                title="Prescriptions"
-                description="Access prescriptions from appointment details."
-                buttonText="View Appointments"
-                onClick={() => navigate("/patient/my_appointments")}
-              />
-            </div>
-
-            {/* Health Tip */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-3 flex items-center gap-3">
-                <div className="rounded-xl bg-emerald-100 p-3 text-emerald-700">
-                  <HeartPulse size={22} />
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Daily Health Tip
-                  </h2>
-
-                  <p className="text-sm text-slate-500">
-                    Small tips can help maintain your health.
-                  </p>
-                </div>
-              </div>
-
-              <p className="leading-7 text-slate-600">
-                {HEALTH_TIPS.length
-                  ? HEALTH_TIPS[tipIndex]
-                  : "Stay healthy and take care of yourself daily."}
-              </p>
-
-              <p className="mt-3 text-xs text-slate-400">
-                Tip changes automatically every 2 minutes.
-              </p>
-            </div>
           </div>
 
-          {/* Right Sidebar */}
-          <aside className="space-y-6">
-            <ProfileCompletionCard
-              percentage={profileCompletion}
-              onClick={() => navigate("/patient/profile")}
+          <aside className="space-y-6 xl:col-span-4 xl:pt-0">
+            <NotificationPanel
+              nextAppointment={nextAppointment}
+              getDoctorName={getDoctorName}
+              getAppointmentStatus={getAppointmentStatus}
             />
 
-            <AcknowledgementSlipsCard
-              reportCount={reportCount}
-              prescriptionCount={prescriptionCount}
-              onReportsClick={() => navigate("/patient/reports")}
-              onPrescriptionClick={() => navigate("/patient/my_appointments")}
+            <HealthTipCard
+              tip={
+                HEALTH_TIPS.length
+                  ? HEALTH_TIPS[tipIndex]
+                  : "Stay healthy and take care of yourself daily."
+              }
             />
-
-            {/* Notification */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-900">
-                  Notifications
-                </h2>
-
-                <button className="rounded-xl bg-slate-100 p-2 text-slate-700 hover:bg-slate-200">
-                  <Bell size={18} />
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                <NotificationItem
-                  title="Appointment Status"
-                  description={
-                    nextAppointment
-                      ? `Your appointment with ${getDoctorName(
-                          nextAppointment
-                        )} is ${getAppointmentStatus(nextAppointment)}.`
-                      : "No upcoming slot assigned appointment notification."
-                  }
-                />
-
-                <NotificationItem
-                  title="Report Uploaded"
-                  description="Your latest blood report is available."
-                />
-
-                <NotificationItem
-                  title="Medicine Reminder"
-                  description="Afternoon tablet is pending."
-                />
-              </div>
-            </div>
           </aside>
         </section>
+
+        {/* QUICK ACTIONS + SECURITY SAME ROW */}
+        <section className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-12">
+          <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-3 xl:col-span-8">
+            <QuickActionCard
+              icon={<FileText size={22} />}
+              title="Acknowledgement Slip"
+              description="Download or view your hospital visit acknowledgement slip."
+              buttonText="View"
+              onClick={() => navigate("/patient/my_appointments")}
+              color="from-cyan-400 via-sky-500 to-blue-700"
+            />
+
+            <QuickActionCard
+              icon={<FileText size={22} />}
+              title="Medical Reports"
+              description="View diagnostic reports and medical history."
+              buttonText="View Reports"
+              onClick={() => navigate("/patient/reports")}
+              color="from-indigo-500 via-purple-500 to-pink-600"
+            />
+
+            <QuickActionCard
+              icon={<Pill size={22} />}
+              title="Prescriptions"
+              description="Access prescriptions from your visits."
+              buttonText="View"
+              onClick={() => navigate("/patient/my_appointments")}
+              color="from-amber-400 via-orange-500 to-red-500"
+            />
+          </div>
+
+          <div className="xl:col-span-4">
+            <SecurityCard />
+          </div>
+        </section>
       </div>
+    </div>
+  );
+};
+
+const DashboardMiniInfo = ({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon: ReactNode;
+}) => (
+  <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
+    <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
+      {icon}
+    </div>
+
+    <p className="text-xs font-semibold text-white/75">{label}</p>
+    <p className="mt-1 text-2xl font-extrabold text-white">{value}</p>
+  </div>
+);
+
+const CompactProfileCompletionCard = ({
+  percentage,
+  onClick,
+}: {
+  percentage: number;
+  onClick: () => void;
+}) => {
+  const safePercentage = Math.min(Math.max(percentage, 0), 100);
+
+  return (
+    <div className="rounded-[26px] border border-white/25 bg-white/10 p-5 shadow-lg backdrop-blur-xl">
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-white/85">
+            Profile Completion
+          </p>
+
+          <h3 className="mt-1 text-3xl font-extrabold text-white">
+            {safePercentage}%
+          </h3>
+        </div>
+
+        <div className="rounded-2xl bg-white/20 p-3 text-white">
+          <UserRound size={22} />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-5">
+        <div className="relative flex h-28 w-28 shrink-0 items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-white/25" />
+
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: `conic-gradient(
+                #22d3ee 0deg,
+                #38bdf8 ${safePercentage * 1.1}deg,
+                #a78bfa ${safePercentage * 2.1}deg,
+                #f472b6 ${safePercentage * 3}deg,
+                #facc15 ${safePercentage * 3.6}deg,
+                rgba(255,255,255,0.22) 0deg
+              )`,
+            }}
+          />
+
+          <div className="absolute inset-[14px] rounded-full bg-gray-300" />
+
+          <div className="relative text-center">
+            <h4 className="text-2xl font-extrabold text-white">
+              {safePercentage}%
+            </h4>
+            <p className="text-[10px] font-semibold text-white/75">Done</p>
+          </div>
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-sm leading-6 text-white/80">
+            Complete your health profile to improve appointment and care
+            recommendations.
+          </p>
+
+          <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white/20">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-violet-300 to-pink-300"
+              style={{
+                width: `${safePercentage}%`,
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={onClick}
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-cyan-800 shadow-md transition hover:-translate-y-0.5 hover:bg-cyan-50"
+      >
+        Complete Profile
+        <ChevronRight size={16} />
+      </button>
     </div>
   );
 };
@@ -691,168 +707,216 @@ const StatCard: React.FC<StatCardProps> = ({
   subtitle,
   icon,
   bg,
+  iconBg,
+  glow,
 }) => (
   <div
-    className={`rounded-3xl bg-gradient-to-r ${bg} p-6 text-white shadow-md`}
+    className={`relative min-h-[190px] overflow-hidden rounded-[28px] bg-gradient-to-br ${bg} p-6 text-white shadow-xl ${glow} transition duration-300 hover:-translate-y-1 hover:shadow-2xl`}
   >
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-sm font-medium text-white/90">{title}</p>
-        <h3 className="mt-3 text-4xl font-bold tracking-tight">{value}</h3>
-        <p className="mt-2 text-sm text-white/85">{subtitle}</p>
+    <div className="absolute -right-7 -top-7 h-28 w-28 rounded-full bg-white/18" />
+    <div className="absolute right-4 top-9 h-20 w-20 rounded-full bg-white/10" />
+    <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/12" />
+
+    <div className="relative flex h-full flex-col justify-between">
+      <div className="flex items-start justify-between gap-4">
+        <p className="text-base font-bold text-white">{title}</p>
+
+        <div className={`rounded-2xl ${iconBg} p-3 backdrop-blur-sm`}>
+          {icon}
+        </div>
       </div>
 
-      <div className="rounded-2xl bg-white/20 p-3 backdrop-blur-sm">
-        {icon}
+      <div className="mt-5">
+        <h3 className="text-5xl font-extrabold tracking-tight">{value}</h3>
+
+        <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/90">
+          {subtitle}
+        </p>
       </div>
     </div>
   </div>
 );
 
-const ProfileCompletionCard = ({
-  percentage,
-  onClick,
+const AppointmentsPanel = ({
+  loading,
+  appointments,
+  getDoctorName,
+  getSpecialization,
+  getAppointmentDate,
+  getAppointmentTime,
+  getAppointmentStatus,
+  getStatusClass,
+  navigate,
 }: {
-  percentage: number;
-  onClick: () => void;
-}) => {
-  const safePercentage = Math.min(Math.max(percentage, 0), 100);
+  loading: boolean;
+  appointments: Appointment[];
+  getDoctorName: (appointment: Appointment) => string;
+  getSpecialization: (appointment: Appointment) => string;
+  getAppointmentDate: (appointment: Appointment) => string;
+  getAppointmentTime: (appointment: Appointment) => string;
+  getAppointmentStatus: (appointment: Appointment) => string | number;
+  getStatusClass: (status: string | number) => string;
+  navigate: ReturnType<typeof useNavigate>;
+}) => (
+  <div className="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-xl shadow-cyan-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-900">
+    <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-700">
+          Care Schedule
+        </p>
 
-  return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">
-            Profile Completion
-          </h2>
-          <p className="text-sm text-slate-500">
-            Complete your medical profile
-          </p>
-        </div>
+        <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+          Upcoming Appointments
+        </h2>
 
-        <div className="rounded-xl bg-teal-100 p-3 text-teal-700">
-          <UserRound size={20} />
-        </div>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Today and future slot-assigned appointments.
+        </p>
       </div>
 
-      <div className="flex justify-center">
-        <div className="relative flex h-36 w-36 items-center justify-center">
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: `conic-gradient(#0f766e ${
-                safePercentage * 3.6
-              }deg, #e2e8f0 0deg)`,
-            }}
-          />
+      <button
+        onClick={() => navigate("/patient/my_appointments")}
+        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-600 px-5 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:from-cyan-700 hover:to-teal-700"
+      >
+        View All
+        <ChevronRight size={16} />
+      </button>
+    </div>
 
-          <div className="absolute inset-4 rounded-full bg-white shadow-inner" />
+    {loading ? (
+      <div className="rounded-3xl border border-cyan-100 bg-cyan-50 p-8 text-center text-cyan-700">
+        Loading appointments...
+      </div>
+    ) : appointments.length === 0 ? (
+      <EmptyState
+        icon={<CalendarDays size={38} />}
+        title="No upcoming appointments"
+        description="You do not have any slot assigned consultations for today or upcoming dates."
+        buttonText="Book Appointment"
+        onClick={() => navigate("/patient/appointments/")}
+      />
+    ) : (
+      <div className="space-y-4">
+        {appointments.slice(0, 4).map((appointment) => {
+          const doctorName = getDoctorName(appointment);
+          const specialization = getSpecialization(appointment);
+          const appointmentDate = getAppointmentDate(appointment);
+          const appointmentTime = getAppointmentTime(appointment);
+          const appointmentStatus = getAppointmentStatus(appointment);
 
-          <div className="relative text-center">
-            <h3 className="text-3xl font-bold text-slate-900">
-              {safePercentage}%
-            </h3>
-            <p className="text-xs text-slate-500">Completed</p>
+          return (
+            <AppointmentCard
+              key={appointment.appointment_id}
+              appointment={appointment}
+              doctorName={doctorName}
+              specialization={specialization}
+              appointmentDate={appointmentDate}
+              appointmentTime={appointmentTime}
+              appointmentStatus={appointmentStatus}
+              statusClass={getStatusClass(appointmentStatus)}
+              onDetails={() =>
+                navigate(
+                  `/patient/my_appointments/booking_details/${appointment.appointment_id}`,
+                  { state: appointment }
+                )
+              }
+            />
+          );
+        })}
+      </div>
+    )}
+  </div>
+);
+
+const getDoctorInitials = (doctorName: string) => {
+  if (!doctorName || doctorName === "Doctor not assigned") return "DR";
+
+  const nameParts = doctorName.trim().split(/\s+/);
+
+  if (nameParts.length === 1) {
+    return nameParts[0].charAt(0).toUpperCase();
+  }
+
+  const firstNameInitial = nameParts[0].charAt(0).toUpperCase();
+  const lastNameInitial = nameParts[nameParts.length - 1]
+    .charAt(0)
+    .toUpperCase();
+
+  return `${firstNameInitial}${lastNameInitial}`;
+};
+
+const AppointmentCard = ({
+  appointment,
+  doctorName,
+  specialization,
+  appointmentDate,
+  appointmentTime,
+  appointmentStatus,
+  statusClass,
+  onDetails,
+}: {
+  appointment: Appointment;
+  doctorName: string;
+  specialization: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  appointmentStatus: string | number;
+  statusClass: string;
+  onDetails: () => void;
+}) => (
+  <div className="rounded-3xl border border-cyan-100 bg-gradient-to-r from-cyan-50 via-white to-blue-50 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md dark:border-slate-700 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900">
+    <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
+      <div className="flex items-start gap-4">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-600 to-teal-500 text-xl font-bold text-white shadow-md">
+        {getDoctorInitials(doctorName)}
+        </div>
+
+        <div>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+            {doctorName}
+          </h3>
+
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {specialization}
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 font-semibold text-blue-700 shadow-sm">
+              <CalendarDays size={13} />
+              {appointmentDate}
+            </span>
+
+            <span className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 font-semibold text-cyan-700 shadow-sm">
+              <Clock size={13} />
+              {appointmentTime}
+            </span>
+
+            {appointment.doc_slot && (
+              <span className="rounded-full bg-white px-3 py-1 font-semibold text-slate-700 shadow-sm">
+                {appointment.doc_slot}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onClick}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"
-      >
-        Complete Profile
-        <ChevronRight size={16} />
-      </button>
-    </div>
-  );
-};
+      <div className="flex flex-wrap items-center gap-3">
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-bold ${statusClass}`}
+        >
+          {appointmentStatus}
+        </span>
 
-const AcknowledgementSlipsCard = ({
-  reportCount,
-  prescriptionCount,
-  onReportsClick,
-  onPrescriptionClick,
-}: {
-  reportCount: number;
-  prescriptionCount: number;
-  onReportsClick: () => void;
-  onPrescriptionClick: () => void;
-}) => (
-  <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-    <div className="mb-5 flex items-center justify-between">
-      <div>
-        <h2 className="text-xl font-bold text-slate-900">
-          Acknowledgement Slips
-        </h2>
-        <p className="text-sm text-slate-500">
-          Reports and prescription receipts
-        </p>
-      </div>
-
-      <div className="rounded-xl bg-indigo-100 p-3 text-indigo-700">
-        <ClipboardList size={20} />
+        <button
+          type="button"
+          onClick={onDetails}
+          className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-600 px-4 py-2 text-sm font-bold text-white transition hover:from-cyan-700 hover:to-teal-700"
+        >
+          Details
+          <ChevronRight size={15} />
+        </button>
       </div>
     </div>
-
-    <div className="space-y-3">
-      <SlipItem
-        icon={<FileText size={18} />}
-        title="Report Slips"
-        count={reportCount}
-        buttonText="View Reports"
-        onClick={onReportsClick}
-      />
-
-      <SlipItem
-        icon={<Pill size={18} />}
-        title="Prescription Slips"
-        count={prescriptionCount}
-        buttonText="View Appointments"
-        onClick={onPrescriptionClick}
-      />
-    </div>
-  </div>
-);
-
-const SlipItem = ({
-  icon,
-  title,
-  count,
-  buttonText,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  count: number;
-  buttonText: string;
-  onClick: () => void;
-}) => (
-  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
-        <div className="rounded-xl bg-white p-2 text-teal-700 shadow-sm">
-          {icon}
-        </div>
-
-        <div>
-          <p className="font-semibold text-slate-900">{title}</p>
-          <p className="text-xs text-slate-500">{count} available</p>
-        </div>
-      </div>
-
-      <CheckCircle2 size={18} className="text-emerald-600" />
-    </div>
-
-    <button
-      type="button"
-      onClick={onClick}
-      className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-teal-700 shadow-sm hover:bg-teal-50"
-    >
-      {buttonText}
-      <ChevronRight size={14} />
-    </button>
   </div>
 );
 
@@ -874,19 +938,18 @@ const MonthwiseAppointmentGraph = ({
       ? Math.round(totalAppointments / sortedData.length)
       : 0;
 
-  const chartWidth = Math.max(sortedData.length * 90, 700);
-  const chartHeight = 260;
-  const paddingTop = 30;
-  const paddingBottom = 45;
-  const paddingLeft = 45;
-  const paddingRight = 30;
+  const chartWidth = Math.max(sortedData.length * 95, 720);
+  const chartHeight = 280;
+  const paddingTop = 35;
+  const paddingBottom = 50;
+  const paddingLeft = 50;
+  const paddingRight = 35;
 
   const graphHeight = chartHeight - paddingTop - paddingBottom;
   const graphWidth = chartWidth - paddingLeft - paddingRight;
 
   const getX = (index: number) => {
     if (sortedData.length === 1) return paddingLeft + graphWidth / 2;
-
     return paddingLeft + (index / (sortedData.length - 1)) * graphWidth;
   };
 
@@ -898,7 +961,6 @@ const MonthwiseAppointmentGraph = ({
     .map((item, index) => {
       const x = getX(index);
       const y = getY(item.count);
-
       return `${index === 0 ? "M" : "L"} ${x} ${y}`;
     })
     .join(" ");
@@ -911,36 +973,45 @@ const MonthwiseAppointmentGraph = ({
       : "";
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+    <div className="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-xl shadow-cyan-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-900">
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-teal-600">
-            Appointment Trend
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-700">
+            Analytics
           </p>
 
-          <h2 className="mt-1 text-2xl font-bold text-slate-900">
-            All Appointments Graph
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+            Appointment Trend
           </h2>
 
-          <p className="text-sm text-slate-500">
-            Month-wise appointment trend with total and average comparison
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Month-wise appointment volume.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-blue-50 px-4 py-3 text-right">
-          <p className="text-xs font-semibold text-slate-500">
-            Total Appointments
-          </p>
-          <p className="text-2xl font-bold text-slate-900">
-            {totalAppointments}
-          </p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-2xl bg-cyan-50 px-4 py-3 text-right">
+            <p className="text-xs font-bold text-slate-500">Total</p>
+            <p className="text-2xl font-extrabold text-cyan-700">
+              {totalAppointments}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-violet-50 px-4 py-3 text-right">
+            <p className="text-xs font-bold text-slate-500">Average</p>
+            <p className="text-2xl font-extrabold text-violet-700">
+              {average}
+            </p>
+          </div>
         </div>
       </div>
 
       {sortedData.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-          No appointment data available for graph.
-        </div>
+        <EmptyState
+          icon={<BarChart3 size={38} />}
+          title="No appointment data"
+          description="Once appointments are available, trends will be shown here."
+        />
       ) : (
         <div className="overflow-x-auto">
           <div
@@ -950,48 +1021,6 @@ const MonthwiseAppointmentGraph = ({
               minWidth: "100%",
             }}
           >
-            {/* Average Bars */}
-            <div className="mb-4 flex items-end gap-4 pl-10">
-              <div className="text-center">
-                <p className="mb-2 text-xs font-semibold text-slate-500">
-                  Average
-                </p>
-
-                <div className="flex h-24 items-end gap-2">
-                  <div
-                    className="w-10 rounded-t-xl bg-cyan-300"
-                    style={{
-                      height: `${Math.max(
-                        (average / maxCount) * 100,
-                        10
-                      )}%`,
-                    }}
-                  />
-
-                  <div
-                    className="w-10 rounded-t-xl bg-violet-300"
-                    style={{
-                      height: `${Math.max(
-                        (totalAppointments / maxCount / sortedData.length) *
-                          100,
-                        10
-                      )}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="pb-3">
-                <p className="text-sm font-semibold text-slate-700">
-                  Appointments are shown month-wise.
-                </p>
-                <p className="text-xs text-slate-500">
-                  Blue line represents appointment volume trend.
-                </p>
-              </div>
-            </div>
-
-            {/* SVG Line Chart */}
             <svg
               width={chartWidth}
               height={chartHeight}
@@ -1005,12 +1034,11 @@ const MonthwiseAppointmentGraph = ({
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.28" />
+                  <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
                 </linearGradient>
               </defs>
 
-              {/* Grid Lines */}
               {[0, 25, 50, 75, 100].map((percent) => {
                 const y =
                   paddingTop + graphHeight - (percent / 100) * graphHeight;
@@ -1023,11 +1051,11 @@ const MonthwiseAppointmentGraph = ({
                       y1={y}
                       y2={y}
                       stroke="#e2e8f0"
-                      strokeDasharray="4 4"
+                      strokeDasharray="5 5"
                     />
 
                     <text
-                      x={10}
+                      x={12}
                       y={y + 4}
                       className="fill-slate-400 text-[11px]"
                     >
@@ -1037,10 +1065,8 @@ const MonthwiseAppointmentGraph = ({
                 );
               })}
 
-              {/* Area */}
               <path d={areaPath} fill="url(#appointmentAreaGradient)" />
 
-              {/* Line */}
               <path
                 d={linePath}
                 fill="none"
@@ -1050,7 +1076,6 @@ const MonthwiseAppointmentGraph = ({
                 strokeLinejoin="round"
               />
 
-              {/* Points and Labels */}
               {sortedData.map((item, index) => {
                 const x = getX(index);
                 const y = getY(item.count);
@@ -1060,7 +1085,7 @@ const MonthwiseAppointmentGraph = ({
                     <circle
                       cx={x}
                       cy={y}
-                      r="6"
+                      r="7"
                       fill="#ffffff"
                       stroke="#0891b2"
                       strokeWidth="3"
@@ -1068,18 +1093,18 @@ const MonthwiseAppointmentGraph = ({
 
                     <text
                       x={x}
-                      y={y - 12}
+                      y={y - 14}
                       textAnchor="middle"
-                      className="fill-slate-700 text-[12px] font-semibold"
+                      className="fill-slate-700 text-[12px] font-bold"
                     >
                       {item.count}
                     </text>
 
                     <text
                       x={x}
-                      y={chartHeight - 14}
+                      y={chartHeight - 16}
                       textAnchor="middle"
-                      className="fill-slate-500 text-[12px] font-semibold"
+                      className="fill-slate-500 text-[12px] font-bold"
                     >
                       {item.month}
                     </text>
@@ -1087,30 +1112,6 @@ const MonthwiseAppointmentGraph = ({
                 );
               })}
             </svg>
-
-            {/* Legend */}
-            <div className="mt-3 flex flex-wrap items-center gap-5 rounded-2xl bg-slate-50 px-4 py-3">
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-8 rounded-full bg-cyan-600" />
-                <span className="text-xs font-semibold text-slate-600">
-                  Appointment Trend
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded bg-cyan-300" />
-                <span className="text-xs font-semibold text-slate-600">
-                  Average: {average}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded bg-violet-300" />
-                <span className="text-xs font-semibold text-slate-600">
-                  Total: {totalAppointments}
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       )}
@@ -1118,32 +1119,38 @@ const MonthwiseAppointmentGraph = ({
   );
 };
 
-const InfoCard = ({
+const QuickActionCard = ({
   icon,
   title,
   description,
   buttonText,
   onClick,
+  color,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
   buttonText: string;
   onClick?: () => void;
+  color: string;
 }) => (
-  <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-700">
+  <div className="group flex h-full min-h-[285px] flex-col overflow-hidden rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-xl shadow-cyan-900/5 backdrop-blur transition hover:-translate-y-1 hover:shadow-2xl">
+    <div
+      className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r ${color} text-white shadow-lg transition group-hover:scale-110`}
+    >
       {icon}
     </div>
 
-    <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+    <h3 className="text-xl font-extrabold text-slate-900">{title}</h3>
 
-    <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+    <p className="mt-3 min-h-[72px] text-sm leading-7 text-slate-500">
+      {description}
+    </p>
 
     <button
       type="button"
       onClick={onClick}
-      className="mt-5 inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700"
+      className={`mt-auto inline-flex w-fit items-center gap-2 rounded-2xl bg-gradient-to-r ${color} px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5`}
     >
       {buttonText}
       <ChevronRight size={16} />
@@ -1151,16 +1158,142 @@ const InfoCard = ({
   </div>
 );
 
+const NotificationPanel = ({
+  nextAppointment,
+  getDoctorName,
+  getAppointmentStatus,
+}: {
+  nextAppointment?: Appointment;
+  getDoctorName: (appointment: Appointment) => string;
+  getAppointmentStatus: (appointment: Appointment) => string | number;
+}) => (
+  <div className="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-xl shadow-cyan-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-900">
+    <div className="mb-5 flex items-center justify-between">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+          Notifications
+        </h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Latest care updates
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-amber-100 p-3 text-amber-700">
+        <Bell size={20} />
+      </div>
+    </div>
+
+    <div className="space-y-3">
+      <NotificationItem
+        title="Appointment Status"
+        description={
+          nextAppointment
+            ? `Your appointment with ${getDoctorName(
+                nextAppointment
+              )} is ${getAppointmentStatus(nextAppointment)}.`
+            : "No upcoming appointment notification."
+        }
+        color="border-cyan-200 bg-cyan-50"
+      />
+
+      <NotificationItem
+        title="Report Uploaded"
+        description="Your latest medical reports will appear here."
+        color="border-violet-200 bg-violet-50"
+      />
+
+      <NotificationItem
+        title="Medicine Reminder"
+        description="Prescription and medicine reminders can be checked from appointments."
+        color="border-orange-200 bg-orange-50"
+      />
+    </div>
+  </div>
+);
+
 const NotificationItem = ({
   title,
   description,
+  color,
 }: {
   title: string;
   description: string;
+  color: string;
 }) => (
-  <div className="rounded-2xl bg-slate-50 p-4">
-    <p className="font-semibold text-slate-900">{title}</p>
-    <p className="mt-1 text-sm text-slate-500">{description}</p>
+  <div className={`rounded-3xl border p-4 ${color}`}>
+    <p className="font-bold text-slate-900">{title}</p>
+    <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
+  </div>
+);
+
+const HealthTipCard = ({ tip }: { tip: string }) => (
+  <div className="rounded-[28px] bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 p-6 text-white shadow-xl">
+    <div className="mb-4 flex items-center gap-3">
+      <div className="rounded-2xl bg-white/20 p-3 backdrop-blur">
+        <HeartPulse size={22} />
+      </div>
+
+      <div>
+        <h2 className="text-xl font-bold">Daily Health Tip</h2>
+        <p className="text-sm text-white/80">Changes every 2 minutes</p>
+      </div>
+    </div>
+
+    <p className="rounded-3xl bg-white/15 p-4 text-sm leading-7 text-white backdrop-blur">
+      {tip}
+    </p>
+  </div>
+);
+
+const SecurityCard = () => (
+  <div className="flex h-full min-h-[285px] flex-col justify-center rounded-[28px] bg-gradient-to-br from-slate-800 via-cyan-900 to-slate-950 p-6 text-white shadow-xl">
+    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
+      <ShieldCheck size={24} />
+    </div>
+
+    <h3 className="text-xl font-extrabold">Secure Health Data</h3>
+
+    <p className="mt-4 text-sm leading-7 text-white/75">
+      Your appointments, reports, prescriptions, and profile are managed
+      securely inside SymptoNexus.
+    </p>
+  </div>
+);
+
+const EmptyState = ({
+  icon,
+  title,
+  description,
+  buttonText,
+  onClick,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  buttonText?: string;
+  onClick?: () => void;
+}) => (
+  <div className="rounded-3xl border border-dashed border-cyan-300 bg-cyan-50/70 p-8 text-center">
+    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-cyan-500 shadow-sm">
+      {icon}
+    </div>
+
+    <h3 className="font-bold text-slate-800">{title}</h3>
+
+    <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+      {description}
+    </p>
+
+    {buttonText && onClick && (
+      <button
+        type="button"
+        onClick={onClick}
+        className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-600 px-5 py-3 text-sm font-bold text-white transition hover:from-cyan-700 hover:to-teal-700"
+      >
+        {buttonText}
+        <ChevronRight size={16} />
+      </button>
+    )}
   </div>
 );
 
