@@ -515,7 +515,7 @@ export const getGenderLabel = (value?: string | number): string => {
 };
 
 export const urls ={
-  baseUrl : 'http://localhost:4000/api/',
+  baseUrl : 'https://symptonexus-backend.onrender.com/api/',
   loginUrl :'auth/login',
   signupUrl : 'auth/signup',
   sendOtpUrl: 'auth/send-otp',
