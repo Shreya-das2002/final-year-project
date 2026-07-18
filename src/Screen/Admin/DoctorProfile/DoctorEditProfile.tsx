@@ -41,7 +41,12 @@ const DoctorEditProfile: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchDoctorListThunk());
+    dispatch(
+      fetchDoctorListThunk({
+        specializationId: undefined,
+        isPatientRoute: true,
+      })
+    );
   }, [dispatch]);
 
   const doctor = useMemo(() => {
