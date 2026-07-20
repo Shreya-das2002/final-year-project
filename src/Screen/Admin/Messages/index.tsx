@@ -14,13 +14,14 @@ import {
   getAllPatientFeedbackApi,
   type DoctorFeedback,
   type PatientFeedback,
-} from "../.././../services/feedbackApi";
+} from "../../../services/feedbackApi";
 
 /* =====================================================
    TYPES
 ===================================================== */
 
 type AdminRole =
+  | "super admin"
   | "standard admin"
   | "guest admin"
   | "";
@@ -54,13 +55,28 @@ const normalizeRole = (
 ): AdminRole => {
   const normalizedValue = String(value || "")
     .trim()
-    .toLowerCase();
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ");
 
-  if (normalizedValue === "standard admin") {
+  if (
+    normalizedValue === "super admin" ||
+    normalizedValue === "superadmin"
+  ) {
+    return "super admin";
+  }
+
+  if (
+    normalizedValue === "standard admin" ||
+    normalizedValue === "standardadmin"
+  ) {
     return "standard admin";
   }
 
-  if (normalizedValue === "guest admin") {
+  if (
+    normalizedValue === "guest admin" ||
+    normalizedValue === "guestadmin"
+  ) {
     return "guest admin";
   }
 
@@ -68,26 +84,27 @@ const normalizeRole = (
 };
 
 const extractRoleFromObject = (
-  user: StoredUser
+  storedUser: StoredUser
 ): AdminRole => {
   return normalizeRole(
-    user.role ||
-      user.role_name ||
-      user.user_role ||
-      user.userType ||
-      user.user_type_name ||
-      user.data?.role ||
-      user.data?.role_name ||
-      user.data?.user_role ||
-      user.user?.role ||
-      user.user?.role_name ||
-      user.user?.user_role
+    storedUser.role ||
+      storedUser.role_name ||
+      storedUser.user_role ||
+      storedUser.userType ||
+      storedUser.user_type_name ||
+      storedUser.data?.role ||
+      storedUser.data?.role_name ||
+      storedUser.data?.user_role ||
+      storedUser.user?.role ||
+      storedUser.user?.role_name ||
+      storedUser.user?.user_role
   );
 };
 
 const getLoggedInRole = (): AdminRole => {
   /*
-   * First check directly stored role.
+   * Directly stored role:
+   * localStorage.setItem("role", "super admin")
    */
   const directRole =
     localStorage.getItem("role") ||
@@ -104,18 +121,17 @@ const getLoggedInRole = (): AdminRole => {
 
   /*
    * Check commonly used user-storage keys.
-   * Add your own storage key here if required.
    */
-  const possibleKeys = [
+  const storageKeys = [
     "user",
     "userData",
     "authUser",
     "loginData",
-    "auth",
     "loggedInUser",
+    "auth",
   ];
 
-  for (const key of possibleKeys) {
+  for (const key of storageKeys) {
     const storedValue =
       localStorage.getItem(key) ||
       sessionStorage.getItem(key);
@@ -125,24 +141,21 @@ const getLoggedInRole = (): AdminRole => {
     }
 
     try {
-      const parsedUser =
+      const parsedValue =
         JSON.parse(storedValue) as StoredUser;
 
-      const role =
-        extractRoleFromObject(parsedUser);
+      const detectedRole =
+        extractRoleFromObject(parsedValue);
 
-      if (role) {
-        return role;
+      if (detectedRole) {
+        return detectedRole;
       }
     } catch {
-      /*
-       * The stored value may itself be the role.
-       */
-      const role =
+      const detectedRole =
         normalizeRole(storedValue);
 
-      if (role) {
-        return role;
+      if (detectedRole) {
+        return detectedRole;
       }
     }
   }
@@ -157,26 +170,26 @@ const getLoggedInRole = (): AdminRole => {
 const getSafeRating = (
   rating?: number | null
 ): number => {
-  const parsedRating = Number(rating || 0);
+  const numericRating = Number(rating || 0);
 
-  if (Number.isNaN(parsedRating)) {
+  if (Number.isNaN(numericRating)) {
     return 0;
   }
 
   return Math.max(
     0,
-    Math.min(Math.round(parsedRating), 5)
+    Math.min(Math.round(numericRating), 5)
   );
 };
 
 const formatDoctorName = (
-  doctorName?: string | null
+  name?: string | null
 ): string => {
-  if (!doctorName) {
+  if (!name) {
     return "Doctor";
   }
 
-  const cleanName = doctorName.replace(
+  const cleanName = name.replace(
     /^Dr\.?\s*/i,
     ""
   );
@@ -210,6 +223,9 @@ const Messages = () => {
     setErrorMessage,
   ] = useState("");
 
+  const isSuperAdmin =
+    role === "super admin";
+
   const isStandardAdmin =
     role === "standard admin";
 
@@ -228,7 +244,7 @@ const Messages = () => {
           getLoggedInRole();
 
         console.log(
-          "MESSAGES PAGE ROLE:",
+          "MESSAGES PAGE DETECTED ROLE:",
           loggedInRole
         );
 
@@ -237,6 +253,56 @@ const Messages = () => {
         }
 
         setRole(loggedInRole);
+
+        /* =============================================
+           SUPER ADMIN
+           SHOW BOTH FEEDBACK TYPES
+        ============================================= */
+
+        if (loggedInRole === "super admin") {
+          const [
+            patientResponse,
+            doctorResponse,
+          ] = await Promise.all([
+            getAllPatientFeedbackApi(),
+            getAllDoctorFeedbackApi(),
+          ]);
+
+          if (!componentMounted) {
+            return;
+          }
+
+          const patientSuccess =
+            patientResponse.data?.success;
+
+          const doctorSuccess =
+            doctorResponse.data?.success;
+
+          setPatientFeedbacks(
+            patientSuccess
+              ? patientResponse.data.data || []
+              : []
+          );
+
+          setDoctorFeedbacks(
+            doctorSuccess
+              ? doctorResponse.data.data || []
+              : []
+          );
+
+          if (
+            !patientSuccess &&
+            !doctorSuccess
+          ) {
+            setErrorMessage(
+              patientResponse.data?.message ||
+                doctorResponse.data?.message ||
+                "Failed to fetch feedback."
+            );
+          }
+
+          return;
+        }
 
         /* =============================================
            STANDARD ADMIN
@@ -339,6 +405,13 @@ const Messages = () => {
   }, []);
 
   const feedbackCount = useMemo(() => {
+    if (isSuperAdmin) {
+      return (
+        patientFeedbacks.length +
+        doctorFeedbacks.length
+      );
+    }
+
     if (isStandardAdmin) {
       return doctorFeedbacks.length;
     }
@@ -349,10 +422,11 @@ const Messages = () => {
 
     return 0;
   }, [
+    isSuperAdmin,
     isStandardAdmin,
     isGuestAdmin,
-    doctorFeedbacks,
     patientFeedbacks,
+    doctorFeedbacks,
   ]);
 
   if (loading) {
@@ -426,22 +500,20 @@ const Messages = () => {
               </div>
 
               <div>
-                <h1
-                  className="
-                    text-3xl
-                    font-bold
-                    md:text-4xl
-                  "
-                >
-                  {isStandardAdmin
-                    ? "Doctor Feedback"
-                    : "Patient Feedback"}
+                <h1 className="text-3xl font-bold md:text-4xl">
+                  {isSuperAdmin
+                    ? "All Feedback"
+                    : isStandardAdmin
+                      ? "Doctor Feedback"
+                      : "Patient Feedback"}
                 </h1>
 
                 <p className="mt-2 text-cyan-50">
-                  {isStandardAdmin
-                    ? "Review feedback submitted by registered doctors."
-                    : "Review feedback submitted by registered patients."}
+                  {isSuperAdmin
+                    ? "Review feedback submitted by patients and doctors."
+                    : isStandardAdmin
+                      ? "Review feedback submitted by registered doctors."
+                      : "Review feedback submitted by registered patients."}
                 </p>
               </div>
             </div>
@@ -472,7 +544,7 @@ const Messages = () => {
 
         <div
           className="
-            mb-6
+            mb-8
             flex
             flex-col
             gap-4
@@ -490,7 +562,15 @@ const Messages = () => {
           "
         >
           <div className="flex items-center gap-3">
-            {isStandardAdmin ? (
+            {isSuperAdmin ? (
+              <FaCommentMedical
+                className="
+                  text-3xl
+                  text-cyan-600
+                  dark:text-cyan-400
+                "
+              />
+            ) : isStandardAdmin ? (
               <LuStethoscope
                 className="
                   text-3xl
@@ -540,30 +620,67 @@ const Messages = () => {
               text-sm
               font-semibold
               ${
-                isStandardAdmin
+                isSuperAdmin
                   ? `
-                    bg-emerald-100
-                    text-emerald-700
-                    dark:bg-emerald-950
-                    dark:text-emerald-300
+                    bg-cyan-100
+                    text-cyan-700
+                    dark:bg-cyan-950
+                    dark:text-cyan-300
                   `
-                  : `
-                    bg-blue-100
-                    text-blue-700
-                    dark:bg-blue-950
-                    dark:text-blue-300
-                  `
+                  : isStandardAdmin
+                    ? `
+                      bg-emerald-100
+                      text-emerald-700
+                      dark:bg-emerald-950
+                      dark:text-emerald-300
+                    `
+                    : `
+                      bg-blue-100
+                      text-blue-700
+                      dark:bg-blue-950
+                      dark:text-blue-300
+                    `
               }
             `}
           >
-            {isStandardAdmin
-              ? "Doctor Reviews"
-              : "Patient Reviews"}
+            {isSuperAdmin
+              ? "All Reviews"
+              : isStandardAdmin
+                ? "Doctor Reviews"
+                : "Patient Reviews"}
           </div>
         </div>
 
         {/* =================================================
-            STANDARD ADMIN CONTENT
+            SUPER ADMIN
+        ================================================= */}
+
+        {isSuperAdmin && (
+          <div className="space-y-14">
+            <FeedbackSectionHeader
+              type="patient"
+              title="Patient Feedback"
+              count={patientFeedbacks.length}
+            />
+
+            <PatientFeedbackSection
+              feedbacks={patientFeedbacks}
+            />
+
+            <FeedbackSectionHeader
+              type="doctor"
+              title="Doctor Feedback"
+              count={doctorFeedbacks.length}
+            />
+
+            <DoctorFeedbackSection
+              feedbacks={doctorFeedbacks}
+            />
+          </div>
+        )}
+
+        {/* =================================================
+            STANDARD ADMIN
         ================================================= */}
 
         {isStandardAdmin && (
@@ -573,7 +690,7 @@ const Messages = () => {
         )}
 
         {/* =================================================
-            GUEST ADMIN CONTENT
+            GUEST ADMIN
         ================================================= */}
 
         {isGuestAdmin && (
@@ -581,6 +698,103 @@ const Messages = () => {
             feedbacks={patientFeedbacks}
           />
         )}
+      </div>
+    </div>
+  );
+};
+
+/* =====================================================
+   SECTION HEADER
+===================================================== */
+
+interface FeedbackSectionHeaderProps {
+  type: "doctor" | "patient";
+  title: string;
+  count: number;
+}
+
+const FeedbackSectionHeader = ({
+  type,
+  title,
+  count,
+}: FeedbackSectionHeaderProps) => {
+  const isDoctor = type === "doctor";
+
+  return (
+    <div
+      className="
+        flex
+        flex-col
+        gap-3
+        rounded-2xl
+        border
+        border-gray-200
+        bg-white
+        p-5
+        shadow-sm
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+        dark:border-gray-700
+        dark:bg-gray-800
+      "
+    >
+      <div className="flex items-center gap-4">
+        <div
+          className={`
+            flex
+            h-12
+            w-12
+            items-center
+            justify-center
+            rounded-xl
+            ${
+              isDoctor
+                ? `
+                  bg-emerald-100
+                  text-emerald-600
+                  dark:bg-emerald-950
+                  dark:text-emerald-300
+                `
+                : `
+                  bg-blue-100
+                  text-blue-600
+                  dark:bg-blue-950
+                  dark:text-blue-300
+                `
+            }
+          `}
+        >
+          {isDoctor ? (
+            <LuStethoscope className="text-2xl" />
+          ) : (
+            <LuUser className="text-2xl" />
+          )}
+        </div>
+
+        <div>
+          <h2
+            className="
+              text-2xl
+              font-bold
+              text-gray-900
+              dark:text-white
+            "
+          >
+            {title}
+          </h2>
+
+          <p
+            className="
+              text-sm
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            {count} feedback record
+            {count === 1 ? "" : "s"}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -1154,7 +1368,7 @@ const RatingItem = ({
   label,
   value,
 }: RatingItemProps) => {
-  const rating =
+  const numericValue =
     value === null ||
     value === undefined
       ? null
@@ -1190,9 +1404,10 @@ const RatingItem = ({
           dark:text-white
         "
       >
-        {rating === null
+        {numericValue === null ||
+        Number.isNaN(numericValue)
           ? "-"
-          : `${rating}/5`}
+          : `${numericValue}/5`}
       </p>
     </div>
   );
