@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   FaCommentMedical,
   FaStar,
@@ -8,6 +9,8 @@ import {
   LuStethoscope,
   LuUser,
 } from "react-icons/lu";
+
+import type { RootState } from "../../../../store/store";
 
 import {
   getAllDoctorFeedbackApi,
@@ -26,56 +29,41 @@ type AdminRole =
   | "guest admin"
   | "";
 
-interface StoredUser {
-  role?: string;
-  role_name?: string;
-  user_role?: string;
-  userType?: string;
-  user_type_name?: string;
-
-  data?: {
-    role?: string;
-    role_name?: string;
-    user_role?: string;
-  };
-
-  user?: {
-    role?: string;
-    role_name?: string;
-    user_role?: string;
-  };
-}
+type FeedbackSectionType =
+  | "patient"
+  | "doctor";
 
 /* =====================================================
-   ROLE HELPERS
+   ROLE HELPER
 ===================================================== */
 
 const normalizeRole = (
   value: unknown
 ): AdminRole => {
-  const normalizedValue = String(value || "")
+  const normalizedRole = String(value || "")
     .trim()
     .toLowerCase()
     .replace(/_/g, " ")
+    .replace(/-/g, " ")
     .replace(/\s+/g, " ");
 
   if (
-    normalizedValue === "super admin" ||
-    normalizedValue === "superadmin"
+    normalizedRole === "super admin" ||
+    normalizedRole === "superadmin"
   ) {
     return "super admin";
   }
 
   if (
-    normalizedValue === "standard admin" ||
-    normalizedValue === "standardadmin"
+    normalizedRole === "standard admin" ||
+    normalizedRole === "standardadmin"
   ) {
     return "standard admin";
   }
 
   if (
-    normalizedValue === "guest admin" ||
-    normalizedValue === "guestadmin"
+    normalizedRole === "guest admin" ||
+    normalizedRole === "guestadmin"
   ) {
     return "guest admin";
   }
@@ -83,102 +71,22 @@ const normalizeRole = (
   return "";
 };
 
-const extractRoleFromObject = (
-  storedUser: StoredUser
-): AdminRole => {
-  return normalizeRole(
-    storedUser.role ||
-      storedUser.role_name ||
-      storedUser.user_role ||
-      storedUser.userType ||
-      storedUser.user_type_name ||
-      storedUser.data?.role ||
-      storedUser.data?.role_name ||
-      storedUser.data?.user_role ||
-      storedUser.user?.role ||
-      storedUser.user?.role_name ||
-      storedUser.user?.user_role
-  );
-};
-
-const getLoggedInRole = (): AdminRole => {
-  /*
-   * Directly stored role:
-   * localStorage.setItem("role", "super admin")
-   */
-  const directRole =
-    localStorage.getItem("role") ||
-    sessionStorage.getItem("role");
-
-  if (directRole) {
-    const normalizedRole =
-      normalizeRole(directRole);
-
-    if (normalizedRole) {
-      return normalizedRole;
-    }
-  }
-
-  /*
-   * Check commonly used user-storage keys.
-   */
-  const storageKeys = [
-    "user",
-    "userData",
-    "authUser",
-    "loginData",
-    "loggedInUser",
-    "auth",
-  ];
-
-  for (const key of storageKeys) {
-    const storedValue =
-      localStorage.getItem(key) ||
-      sessionStorage.getItem(key);
-
-    if (!storedValue) {
-      continue;
-    }
-
-    try {
-      const parsedValue =
-        JSON.parse(storedValue) as StoredUser;
-
-      const detectedRole =
-        extractRoleFromObject(parsedValue);
-
-      if (detectedRole) {
-        return detectedRole;
-      }
-    } catch {
-      const detectedRole =
-        normalizeRole(storedValue);
-
-      if (detectedRole) {
-        return detectedRole;
-      }
-    }
-  }
-
-  return "";
-};
-
 /* =====================================================
-   COMMON HELPERS
+   OTHER HELPERS
 ===================================================== */
 
 const getSafeRating = (
-  rating?: number | null
+  value?: number | null
 ): number => {
-  const numericRating = Number(rating || 0);
+  const rating = Number(value ?? 0);
 
-  if (Number.isNaN(numericRating)) {
+  if (Number.isNaN(rating)) {
     return 0;
   }
 
   return Math.max(
     0,
-    Math.min(Math.round(numericRating), 5)
+    Math.min(Math.round(rating), 5)
   );
 };
 
@@ -202,8 +110,16 @@ const formatDoctorName = (
 ===================================================== */
 
 const Messages = () => {
-  const [role, setRole] =
-    useState<AdminRole>("");
+  /*
+   * Your login/auth bootstrap stores role directly
+   * inside state.auth.role.
+   */
+  const reduxRole = useSelector(
+    (state: RootState) =>
+      state.auth.role
+  );
+
+  const role = normalizeRole(reduxRole);
 
   const [
     patientFeedbacks,
@@ -223,6 +139,16 @@ const Messages = () => {
     setErrorMessage,
   ] = useState("");
 
+  const [
+    patientError,
+    setPatientError,
+  ] = useState("");
+
+  const [
+    doctorError,
+    setDoctorError,
+  ] = useState("");
+
   const isSuperAdmin =
     role === "super admin";
 
@@ -232,72 +158,102 @@ const Messages = () => {
   const isGuestAdmin =
     role === "guest admin";
 
-  useEffect(() => {
-    let componentMounted = true;
+  /* =====================================================
+     FETCH FEEDBACK ACCORDING TO ROLE
+  ===================================================== */
 
-    const fetchFeedbacks = async () => {
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchFeedback = async () => {
       try {
         setLoading(true);
         setErrorMessage("");
+        setPatientError("");
+        setDoctorError("");
+        setPatientFeedbacks([]);
+        setDoctorFeedbacks([]);
 
-        const loggedInRole =
-          getLoggedInRole();
+        if (!role) {
+          setErrorMessage(
+            "Your admin role could not be identified. Please log in again."
+          );
 
-        console.log(
-          "MESSAGES PAGE DETECTED ROLE:",
-          loggedInRole
-        );
-
-        if (!componentMounted) {
           return;
         }
 
-        setRole(loggedInRole);
-
         /* =============================================
            SUPER ADMIN
-           SHOW BOTH FEEDBACK TYPES
+           PATIENT + DOCTOR FEEDBACK
         ============================================= */
 
-        if (loggedInRole === "super admin") {
-          const [
-            patientResponse,
-            doctorResponse,
-          ] = await Promise.all([
-            getAllPatientFeedbackApi(),
-            getAllDoctorFeedbackApi(),
-          ]);
+        if (role === "super admin") {
+          const results =
+            await Promise.allSettled([
+              getAllPatientFeedbackApi(),
+              getAllDoctorFeedbackApi(),
+            ]);
 
-          if (!componentMounted) {
+          if (!mounted) {
             return;
           }
 
-          const patientSuccess =
-            patientResponse.data?.success;
-
-          const doctorSuccess =
-            doctorResponse.data?.success;
-
-          setPatientFeedbacks(
-            patientSuccess
-              ? patientResponse.data.data || []
-              : []
-          );
-
-          setDoctorFeedbacks(
-            doctorSuccess
-              ? doctorResponse.data.data || []
-              : []
-          );
+          const patientResult = results[0];
+          const doctorResult = results[1];
 
           if (
-            !patientSuccess &&
-            !doctorSuccess
+            patientResult.status ===
+            "fulfilled"
           ) {
-            setErrorMessage(
-              patientResponse.data?.message ||
-                doctorResponse.data?.message ||
-                "Failed to fetch feedback."
+            const response =
+              patientResult.value.data;
+
+            if (response?.success) {
+              setPatientFeedbacks(
+                response.data || []
+              );
+            } else {
+              setPatientError(
+                response?.message ||
+                  "Failed to load patient feedback."
+              );
+            }
+          } else {
+            console.error(
+              "PATIENT FEEDBACK ERROR:",
+              patientResult.reason
+            );
+
+            setPatientError(
+              "Failed to load patient feedback."
+            );
+          }
+
+          if (
+            doctorResult.status ===
+            "fulfilled"
+          ) {
+            const response =
+              doctorResult.value.data;
+
+            if (response?.success) {
+              setDoctorFeedbacks(
+                response.data || []
+              );
+            } else {
+              setDoctorError(
+                response?.message ||
+                  "Failed to load doctor feedback."
+              );
+            }
+          } else {
+            console.error(
+              "DOCTOR FEEDBACK ERROR:",
+              doctorResult.reason
+            );
+
+            setDoctorError(
+              "Failed to load doctor feedback."
             );
           }
 
@@ -306,26 +262,23 @@ const Messages = () => {
 
         /* =============================================
            STANDARD ADMIN
-           SHOW ONLY DOCTOR FEEDBACK
+           DOCTOR FEEDBACK ONLY
         ============================================= */
 
         if (
-          loggedInRole ===
-          "standard admin"
+          role === "standard admin"
         ) {
           const response =
             await getAllDoctorFeedbackApi();
 
-          if (!componentMounted) {
+          if (!mounted) {
             return;
           }
 
           if (!response.data?.success) {
-            setDoctorFeedbacks([]);
-
             setErrorMessage(
               response.data?.message ||
-                "Failed to fetch doctor feedback."
+                "Failed to load doctor feedback."
             );
 
             return;
@@ -335,33 +288,26 @@ const Messages = () => {
             response.data.data || []
           );
 
-          setPatientFeedbacks([]);
-
           return;
         }
 
         /* =============================================
            GUEST ADMIN
-           SHOW ONLY PATIENT FEEDBACK
+           PATIENT FEEDBACK ONLY
         ============================================= */
 
-        if (
-          loggedInRole ===
-          "guest admin"
-        ) {
+        if (role === "guest admin") {
           const response =
             await getAllPatientFeedbackApi();
 
-          if (!componentMounted) {
+          if (!mounted) {
             return;
           }
 
           if (!response.data?.success) {
-            setPatientFeedbacks([]);
-
             setErrorMessage(
               response.data?.message ||
-                "Failed to fetch patient feedback."
+                "Failed to load patient feedback."
             );
 
             return;
@@ -371,13 +317,11 @@ const Messages = () => {
             response.data.data || []
           );
 
-          setDoctorFeedbacks([]);
-
           return;
         }
 
         setErrorMessage(
-          "Your admin role could not be identified. Please log in again."
+          "You do not have permission to view this page."
         );
       } catch (error) {
         console.error(
@@ -385,26 +329,30 @@ const Messages = () => {
           error
         );
 
-        if (componentMounted) {
+        if (mounted) {
           setErrorMessage(
             "Something went wrong while loading feedback."
           );
         }
       } finally {
-        if (componentMounted) {
+        if (mounted) {
           setLoading(false);
         }
       }
     };
 
-    fetchFeedbacks();
+    fetchFeedback();
 
     return () => {
-      componentMounted = false;
+      mounted = false;
     };
-  }, []);
+  }, [role]);
 
-  const feedbackCount = useMemo(() => {
+  /* =====================================================
+     TOTAL FEEDBACK COUNT
+  ===================================================== */
+
+  const totalFeedback = useMemo(() => {
     if (isSuperAdmin) {
       return (
         patientFeedbacks.length +
@@ -425,22 +373,34 @@ const Messages = () => {
     isSuperAdmin,
     isStandardAdmin,
     isGuestAdmin,
-    patientFeedbacks,
-    doctorFeedbacks,
+    patientFeedbacks.length,
+    doctorFeedbacks.length,
   ]);
+
+  /* =====================================================
+     LOADING
+  ===================================================== */
 
   if (loading) {
     return <FeedbackLoading />;
   }
 
+  /* =====================================================
+     ERROR
+  ===================================================== */
+
   if (errorMessage) {
     return (
       <FeedbackError
         message={errorMessage}
-        role={role}
+        role={reduxRole}
       />
     );
   }
+
+  /* =====================================================
+     PAGE
+  ===================================================== */
 
   return (
     <div
@@ -450,238 +410,76 @@ const Messages = () => {
         from-gray-200
         via-slate-50
         to-gray-200
-        p-6
+        p-4
+        sm:p-6
         dark:from-gray-950
         dark:via-gray-800
         dark:to-gray-950
       "
     >
       <div className="mx-auto max-w-7xl">
-        {/* =================================================
-            PAGE HEADER
-        ================================================= */}
+        {/* HEADER */}
 
-        <div
-          className="
-            mb-8
-            rounded-3xl
-            bg-gradient-to-r
-            from-cyan-700
-            to-teal-500
-            p-8
-            text-white
-            shadow-xl
-          "
-        >
-          <div
-            className="
-              flex
-              flex-col
-              gap-5
-              md:flex-row
-              md:items-center
-              md:justify-between
-            "
-          >
-            <div className="flex items-center gap-5">
-              <div
-                className="
-                  flex
-                  h-16
-                  w-16
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-white/20
-                  backdrop-blur
-                "
-              >
-                <FaCommentMedical className="text-3xl" />
-              </div>
+        <FeedbackPageHeader
+          role={role}
+          totalFeedback={totalFeedback}
+        />
 
-              <div>
-                <h1 className="text-3xl font-bold md:text-4xl">
-                  {isSuperAdmin
-                    ? "All Feedback"
-                    : isStandardAdmin
-                      ? "Doctor Feedback"
-                      : "Patient Feedback"}
-                </h1>
+        {/* ROLE INFORMATION */}
 
-                <p className="mt-2 text-cyan-50">
-                  {isSuperAdmin
-                    ? "Review feedback submitted by patients and doctors."
-                    : isStandardAdmin
-                      ? "Review feedback submitted by registered doctors."
-                      : "Review feedback submitted by registered patients."}
-                </p>
-              </div>
-            </div>
+        <RoleInformation role={role} />
 
-            <div
-              className="
-                rounded-2xl
-                bg-white/20
-                px-7
-                py-4
-                backdrop-blur
-              "
-            >
-              <p className="text-sm text-cyan-50">
-                Total Feedback
-              </p>
-
-              <p className="text-3xl font-bold">
-                {feedbackCount}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* =================================================
-            ROLE INFORMATION
-        ================================================= */}
-
-        <div
-          className="
-            mb-8
-            flex
-            flex-col
-            gap-4
-            rounded-2xl
-            border
-            border-gray-200
-            bg-white
-            p-5
-            shadow-sm
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            dark:border-gray-700
-            dark:bg-gray-800
-          "
-        >
-          <div className="flex items-center gap-3">
-            {isSuperAdmin ? (
-              <FaCommentMedical
-                className="
-                  text-3xl
-                  text-cyan-600
-                  dark:text-cyan-400
-                "
-              />
-            ) : isStandardAdmin ? (
-              <LuStethoscope
-                className="
-                  text-3xl
-                  text-emerald-600
-                  dark:text-emerald-400
-                "
-              />
-            ) : (
-              <LuUser
-                className="
-                  text-3xl
-                  text-blue-600
-                  dark:text-blue-400
-                "
-              />
-            )}
-
-            <div>
-              <p
-                className="
-                  font-semibold
-                  text-gray-900
-                  dark:text-white
-                "
-              >
-                Logged in as
-              </p>
-
-              <p
-                className="
-                  text-sm
-                  capitalize
-                  text-gray-500
-                  dark:text-gray-400
-                "
-              >
-                {role}
-              </p>
-            </div>
-          </div>
-
-          <div
-            className={`
-              rounded-full
-              px-5
-              py-2
-              text-sm
-              font-semibold
-              ${
-                isSuperAdmin
-                  ? `
-                    bg-cyan-100
-                    text-cyan-700
-                    dark:bg-cyan-950
-                    dark:text-cyan-300
-                  `
-                  : isStandardAdmin
-                    ? `
-                      bg-emerald-100
-                      text-emerald-700
-                      dark:bg-emerald-950
-                      dark:text-emerald-300
-                    `
-                    : `
-                      bg-blue-100
-                      text-blue-700
-                      dark:bg-blue-950
-                      dark:text-blue-300
-                    `
-              }
-            `}
-          >
-            {isSuperAdmin
-              ? "All Reviews"
-              : isStandardAdmin
-                ? "Doctor Reviews"
-                : "Patient Reviews"}
-          </div>
-        </div>
-
-        {/* =================================================
-            SUPER ADMIN
-        ================================================= */}
+        {/* SUPER ADMIN */}
 
         {isSuperAdmin && (
-          <div className="space-y-14">
-            <FeedbackSectionHeader
-              type="patient"
-              title="Patient Feedback"
-              count={patientFeedbacks.length}
-            />
+          <div className="space-y-12">
+            <section>
+              <FeedbackSectionHeader
+                type="patient"
+                title="Patient Feedback"
+                count={
+                  patientFeedbacks.length
+                }
+              />
 
-            <PatientFeedbackSection
-              feedbacks={patientFeedbacks}
-            />
+              {patientError ? (
+                <SectionError
+                  message={patientError}
+                />
+              ) : (
+                <PatientFeedbackSection
+                  feedbacks={
+                    patientFeedbacks
+                  }
+                />
+              )}
+            </section>
 
-            <FeedbackSectionHeader
-              type="doctor"
-              title="Doctor Feedback"
-              count={doctorFeedbacks.length}
-            />
+            <section>
+              <FeedbackSectionHeader
+                type="doctor"
+                title="Doctor Feedback"
+                count={
+                  doctorFeedbacks.length
+                }
+              />
 
-            <DoctorFeedbackSection
-              feedbacks={doctorFeedbacks}
-            />
+              {doctorError ? (
+                <SectionError
+                  message={doctorError}
+                />
+              ) : (
+                <DoctorFeedbackSection
+                  feedbacks={
+                    doctorFeedbacks
+                  }
+                />
+              )}
+            </section>
           </div>
         )}
 
-        {/* =================================================
-            STANDARD ADMIN
-        ================================================= */}
+        {/* STANDARD ADMIN */}
 
         {isStandardAdmin && (
           <DoctorFeedbackSection
@@ -689,9 +487,7 @@ const Messages = () => {
           />
         )}
 
-        {/* =================================================
-            GUEST ADMIN
-        ================================================= */}
+        {/* GUEST ADMIN */}
 
         {isGuestAdmin && (
           <PatientFeedbackSection
@@ -704,11 +500,245 @@ const Messages = () => {
 };
 
 /* =====================================================
+   PAGE HEADER
+===================================================== */
+
+interface FeedbackPageHeaderProps {
+  role: AdminRole;
+  totalFeedback: number;
+}
+
+const FeedbackPageHeader = ({
+  role,
+  totalFeedback,
+}: FeedbackPageHeaderProps) => {
+  const isSuperAdmin =
+    role === "super admin";
+
+  const isStandardAdmin =
+    role === "standard admin";
+
+  const title = isSuperAdmin
+    ? "All Feedback"
+    : isStandardAdmin
+      ? "Doctor Feedback"
+      : "Patient Feedback";
+
+  const description = isSuperAdmin
+    ? "Review feedback submitted by registered patients and doctors."
+    : isStandardAdmin
+      ? "Review feedback submitted by registered doctors."
+      : "Review feedback submitted by registered patients.";
+
+  return (
+    <div
+      className="
+        mb-8
+        rounded-3xl
+        bg-gradient-to-r
+        from-cyan-700
+        to-teal-500
+        p-6
+        text-white
+        shadow-xl
+        sm:p-8
+      "
+    >
+      <div
+        className="
+          flex
+          flex-col
+          gap-6
+          md:flex-row
+          md:items-center
+          md:justify-between
+        "
+      >
+        <div className="flex items-center gap-5">
+          <div
+            className="
+              flex
+              h-16
+              w-16
+              shrink-0
+              items-center
+              justify-center
+              rounded-2xl
+              bg-white/20
+              backdrop-blur
+            "
+          >
+            <FaCommentMedical className="text-3xl" />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold md:text-4xl">
+              {title}
+            </h1>
+
+            <p className="mt-2 text-cyan-50">
+              {description}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="
+            rounded-2xl
+            bg-white/20
+            px-7
+            py-4
+            backdrop-blur
+          "
+        >
+          <p className="text-sm text-cyan-50">
+            Total Feedback
+          </p>
+
+          <p className="text-3xl font-bold">
+            {totalFeedback}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* =====================================================
+   ROLE INFORMATION
+===================================================== */
+
+interface RoleInformationProps {
+  role: AdminRole;
+}
+
+const RoleInformation = ({
+  role,
+}: RoleInformationProps) => {
+  const isSuperAdmin =
+    role === "super admin";
+
+  const isStandardAdmin =
+    role === "standard admin";
+
+  return (
+    <div
+      className="
+        mb-8
+        flex
+        flex-col
+        gap-4
+        rounded-2xl
+        border
+        border-gray-200
+        bg-white
+        p-5
+        shadow-sm
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+        dark:border-gray-700
+        dark:bg-gray-800
+      "
+    >
+      <div className="flex items-center gap-3">
+        {isSuperAdmin ? (
+          <FaCommentMedical
+            className="
+              text-3xl
+              text-cyan-600
+              dark:text-cyan-400
+            "
+          />
+        ) : isStandardAdmin ? (
+          <LuStethoscope
+            className="
+              text-3xl
+              text-emerald-600
+              dark:text-emerald-400
+            "
+          />
+        ) : (
+          <LuUser
+            className="
+              text-3xl
+              text-blue-600
+              dark:text-blue-400
+            "
+          />
+        )}
+
+        <div>
+          <p
+            className="
+              font-semibold
+              text-gray-900
+              dark:text-white
+            "
+          >
+            Logged in as
+          </p>
+
+          <p
+            className="
+              text-sm
+              capitalize
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            {role}
+          </p>
+        </div>
+      </div>
+
+      <span
+        className={`
+          rounded-full
+          px-5
+          py-2
+          text-sm
+          font-semibold
+          ${
+            isSuperAdmin
+              ? `
+                bg-cyan-100
+                text-cyan-700
+                dark:bg-cyan-950
+                dark:text-cyan-300
+              `
+              : isStandardAdmin
+                ? `
+                  bg-emerald-100
+                  text-emerald-700
+                  dark:bg-emerald-950
+                  dark:text-emerald-300
+                `
+                : `
+                  bg-blue-100
+                  text-blue-700
+                  dark:bg-blue-950
+                  dark:text-blue-300
+                `
+          }
+        `}
+      >
+        {isSuperAdmin
+          ? "All Reviews"
+          : isStandardAdmin
+            ? "Doctor Reviews"
+            : "Patient Reviews"}
+      </span>
+    </div>
+  );
+};
+
+/* =====================================================
    SECTION HEADER
 ===================================================== */
 
 interface FeedbackSectionHeaderProps {
-  type: "doctor" | "patient";
+  type: FeedbackSectionType;
   title: string;
   count: number;
 }
@@ -718,11 +748,13 @@ const FeedbackSectionHeader = ({
   title,
   count,
 }: FeedbackSectionHeaderProps) => {
-  const isDoctor = type === "doctor";
+  const isDoctor =
+    type === "doctor";
 
   return (
     <div
       className="
+        mb-6
         flex
         flex-col
         gap-3
@@ -801,7 +833,7 @@ const FeedbackSectionHeader = ({
 };
 
 /* =====================================================
-   DOCTOR FEEDBACK SECTION
+   DOCTOR FEEDBACK
 ===================================================== */
 
 interface DoctorFeedbackSectionProps {
@@ -816,7 +848,7 @@ const DoctorFeedbackSection = ({
       <EmptyFeedback
         type="doctor"
         title="No doctor feedback found"
-        description="Doctor feedback will appear here after a doctor submits it."
+        description="Doctor feedback will appear here after a doctor submits feedback."
       />
     );
   }
@@ -831,10 +863,11 @@ const DoctorFeedbackSection = ({
       "
     >
       {feedbacks.map((feedback) => (
-        <div
-          key={feedback.doctor_feedback_id}
+        <article
+          key={
+            feedback.doctor_feedback_id
+          }
           className="
-            group
             overflow-hidden
             rounded-3xl
             border
@@ -874,6 +907,7 @@ const DoctorFeedbackSection = ({
                     flex
                     h-14
                     w-14
+                    shrink-0
                     items-center
                     justify-center
                     rounded-2xl
@@ -888,7 +922,7 @@ const DoctorFeedbackSection = ({
                 </div>
 
                 <div>
-                  <h2
+                  <h3
                     className="
                       text-xl
                       font-bold
@@ -899,7 +933,7 @@ const DoctorFeedbackSection = ({
                     {formatDoctorName(
                       feedback.doctor_name
                     )}
-                  </h2>
+                  </h3>
 
                   <p
                     className="
@@ -935,28 +969,9 @@ const DoctorFeedbackSection = ({
               rating={feedback.experience}
             />
 
-            <div
-              className="
-                my-5
-                rounded-2xl
-                bg-gray-50
-                p-4
-                dark:bg-gray-900/50
-              "
-            >
-              <p
-                className="
-                  leading-7
-                  text-gray-600
-                  dark:text-gray-300
-                "
-              >
-                “
-                {feedback.desc ||
-                  "No additional comments provided."}
-                ”
-              </p>
-            </div>
+            <FeedbackDescription
+              description={feedback.desc}
+            />
 
             <div
               className="
@@ -990,12 +1005,16 @@ const DoctorFeedbackSection = ({
 
               <RatingItem
                 label="Support"
-                value={feedback.support_service}
+                value={
+                  feedback.support_service
+                }
               />
 
               <RatingItem
                 label="Cooperation"
-                value={feedback.p_cooperation}
+                value={
+                  feedback.p_cooperation
+                }
               />
 
               <RatingItem
@@ -1004,41 +1023,21 @@ const DoctorFeedbackSection = ({
               />
             </div>
 
-            <div
-              className="
-                mt-5
-                flex
-                items-center
-                justify-between
-                border-t
-                border-gray-200
-                pt-4
-                dark:border-gray-700
-              "
-            >
-              <span
-                className="
-                  text-sm
-                  text-gray-500
-                  dark:text-gray-400
-                "
-              >
-                Would recommend
-              </span>
-
-              <BooleanBadge
-                value={feedback.recommendation}
-              />
-            </div>
+            <RecommendationRow
+              label="Would recommend"
+              value={
+                feedback.recommendation
+              }
+            />
           </div>
-        </div>
+        </article>
       ))}
     </div>
   );
 };
 
 /* =====================================================
-   PATIENT FEEDBACK SECTION
+   PATIENT FEEDBACK
 ===================================================== */
 
 interface PatientFeedbackSectionProps {
@@ -1053,7 +1052,7 @@ const PatientFeedbackSection = ({
       <EmptyFeedback
         type="patient"
         title="No patient feedback found"
-        description="Patient feedback will appear here after a patient submits it."
+        description="Patient feedback will appear here after a patient submits feedback."
       />
     );
   }
@@ -1068,10 +1067,11 @@ const PatientFeedbackSection = ({
       "
     >
       {feedbacks.map((feedback) => (
-        <div
-          key={feedback.patient_feedback_id}
+        <article
+          key={
+            feedback.patient_feedback_id
+          }
           className="
-            group
             overflow-hidden
             rounded-3xl
             border
@@ -1111,6 +1111,7 @@ const PatientFeedbackSection = ({
                     flex
                     h-14
                     w-14
+                    shrink-0
                     items-center
                     justify-center
                     rounded-2xl
@@ -1125,7 +1126,7 @@ const PatientFeedbackSection = ({
                 </div>
 
                 <div>
-                  <h2
+                  <h3
                     className="
                       text-xl
                       font-bold
@@ -1135,7 +1136,7 @@ const PatientFeedbackSection = ({
                   >
                     {feedback.patient_name ||
                       "Patient"}
-                  </h2>
+                  </h3>
 
                   <p
                     className="
@@ -1172,28 +1173,9 @@ const PatientFeedbackSection = ({
               rating={feedback.experience}
             />
 
-            <div
-              className="
-                my-5
-                rounded-2xl
-                bg-gray-50
-                p-4
-                dark:bg-gray-900/50
-              "
-            >
-              <p
-                className="
-                  leading-7
-                  text-gray-600
-                  dark:text-gray-300
-                "
-              >
-                “
-                {feedback.desc ||
-                  "No additional comments provided."}
-                ”
-              </p>
-            </div>
+            <FeedbackDescription
+              description={feedback.desc}
+            />
 
             <div
               className="
@@ -1261,52 +1243,22 @@ const PatientFeedbackSection = ({
                 dark:border-gray-700
               "
             >
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
-                <span
-                  className="
-                    text-sm
-                    text-gray-500
-                    dark:text-gray-400
-                  "
-                >
-                  Recommend
-                </span>
+              <BooleanInformation
+                label="Recommend"
+                value={
+                  feedback.recommendation
+                }
+              />
 
-                <BooleanBadge
-                  value={feedback.recommendation}
-                />
-              </div>
-
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
-                <span
-                  className="
-                    text-sm
-                    text-gray-500
-                    dark:text-gray-400
-                  "
-                >
-                  Consultation
-                </span>
-
-                <BooleanBadge
-                  value={feedback.consultation}
-                />
-              </div>
+              <BooleanInformation
+                label="Consultation"
+                value={
+                  feedback.consultation
+                }
+              />
             </div>
           </div>
-        </div>
+        </article>
       ))}
     </div>
   );
@@ -1351,6 +1303,43 @@ const StarRating = ({
       >
         {safeRating}/5
       </span>
+    </div>
+  );
+};
+
+/* =====================================================
+   DESCRIPTION
+===================================================== */
+
+interface FeedbackDescriptionProps {
+  description?: string | null;
+}
+
+const FeedbackDescription = ({
+  description,
+}: FeedbackDescriptionProps) => {
+  return (
+    <div
+      className="
+        my-5
+        rounded-2xl
+        bg-gray-50
+        p-4
+        dark:bg-gray-900/50
+      "
+    >
+      <p
+        className="
+          leading-7
+          text-gray-600
+          dark:text-gray-300
+        "
+      >
+        “
+        {description ||
+          "No additional comments provided."}
+        ”
+      </p>
     </div>
   );
 };
@@ -1414,7 +1403,7 @@ const RatingItem = ({
 };
 
 /* =====================================================
-   BOOLEAN BADGE
+   BOOLEAN VALUES
 ===================================================== */
 
 interface BooleanBadgeProps {
@@ -1454,6 +1443,77 @@ const BooleanBadge = ({
   );
 };
 
+interface BooleanInformationProps {
+  label: string;
+  value?: boolean | null;
+}
+
+const BooleanInformation = ({
+  label,
+  value,
+}: BooleanInformationProps) => {
+  return (
+    <div
+      className="
+        flex
+        items-center
+        justify-between
+        gap-3
+      "
+    >
+      <span
+        className="
+          text-sm
+          text-gray-500
+          dark:text-gray-400
+        "
+      >
+        {label}
+      </span>
+
+      <BooleanBadge value={value} />
+    </div>
+  );
+};
+
+interface RecommendationRowProps {
+  label: string;
+  value?: boolean | null;
+}
+
+const RecommendationRow = ({
+  label,
+  value,
+}: RecommendationRowProps) => {
+  return (
+    <div
+      className="
+        mt-5
+        flex
+        items-center
+        justify-between
+        gap-4
+        border-t
+        border-gray-200
+        pt-4
+        dark:border-gray-700
+      "
+    >
+      <span
+        className="
+          text-sm
+          text-gray-500
+          dark:text-gray-400
+        "
+      >
+        {label}
+      </span>
+
+      <BooleanBadge value={value} />
+    </div>
+  );
+};
+
 /* =====================================================
    EMPTY FEEDBACK
 ===================================================== */
@@ -1461,7 +1521,7 @@ const BooleanBadge = ({
 interface EmptyFeedbackProps {
   title: string;
   description: string;
-  type: "doctor" | "patient";
+  type: FeedbackSectionType;
 }
 
 const EmptyFeedback = ({
@@ -1469,6 +1529,9 @@ const EmptyFeedback = ({
   description,
   type,
 }: EmptyFeedbackProps) => {
+  const isDoctor =
+    type === "doctor";
+
   return (
     <div
       className="
@@ -1494,7 +1557,7 @@ const EmptyFeedback = ({
           justify-center
           rounded-full
           ${
-            type === "doctor"
+            isDoctor
               ? `
                 bg-emerald-100
                 text-emerald-600
@@ -1510,14 +1573,14 @@ const EmptyFeedback = ({
           }
         `}
       >
-        {type === "doctor" ? (
+        {isDoctor ? (
           <FaUserMd className="text-3xl" />
         ) : (
           <LuUser className="text-3xl" />
         )}
       </div>
 
-      <h2
+      <h3
         className="
           mt-5
           text-xl
@@ -1527,7 +1590,7 @@ const EmptyFeedback = ({
         "
       >
         {title}
-      </h2>
+      </h3>
 
       <p
         className="
@@ -1543,12 +1606,42 @@ const EmptyFeedback = ({
 };
 
 /* =====================================================
-   ERROR COMPONENT
+   SECTION ERROR
+===================================================== */
+
+interface SectionErrorProps {
+  message: string;
+}
+
+const SectionError = ({
+  message,
+}: SectionErrorProps) => {
+  return (
+    <div
+      className="
+        rounded-2xl
+        border
+        border-red-200
+        bg-red-50
+        p-6
+        text-red-700
+        dark:border-red-900
+        dark:bg-red-950/40
+        dark:text-red-300
+      "
+    >
+      {message}
+    </div>
+  );
+};
+
+/* =====================================================
+   PAGE ERROR
 ===================================================== */
 
 interface FeedbackErrorProps {
   message: string;
-  role: string;
+  role?: string | null;
 }
 
 const FeedbackError = ({
@@ -1593,7 +1686,7 @@ const FeedbackError = ({
           </p>
 
           <p className="mt-3 text-sm">
-            Detected role:{" "}
+            Redux role:{" "}
             <strong>
               {role || "Not found"}
             </strong>
@@ -1605,7 +1698,7 @@ const FeedbackError = ({
 };
 
 /* =====================================================
-   LOADING COMPONENT
+   LOADING
 ===================================================== */
 
 const FeedbackLoading = () => {
