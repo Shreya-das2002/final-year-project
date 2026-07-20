@@ -85,6 +85,16 @@ const AdminDashboard: React.FC = () => {
     (state: RootState) => state.appointment
   );
 
+  const adminRole = useSelector(
+    (state: RootState) => state.auth.role
+  );
+
+  const normalizedAdminRole = useMemo(() => {
+    return String(adminRole || "")
+      .trim()
+      .toLowerCase();
+  }, [adminRole]);
+
   useEffect(() => {
     dispatch(fetchAppointmentsThunk());
   }, [dispatch]);
@@ -463,30 +473,66 @@ const AdminDashboard: React.FC = () => {
 
             <MonthwiseAppointmentGraph data={monthwiseAppointmentData} />
 
-            <section className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-3">
-              <QuickActionCard
-                title="Add Doctor"
-                description="Create a new doctor profile and assign specialization."
-                icon={<UserPlus size={22} />}
-                color="from-cyan-400 via-sky-500 to-blue-700"
-                onClick={() => navigate("/admin/doctors/add")}
-              />
+            <section className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
+              {normalizedAdminRole === "super admin" && (
+                <>
+                  <QuickActionCard
+                    title="Create Admin"
+                    description="Create a new admin account and assign the required access."
+                    icon={<UserPlus size={22} />}
+                    color="from-cyan-400 via-sky-500 to-blue-700"
+                    onClick={() => navigate("/admin/create_admin")}
+                  />
 
-              <QuickActionCard
-                title="View Appointments"
-                description="Track all patient appointments and booking statuses."
-                icon={<CalendarDays size={22} />}
-                color="from-indigo-500 via-purple-500 to-pink-600"
-                onClick={() => navigate("/admin/appointments")}
-              />
+                  <QuickActionCard
+                    title="View Appointments"
+                    description="Track all patient appointments and booking statuses."
+                    icon={<CalendarDays size={22} />}
+                    color="from-indigo-500 via-purple-500 to-pink-600"
+                    onClick={() => navigate("/admin/appointments")}
+                  />
+                </>
+              )}
 
-              <QuickActionCard
-                title="Manage Users"
-                description="Manage patient, doctor, and admin user accounts."
-                icon={<UsersRound size={22} />}
-                color="from-emerald-400 via-teal-500 to-cyan-700"
-                onClick={() => navigate("/admin/users")}
-              />
+              {normalizedAdminRole === "guest admin" && (
+                <>
+                  <QuickActionCard
+                    title="Add Doctor"
+                    description="Create a new doctor profile and assign specialization."
+                    icon={<UserPlus size={22} />}
+                    color="from-cyan-400 via-sky-500 to-blue-700"
+                    onClick={() => navigate("/admin/add_doctor")}
+                  />
+
+                  <QuickActionCard
+                    title="View Appointments"
+                    description="Track all patient appointments and booking statuses."
+                    icon={<CalendarDays size={22} />}
+                    color="from-indigo-500 via-purple-500 to-pink-600"
+                    onClick={() => navigate("/admin/appointments")}
+                  />
+                </>
+              )}
+
+              {normalizedAdminRole === "standard admin" && (
+                <>
+                  <QuickActionCard
+                    title="Manage Doctor"
+                    description="View and manage registered doctor profiles."
+                    icon={<Stethoscope size={22} />}
+                    color="from-emerald-400 via-teal-500 to-cyan-700"
+                    onClick={() => navigate("/admin/doctor_list")}
+                  />
+
+                  <QuickActionCard
+                    title="View Appointments"
+                    description="Track all patient appointments and booking statuses."
+                    icon={<CalendarDays size={22} />}
+                    color="from-indigo-500 via-purple-500 to-pink-600"
+                    onClick={() => navigate("/admin/appointments")}
+                  />
+                </>
+              )}
             </section>
           </div>
 
