@@ -214,8 +214,6 @@ const SymptoChecker = () => {
 return (
   <div
     className="
-      relative
-      mx-auto
       flex
       h-full
       min-h-0
@@ -226,7 +224,7 @@ return (
       backdrop-blur-xl
     "
   >
-    {/* HEADER */}
+    {/* FIXED HEADER */}
 
     <div className="shrink-0 px-6 py-4 text-cyan-800">
       <h3 className="text-4xl font-bold">
@@ -238,7 +236,7 @@ return (
       </p>
     </div>
 
-    {/* ONLY THIS MIDDLE SECTION SCROLLS */}
+    {/* SCROLLBAR EXISTS ONLY IN THIS SECTION */}
 
     <div
       className="
@@ -249,8 +247,7 @@ return (
         overscroll-contain
         bg-[radial-gradient(circle_at_top_left,_#e0faff,_transparent_35%),radial-gradient(circle_at_bottom_right,_#dff6ff,_transparent_35%)]
         px-8
-        pb-36
-        pt-8
+        py-8
       "
     >
       {displayedConversation.map((chat, index) => (
@@ -454,27 +451,9 @@ return (
             <div className="flex items-center gap-1">
               <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-500" />
 
-              <span
-                className="
-                  h-2
-                  w-2
-                  animate-bounce
-                  rounded-full
-                  bg-cyan-500
-                  [animation-delay:150ms]
-                "
-              />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-500 [animation-delay:150ms]" />
 
-              <span
-                className="
-                  h-2
-                  w-2
-                  animate-bounce
-                  rounded-full
-                  bg-cyan-500
-                  [animation-delay:300ms]
-                "
-              />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-500 [animation-delay:300ms]" />
 
               <span className="ml-2 text-sm text-slate-600">
                 Analyzing symptoms...
@@ -485,21 +464,18 @@ return (
       )}
     </div>
 
-    {/* ALWAYS VISIBLE INPUT SECTION */}
+    {/* INPUT IS OUTSIDE AND BELOW THE SCROLLBAR */}
 
     <div
       className="
-        absolute
-        inset-x-0
-        bottom-0
-        z-30
+        z-20
+        shrink-0
         border-t
         border-cyan-100
-        bg-white/95
+        bg-white
         px-6
         py-5
-        shadow-[0_-8px_25px_rgba(15,23,42,0.08)]
-        backdrop-blur-xl
+        shadow-[0_-6px_20px_rgba(15,23,42,0.08)]
       "
     >
       <div
