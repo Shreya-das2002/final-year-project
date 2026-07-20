@@ -1,6 +1,25 @@
 import { urls } from "../Environment";
 import { API } from "./api";
 
+const getListFromResponse = <T>(response: { status: number; data?: unknown }): T[] => {
+  const payload = response.data as {
+    success?: boolean;
+    message?: string;
+    data?: T[] | { doctors?: T[] };
+  } | undefined;
+
+  if (response.status < 200 || response.status >= 300 || payload?.success === false) {
+    throw new Error(payload?.message || "Unable to fetch doctors");
+  }
+
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.data?.doctors)) return payload.data.doctors;
+
+  // A list endpoint returning an unexpected payload is an error, not an empty list.
+  // This prevents 401/404 responses from being displayed as "No doctors found".
+  throw new Error(payload?.message || "Invalid doctor list response");
+};
+
 /* ================= DOCTOR TYPE ================= */
 
 export interface Address {
@@ -122,10 +141,11 @@ export const createDoctorApi = (data: CreateDoctorPayload) => {
 export const getPendingDoctorsApi = async (): Promise<Doctor[]> => {
 
   const response = await API.get(
-    urls.getPendingDoctorsUrl
+    urls.getPendingDoctorsUrl,
+    { validateStatus: () => true }
   );
 
-  return response.data.data;
+  return getListFromResponse<Doctor>(response);
 
 };
 
@@ -154,11 +174,12 @@ export const getDoctorListApi = async (
     {
       params: {
         specializationId
-      }
+      },
+      validateStatus: () => true,
     }
   );
 
-  return response.data.data;
+  return getListFromResponse<Doctor>(response);
 };
 
 /* ================= GET PUBLIC DOCTOR LIST API ================= */
@@ -172,11 +193,12 @@ export const getpublicDoctorListApi = async (
     {
       params: {
         specializationId
-      }
+      },
+      validateStatus: () => true,
     }
   );
 
-  return response.data.data;
+  return getListFromResponse<Doctor>(response);
 };
 
 /* ================= UPSERT SLOT API ================= */

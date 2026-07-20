@@ -94,6 +94,7 @@ interface DoctorState {
   >
 >;
   loading: boolean;
+  error: string | null;
   selectedDoctor: Doctor | null;
 }
 
@@ -102,6 +103,7 @@ const initialState: DoctorState = {
   experiences: [],
   slot: {},
   loading: false,
+  error: null,
   selectedDoctor: null,
 };
 
@@ -288,6 +290,7 @@ const doctorSlice = createSlice({
       .addCase(fetchDoctorListThunk.pending, (state) => {
 
         state.loading = true;
+        state.error = null;
 
       })
 
@@ -324,9 +327,10 @@ Object.entries(availability).forEach(([date, slot]) => {
 
       )
 
-      .addCase(fetchDoctorListThunk.rejected, (state) => {
+      .addCase(fetchDoctorListThunk.rejected, (state, action) => {
 
         state.loading = false;
+        state.error = action.payload || "Failed to fetch doctors";
 
       });
 

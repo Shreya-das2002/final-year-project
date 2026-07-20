@@ -20,7 +20,7 @@ const AdminAppoinments = () => {
   const navigate = useNavigate();
 
 
-  const { appointments, loading } = useSelector(
+  const { appointments, loading, error } = useSelector(
     (state: RootState) => state.appointment
   );
 
@@ -421,7 +421,7 @@ useEffect(() => {
                   colSpan={7}
                   className="p-6 text-center text-gray-500"
                 >
-                  No doctors found
+                  {error || "No appointments found"}
                 </td>
 
               </tr>

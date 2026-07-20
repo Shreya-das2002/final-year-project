@@ -78,7 +78,7 @@ const DoctorList = () => {
   const navigate = useNavigate();
 
 
-  const { doctors, loading } = useSelector(
+  const { doctors, loading, error } = useSelector(
     (state: RootState) => state.doctor
   );
 
@@ -539,7 +539,7 @@ const filteredDoctors = (Array.isArray(doctors) ? doctors : [])
                   colSpan={7}
                   className="p-6 text-center text-gray-500"
                 >
-                  No doctors found
+                  {error || "No doctors found"}
                 </td>
 
               </tr>

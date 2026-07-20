@@ -47,6 +47,7 @@ const PendingDoctorList: React.FC = () => {
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const calledRef = useRef(false);
 
   const buttons = useSelector(
@@ -74,6 +75,7 @@ const PendingDoctorList: React.FC = () => {
         setDoctors(data);
       } catch (error) {
         console.error(error);
+        setError(error instanceof Error ? error.message : "Failed to fetch pending doctors");
       } finally {
         setLoading(false);
       }
@@ -151,6 +153,8 @@ const PendingDoctorList: React.FC = () => {
       <h1 className="text-4xl font-bold mb-6 text-cyan-800 dark:text-cyan-50">
         Pending Doctor Approvals
       </h1>
+
+      {error && <div className="mb-4 rounded bg-red-100 p-3 text-red-700">{error}</div>}
 
       {doctors.length === 0 ? (
 

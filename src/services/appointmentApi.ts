@@ -1,6 +1,23 @@
 import { urls } from "../Environment";
 import { API } from "./api";
 
+const getListFromResponse = <T>(response: { status: number; data?: unknown }): T[] => {
+  const payload = response.data as {
+    success?: boolean;
+    message?: string;
+    data?: T[] | { appointments?: T[] };
+  } | undefined;
+
+  if (response.status < 200 || response.status >= 300 || payload?.success === false) {
+    throw new Error(payload?.message || "Unable to fetch appointments");
+  }
+
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.data?.appointments)) return payload.data.appointments;
+
+  throw new Error(payload?.message || "Invalid appointment list response");
+};
+
 /* ================= APPOINTMENT TYPE ================= */
 
 export interface AppointmentRequestPayload {
@@ -166,7 +183,7 @@ export const getAppointmentsApi = async (
     }
   );
 
-  return response.data?.data || [];
+  return getListFromResponse<Appointment>(response);
 };
 
 
@@ -181,7 +198,7 @@ export const getSlotmanagementListApi = async (
     }
   );
 
-  return response.data?.data || [];
+  return getListFromResponse<Appointment>(response);
 };
 
 /* ================= GET PENDING APPOINTMENTS FOR STANDARD ADMIN ================= */
@@ -194,7 +211,7 @@ export const getPendingAppointmentsApi = async (): Promise<PendingAppointment[]>
     }
   );
 
-  return response.data?.data || [];
+  return getListFromResponse<PendingAppointment>(response);
 };
 
 
