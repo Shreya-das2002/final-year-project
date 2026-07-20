@@ -211,9 +211,10 @@ const SymptoChecker = () => {
     }
   };
 
- return (
+return (
   <div
     className="
+      relative
       mx-auto
       flex
       h-full
@@ -225,7 +226,7 @@ const SymptoChecker = () => {
       backdrop-blur-xl
     "
   >
-    {/* FIXED HEADER */}
+    {/* HEADER */}
 
     <div className="shrink-0 px-6 py-4 text-cyan-800">
       <h3 className="text-4xl font-bold">
@@ -241,7 +242,6 @@ const SymptoChecker = () => {
 
     <div
       className="
-        relative
         min-h-0
         flex-1
         space-y-6
@@ -249,7 +249,8 @@ const SymptoChecker = () => {
         overscroll-contain
         bg-[radial-gradient(circle_at_top_left,_#e0faff,_transparent_35%),radial-gradient(circle_at_bottom_right,_#dff6ff,_transparent_35%)]
         px-8
-        py-8
+        pb-36
+        pt-8
       "
     >
       {displayedConversation.map((chat, index) => (
@@ -393,6 +394,7 @@ const SymptoChecker = () => {
                             )
                           }
                           className="
+                            shrink-0
                             rounded-xl
                             bg-cyan-600
                             px-4
@@ -450,15 +452,7 @@ const SymptoChecker = () => {
             "
           >
             <div className="flex items-center gap-1">
-              <span
-                className="
-                  h-2
-                  w-2
-                  animate-bounce
-                  rounded-full
-                  bg-cyan-500
-                "
-              />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-500" />
 
               <span
                 className="
@@ -491,17 +485,21 @@ const SymptoChecker = () => {
       )}
     </div>
 
-    {/* FIXED INPUT SECTION — NO SCROLLBAR */}
+    {/* ALWAYS VISIBLE INPUT SECTION */}
 
     <div
       className="
-        z-20
-        shrink-0
+        absolute
+        inset-x-0
+        bottom-0
+        z-30
         border-t
         border-cyan-100
-        bg-white/90
+        bg-white/95
         px-6
         py-5
+        shadow-[0_-8px_25px_rgba(15,23,42,0.08)]
+        backdrop-blur-xl
       "
     >
       <div
@@ -540,6 +538,7 @@ const SymptoChecker = () => {
             py-3
             text-slate-700
             outline-none
+            placeholder:text-slate-400
           "
           placeholder="Ask about your symptoms..."
           disabled={loading}
@@ -555,7 +554,7 @@ const SymptoChecker = () => {
             bg-gradient-to-r
             from-cyan-600
             to-sky-500
-            px-6
+            px-7
             py-3
             font-medium
             text-white

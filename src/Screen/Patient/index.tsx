@@ -14,7 +14,7 @@ const Patient = () => {
       <SideNav onProfileClick={() => setOpenProfileDrawer(true)} />
 
       {/* MAIN CONTENT */}
-      <main className="relative ml-64 w-screen min-h-screen bg-gradient-to-r from-slate-300 via-gray-50 to-slate-300">
+      <main className="relative ml-64 w-screen min-h-0 flex-1 overflow-hiddebg-gradient-to-r from-slate-300 via-gray-50 to-slate-300">
 
 {/* RIGHT PROFILE DRAWER */}
       <PatientProfileView
